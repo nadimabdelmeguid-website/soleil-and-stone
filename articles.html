@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Articles & Perspectives | SOLEIL & STONE</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              cream: '#F9F8F3',
+              card: '#FFFFFF',
+              charcoal: '#22252A',
+              slate: '#4A505A',
+              gold: '#C5A059',
+              goldlight: '#E5C98B',
+              border: '#E8E5DA',
+            }
+          },
+          fontFamily: {
+            serif: ['Cinzel', 'Playfair Display', 'Georgia', 'serif'],
+            sans: ['Plus Jakarta Sans', 'Inter', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+</head>
+<body class="bg-brand-cream text-brand-charcoal min-h-screen flex flex-col font-sans antialiased selection:bg-brand-gold selection:text-white">
+
+  <!-- Header -->
+  <header class="max-w-6xl w-full mx-auto px-6 py-8 flex flex-col sm:flex-row items-center justify-between border-b border-brand-border gap-6">
+    <a href="/" class="flex items-center gap-4 group">
+      <!-- SVG Brand Mark -->
+      <svg class="w-10 h-10 text-brand-gold" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="50" cy="35" r="14" fill="#C5A059" />
+        <line x1="50" y1="12" x2="50" y2="17" stroke="#C5A059" stroke-width="2" stroke-linecap="round"/>
+        <line x1="32" y1="20" x2="36" y2="24" stroke="#C5A059" stroke-width="2" stroke-linecap="round"/>
+        <line x1="68" y1="20" x2="64" y2="24" stroke="#C5A059" stroke-width="2" stroke-linecap="round"/>
+        <polygon points="50,28 18,58 50,58" fill="#D4AF37" />
+        <polygon points="50,28 50,58 82,58" fill="#3A3F47" />
+        <line x1="22" y1="63" x2="78" y2="63" stroke="#C5A059" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      <div class="flex flex-col text-center sm:text-left">
+        <span class="font-serif text-xl tracking-[0.2em] font-medium text-brand-charcoal group-hover:text-brand-gold transition-colors">SOLEIL & STONE</span>
+      </div>
+    </a>
+
+    <nav class="flex items-center gap-6 text-xs uppercase tracking-widest font-medium text-brand-slate">
+      <a href="/#community" class="hover:text-brand-gold transition-colors">Community Hub</a>
+      <a href="/articles.html" class="text-brand-gold font-semibold">Articles</a>
+      <a href="/#contact" class="px-4 py-2 border border-brand-charcoal hover:border-brand-gold hover:bg-brand-gold hover:text-white transition-all text-[11px]">Connect</a>
+    </nav>
+  </header>
+
+  <main class="flex-grow">
+    
+    <!-- Hero Header Section -->
+    <section class="max-w-6xl w-full mx-auto px-6 py-16 border-b border-brand-border">
+      <div class="max-w-3xl">
+        <span class="text-xs uppercase tracking-[0.2em] text-brand-gold font-semibold block mb-2">Writing & Perspectives</span>
+        <h1 class="font-serif text-4xl sm:text-5xl font-normal text-brand-charcoal mb-4">Articles</h1>
+        <p class="text-brand-slate text-base leading-relaxed font-light">
+          Long-form essays, field observations, and strategic notes across regional ecosystem building, technical sales execution, trade show analysis, and travel.
+        </p>
+      </div>
+
+      <!-- Topic Filter Bar -->
+      <div class="flex flex-wrap items-center gap-3 mt-10 pt-6 border-t border-brand-border text-xs uppercase tracking-wider font-medium">
+        <span class="text-brand-slate/60 text-[10px] mr-2">Filter Topic:</span>
+        <a href="#all" class="px-3.5 py-1.5 bg-brand-charcoal text-white rounded-none">All Topics</a>
+        <a href="#ecosystem" class="px-3.5 py-1.5 border border-brand-border bg-brand-card text-brand-slate hover:border-brand-gold transition-colors">Ecosystem Building</a>
+        <a href="#tradeshows" class="px-3.5 py-1.5 border border-brand-border bg-brand-card text-brand-slate hover:border-brand-gold transition-colors">Tradeshows</a>
+        <a href="#sales" class="px-3.5 py-1.5 border border-brand-border bg-brand-card text-brand-slate hover:border-brand-gold transition-colors">Sales</a>
+        <a href="#travel" class="px-3.5 py-1.5 border border-brand-border bg-brand-card text-brand-slate hover:border-brand-gold transition-colors">Travel</a>
+      </div>
+    </section>
+
+    <!-- Articles Feed Grid -->
+    <section class="max-w-6xl w-full mx-auto px-6 py-16">
+      <div class="grid md:grid-cols-2 gap-8">
+
+        <!-- Article Card 1 (Ecosystem Building) -->
+        <article class="p-8 bg-brand-card border border-brand-border hover:border-brand-gold transition-all duration-300 flex flex-col justify-between shadow-sm">
+          <div>
+            <div class="flex items-center justify-between text-xs text-brand-slate mb-4">
+              <span class="text-[10px] font-semibold text-brand-gold uppercase tracking-[0.2em]">Ecosystem Building</span>
+              <span class="font-mono text-[11px]">Sep 2026</span>
+            </div>
+            <h2 class="font-serif text-2xl font-normal text-brand-charcoal mb-3">Why Physical Hardware Teams Need Dedicated Local Gathering Spaces</h2>
+            <p class="text-brand-slate text-sm leading-relaxed font-light mb-6">
+              Unlike pure software, physical product creators face supply chain, manufacturing, and prototyping hurdles that require hyper-local cross-pollination. Informal, recurring gatherings build the trust required to share supplier networks and technical trade-offs.
+            </p>
+          </div>
+          <div class="pt-4 border-t border-brand-border flex items-center justify-between text-xs">
+            <span class="text-brand-slate font-light">5 min read</span>
+            <span class="text-brand-gold font-medium uppercase tracking-wider">Read Article →</span>
+          </div>
+        </article>
+
+        <!-- Article Card 2 (Tradeshows) -->
+        <article class="p-8 bg-brand-card border border-brand-border hover:border-brand-gold transition-all duration-300 flex flex-col justify-between shadow-sm">
+          <div>
+            <div class="flex items-center justify-between text-xs text-brand-slate mb-4">
+              <span class="text-[10px] font-semibold text-brand-gold uppercase tracking-[0.2em]">Tradeshows</span>
+              <span class="font-mono text-[11px]">Aug 2026</span>
+            </div>
+            <h2 class="font-serif text-2xl font-normal text-brand-charcoal mb-3">Navigating Sensor & Component Trends on the Trade Show Floor</h2>
+            <p class="text-brand-slate text-sm leading-relaxed font-light mb-6">
+              Observations from West Coast technical expos on micro-acoustics, thermal bottlenecks in industrial enclosures, and how component suppliers are adapting to rapid NPI cycles.
+            </p>
+          </div>
+          <div class="pt-4 border-t border-brand-border flex items-center justify-between text-xs">
+            <span class="text-brand-slate font-light">7 min read</span>
+            <span class="text-brand-gold font-medium uppercase tracking-wider">Read Article →</span>
+          </div>
+        </article>
+
+        <!-- Article Card 3 (Sales) -->
+        <article class="p-8 bg-brand-card border border-brand-border hover:border-brand-gold transition-all duration-300 flex flex-col justify-between shadow-sm">
+          <div>
+            <div class="flex items-center justify-between text-xs text-brand-slate mb-4">
+              <span class="text-[10px] font-semibold text-brand-gold uppercase tracking-[0.2em]">Sales</span>
+              <span class="font-mono text-[11px]">Jul 2026</span>
+            </div>
+            <h2 class="font-serif text-2xl font-normal text-brand-charcoal mb-3">Engineering-Led Sales Execution Across Multi-State Territories</h2>
+            <p class="text-brand-slate text-sm leading-relaxed font-light mb-6">
+              Managing high-value technical account relationships requires bridging formal industrial engineering rigor with consultative, relationship-driven business development.
+            </p>
+          </div>
+          <div class="pt-4 border-t border-brand-border flex items-center justify-between text-xs">
+            <span class="text-brand-slate font-light">6 min read</span>
+            <span class="text-brand-gold font-medium uppercase tracking-wider">Read Article →</span>
+          </div>
+        </article>
+
+        <!-- Article Card 4 (Travel) -->
+        <article class="p-8 bg-brand-card border border-brand-border hover:border-brand-gold transition-all duration-300 flex flex-col justify-between shadow-sm">
+          <div>
+            <div class="flex items-center justify-between text-xs text-brand-slate mb-4">
+              <span class="text-[10px] font-semibold text-brand-gold uppercase tracking-[0.2em]">Travel</span>
+              <span class="font-mono text-[11px]">Jun 2026</span>
+            </div>
+            <h2 class="font-serif text-2xl font-normal text-brand-charcoal mb-3">Expedition Notes: National Parks & Island Field Logistics</h2>
+            <p class="text-brand-slate text-sm leading-relaxed font-light mb-6">
+              Planning long-distance trail routes, multi-island ferry logistics, and outdoor equipment endurance—reflections on movement and preparation across North American landscapes.
+            </p>
+          </div>
+          <div class="pt-4 border-t border-brand-border flex items-center justify-between text-xs">
+            <span class="text-brand-slate font-light">8 min read</span>
+            <span class="text-brand-gold font-medium uppercase tracking-wider">Read Article →</span>
+          </div>
+        </article>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="border-t border-brand-border py-10 bg-white">
+    <div class="max-w-6xl w-full mx-auto px-6 flex flex-col sm:flex-row justify-between items-center text-xs text-brand-slate gap-4">
+      <div class="flex items-center gap-2">
+        <span class="font-serif tracking-widest text-brand-charcoal font-semibold">SOLEIL & STONE</span>
+        <span>•</span>
+        <span>San Diego, CA</span>
+      </div>
+      <span class="font-light">&copy; Soleil & Stone. All rights reserved.</span>
+    </div>
+  </footer>
+
+</body>
+</html>
