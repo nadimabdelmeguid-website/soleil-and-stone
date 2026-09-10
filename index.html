@@ -61,7 +61,7 @@
 
   <main class="flex-grow">
     
-    <!-- 1. Hero Banner (Positioning & Location Base) -->
+    <!-- 1. Hero Banner -->
     <section class="max-w-6xl w-full mx-auto px-6 py-20 border-b border-brand-border">
       <div class="max-w-3xl">
         <span class="inline-block px-3 py-1 bg-brand-gold/10 border border-brand-gold/30 text-brand-gold text-[10px] uppercase tracking-[0.2em] font-semibold mb-6">
@@ -89,86 +89,122 @@
       </div>
     </section>
 
-    <!-- 2. Community Hub & Calendar -->
+    <!-- 2. Community Hub & Calendar (Visual Calendar Layout) -->
     <section id="community" class="max-w-6xl w-full mx-auto px-6 py-20 border-b border-brand-border">
       <div class="flex flex-col sm:flex-row sm:items-end justify-between mb-12 gap-4">
         <div>
           <span class="text-xs uppercase tracking-[0.2em] text-brand-gold font-semibold">San Diego Ecosystem</span>
-          <h2 class="font-serif text-3xl font-normal text-brand-charcoal mt-1">Community Hub & Gatherings</h2>
+          <h2 class="font-serif text-3xl font-normal text-brand-charcoal mt-1">Community Hub & Calendar</h2>
         </div>
         <p class="text-brand-slate text-sm max-w-md font-light">
-          Organizing monthly networking events and hardware panels connecting local entrepreneurs, engineers, and investors.
+          Upcoming ecosystem gatherings, startup mixers, and technical hardware panels. Select an event to register externally.
         </p>
       </div>
 
-      <!-- Upcoming Events Grid -->
-      <div class="grid md:grid-cols-2 gap-8 mb-12">
+      <!-- Main Visual Calendar Grid Component -->
+      <div class="grid lg:grid-cols-12 gap-8 mb-12">
         
-        <!-- Upcoming Event 1 -->
-        <div class="p-8 bg-brand-card border border-brand-border hover:border-brand-gold transition-all duration-300 shadow-sm flex flex-col justify-between">
+        <!-- Left Column: Visual Monthly Calendar Grid (5 cols) -->
+        <div class="lg:col-span-5 p-6 bg-brand-card border border-brand-border shadow-sm flex flex-col justify-between">
           <div>
-            <div class="flex items-center justify-between mb-4">
-              <span class="text-[10px] font-semibold text-brand-gold uppercase tracking-[0.2em]">San Diego Startup Mixer</span>
-              <span class="text-[10px] font-mono bg-brand-gold/10 text-brand-gold border border-brand-gold/20 px-2 py-0.5">Upcoming</span>
+            <div class="flex items-center justify-between border-b border-brand-border pb-4 mb-4">
+              <span class="font-serif text-lg font-normal text-brand-charcoal">September 2026</span>
+              <span class="text-[10px] uppercase font-mono tracking-widest text-brand-gold">Community Schedule</span>
             </div>
-            <h3 class="font-serif text-2xl font-normal text-brand-charcoal mb-2">Monthly Founder & Investor Gathering</h3>
-            <p class="text-brand-slate text-sm leading-relaxed font-light mb-6">
-              An open, informal community environment designed to connect entrepreneurs, technical founders, and local deal flow.
-            </p>
+
+            <!-- Days of the week header -->
+            <div class="grid grid-cols-7 gap-1 text-center text-[10px] font-semibold text-brand-slate uppercase tracking-wider mb-2">
+              <div>S</div><div>M</div><div>T</div><div>W</div><div>T</div><div>F</div><div>S</div>
+            </div>
+
+            <!-- Date Grid -->
+            <div class="grid grid-cols-7 gap-1 text-center text-xs text-brand-slate">
+              <div class="py-2 text-brand-slate/30">30</div>
+              <div class="py-2 text-brand-slate/30">31</div>
+              <div class="py-2">1</div><div class="py-2">2</div><div class="py-2">3</div><div class="py-2">4</div><div class="py-2">5</div>
+              <div class="py-2">6</div><div class="py-2">7</div><div class="py-2">8</div><div class="py-2">9</div><div class="py-2">10</div><div class="py-2">11</div><div class="py-2">12</div>
+              <div class="py-2">13</div><div class="py-2">14</div><div class="py-2">15</div><div class="py-2">16</div><div class="py-2">17</div><div class="py-2">18</div><div class="py-2">19</div>
+              <!-- Highlighted Event Date: 22 -->
+              <div class="py-2">20</div><div class="py-2">21</div>
+              <div class="py-2 bg-brand-gold text-white font-bold rounded-none relative group cursor-pointer" title="San Diego Startup Mixer">
+                22
+                <span class="absolute top-0 right-0 w-1.5 h-1.5 bg-brand-charcoal"></span>
+              </div>
+              <div class="py-2">23</div>
+              <!-- Highlighted Event Date: 24 -->
+              <div class="py-2 bg-brand-charcoal text-white font-bold rounded-none relative group cursor-pointer" title="Hardware Meetup">
+                24
+              </div>
+              <div class="py-2">25</div><div class="py-2">26</div>
+              <div class="py-2">27</div><div class="py-2">28</div><div class="py-2">29</div><div class="py-2">30</div>
+              <div class="py-2 text-brand-slate/30">1</div><div class="py-2 text-brand-slate/30">2</div><div class="py-2 text-brand-slate/30">3</div>
+            </div>
           </div>
-          <div class="pt-6 border-t border-brand-border flex items-center justify-between">
-            <div class="text-xs text-brand-slate">
-              <div class="font-medium text-brand-charcoal">Harland Brewing (Bay Park)</div>
-              <div class="font-light">Recurring Monthly Series</div>
+
+          <div class="mt-6 pt-4 border-t border-brand-border flex items-center gap-4 text-[11px] text-brand-slate">
+            <div class="flex items-center gap-1.5">
+              <span class="w-2.5 h-2.5 bg-brand-gold inline-block"></span>
+              <span>Startup Mixer</span>
             </div>
-            <a href="mailto:nadimabdelmeguid@gmail.com?subject=RSVP%20Startup%20Mixer" class="px-4 py-2 border border-brand-charcoal text-xs uppercase tracking-wider hover:bg-brand-charcoal hover:text-white transition-colors">
-              RSVP / Details
-            </a>
+            <div class="flex items-center gap-1.5">
+              <span class="w-2.5 h-2.5 bg-brand-charcoal inline-block"></span>
+              <span>Hardware Meetup</span>
+            </div>
           </div>
         </div>
 
-        <!-- Upcoming Event 2 -->
-        <div class="p-8 bg-brand-card border border-brand-border hover:border-brand-gold transition-all duration-300 shadow-sm flex flex-col justify-between">
-          <div>
-            <div class="flex items-center justify-between mb-4">
-              <span class="text-[10px] font-semibold text-brand-gold uppercase tracking-[0.2em]">San Diego Hardware Meetup</span>
-              <span class="text-[10px] font-mono bg-brand-gold/10 text-brand-gold border border-brand-gold/20 px-2 py-0.5">Upcoming</span>
+        <!-- Right Column: Interactive Event Detail Cards (7 cols) -->
+        <div class="lg:col-span-7 space-y-6">
+          
+          <!-- Event Card 1: Startup Mixer (With External Link) -->
+          <div class="p-8 bg-brand-card border border-brand-border hover:border-brand-gold transition-all duration-300 shadow-sm flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between mb-4">
+                <span class="text-[10px] font-semibold text-brand-gold uppercase tracking-[0.2em]">San Diego Startup Mixer</span>
+                <span class="text-[10px] font-mono bg-brand-gold/10 text-brand-gold border border-brand-gold/20 px-2 py-0.5">Sep 22, 2026</span>
+              </div>
+              <h3 class="font-serif text-2xl font-normal text-brand-charcoal mb-2">San Diego County Startup Mixer #5</h3>
+              <p class="text-brand-slate text-sm leading-relaxed font-light mb-6">
+                Monthly casual networking event connecting local entrepreneurs, engineers, and investors across the San Diego startup ecosystem.
+              </p>
             </div>
-            <h3 class="font-serif text-2xl font-normal text-brand-charcoal mb-2">Physical Products & Manufacturing Panel</h3>
-            <p class="text-brand-slate text-sm leading-relaxed font-light mb-6">
-              Focused panels and engineering discussions on scaling hardware development, prototyping, and West Coast manufacturing.
-            </p>
-          </div>
-          <div class="pt-6 border-t border-brand-border flex items-center justify-between">
-            <div class="text-xs text-brand-slate">
-              <div class="font-medium text-brand-charcoal">Downtown Works / Regional Venues</div>
-              <div class="font-light">Quarterly Community Event</div>
+            <div class="pt-6 border-t border-brand-border flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div class="text-xs text-brand-slate">
+                <div class="font-medium text-brand-charcoal">Harland Brewing (Bay Park)</div>
+                <div class="font-light">San Diego, CA</div>
+              </div>
+              <a href="https://eventship.com/event/san-diego-county-startup-mixer-5" target="_blank" rel="noopener noreferrer" class="px-5 py-2.5 bg-brand-charcoal text-white text-xs uppercase tracking-widest hover:bg-brand-gold transition-colors text-center inline-flex items-center justify-center gap-2">
+                <span>Register on Eventship</span>
+                <span>↗</span>
+              </a>
             </div>
-            <a href="mailto:nadimabdelmeguid@gmail.com?subject=Hardware%20Meetup%20Inquiry" class="px-4 py-2 border border-brand-charcoal text-xs uppercase tracking-wider hover:bg-brand-charcoal hover:text-white transition-colors">
-              RSVP / Details
-            </a>
           </div>
+
+          <!-- Event Card 2: Hardware Meetup -->
+          <div class="p-8 bg-brand-card border border-brand-border hover:border-brand-gold transition-all duration-300 shadow-sm flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between mb-4">
+                <span class="text-[10px] font-semibold text-brand-gold uppercase tracking-[0.2em]">San Diego Hardware Meetup</span>
+                <span class="text-[10px] font-mono bg-brand-charcoal/10 text-brand-charcoal border border-brand-charcoal/20 px-2 py-0.5">Sep 24, 2026</span>
+              </div>
+              <h3 class="font-serif text-2xl font-normal text-brand-charcoal mb-2">Physical Products & NPI Panel</h3>
+              <p class="text-brand-slate text-sm leading-relaxed font-light mb-6">
+                Panel discussions and community networking centered on physical product design, prototyping, and West Coast manufacturing scaling.
+              </p>
+            </div>
+            <div class="pt-6 border-t border-brand-border flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div class="text-xs text-brand-slate">
+                <div class="font-medium text-brand-charcoal">Downtown Works</div>
+                <div class="font-light">San Diego, CA</div>
+              </div>
+              <a href="mailto:nadimabdelmeguid@gmail.com?subject=Hardware%20Meetup%20Inquiry" class="px-5 py-2.5 border border-brand-charcoal text-brand-charcoal text-xs uppercase tracking-widest hover:bg-brand-charcoal hover:text-white transition-colors text-center">
+                RSVP via Email
+              </a>
+            </div>
+          </div>
+
         </div>
 
-      </div>
-
-      <!-- Past Community Gatherings Archive -->
-      <div class="p-6 bg-brand-card border border-brand-border rounded-none mb-8">
-        <h4 class="text-xs uppercase tracking-[0.2em] font-semibold text-brand-charcoal mb-4">Past Community Milestones & Topics</h4>
-        <ul class="grid md:grid-cols-3 gap-4 text-xs text-brand-slate font-light">
-          <li class="border-l-2 border-brand-gold pl-3">
-            <strong class="font-normal text-brand-charcoal block">Hardware Scaling Panel</strong>
-            Regional manufacturing strategies & component sourcing.
-          </li>
-          <li class="border-l-2 border-brand-gold pl-3">
-            <strong class="font-normal text-brand-charcoal block">Live Pitch Feedback Session</strong>
-            Interactive pitch coaching at Downtown Works Mission Valley.
-          </li>
-          <li class="border-l-2 border-brand-gold pl-3">
-            <strong class="font-normal text-brand-charcoal block">Bay Park Networking Series</strong>
-            Ongoing founder-to-investor ecosystem matchmaking.
-          </li>
-        </ul>
       </div>
 
       <!-- Host / Sponsor Callout -->
