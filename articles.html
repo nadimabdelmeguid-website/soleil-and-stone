@@ -67,27 +67,27 @@
         <span class="text-xs uppercase tracking-[0.2em] text-brand-gold font-semibold block mb-2">Writing & Perspectives</span>
         <h1 class="font-serif text-4xl sm:text-5xl font-normal text-brand-charcoal mb-4">Articles</h1>
         <p class="text-brand-slate text-base leading-relaxed font-light">
-          Long-form essays, field observations, and strategic notes across regional ecosystem building, technical sales execution, trade show analysis, and travel.
+          Long-form essays, field observations, and strategic notes across regional ecosystem building, trade shows, sales execution, and travel.
         </p>
       </div>
 
-      <!-- Topic Filter Bar -->
+      <!-- Interactive Topic Filter Bar -->
       <div class="flex flex-wrap items-center gap-3 mt-10 pt-6 border-t border-brand-border text-xs uppercase tracking-wider font-medium">
         <span class="text-brand-slate/60 text-[10px] mr-2">Filter Topic:</span>
-        <a href="#all" class="px-3.5 py-1.5 bg-brand-charcoal text-white rounded-none">All Topics</a>
-        <a href="#ecosystem" class="px-3.5 py-1.5 border border-brand-border bg-brand-card text-brand-slate hover:border-brand-gold transition-colors">Ecosystem Building</a>
-        <a href="#tradeshows" class="px-3.5 py-1.5 border border-brand-border bg-brand-card text-brand-slate hover:border-brand-gold transition-colors">Tradeshows</a>
-        <a href="#sales" class="px-3.5 py-1.5 border border-brand-border bg-brand-card text-brand-slate hover:border-brand-gold transition-colors">Sales</a>
-        <a href="#travel" class="px-3.5 py-1.5 border border-brand-border bg-brand-card text-brand-slate hover:border-brand-gold transition-colors">Travel</a>
+        <button onclick="filterArticles('all')" id="btn-all" class="filter-btn px-3.5 py-1.5 bg-brand-charcoal text-white transition-all">All Topics</button>
+        <button onclick="filterArticles('ecosystem')" id="btn-ecosystem" class="filter-btn px-3.5 py-1.5 border border-brand-border bg-brand-card text-brand-slate hover:border-brand-gold transition-all">Ecosystem Building</button>
+        <button onclick="filterArticles('tradeshows')" id="btn-tradeshows" class="filter-btn px-3.5 py-1.5 border border-brand-border bg-brand-card text-brand-slate hover:border-brand-gold transition-all">Tradeshows</button>
+        <button onclick="filterArticles('sales')" id="btn-sales" class="filter-btn px-3.5 py-1.5 border border-brand-border bg-brand-card text-brand-slate hover:border-brand-gold transition-all">Sales</button>
+        <button onclick="filterArticles('travel')" id="btn-travel" class="filter-btn px-3.5 py-1.5 border border-brand-border bg-brand-card text-brand-slate hover:border-brand-gold transition-all">Travel</button>
       </div>
     </section>
 
     <!-- Articles Feed Grid -->
     <section class="max-w-6xl w-full mx-auto px-6 py-16">
-      <div class="grid md:grid-cols-2 gap-8">
+      <div class="grid md:grid-cols-2 gap-8" id="articles-grid">
 
         <!-- Article Card 1 (Ecosystem Building) -->
-        <article class="p-8 bg-brand-card border border-brand-border hover:border-brand-gold transition-all duration-300 flex flex-col justify-between shadow-sm">
+        <article data-topic="ecosystem" class="article-card p-8 bg-brand-card border border-brand-border hover:border-brand-gold transition-all duration-300 flex flex-col justify-between shadow-sm">
           <div>
             <div class="flex items-center justify-between text-xs text-brand-slate mb-4">
               <span class="text-[10px] font-semibold text-brand-gold uppercase tracking-[0.2em]">Ecosystem Building</span>
@@ -105,7 +105,7 @@
         </article>
 
         <!-- Article Card 2 (Tradeshows) -->
-        <article class="p-8 bg-brand-card border border-brand-border hover:border-brand-gold transition-all duration-300 flex flex-col justify-between shadow-sm">
+        <article data-topic="tradeshows" class="article-card p-8 bg-brand-card border border-brand-border hover:border-brand-gold transition-all duration-300 flex flex-col justify-between shadow-sm">
           <div>
             <div class="flex items-center justify-between text-xs text-brand-slate mb-4">
               <span class="text-[10px] font-semibold text-brand-gold uppercase tracking-[0.2em]">Tradeshows</span>
@@ -123,7 +123,7 @@
         </article>
 
         <!-- Article Card 3 (Sales) -->
-        <article class="p-8 bg-brand-card border border-brand-border hover:border-brand-gold transition-all duration-300 flex flex-col justify-between shadow-sm">
+        <article data-topic="sales" class="article-card p-8 bg-brand-card border border-brand-border hover:border-brand-gold transition-all duration-300 flex flex-col justify-between shadow-sm">
           <div>
             <div class="flex items-center justify-between text-xs text-brand-slate mb-4">
               <span class="text-[10px] font-semibold text-brand-gold uppercase tracking-[0.2em]">Sales</span>
@@ -141,7 +141,7 @@
         </article>
 
         <!-- Article Card 4 (Travel) -->
-        <article class="p-8 bg-brand-card border border-brand-border hover:border-brand-gold transition-all duration-300 flex flex-col justify-between shadow-sm">
+        <article data-topic="travel" class="article-card p-8 bg-brand-card border border-brand-border hover:border-brand-gold transition-all duration-300 flex flex-col justify-between shadow-sm">
           <div>
             <div class="flex items-center justify-between text-xs text-brand-slate mb-4">
               <span class="text-[10px] font-semibold text-brand-gold uppercase tracking-[0.2em]">Travel</span>
@@ -166,23 +166,18 @@
   <!-- Footer -->
   <footer class="border-t border-brand-border py-10 bg-white">
     <div class="max-w-6xl w-full mx-auto px-6 flex flex-col sm:flex-row justify-between items-center text-xs text-brand-slate gap-6">
-      
       <div class="flex items-center gap-2">
         <span class="font-serif tracking-widest text-brand-charcoal font-semibold">SOLEIL & STONE</span>
         <span>•</span>
         <span>San Diego, CA</span>
       </div>
 
-      <!-- Social & Email Links -->
       <div class="flex items-center gap-5">
-        <!-- LinkedIn Icon Link -->
         <a href="https://www.linkedin.com/in/nadim-abdel-meguid-aa5229108/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn Profile" class="text-brand-slate hover:text-brand-gold transition-colors">
           <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24">
             <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.46 10.9v8.37H9.25V10.9H6.46M7.86 6.72a1.47 1.47 0 1 0 0 2.94 1.47 1.47 0 0 0 0-2.94Z"/>
           </svg>
         </a>
-
-        <!-- Email Icon Link -->
         <a href="mailto:nadimabdelmeguid@gmail.com" aria-label="Direct Email" class="text-brand-slate hover:text-brand-gold transition-colors">
           <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24">
             <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
@@ -193,6 +188,43 @@
       <span class="font-light">&copy; Soleil & Stone. All rights reserved.</span>
     </div>
   </footer>
+
+  <!-- Client-side Filtering Script -->
+  <script>
+    function filterArticles(topic) {
+      const articles = document.querySelectorAll('.article-card');
+      const buttons = document.querySelectorAll('.filter-btn');
+
+      // Update Active Button Styling
+      buttons.forEach(btn => {
+        btn.classList.remove('bg-brand-charcoal', 'text-white');
+        btn.classList.add('border', 'border-brand-border', 'bg-brand-card', 'text-brand-slate');
+      });
+
+      const activeBtn = document.getElementById(`btn-${topic}`);
+      if (activeBtn) {
+        activeBtn.classList.remove('border', 'border-brand-border', 'bg-brand-card', 'text-brand-slate');
+        activeBtn.classList.add('bg-brand-charcoal', 'text-white');
+      }
+
+      // Filter Visibility
+      articles.forEach(article => {
+        if (topic === 'all' || article.getAttribute('data-topic') === topic) {
+          article.style.display = 'flex';
+        } else {
+          article.style.display = 'none';
+        }
+      });
+    }
+
+    // Initialize filter from URL hash if user links directly (e.g. articles.html#sales)
+    window.addEventListener('DOMContentLoaded', () => {
+      const hash = window.location.hash.replace('#', '');
+      if (['ecosystem', 'tradeshows', 'sales', 'travel'].includes(hash)) {
+        filterArticles(hash);
+      }
+    });
+  </script>
 
 </body>
 </html>
