@@ -36,7 +36,7 @@
 
   <!-- Header -->
   <header class="max-w-6xl w-full mx-auto px-6 py-8 flex flex-col sm:flex-row items-center justify-between border-b border-brand-border gap-6">
-    <a href="#" class="flex items-center gap-4 group">
+    <a href="/" class="flex items-center gap-4 group">
       <!-- SVG Brand Mark -->
       <svg class="w-10 h-10 text-brand-gold" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
         <circle cx="50" cy="35" r="14" fill="#C5A059" />
@@ -54,7 +54,7 @@
 
     <nav class="flex items-center gap-6 text-xs uppercase tracking-widest font-medium text-brand-slate">
       <a href="#community" class="hover:text-brand-gold transition-colors">Community Hub</a>
-      <a href="#notes" class="hover:text-brand-gold transition-colors">Field Notes</a>
+      <a href="/articles.html" class="hover:text-brand-gold transition-colors">Articles</a>
       <a href="#contact" class="px-4 py-2 border border-brand-charcoal hover:border-brand-gold hover:bg-brand-gold hover:text-white transition-all text-[11px]">Connect</a>
     </nav>
   </header>
@@ -89,7 +89,7 @@
       </div>
     </section>
 
-    <!-- 2. Community Hub & Calendar (The Central Anchor) -->
+    <!-- 2. Community Hub & Calendar -->
     <section id="community" class="max-w-6xl w-full mx-auto px-6 py-20 border-b border-brand-border">
       <div class="flex flex-col sm:flex-row sm:items-end justify-between mb-12 gap-4">
         <div>
@@ -182,17 +182,19 @@
       </div>
     </section>
 
-    <!-- 3. Field Notes & Perspectives -->
-    <section id="notes" class="max-w-6xl w-full mx-auto px-6 py-20 border-b border-brand-border">
-      <div class="mb-10">
-        <span class="text-xs uppercase tracking-[0.2em] text-brand-gold font-semibold">Short Insights</span>
-        <h2 class="font-serif text-3xl font-normal text-brand-charcoal mt-1">Field Notes & Observations</h2>
-        <p class="text-brand-slate text-sm font-light mt-1">
-          Direct observations on technical sales execution, hardware development, and regional ecosystem building.
-        </p>
+    <!-- 3. Featured Articles Preview Section -->
+    <section class="max-w-6xl w-full mx-auto px-6 py-20 border-b border-brand-border">
+      <div class="flex flex-col sm:flex-row sm:items-end justify-between mb-10 gap-4">
+        <div>
+          <span class="text-xs uppercase tracking-[0.2em] text-brand-gold font-semibold">Perspectives</span>
+          <h2 class="font-serif text-3xl font-normal text-brand-charcoal mt-1">Featured Articles</h2>
+        </div>
+        <a href="/articles.html" class="text-xs uppercase tracking-widest font-medium text-brand-gold hover:underline">
+          View All Articles & Topics →
+        </a>
       </div>
 
-      <div class="space-y-6">
+      <div class="grid md:grid-cols-2 gap-8">
         <article class="p-6 bg-brand-card border border-brand-border">
           <div class="flex items-center gap-3 text-xs text-brand-slate mb-2">
             <span class="font-mono text-brand-gold">2026-09-10</span>
@@ -200,9 +202,23 @@
             <span class="uppercase tracking-wider">Ecosystem Building</span>
           </div>
           <h3 class="font-serif text-xl font-normal text-brand-charcoal mb-2">Why Physical Hardware Teams Need Dedicated Local Gathering Spaces</h3>
-          <p class="text-brand-slate text-sm leading-relaxed font-light">
-            Unlike pure software, physical product creators face supply chain, manufacturing, and prototyping hurdles that require hyper-local cross-pollination. Informal, recurring gatherings build the trust required to share regional supplier networks and technical trade-offs.
+          <p class="text-brand-slate text-sm leading-relaxed font-light mb-4">
+            Unlike pure software, physical product creators face supply chain, manufacturing, and prototyping hurdles that require hyper-local cross-pollination.
           </p>
+          <a href="/articles.html" class="text-xs font-medium text-brand-gold uppercase tracking-wider">Read Full Article →</a>
+        </article>
+
+        <article class="p-6 bg-brand-card border border-brand-border">
+          <div class="flex items-center gap-3 text-xs text-brand-slate mb-2">
+            <span class="font-mono text-brand-gold">2026-08-28</span>
+            <span>•</span>
+            <span class="uppercase tracking-wider">Tradeshows</span>
+          </div>
+          <h3 class="font-serif text-xl font-normal text-brand-charcoal mb-2">Navigating Sensor & Component Trends on the Trade Show Floor</h3>
+          <p class="text-brand-slate text-sm leading-relaxed font-light mb-4">
+            Observations from West Coast technical expos on micro-acoustics, thermal bottlenecks, and fast-turn hardware NPI cycles.
+          </p>
+          <a href="/articles.html" class="text-xs font-medium text-brand-gold uppercase tracking-wider">Read Full Article →</a>
         </article>
       </div>
     </section>
