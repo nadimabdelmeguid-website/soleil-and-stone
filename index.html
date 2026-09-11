@@ -102,7 +102,7 @@
             Global Perspective. Technical Mindset. Local Impact.
           </h1>
           <p class="text-base text-brand-slate leading-relaxed font-light">
-            Raised in Cairo, trained as an Industrial Engineer in France, and forged in San Francisco’s tech ecosystem. Today, I’m based in San Diego, actively building local founder networks, hardware meetups, and startup communities[cite: 1].
+            Raised in Cairo, trained as an Industrial Engineer in France, and forged in San Francisco’s tech ecosystem. Today, I’m based in San Diego, actively building local founder networks, hardware meetups, and startup communities.
           </p>
         </div>
 
@@ -139,7 +139,7 @@
               <div>S</div><div>M</div><div>T</div><div>W</div><div>T</div><div>F</div><div>S</div>
             </div>
 
-            <!-- September 2026 Date Grid -->
+            <!-- September 2026 Date Grid (Current Month Default) -->
             <div id="calendar-sep2026" class="calendar-month grid grid-cols-7 gap-1 text-center text-xs text-brand-slate">
               <div class="py-2 text-brand-slate/30">30</div>
               <div class="py-2 text-brand-slate/30">31</div>
@@ -191,7 +191,7 @@
               <div class="py-2 text-brand-slate/30">1</div><div class="py-2 text-brand-slate/30">2</div><div class="py-2 text-brand-slate/30">3</div><div class="py-2 text-brand-slate/30">4</div><div class="py-2 text-brand-slate/30">5</div>
             </div>
 
-            <!-- August 2026 Date Grid (Hidden by default) -->
+            <!-- August 2026 Date Grid -->
             <div id="calendar-aug2026" class="calendar-month hidden grid grid-cols-7 gap-1 text-center text-xs text-brand-slate">
               <div class="py-2 text-brand-slate/30">26</div><div class="py-2 text-brand-slate/30">27</div><div class="py-2 text-brand-slate/30">28</div><div class="py-2 text-brand-slate/30">29</div><div class="py-2 text-brand-slate/30">30</div><div class="py-2 text-brand-slate/30">31</div><div class="py-2">1</div>
               <div class="py-2">2</div><div class="py-2">3</div><div class="py-2">4</div><div class="py-2">5</div><div class="py-2">6</div><div class="py-2">7</div><div class="py-2">8</div>
@@ -209,7 +209,7 @@
 
           </div>
 
-          <!-- Latest Past Events Section (Max 2 items, chronological / most recent) -->
+          <!-- Latest Past Events Section -->
           <div class="mt-6 pt-4 border-t border-brand-border flex flex-col gap-2 text-[11px] text-brand-slate">
             <span class="font-medium text-brand-charcoal uppercase tracking-wider text-[10px]">Latest Past Events:</span>
             
@@ -248,7 +248,7 @@
               </div>
               <h3 class="font-serif text-xl sm:text-2xl font-normal text-brand-charcoal mb-2">San Diego County Startup Mixer</h3>
               <p class="text-brand-slate text-sm leading-relaxed font-light mb-4">
-                Monthly casual networking event connecting local entrepreneurs, engineers, and investors across the San Diego startup ecosystem[cite: 1].
+                Monthly casual networking event connecting local entrepreneurs, engineers, and investors across the San Diego startup ecosystem.
               </p>
             </div>
             <div class="pt-4 border-t border-brand-border flex flex-col sm:flex-row sm:items-center justify-between gap-3">
@@ -464,7 +464,7 @@
               </div>
               <h3 class="font-serif text-xl sm:text-2xl font-normal text-brand-charcoal mb-2">San Diego County Startup Mixer</h3>
               <p class="text-brand-slate text-sm leading-relaxed font-light mb-4">
-                August edition of our monthly startup networking gathering, connecting local founders, engineers, and tech creators over craft beers in San Diego[cite: 1].
+                August edition of our monthly startup networking gathering, connecting local founders, engineers, and tech creators over craft beers in San Diego.
               </p>
             </div>
             <div class="pt-4 border-t border-brand-border flex flex-col sm:flex-row sm:items-center justify-between gap-3">
@@ -619,7 +619,7 @@
     </div>
   </footer>
 
-  <!-- Arrow Navigation & Event Scroll Script -->
+  <!-- Arrow Navigation & Dynamic Current Month Script -->
   <script>
     const months = [
       { id: 'aug2026', title: 'August 2026' },
@@ -627,7 +627,21 @@
       { id: 'oct2026', title: 'October 2026' },
       { id: 'nov2026', title: 'November 2026' }
     ];
-    let currentMonthIndex = 1; // Default: September 2026
+
+    // Dynamically calculate the active month based on the current date (September 2026)
+    const now = new Date();
+    const currentYear = now.getFullYear();
+    const currentMonthNum = now.getMonth(); // 0-indexed (8 = September)
+
+    let currentMonthIndex = months.findIndex(m => {
+      if (m.id === 'sep2026' && currentYear === 2026 && currentMonthNum === 8) return true;
+      return false;
+    });
+
+    // Fallback default index if date doesn't match precisely
+    if (currentMonthIndex === -1) {
+      currentMonthIndex = 1; // Default to September 2026
+    }
 
     function updateMonthDisplay() {
       const allMonths = document.querySelectorAll('.calendar-month');
