@@ -98,11 +98,11 @@
       </div>
     </section>
 
-    <!-- Articles Grid Section (Live-scraped with exact source dates) -->
+    <!-- Articles Grid Section (Live-scraped and sorted most recent to oldest) -->
     <section class="max-w-6xl w-full mx-auto px-6 py-16">
       <div id="articles-grid" class="grid md:grid-cols-2 gap-10">
         <div class="col-span-2 text-center py-12 text-brand-slate text-sm font-light">
-          Synchronizing article contents and exact dates...
+          Synchronizing article contents and sorting by most recent...
         </div>
       </div>
     </section>
@@ -139,7 +139,7 @@
     </div>
   </footer>
 
-  <!-- Live HTML Scraping Engine capturing exact article dates and contents -->
+  <!-- Live HTML Scraping Engine sorted from most recent to oldest -->
   <script>
     const articleFiles = [
       {
@@ -169,19 +169,15 @@
           const htmlText = await response.text();
           const doc = parser.parseFromString(htmlText, 'text/html');
 
-          // Extract exact date from the target article page header (.font-mono element)
           const dateEl = doc.querySelector('section.border-b .font-mono') || doc.querySelector('.font-mono');
           const date = dateEl ? dateEl.textContent.trim() : '2026-09-11';
 
-          // Extract exact title from the target article page h1
           const titleEl = doc.querySelector('section.border-b h1') || doc.querySelector('h1');
           const title = titleEl ? titleEl.textContent.trim() : 'Untitled Article';
           
-          // Extract the first meaningful paragraph as the dynamic summary/excerpt
           const descEl = doc.querySelector('article.max-w-3xl > p.text-lg') || doc.querySelector('article p');
           const description = descEl ? descEl.textContent.trim() : '';
 
-          // Estimate read time based on word count of the article text
           const articleBodyText = doc.querySelector('article') ? doc.querySelector('article').textContent : '';
           const wordCount = articleBodyText.split(/\s+/).length;
           const readTime = Math.max(3, Math.ceil(wordCount / 200)) + ' min read';
@@ -199,6 +195,9 @@
           console.error(`Error loading content from ${file.url}:`, e);
         }
       }
+
+      // Sort articles from most recent to oldest based on their extracted date string
+      parsedArticles.sort((a, b) => new Date(b.date) - new Date(a.date));
 
       cachedArticles = parsedArticles;
       renderGrid(currentFilter);
