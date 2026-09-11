@@ -127,13 +127,11 @@
         <!-- Left Column: Visual Monthly Calendar Grid (5 cols) -->
         <div class="lg:col-span-5 p-6 bg-brand-card border border-brand-border shadow-sm flex flex-col justify-between">
           <div>
-            <!-- Header with Month Selector Dropdown -->
+            <!-- Arrow Navigation Month Header -->
             <div class="flex items-center justify-between border-b border-brand-border pb-4 mb-4">
-              <select id="month-select" onchange="changeMonth(this.value)" class="font-serif text-lg font-normal text-brand-charcoal bg-transparent focus:outline-none cursor-pointer">
-                <option value="sep2026" selected>September 2026</option>
-                <option value="aug2026">August 2026</option>
-              </select>
-              <span class="text-[10px] uppercase font-mono tracking-widest text-brand-gold">Schedule</span>
+              <button onclick="navigateMonth(-1)" class="text-brand-slate hover:text-brand-gold transition-colors font-bold px-2 py-0.5 border border-brand-border text-xs" title="Previous Month">←</button>
+              <span id="calendar-month-title" class="font-serif text-lg font-normal text-brand-charcoal">September 2026</span>
+              <button onclick="navigateMonth(1)" class="text-brand-slate hover:text-brand-gold transition-colors font-bold px-2 py-0.5 border border-brand-border text-xs" title="Next Month">→</button>
             </div>
 
             <!-- Days of the week header -->
@@ -146,8 +144,12 @@
               <div class="py-2 text-brand-slate/30">30</div>
               <div class="py-2 text-brand-slate/30">31</div>
               <div class="py-2">1</div><div class="py-2">2</div><div class="py-2">3</div><div class="py-2">4</div><div class="py-2">5</div>
-              <div class="py-2">6</div><div class="py-2">7</div><div class="py-2">8</div><div class="py-2">9</div><div class="py-2">10</div><div class="py-2">11</div><div class="py-2">12</div>
+              <div class="py-2">6</div><div class="py-2">7</div><div class="py-2">8</div>
+              <!-- Attended Event: Sep 9 (VibeCraft Slopathon) -->
+              <div onclick="scrollToEvent('event-sep9')" class="py-2 bg-brand-slate text-white font-bold cursor-pointer transition-transform hover:scale-105" title="Click to view VibeCraft Slopathon">9</div>
+              <div class="py-2">10</div><div class="py-2">11</div><div class="py-2">12</div>
               <div class="py-2">13</div>
+              <!-- Hosted Event: Sep 14 -->
               <div onclick="scrollToEvent('event-sep14')" class="py-2 bg-brand-gold text-white font-bold cursor-pointer transition-transform hover:scale-105" title="Click to view San Diego County Startup Mixer">14</div>
               <div class="py-2">15</div><div class="py-2">16</div><div class="py-2">17</div><div class="py-2">18</div>
               <div onclick="scrollToEvent('event-sep19')" class="py-2 bg-brand-slate text-white font-bold cursor-pointer transition-transform hover:scale-105" title="Click to view California Rum Fest">19</div>
@@ -165,32 +167,33 @@
               <div class="py-2 text-brand-slate/30">26</div><div class="py-2 text-brand-slate/30">27</div><div class="py-2 text-brand-slate/30">28</div><div class="py-2 text-brand-slate/30">29</div><div class="py-2 text-brand-slate/30">30</div><div class="py-2 text-brand-slate/30">31</div><div class="py-2">1</div>
               <div class="py-2">2</div><div class="py-2">3</div><div class="py-2">4</div><div class="py-2">5</div><div class="py-2">6</div><div class="py-2">7</div><div class="py-2">8</div>
               <div class="py-2">9</div>
-              <!-- Highlighted Past Event Date: Aug 10 -->
+              <!-- Hosted Event: Aug 10 -->
               <div onclick="scrollToEvent('event-aug10')" class="py-2 bg-brand-gold/80 text-white font-bold cursor-pointer transition-transform hover:scale-105" title="Click to view San Diego County Startup Mixer">10</div>
-              <div class="py-2">11</div><div class="py-2">12</div><div class="py-2">13</div><div class="py-2">14</div><div class="py-2">15</div>
+              <div class="py-2">11</div><div class="py-2">12</div><div class="py-2">13</div><div class="py-2">14</div>
+              <!-- Attended Event: Aug 15 (The Insider Series) -->
+              <div onclick="scrollToEvent('event-aug15')" class="py-2 bg-brand-slate/80 text-white font-bold cursor-pointer transition-transform hover:scale-105" title="Click to view The Insider Series">15</div>
               <div class="py-2">16</div><div class="py-2">17</div><div class="py-2">18</div><div class="py-2">19</div><div class="py-2">20</div><div class="py-2">21</div><div class="py-2">22</div>
               <div class="py-2">23</div><div class="py-2">24</div><div class="py-2">25</div><div class="py-2">26</div>
-              <!-- Highlighted Past Event Date: Aug 27 -->
-              <div onclick="scrollToEvent('event-aug27')" class="py-2 bg-brand-slate/80 text-white font-bold cursor-pointer transition-transform hover:scale-105" title="Click to view Live Pitch Feedback Session">27</div>
-              <div class="py-2">28</div><div class="py-2">29</div>
+              <!-- Attended Events: Aug 27 (Howl House) & Aug 29 (Founders Fire) -->
+              <div onclick="scrollToEvent('event-aug27-howl')" class="py-2 bg-brand-slate/80 text-white font-bold cursor-pointer transition-transform hover:scale-105" title="Click to view Howl House Party">27</div>
+              <div class="py-2">28</div>
+              <div onclick="scrollToEvent('event-aug29')" class="py-2 bg-brand-slate/80 text-white font-bold cursor-pointer transition-transform hover:scale-105" title="Click to view Founders Fire Demo Day">29</div>
               <div class="py-2">30</div><div class="py-2">31</div><div class="py-2 text-brand-slate/30">1</div><div class="py-2 text-brand-slate/30">2</div><div class="py-2 text-brand-slate/30">3</div><div class="py-2 text-brand-slate/30">4</div><div class="py-2 text-brand-slate/30">5</div>
             </div>
 
           </div>
 
-          <!-- Capped Past Hosted Events Section (Max 2 items) -->
+          <!-- Past Hosted Events Section (Max 2 items) -->
           <div class="mt-6 pt-4 border-t border-brand-border flex flex-col gap-2 text-[11px] text-brand-slate">
-            <span class="font-medium text-brand-charcoal uppercase tracking-wider text-[10px]">Past Events (Select to View):</span>
+            <span class="font-medium text-brand-charcoal uppercase tracking-wider text-[10px]">Past Hosted Events:</span>
             
-            <!-- Past Event Item 1 -->
             <button onclick="scrollToEvent('event-aug10')" class="text-left text-brand-slate hover:text-brand-gold transition-colors flex items-center justify-between">
               <span class="truncate">• Aug 10: San Diego County Startup Mixer</span>
               <span class="text-[10px] text-brand-gold uppercase ml-2 flex-shrink-0">View →</span>
             </button>
             
-            <!-- Past Event Item 2 -->
-            <button onclick="scrollToEvent('event-aug27')" class="text-left text-brand-slate hover:text-brand-gold transition-colors flex items-center justify-between">
-              <span class="truncate">• Aug 27: Pitch Feedback Session</span>
+            <button onclick="scrollToEvent('event-sep9')" class="text-left text-brand-slate hover:text-brand-gold transition-colors flex items-center justify-between">
+              <span class="truncate">• Sep 9: VibeCraft Slopathon & Showcase</span>
               <span class="text-[10px] text-brand-gold uppercase ml-2 flex-shrink-0">View →</span>
             </button>
           </div>
@@ -210,7 +213,7 @@
         <!-- Right Column: Fixed Height Event Container -->
         <div id="event-container" class="lg:col-span-7 max-h-[520px] overflow-y-auto pr-2 space-y-6 custom-scrollbar">
           
-          <!-- Event Card 1: San Diego County Startup Mixer (Sep 14) -->
+          <!-- Event Card: Sep 14 (San Diego County Startup Mixer) -->
           <div id="event-sep14" class="p-6 sm:p-8 bg-brand-card border border-brand-border hover:border-brand-gold transition-all duration-300 shadow-sm flex flex-col justify-between">
             <div>
               <div class="flex items-center justify-between mb-3">
@@ -234,7 +237,7 @@
             </div>
           </div>
 
-          <!-- Event Card 2: California Rum Fest -->
+          <!-- Event Card: Sep 19 (California Rum Fest) -->
           <div id="event-sep19" class="p-6 sm:p-8 bg-brand-card border border-brand-border hover:border-brand-gold transition-all duration-300 shadow-sm flex flex-col justify-between">
             <div>
               <div class="flex items-center justify-between mb-3">
@@ -258,7 +261,7 @@
             </div>
           </div>
 
-          <!-- Event Card 3: Embedded World North America -->
+          <!-- Event Card: Sep 22-24 (Embedded World) -->
           <div id="event-sep22" class="p-6 sm:p-8 bg-brand-card border border-brand-border hover:border-brand-gold transition-all duration-300 shadow-sm flex flex-col justify-between">
             <div>
               <div class="flex items-center justify-between mb-3">
@@ -282,7 +285,99 @@
             </div>
           </div>
 
-          <!-- PAST EVENT CARD 1: San Diego County Startup Mixer (Aug 10) -->
+          <!-- PAST EVENT CARD: Sep 9 (VibeCraft Slopathon) -->
+          <div id="event-sep9" class="past-event p-6 sm:p-8 bg-brand-card border border-brand-border hover:border-brand-gold transition-all duration-300 shadow-sm flex flex-col justify-between opacity-90">
+            <div>
+              <div class="flex items-center justify-between mb-3">
+                <span class="text-[10px] font-semibold text-brand-slate uppercase tracking-[0.2em]">Past Attended Event</span>
+                <span class="text-[10px] font-mono bg-brand-slate/10 text-brand-slate border border-brand-slate/20 px-2 py-0.5">Sep 9, 2026</span>
+              </div>
+              <h3 class="font-serif text-xl sm:text-2xl font-normal text-brand-charcoal mb-2">VibeCraft Slopathon & Project Showcase</h3>
+              <p class="text-brand-slate text-sm leading-relaxed font-light mb-4">
+                Interactive builder competition and showcase connecting San Diego engineers and project creators.
+              </p>
+            </div>
+            <div class="pt-4 border-t border-brand-border flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div class="text-xs text-brand-slate">
+                <div class="font-medium text-brand-charcoal">San Diego, CA</div>
+              </div>
+              <a href="https://eventship.com/event/vibecraft-slopathon-compete-for-a-chance-to-win-big" target="_blank" rel="noopener noreferrer" class="px-4 py-2 border border-brand-border bg-brand-cream text-brand-charcoal text-xs uppercase tracking-widest hover:border-brand-gold transition-colors text-center inline-flex items-center justify-center gap-2">
+                <span>View Event Link</span>
+                <span>↗</span>
+              </a>
+            </div>
+          </div>
+
+          <!-- PAST EVENT CARD: Aug 29 (Founders Fire) -->
+          <div id="event-aug29" class="past-event p-6 sm:p-8 bg-brand-card border border-brand-border hover:border-brand-gold transition-all duration-300 shadow-sm flex flex-col justify-between opacity-90">
+            <div>
+              <div class="flex items-center justify-between mb-3">
+                <span class="text-[10px] font-semibold text-brand-slate uppercase tracking-[0.2em]">Past Attended Event</span>
+                <span class="text-[10px] font-mono bg-brand-slate/10 text-brand-slate border border-brand-slate/20 px-2 py-0.5">Aug 29, 2026</span>
+              </div>
+              <h3 class="font-serif text-xl sm:text-2xl font-normal text-brand-charcoal mb-2">Founders Fire 🔥☀️ Daytime Demo Day</h3>
+              <p class="text-brand-slate text-sm leading-relaxed font-light mb-4">
+                Daytime startup showcase and pitch demo event bringing together West Coast founders and early-stage investors.
+              </p>
+            </div>
+            <div class="pt-4 border-t border-brand-border flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div class="text-xs text-brand-slate">
+                <div class="font-medium text-brand-charcoal">San Diego, CA</div>
+              </div>
+              <a href="https://eventship.com/event/founders-fire-daytime-demo-day" target="_blank" rel="noopener noreferrer" class="px-4 py-2 border border-brand-border bg-brand-cream text-brand-charcoal text-xs uppercase tracking-widest hover:border-brand-gold transition-colors text-center inline-flex items-center justify-center gap-2">
+                <span>View Event Link</span>
+                <span>↗</span>
+              </a>
+            </div>
+          </div>
+
+          <!-- PAST EVENT CARD: Aug 27 (Howl House Party) -->
+          <div id="event-aug27-howl" class="past-event p-6 sm:p-8 bg-brand-card border border-brand-border hover:border-brand-gold transition-all duration-300 shadow-sm flex flex-col justify-between opacity-90">
+            <div>
+              <div class="flex items-center justify-between mb-3">
+                <span class="text-[10px] font-semibold text-brand-slate uppercase tracking-[0.2em]">Past Attended Event</span>
+                <span class="text-[10px] font-mono bg-brand-slate/10 text-brand-slate border border-brand-slate/20 px-2 py-0.5">Aug 27, 2026</span>
+              </div>
+              <h3 class="font-serif text-xl sm:text-2xl font-normal text-brand-charcoal mb-2">Howl House | End of Summer Party</h3>
+              <p class="text-brand-slate text-sm leading-relaxed font-light mb-4">
+                San Diego's top tech community celebration and networking gathering.
+              </p>
+            </div>
+            <div class="pt-4 border-t border-brand-border flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div class="text-xs text-brand-slate">
+                <div class="font-medium text-brand-charcoal">San Diego, CA</div>
+              </div>
+              <a href="https://eventship.com/event/howl-house-san-diego-s-top-tech-party" target="_blank" rel="noopener noreferrer" class="px-4 py-2 border border-brand-border bg-brand-cream text-brand-charcoal text-xs uppercase tracking-widest hover:border-brand-gold transition-colors text-center inline-flex items-center justify-center gap-2">
+                <span>View Event Link</span>
+                <span>↗</span>
+              </a>
+            </div>
+          </div>
+
+          <!-- PAST EVENT CARD: Aug 15 (The Insider Series) -->
+          <div id="event-aug15" class="past-event p-6 sm:p-8 bg-brand-card border border-brand-border hover:border-brand-gold transition-all duration-300 shadow-sm flex flex-col justify-between opacity-90">
+            <div>
+              <div class="flex items-center justify-between mb-3">
+                <span class="text-[10px] font-semibold text-brand-slate uppercase tracking-[0.2em]">Past Attended Event</span>
+                <span class="text-[10px] font-mono bg-brand-slate/10 text-brand-slate border border-brand-slate/20 px-2 py-0.5">Aug 15, 2026</span>
+              </div>
+              <h3 class="font-serif text-xl sm:text-2xl font-normal text-brand-charcoal mb-2">The Insider Series: U.S. Workplace Culture & Confidence</h3>
+              <p class="text-brand-slate text-sm leading-relaxed font-light mb-4">
+                Interactive workshop focused on navigation and confidence in U.S. professional spaces for international founders and builders.
+              </p>
+            </div>
+            <div class="pt-4 border-t border-brand-border flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div class="text-xs text-brand-slate">
+                <div class="font-medium text-brand-charcoal">San Diego, CA</div>
+              </div>
+              <a href="https://eventship.com/event/the-insider-series-u-s-workplace-culture-confidence-for-international-professionals" target="_blank" rel="noopener noreferrer" class="px-4 py-2 border border-brand-border bg-brand-cream text-brand-charcoal text-xs uppercase tracking-widest hover:border-brand-gold transition-colors text-center inline-flex items-center justify-center gap-2">
+                <span>View Event Link</span>
+                <span>↗</span>
+              </a>
+            </div>
+          </div>
+
+          <!-- PAST EVENT CARD: Aug 10 (San Diego County Startup Mixer) -->
           <div id="event-aug10" class="past-event p-6 sm:p-8 bg-brand-card border border-brand-border hover:border-brand-gold transition-all duration-300 shadow-sm flex flex-col justify-between opacity-90">
             <div>
               <div class="flex items-center justify-between mb-3">
@@ -300,30 +395,9 @@
                 <div class="font-light">San Diego, CA</div>
               </div>
               <a href="https://eventship.com/event/san-diego-county-startup-mixer-4" target="_blank" rel="noopener noreferrer" class="px-4 py-2 border border-brand-border bg-brand-cream text-brand-charcoal text-xs uppercase tracking-widest hover:border-brand-gold transition-colors text-center inline-flex items-center justify-center gap-2">
-                <span>View Registration Link</span>
+                <span>View Event Link</span>
                 <span>↗</span>
               </a>
-            </div>
-          </div>
-
-          <!-- PAST EVENT CARD 2: Live Pitch Feedback Session (Aug 27) -->
-          <div id="event-aug27" class="past-event p-6 sm:p-8 bg-brand-card border border-brand-border hover:border-brand-gold transition-all duration-300 shadow-sm flex flex-col justify-between opacity-90">
-            <div>
-              <div class="flex items-center justify-between mb-3">
-                <span class="text-[10px] font-semibold text-brand-slate uppercase tracking-[0.2em]">Past Hosted Event</span>
-                <span class="text-[10px] font-mono bg-brand-slate/10 text-brand-slate border border-brand-slate/20 px-2 py-0.5">Aug 27, 2026</span>
-              </div>
-              <h3 class="font-serif text-xl sm:text-2xl font-normal text-brand-charcoal mb-2">Live Pitch Feedback Session</h3>
-              <p class="text-brand-slate text-sm leading-relaxed font-light mb-4">
-                Co-hosted interactive pitch coaching session for San Diego founders at Downtown Works.
-              </p>
-            </div>
-            <div class="pt-4 border-t border-brand-border flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-              <div class="text-xs text-brand-slate">
-                <div class="font-medium text-brand-charcoal">Downtown Works (Mission Valley)</div>
-                <div class="font-light">San Diego, CA</div>
-              </div>
-              <span class="text-xs text-brand-slate font-mono">Concluded</span>
             </div>
           </div>
 
@@ -467,16 +541,31 @@
     </div>
   </footer>
 
-  <!-- Calendar Switcher & Scroll Script -->
+  <!-- Arrow Navigation & Event Scroll Script -->
   <script>
-    function changeMonth(selectedMonth) {
+    const months = [
+      { id: 'aug2026', title: 'August 2026' },
+      { id: 'sep2026', title: 'September 2026' }
+    ];
+    let currentMonthIndex = 1; // Default: September 2026
+
+    function updateMonthDisplay() {
       const allMonths = document.querySelectorAll('.calendar-month');
       allMonths.forEach(m => m.classList.add('hidden'));
 
-      const targetMonth = document.getElementById(`calendar-${selectedMonth}`);
+      const current = months[currentMonthIndex];
+      const targetMonth = document.getElementById(`calendar-${current.id}`);
       if (targetMonth) {
         targetMonth.classList.remove('hidden');
       }
+      document.getElementById('calendar-month-title').textContent = current.title;
+    }
+
+    function navigateMonth(direction) {
+      currentMonthIndex += direction;
+      if (currentMonthIndex < 0) currentMonthIndex = 0;
+      if (currentMonthIndex >= months.length) currentMonthIndex = months.length - 1;
+      updateMonthDisplay();
     }
 
     function scrollToEvent(eventId) {
@@ -498,6 +587,7 @@
     window.addEventListener('DOMContentLoaded', () => {
       const pastCards = document.querySelectorAll('.past-event');
       pastCards.forEach(card => card.classList.add('hidden'));
+      updateMonthDisplay();
     });
   </script>
 
