@@ -127,9 +127,13 @@
         <!-- Left Column: Visual Monthly Calendar Grid (5 cols) -->
         <div class="lg:col-span-5 p-6 bg-brand-card border border-brand-border shadow-sm flex flex-col justify-between">
           <div>
+            <!-- Header with Month Selector Dropdown -->
             <div class="flex items-center justify-between border-b border-brand-border pb-4 mb-4">
-              <span class="font-serif text-lg font-normal text-brand-charcoal">September 2026</span>
-              <span class="text-[10px] uppercase font-mono tracking-widest text-brand-gold">Community Schedule</span>
+              <select id="month-select" onchange="changeMonth(this.value)" class="font-serif text-lg font-normal text-brand-charcoal bg-transparent focus:outline-none cursor-pointer">
+                <option value="sep2026" selected>September 2026</option>
+                <option value="aug2026">August 2026</option>
+              </select>
+              <span class="text-[10px] uppercase font-mono tracking-widest text-brand-gold">Schedule</span>
             </div>
 
             <!-- Days of the week header -->
@@ -137,40 +141,57 @@
               <div>S</div><div>M</div><div>T</div><div>W</div><div>T</div><div>F</div><div>S</div>
             </div>
 
-            <!-- Date Grid -->
-            <div class="grid grid-cols-7 gap-1 text-center text-xs text-brand-slate">
+            <!-- September 2026 Date Grid -->
+            <div id="calendar-sep2026" class="calendar-month grid grid-cols-7 gap-1 text-center text-xs text-brand-slate">
               <div class="py-2 text-brand-slate/30">30</div>
               <div class="py-2 text-brand-slate/30">31</div>
               <div class="py-2">1</div><div class="py-2">2</div><div class="py-2">3</div><div class="py-2">4</div><div class="py-2">5</div>
               <div class="py-2">6</div><div class="py-2">7</div><div class="py-2">8</div><div class="py-2">9</div><div class="py-2">10</div><div class="py-2">11</div><div class="py-2">12</div>
               <div class="py-2">13</div>
-              <!-- Highlighted Event Date: Sep 14 -->
-              <div onclick="scrollToEvent('event-sep14')" class="py-2 bg-brand-gold text-white font-bold rounded-none relative group cursor-pointer transition-transform hover:scale-105" title="Click to view San Diego County Startup Mixer">
-                14
-                <span class="absolute top-0 right-0 w-1.5 h-1.5 bg-brand-charcoal"></span>
-              </div>
+              <div onclick="scrollToEvent('event-sep14')" class="py-2 bg-brand-gold text-white font-bold cursor-pointer transition-transform hover:scale-105" title="Click to view San Diego County Startup Mixer">14</div>
               <div class="py-2">15</div><div class="py-2">16</div><div class="py-2">17</div><div class="py-2">18</div>
-              <!-- Highlighted Event Date: Sep 19 (California Rum Fest) -->
-              <div onclick="scrollToEvent('event-sep19')" class="py-2 bg-brand-slate text-white font-bold rounded-none cursor-pointer transition-transform hover:scale-105" title="Click to view California Rum Fest">
-                19
-              </div>
+              <div onclick="scrollToEvent('event-sep19')" class="py-2 bg-brand-slate text-white font-bold cursor-pointer transition-transform hover:scale-105" title="Click to view California Rum Fest">19</div>
               <div class="py-2">20</div><div class="py-2">21</div>
-              <!-- Highlighted Attendance Span: Sep 22 - Sep 24 -->
-              <div onclick="scrollToEvent('event-sep22')" class="py-2 bg-brand-slate text-white font-bold rounded-none cursor-pointer transition-transform hover:scale-105" title="Click to view Embedded World">22</div>
-              <div onclick="scrollToEvent('event-sep22')" class="py-2 bg-brand-slate text-white font-bold rounded-none cursor-pointer transition-transform hover:scale-105" title="Click to view Embedded World">23</div>
-              <div onclick="scrollToEvent('event-sep22')" class="py-2 bg-brand-slate text-white font-bold rounded-none cursor-pointer transition-transform hover:scale-105" title="Click to view Embedded World">24</div>
+              <div onclick="scrollToEvent('event-sep22')" class="py-2 bg-brand-slate text-white font-bold cursor-pointer transition-transform hover:scale-105" title="Click to view Embedded World">22</div>
+              <div onclick="scrollToEvent('event-sep22')" class="py-2 bg-brand-slate text-white font-bold cursor-pointer transition-transform hover:scale-105" title="Click to view Embedded World">23</div>
+              <div onclick="scrollToEvent('event-sep22')" class="py-2 bg-brand-slate text-white font-bold cursor-pointer transition-transform hover:scale-105" title="Click to view Embedded World">24</div>
               <div class="py-2">25</div><div class="py-2">26</div>
               <div class="py-2">27</div><div class="py-2">28</div><div class="py-2">29</div><div class="py-2">30</div>
               <div class="py-2 text-brand-slate/30">1</div><div class="py-2 text-brand-slate/30">2</div><div class="py-2 text-brand-slate/30">3</div>
             </div>
+
+            <!-- August 2026 Date Grid (Hidden by default) -->
+            <div id="calendar-aug2026" class="calendar-month hidden grid grid-cols-7 gap-1 text-center text-xs text-brand-slate">
+              <div class="py-2 text-brand-slate/30">26</div><div class="py-2 text-brand-slate/30">27</div><div class="py-2 text-brand-slate/30">28</div><div class="py-2 text-brand-slate/30">29</div><div class="py-2 text-brand-slate/30">30</div><div class="py-2 text-brand-slate/30">31</div><div class="py-2">1</div>
+              <div class="py-2">2</div><div class="py-2">3</div><div class="py-2">4</div><div class="py-2">5</div><div class="py-2">6</div><div class="py-2">7</div><div class="py-2">8</div>
+              <div class="py-2">9</div>
+              <!-- Highlighted Past Event Date: Aug 10 -->
+              <div onclick="scrollToEvent('event-aug10')" class="py-2 bg-brand-gold/80 text-white font-bold cursor-pointer transition-transform hover:scale-105" title="Click to view San Diego County Startup Mixer">10</div>
+              <div class="py-2">11</div><div class="py-2">12</div><div class="py-2">13</div><div class="py-2">14</div><div class="py-2">15</div>
+              <div class="py-2">16</div><div class="py-2">17</div><div class="py-2">18</div><div class="py-2">19</div><div class="py-2">20</div><div class="py-2">21</div><div class="py-2">22</div>
+              <div class="py-2">23</div><div class="py-2">24</div><div class="py-2">25</div><div class="py-2">26</div>
+              <!-- Highlighted Past Event Date: Aug 27 -->
+              <div onclick="scrollToEvent('event-aug27')" class="py-2 bg-brand-slate/80 text-white font-bold cursor-pointer transition-transform hover:scale-105" title="Click to view Live Pitch Feedback Session">27</div>
+              <div class="py-2">28</div><div class="py-2">29</div>
+              <div class="py-2">30</div><div class="py-2">31</div><div class="py-2 text-brand-slate/30">1</div><div class="py-2 text-brand-slate/30">2</div><div class="py-2 text-brand-slate/30">3</div><div class="py-2 text-brand-slate/30">4</div><div class="py-2 text-brand-slate/30">5</div>
+            </div>
+
           </div>
 
-          <!-- Past Events Quick Reveal Links -->
+          <!-- Capped Past Hosted Events Section (Max 2 items) -->
           <div class="mt-6 pt-4 border-t border-brand-border flex flex-col gap-2 text-[11px] text-brand-slate">
-            <span class="font-medium text-brand-charcoal uppercase tracking-wider text-[10px]">Past Hosted Events:</span>
+            <span class="font-medium text-brand-charcoal uppercase tracking-wider text-[10px]">Past Events (Select to View):</span>
+            
+            <!-- Past Event Item 1 -->
             <button onclick="scrollToEvent('event-aug10')" class="text-left text-brand-slate hover:text-brand-gold transition-colors flex items-center justify-between">
-              <span>• Aug 10, 2026: Startup Mixer #4</span>
-              <span class="text-[10px] text-brand-gold uppercase">View →</span>
+              <span class="truncate">• Aug 10: San Diego County Startup Mixer</span>
+              <span class="text-[10px] text-brand-gold uppercase ml-2 flex-shrink-0">View →</span>
+            </button>
+            
+            <!-- Past Event Item 2 -->
+            <button onclick="scrollToEvent('event-aug27')" class="text-left text-brand-slate hover:text-brand-gold transition-colors flex items-center justify-between">
+              <span class="truncate">• Aug 27: Pitch Feedback Session</span>
+              <span class="text-[10px] text-brand-gold uppercase ml-2 flex-shrink-0">View →</span>
             </button>
           </div>
 
@@ -196,9 +217,9 @@
                 <span class="text-[10px] font-semibold text-brand-gold uppercase tracking-[0.2em]">Hosted Community Event</span>
                 <span class="text-[10px] font-mono bg-brand-gold/10 text-brand-gold border border-brand-gold/20 px-2 py-0.5">Sep 14, 2026</span>
               </div>
-              <h3 class="font-serif text-xl sm:text-2xl font-normal text-brand-charcoal mb-2">San Diego County Startup Mixer #5</h3>
+              <h3 class="font-serif text-xl sm:text-2xl font-normal text-brand-charcoal mb-2">San Diego County Startup Mixer</h3>
               <p class="text-brand-slate text-sm leading-relaxed font-light mb-4">
-                Monthly casual networking event connecting local entrepreneurs, engineers, and investors across the San Diego startup ecosystem.
+                Monthly casual networking event connecting local entrepreneurs, engineers, and investors across the San Diego startup ecosystem[cite: 1].
               </p>
             </div>
             <div class="pt-4 border-t border-brand-border flex flex-col sm:flex-row sm:items-center justify-between gap-3">
@@ -261,16 +282,16 @@
             </div>
           </div>
 
-          <!-- PAST EVENT CARD (Hidden by default, unhides when clicked) -->
+          <!-- PAST EVENT CARD 1: San Diego County Startup Mixer (Aug 10) -->
           <div id="event-aug10" class="past-event p-6 sm:p-8 bg-brand-card border border-brand-border hover:border-brand-gold transition-all duration-300 shadow-sm flex flex-col justify-between opacity-90">
             <div>
               <div class="flex items-center justify-between mb-3">
                 <span class="text-[10px] font-semibold text-brand-slate uppercase tracking-[0.2em]">Past Hosted Event</span>
                 <span class="text-[10px] font-mono bg-brand-slate/10 text-brand-slate border border-brand-slate/20 px-2 py-0.5">Aug 10, 2026</span>
               </div>
-              <h3 class="font-serif text-xl sm:text-2xl font-normal text-brand-charcoal mb-2">San Diego County Startup Mixer #4</h3>
+              <h3 class="font-serif text-xl sm:text-2xl font-normal text-brand-charcoal mb-2">San Diego County Startup Mixer</h3>
               <p class="text-brand-slate text-sm leading-relaxed font-light mb-4">
-                August edition of our monthly startup networking gathering, connecting local founders, engineers, and tech creators over craft beers in San Diego.
+                August edition of our monthly startup networking gathering, connecting local founders, engineers, and tech creators over craft beers in San Diego[cite: 1].
               </p>
             </div>
             <div class="pt-4 border-t border-brand-border flex flex-col sm:flex-row sm:items-center justify-between gap-3">
@@ -279,9 +300,30 @@
                 <div class="font-light">San Diego, CA</div>
               </div>
               <a href="https://eventship.com/event/san-diego-county-startup-mixer-4" target="_blank" rel="noopener noreferrer" class="px-4 py-2 border border-brand-border bg-brand-cream text-brand-charcoal text-xs uppercase tracking-widest hover:border-brand-gold transition-colors text-center inline-flex items-center justify-center gap-2">
-                <span>View Event Link</span>
+                <span>View Registration Link</span>
                 <span>↗</span>
               </a>
+            </div>
+          </div>
+
+          <!-- PAST EVENT CARD 2: Live Pitch Feedback Session (Aug 27) -->
+          <div id="event-aug27" class="past-event p-6 sm:p-8 bg-brand-card border border-brand-border hover:border-brand-gold transition-all duration-300 shadow-sm flex flex-col justify-between opacity-90">
+            <div>
+              <div class="flex items-center justify-between mb-3">
+                <span class="text-[10px] font-semibold text-brand-slate uppercase tracking-[0.2em]">Past Hosted Event</span>
+                <span class="text-[10px] font-mono bg-brand-slate/10 text-brand-slate border border-brand-slate/20 px-2 py-0.5">Aug 27, 2026</span>
+              </div>
+              <h3 class="font-serif text-xl sm:text-2xl font-normal text-brand-charcoal mb-2">Live Pitch Feedback Session</h3>
+              <p class="text-brand-slate text-sm leading-relaxed font-light mb-4">
+                Co-hosted interactive pitch coaching session for San Diego founders at Downtown Works.
+              </p>
+            </div>
+            <div class="pt-4 border-t border-brand-border flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div class="text-xs text-brand-slate">
+                <div class="font-medium text-brand-charcoal">Downtown Works (Mission Valley)</div>
+                <div class="font-light">San Diego, CA</div>
+              </div>
+              <span class="text-xs text-brand-slate font-mono">Concluded</span>
             </div>
           </div>
 
@@ -386,7 +428,6 @@
       
       <!-- Footer Logo & Text -->
       <div class="flex items-center gap-3">
-        <!-- Monochrome SVG Logo Mark -->
         <svg class="w-9 h-9 text-brand-charcoal" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
           <line x1="50" y1="12" x2="50" y2="19" stroke="#22252A" stroke-width="1.8" stroke-linecap="round"/>
           <line x1="33" y1="18" x2="38" y2="23" stroke="#22252A" stroke-width="1.8" stroke-linecap="round"/>
@@ -426,28 +467,34 @@
     </div>
   </footer>
 
-  <!-- Scroll Handler & Past Events Toggle Script -->
+  <!-- Calendar Switcher & Scroll Script -->
   <script>
+    function changeMonth(selectedMonth) {
+      const allMonths = document.querySelectorAll('.calendar-month');
+      allMonths.forEach(m => m.classList.add('hidden'));
+
+      const targetMonth = document.getElementById(`calendar-${selectedMonth}`);
+      if (targetMonth) {
+        targetMonth.classList.remove('hidden');
+      }
+    }
+
     function scrollToEvent(eventId) {
       const targetCard = document.getElementById(eventId);
       if (!targetCard) return;
 
-      // Reveal card if it was hidden
       if (targetCard.classList.contains('hidden')) {
         targetCard.classList.remove('hidden');
       }
 
-      // Smooth scroll to card
       targetCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 
-      // Highlight target card with temporary gold border
       targetCard.classList.add('ring-2', 'ring-brand-gold');
       setTimeout(() => {
         targetCard.classList.remove('ring-2', 'ring-brand-gold');
       }, 1500);
     }
 
-    // Automatically hide past event cards on initial page load
     window.addEventListener('DOMContentLoaded', () => {
       const pastCards = document.querySelectorAll('.past-event');
       pastCards.forEach(card => card.classList.add('hidden'));
