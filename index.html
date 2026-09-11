@@ -75,6 +75,7 @@
 
     <nav class="flex items-center gap-6 text-xs uppercase tracking-widest font-medium text-brand-slate">
       <a href="#community" class="hover:text-brand-gold transition-colors">Community Hub</a>
+      <a href="/groups.html" class="hover:text-brand-gold transition-colors">Community Groups</a>
       <a href="/articles.html" class="hover:text-brand-gold transition-colors">Articles</a>
       <a href="#contact" class="px-4 py-2 border border-brand-charcoal hover:border-brand-gold hover:bg-brand-gold hover:text-white transition-all text-[11px]">Connect</a>
     </nav>
@@ -101,9 +102,15 @@
           <h1 class="font-serif text-3xl sm:text-4xl lg:text-5xl font-normal tracking-wide text-brand-charcoal leading-[1.2] mb-6">
             Global Perspective. Technical Mindset. Local Impact.
           </h1>
-          <p class="text-base text-brand-slate leading-relaxed font-light">
+          <p class="text-base text-brand-slate leading-relaxed font-light mb-6">
             Raised in Cairo, trained as an Industrial Engineer in France, and forged in San Francisco’s tech ecosystem. Today, I’m based in San Diego, actively building local founder networks, hardware meetups, and startup communities.
           </p>
+          <div class="flex flex-wrap gap-4">
+            <a href="/groups.html" class="px-5 py-2.5 bg-brand-charcoal text-white text-xs uppercase tracking-widest hover:bg-brand-gold transition-colors inline-flex items-center gap-2">
+              <span>Explore My Community Groups</span>
+              <span>→</span>
+            </a>
+          </div>
         </div>
 
       </div>
@@ -139,7 +146,7 @@
               <div>S</div><div>M</div><div>T</div><div>W</div><div>T</div><div>F</div><div>S</div>
             </div>
 
-            <!-- September 2026 Date Grid (Current Month Default) -->
+            <!-- September 2026 Date Grid -->
             <div id="calendar-sep2026" class="calendar-month grid grid-cols-7 gap-1 text-center text-xs text-brand-slate">
               <div class="py-2 text-brand-slate/30">30</div>
               <div class="py-2 text-brand-slate/30">31</div>
@@ -628,10 +635,9 @@
       { id: 'nov2026', title: 'November 2026' }
     ];
 
-    // Dynamically calculate the active month based on the current date
     const now = new Date();
     const currentYear = now.getFullYear();
-    const currentMonthNum = now.getMonth(); // 0-indexed (8 = September)
+    const currentMonthNum = now.getMonth();
 
     let currentMonthIndex = months.findIndex(m => {
       if (m.id === 'sep2026' && currentYear === 2026 && currentMonthNum === 8) return true;
@@ -639,7 +645,7 @@
     });
 
     if (currentMonthIndex === -1) {
-      currentMonthIndex = 1; // Default fallback to September 2026
+      currentMonthIndex = 1;
     }
 
     function updateMonthDisplay() {
