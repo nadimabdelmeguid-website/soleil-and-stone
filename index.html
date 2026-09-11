@@ -528,7 +528,8 @@
           Reach out for general networking, speaker requests for hardware panels, or partnership opportunities for San Diego community events.
         </p>
 
-        <form action="https://formspree.io/f/xbjnqpyw" method="POST" class="space-y-4">
+        <!-- Connected Google Apps Script Form with AJAX Submission and Success Message Handling -->
+        <form id="contact-form" action="https://script.google.com/macros/s/AKfycbxKtCKaU1D2tbC-np9R-a_R4A-CMgJuaNnGH3TPyBCK4whhThTE6t7u35yWoym4eXZN/exec" method="POST" class="space-y-4">
           <div>
             <label class="block text-xs uppercase tracking-wider text-brand-slate mb-1">Your Name</label>
             <input type="text" name="name" required class="w-full px-4 py-2.5 bg-brand-card border border-brand-border text-sm focus:outline-none focus:border-brand-gold">
@@ -550,9 +551,10 @@
             <label class="block text-xs uppercase tracking-wider text-brand-slate mb-1">Message</label>
             <textarea name="message" rows="4" required class="w-full px-4 py-2.5 bg-brand-card border border-brand-border text-sm focus:outline-none focus:border-brand-gold"></textarea>
           </div>
-          <button type="submit" class="px-6 py-3 bg-brand-charcoal text-white text-xs uppercase tracking-[0.2em] hover:bg-brand-gold transition-colors">
+          <button type="submit" id="submit-btn" class="px-6 py-3 bg-brand-charcoal text-white text-xs uppercase tracking-[0.2em] hover:bg-brand-gold transition-colors">
             Send Message
           </button>
+          <p id="form-status" class="text-xs mt-3 hidden font-medium"></p>
         </form>
       </div>
     </section>
@@ -604,7 +606,7 @@
     </div>
   </footer>
 
-  <!-- Script for Calendar & Live Fetching of Latest 2 Featured Articles -->
+  <!-- Script for Calendar, Live Featured Articles & AJAX Google Sheet Form Submission -->
   <script>
     const months = [
       { id: 'aug2026', title: 'August 2026' },
@@ -737,6 +739,49 @@
           <a href="${art.url}" class="text-xs font-medium text-brand-gold uppercase tracking-wider hover:underline">Read Full Article →</a>
         </article>
       `).join('');
+    }
+
+    // AJAX Form Submission Handler for Google Apps Script Web App Endpoint
+    const contactForm = document.getElementById('contact-form');
+    if (contactForm) {
+      contactForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const submitBtn = document.getElementById('submit-btn');
+        const statusEl = document.getElementById('form-status');
+        
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Sending...';
+        statusEl.classList.add('hidden');
+
+        const formData = new FormData(contactForm);
+
+        fetch(contactForm.action, {
+          method: 'POST',
+          body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Send Message';
+          statusEl.classList.remove('hidden');
+          
+          if (data.result === 'success') {
+            statusEl.textContent = 'Thank you! Your message has been sent successfully.';
+            statusEl.className = 'text-xs mt-3 font-medium text-green-600';
+            contactForm.reset();
+          } else {
+            throw new Error(data.error || 'Submission failed');
+          }
+        })
+        .catch(error => {
+          console.error('Form submission error:', error);
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Send Message';
+          statusEl.classList.remove('hidden');
+          statusEl.textContent = 'Oops! Something went wrong. Please try again or email directly.';
+          statusEl.className = 'text-xs mt-3 font-medium text-red-600';
+        });
+      });
     }
 
     window.addEventListener('DOMContentLoaded', () => {
