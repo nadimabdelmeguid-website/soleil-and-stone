@@ -99,67 +99,13 @@
       </div>
     </section>
 
-    <!-- Articles Grid Section -->
+    <!-- Articles Grid Section (Dynamically Loaded) -->
     <section class="max-w-6xl w-full mx-auto px-6 py-16">
-      <div class="grid md:grid-cols-2 gap-10">
-        
-        <!-- Article 1 -->
-        <article class="article-card p-8 bg-brand-card border border-brand-border shadow-sm flex flex-col justify-between" data-category="ecosystem">
-          <div>
-            <div class="flex items-center gap-3 text-xs text-brand-slate mb-3">
-              <span class="font-mono text-brand-gold">2026-09-10</span>
-              <span>•</span>
-              <span class="uppercase tracking-wider font-medium">Ecosystem Building</span>
-            </div>
-            <h2 class="font-serif text-xl sm:text-2xl font-normal text-brand-charcoal mb-4">Growing a Community in San Diego: Why Networking Here Feels Different Than the Bay Area</h2>
-            <p class="text-brand-slate text-sm leading-relaxed font-light mb-6">
-              A personal perspective on building authentic local networks, shifting from transactional pitches to human-first connections, and why San Diego relationships often translate from the boardroom to the lineup.
-            </p>
-          </div>
-          <div class="pt-4 border-t border-brand-border flex items-center justify-between">
-            <span class="text-xs text-brand-slate">4 min read</span>
-            <a href="/article-community-building.html" class="text-xs font-semibold text-brand-gold uppercase tracking-widest hover:underline">Read Full Article →</a>
-          </div>
-        </article>
-
-        <!-- Article 2 (Latest) -->
-        <article class="article-card p-8 bg-brand-card border border-brand-border shadow-sm flex flex-col justify-between" data-category="hardware">
-          <div>
-            <div class="flex items-center gap-3 text-xs text-brand-slate mb-3">
-              <span class="font-mono text-brand-gold">2026-08-28</span>
-              <span>•</span>
-              <span class="uppercase tracking-wider font-medium">Hardware Engineering</span>
-            </div>
-            <h2 class="font-serif text-xl sm:text-2xl font-normal text-brand-charcoal mb-4">The Acoustic Reality Gap: Integrating Speakers and Microphones into Hardware Products</h2>
-            <p class="text-brand-slate text-sm leading-relaxed font-light mb-6">
-              Why acoustic integration in physical hardware is fundamentally a mechanical and architectural challenge—and how to bridge the gap between ideal component datasheets and functional products.
-            </p>
-          </div>
-          <div class="pt-4 border-t border-brand-border flex items-center justify-between">
-            <span class="text-xs text-brand-slate">6 min read</span>
-            <a href="/article-acoustic-reality-gap.html" class="text-xs font-semibold text-brand-gold uppercase tracking-widest hover:underline">Read Full Article →</a>
-          </div>
-        </article>
-
-        <!-- Article 3 -->
-        <article class="article-card p-8 bg-brand-card border border-brand-border shadow-sm flex flex-col justify-between" data-category="tradeshows">
-          <div>
-            <div class="flex items-center gap-3 text-xs text-brand-slate mb-3">
-              <span class="font-mono text-brand-gold">2026-08-28</span>
-              <span>•</span>
-              <span class="uppercase tracking-wider font-medium">Tradeshows</span>
-            </div>
-            <h2 class="font-serif text-xl sm:text-2xl font-normal text-brand-charcoal mb-4">Navigating Sensor & Component Trends on the Trade Show Floor</h2>
-            <p class="text-brand-slate text-sm leading-relaxed font-light mb-6">
-              Key observations from recent West Coast technical expos regarding micro-acoustics, environmental sensor integration, thermal constraints, and fast-turn NPI cycles for modern hardware startups.
-            </p>
-          </div>
-          <div class="pt-4 border-t border-brand-border flex items-center justify-between">
-            <span class="text-xs text-brand-slate">5 min read</span>
-            <span class="text-xs font-semibold text-brand-gold uppercase tracking-widest">Technical Note</span>
-          </div>
-        </article>
-
+      <div id="articles-grid" class="grid md:grid-cols-2 gap-10">
+        <!-- Dynamic content will be loaded here via JavaScript -->
+        <div class="col-span-2 text-center py-12 text-brand-slate text-sm font-light">
+          Loading articles...
+        </div>
       </div>
     </section>
 
@@ -196,9 +142,67 @@
     </div>
   </footer>
 
-  <!-- Filter Functionality Script -->
+  <!-- Dynamic Content & Filter Logic Script -->
   <script>
+    let currentCategory = 'all';
+    let allArticlesData = [];
+
+    async function loadArticles() {
+      try {
+        // Fetch the external JSON file containing article metadata and content links
+        const response = await fetch('/articles.json');
+        if (!response.ok) throw new Error('Failed to load articles configuration.');
+        
+        allArticlesData = await response.json();
+        renderArticles(currentCategory);
+      } catch (error) {
+        console.error(error);
+        document.getElementById('articles-grid').innerHTML = `
+          <div class="col-span-2 text-center py-12 text-brand-slate text-sm font-light">
+            Unable to load articles dynamically at the moment. Please check back later.
+          </div>
+        `;
+      }
+    }
+
+    function renderArticles(category) {
+      const grid = document.getElementById('articles-grid');
+      const filtered = category === 'all' 
+        ? allArticlesData 
+        : allArticlesData.filter(art => art.categorySlug === category);
+
+      if (filtered.length === 0) {
+        grid.innerHTML = `
+          <div class="col-span-2 text-center py-12 text-brand-slate text-sm font-light">
+            No articles found in this category.
+          </div>
+        `;
+        return;
+      }
+
+      grid.innerHTML = filtered.map(art => `
+        <article class="article-card p-8 bg-brand-card border border-brand-border shadow-sm flex flex-col justify-between" data-category="${art.categorySlug}">
+          <div>
+            <div class="flex items-center gap-3 text-xs text-brand-slate mb-3">
+              <span class="font-mono text-brand-gold">${art.date}</span>
+              <span>•</span>
+              <span class="uppercase tracking-wider font-medium">${art.categoryName}</span>
+            </div>
+            <h2 class="font-serif text-xl sm:text-2xl font-normal text-brand-charcoal mb-4">${art.title}</h2>
+            <p class="text-brand-slate text-sm leading-relaxed font-light mb-6">
+              ${art.description}
+            </p>
+          </div>
+          <div class="pt-4 border-t border-brand-border flex items-center justify-between">
+            <span class="text-xs text-brand-slate">${art.readTime}</span>
+            <a href="${art.url}" class="text-xs font-semibold text-brand-gold uppercase tracking-widest hover:underline">${art.linkText || 'Read Full Article →'}</a>
+          </div>
+        </article>
+      `).join('');
+    }
+
     function filterArticles(category) {
+      currentCategory = category;
       const buttons = document.querySelectorAll('.filter-btn');
       buttons.forEach(btn => {
         btn.classList.remove('bg-brand-charcoal', 'text-white');
@@ -208,15 +212,11 @@
       event.currentTarget.classList.remove('bg-brand-card', 'text-brand-slate', 'border', 'border-brand-border');
       event.currentTarget.classList.add('bg-brand-charcoal', 'text-white');
 
-      const cards = document.querySelectorAll('.article-card');
-      cards.forEach(card => {
-        if (category === 'all' || card.getAttribute('data-category') === category) {
-          card.style.display = 'flex';
-        } else {
-          card.style.display = 'none';
-        }
-      });
+      renderArticles(category);
     }
+
+    // Load articles on page initialization
+    window.addEventListener('DOMContentLoaded', loadArticles);
   </script>
 
 </body>
