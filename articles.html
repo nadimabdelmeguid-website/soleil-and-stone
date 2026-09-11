@@ -78,9 +78,22 @@
       <h1 class="font-serif text-3xl sm:text-4xl lg:text-5xl font-normal tracking-wide text-brand-charcoal leading-[1.2] mb-6">
         Articles & Field Notes
       </h1>
-      <p class="text-base text-brand-slate leading-relaxed font-light max-w-3xl">
+      <p class="text-base text-brand-slate leading-relaxed font-light max-w-3xl mb-8">
         Reflections on ecosystem building, physical product hardware scaling, international professional integration, and trade show observations across the West Coast tech community.
       </p>
+
+      <!-- Category Filter Pills -->
+      <div id="filter-container" class="flex flex-wrap gap-3">
+        <button onclick="filterArticles('all')" class="filter-btn px-4 py-2 text-xs uppercase tracking-wider font-semibold bg-brand-charcoal text-white transition-all">
+          All Topics
+        </button>
+        <button onclick="filterArticles('ecosystem')" class="filter-btn px-4 py-2 text-xs uppercase tracking-wider font-semibold bg-brand-card text-brand-slate border border-brand-border hover:border-brand-gold transition-all">
+          Ecosystem Building
+        </button>
+        <button onclick="filterArticles('tradeshows')" class="filter-btn px-4 py-2 text-xs uppercase tracking-wider font-semibold bg-brand-card text-brand-slate border border-brand-border hover:border-brand-gold transition-all">
+          Tradeshows
+        </button>
+      </div>
     </section>
 
     <!-- Articles Grid Section -->
@@ -88,7 +101,7 @@
       <div class="grid md:grid-cols-2 gap-10">
         
         <!-- Article 1 -->
-        <article class="p-8 bg-brand-card border border-brand-border shadow-sm flex flex-col justify-between">
+        <article class="article-card p-8 bg-brand-card border border-brand-border shadow-sm flex flex-col justify-between" data-category="ecosystem">
           <div>
             <div class="flex items-center gap-3 text-xs text-brand-slate mb-3">
               <span class="font-mono text-brand-gold">2026-09-10</span>
@@ -107,7 +120,7 @@
         </article>
 
         <!-- Article 2 -->
-        <article class="p-8 bg-brand-card border border-brand-border shadow-sm flex flex-col justify-between">
+        <article class="article-card p-8 bg-brand-card border border-brand-border shadow-sm flex flex-col justify-between" data-category="tradeshows">
           <div>
             <div class="flex items-center gap-3 text-xs text-brand-slate mb-3">
               <span class="font-mono text-brand-gold">2026-08-28</span>
@@ -160,6 +173,29 @@
       <span class="font-light">&copy; Soleil & Stone. All rights reserved.</span>
     </div>
   </footer>
+
+  <!-- Filter Functionality Script -->
+  <script>
+    function filterArticles(category) {
+      const buttons = document.querySelectorAll('.filter-btn');
+      buttons.forEach(btn => {
+        btn.classList.remove('bg-brand-charcoal', 'text-white');
+        btn.classList.add('bg-brand-card', 'text-brand-slate', 'border', 'border-brand-border');
+      });
+
+      event.currentTarget.classList.remove('bg-brand-card', 'text-brand-slate', 'border', 'border-brand-border');
+      event.currentTarget.classList.add('bg-brand-charcoal', 'text-white');
+
+      const cards = document.querySelectorAll('.article-card');
+      cards.forEach(card => {
+        if (category === 'all' || card.getAttribute('data-category') === category) {
+          card.style.display = 'flex';
+        } else {
+          card.style.display = 'none';
+        }
+      });
+    }
+  </script>
 
 </body>
 </html>
