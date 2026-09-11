@@ -352,7 +352,7 @@
                 <div class="font-medium text-brand-charcoal">Downtown Innovation District</div>
                 <div class="font-light">San Diego, CA</div>
               </div>
-              <a href="https://sandiegostartupweek.org/" target="_blank" rel="noopener noreferrer" class="px-4 py-2 border border-brand-border bg-brand-cream text-brand-charcoal text-xs uppercase tracking-widest hover:border-brand-gold transition-colors text-center inline-flex items-center justify-center gap-2">
+              <a href="https://sandiegostartupweek.org/#events" target="_blank" rel="noopener noreferrer" class="px-4 py-2 border border-brand-border bg-brand-cream text-brand-charcoal text-xs uppercase tracking-widest hover:border-brand-gold transition-colors text-center inline-flex items-center justify-center gap-2">
                 <span>Official Website</span>
                 <span>↗</span>
               </a>
@@ -628,7 +628,7 @@
       { id: 'nov2026', title: 'November 2026' }
     ];
 
-    // Dynamically calculate the active month based on the current date (September 2026)
+    // Dynamically calculate the active month based on the current date
     const now = new Date();
     const currentYear = now.getFullYear();
     const currentMonthNum = now.getMonth(); // 0-indexed (8 = September)
@@ -638,9 +638,8 @@
       return false;
     });
 
-    // Fallback default index if date doesn't match precisely
     if (currentMonthIndex === -1) {
-      currentMonthIndex = 1; // Default to September 2026
+      currentMonthIndex = 1; // Default fallback to September 2026
     }
 
     function updateMonthDisplay() {
