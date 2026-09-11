@@ -98,12 +98,11 @@
       </div>
     </section>
 
-    <!-- Articles Grid Section (Scraped Live from HTML files) -->
+    <!-- Articles Grid Section (Live-scraped with exact source dates) -->
     <section class="max-w-6xl w-full mx-auto px-6 py-16">
       <div id="articles-grid" class="grid md:grid-cols-2 gap-10">
-        <!-- Loading state -->
         <div class="col-span-2 text-center py-12 text-brand-slate text-sm font-light">
-          Synchronizing article summaries and live metadata...
+          Synchronizing article contents and exact dates...
         </div>
       </div>
     </section>
@@ -140,11 +139,8 @@
     </div>
   </footer>
 
-  <!-- Live HTML Scraping and Rendering Engine -->
+  <!-- Live HTML Scraping Engine capturing exact article dates and contents -->
   <script>
-    // List your individual article file paths here. 
-    // Whenever you update the text inside any of these files, this script automatically 
-    // extracts the title, date, category, and first paragraph to display the latest snippet live.
     const articleFiles = [
       {
         url: '/article-community-building.html',
@@ -173,12 +169,17 @@
           const htmlText = await response.text();
           const doc = parser.parseFromString(htmlText, 'text/html');
 
-          // Extract fields dynamically from the target HTML file
-          const title = doc.querySelector('h1') ? doc.querySelector('h1').textContent.trim() : 'Untitled Article';
-          const date = doc.querySelector('header .font-mono') ? doc.querySelector('header .font-mono').textContent.trim() : '2026-09-11';
+          // Extract exact date from the target article page header (.font-mono element)
+          const dateEl = doc.querySelector('section.border-b .font-mono') || doc.querySelector('.font-mono');
+          const date = dateEl ? dateEl.textContent.trim() : '2026-09-11';
+
+          // Extract exact title from the target article page h1
+          const titleEl = doc.querySelector('section.border-b h1') || doc.querySelector('h1');
+          const title = titleEl ? titleEl.textContent.trim() : 'Untitled Article';
           
           // Extract the first meaningful paragraph as the dynamic summary/excerpt
-          const firstParagraph = doc.querySelector('article p') ? doc.querySelector('article p').textContent.trim() : '';
+          const descEl = doc.querySelector('article.max-w-3xl > p.text-lg') || doc.querySelector('article p');
+          const description = descEl ? descEl.textContent.trim() : '';
 
           // Estimate read time based on word count of the article text
           const articleBodyText = doc.querySelector('article') ? doc.querySelector('article').textContent : '';
@@ -191,7 +192,7 @@
             categoryName: file.categoryName,
             title: title,
             date: date,
-            description: firstParagraph,
+            description: description,
             readTime: readTime
           });
         } catch (e) {
@@ -253,7 +254,6 @@
       renderGrid(category);
     }
 
-    // Execute live scraping when page loads
     window.addEventListener('DOMContentLoaded', fetchAndParseArticles);
   </script>
 
