@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SOLEIL & STONE | Community Initiatives & Hosted Groups</title>
+
+  <!-- Custom Brand Logo Favicon for Google & Tabs -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cline x1='50' y1='12' x2='50' y2='19' stroke='%23C5A059' stroke-width='1.8' stroke-linecap='round'/%3E%3Cline x1='33' y1='18' x2='38' y2='23' stroke='%23C5A059' stroke-width='1.8' stroke-linecap='round'/%3E%3Cline x1='67' y1='18' x2='62' y2='23' stroke='%23C5A059' stroke-width='1.8' stroke-linecap='round'/%3E%3Cline x1='22' y1='32' x2='28' y2='34' stroke='%23C5A059' stroke-width='1.8' stroke-linecap='round'/%3E%3Cline x1='78' y1='32' x2='72' y2='34' stroke='%23C5A059' stroke-width='1.8' stroke-linecap='round'/%3E%3Ccircle cx='50' cy='34' r='13' fill='%23C5A059'/%3E%3Cpolygon points='50,28 20,56 50,56' fill='%23D5C29C'/%3E%3Cpolygon points='50,28 50,56 80,56' fill='%23363A40'/%3E%3Cline x1='50' y1='28' x2='50' y2='56' stroke='%23F9F8F3' stroke-width='1'/%3E%3Cline x1='28' y1='60' x2='72' y2='60' stroke='%23C5A059' stroke-width='1.5' stroke-linecap='round'/%3E%3Cline x1='36' y1='64' x2='64' y2='64' stroke='%23C5A059' stroke-width='1.2' stroke-linecap='round'/%3E%3Cline x1='42' y1='68' x2='58' y2='68' stroke='%23C5A059' stroke-width='1' stroke-linecap='round'/%3E%3C/svg%3E">
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              cream: '#F9F8F3',
+              card: '#FFFFFF',
+              charcoal: '#22252A',
+              slate: '#4A505A',
+              gold: '#C5A059',
+              goldlight: '#E5C98B',
+              border: '#E8E5DA',
+            }
+          },
+          fontFamily: {
+            serif: ['Cinzel', 'Playfair Display', 'Georgia', 'serif'],
+            sans: ['Plus Jakarta Sans', 'Inter', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+</head>
+<body class="bg-brand-cream text-brand-charcoal min-h-screen flex flex-col font-sans antialiased selection:bg-brand-gold selection:text-white">
+
+  <!-- Header -->
+  <header class="max-w-6xl w-full mx-auto px-6 py-8 flex flex-col sm:flex-row items-center justify-between border-b border-brand-border gap-6">
+    <a href="/" class="flex items-center gap-4 group">
+      <!-- Refined Geometric Logo SVG -->
+      <svg class="w-16 h-16 text-brand-gold" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <line x1="50" y1="12" x2="50" y2="19" stroke="#C5A059" stroke-width="1.8" stroke-linecap="round"/>
+        <line x1="33" y1="18" x2="38" y2="23" stroke="#C5A059" stroke-width="1.8" stroke-linecap="round"/>
+        <line x1="67" y1="18" x2="62" y2="23" stroke="#C5A059" stroke-width="1.8" stroke-linecap="round"/>
+        <line x1="22" y1="32" x2="28" y2="34" stroke="#C5A059" stroke-width="1.8" stroke-linecap="round"/>
+        <line x1="78" y1="32" x2="72" y2="34" stroke="#C5A059" stroke-width="1.8" stroke-linecap="round"/>
+        <circle cx="50" cy="34" r="13" fill="#C5A059" />
+        <polygon points="50,26 20,56 50,56" fill="#D5C29C" />
+        <polygon points="50,26 50,56 80,56" fill="#363A40" />
+        <line x1="50" y1="26" x2="50" y2="56" stroke="#F9F8F3" stroke-width="1" />
+        <line x1="28" y1="60" x2="72" y2="60" stroke="#C5A059" stroke-width="1.5" stroke-linecap="round"/>
+        <line x1="36" y1="64" x2="64" y2="64" stroke="#C5A059" stroke-width="1.2" stroke-linecap="round"/>
+        <line x1="42" y1="68" x2="58" y2="68" stroke="#C5A059" stroke-width="1" stroke-linecap="round"/>
+      </svg>
+      <div class="flex flex-col text-center sm:text-left">
+        <span class="font-serif text-xl tracking-[0.2em] font-medium text-brand-charcoal group-hover:text-brand-gold transition-colors">SOLEIL & STONE</span>
+      </div>
+    </a>
+
+    <nav class="flex items-center gap-6 text-xs uppercase tracking-widest font-medium text-brand-slate">
+      <a href="/" class="hover:text-brand-gold transition-colors">Home</a>
+      <a href="/groups.html" class="text-brand-gold transition-colors font-semibold">Community Groups</a>
+      <a href="/articles.html" class="hover:text-brand-gold transition-colors">Articles</a>
+      <a href="/#contact" class="px-4 py-2 border border-brand-charcoal hover:border-brand-gold hover:bg-brand-gold hover:text-white transition-all text-[11px]">Connect</a>
+    </nav>
+  </header>
+
+  <main class="flex-grow">
+    
+    <!-- Hero Section -->
+    <section class="max-w-6xl w-full mx-auto px-6 py-16 border-b border-brand-border">
+      <span class="inline-block px-3 py-1 bg-brand-gold/10 border border-brand-gold/30 text-brand-gold text-[10px] uppercase tracking-[0.2em] font-semibold mb-4">
+        Ecosystem Leadership
+      </span>
+      <h1 class="font-serif text-3xl sm:text-4xl lg:text-5xl font-normal tracking-wide text-brand-charcoal leading-[1.2] mb-6">
+        Communities & Groups I Lead in San Diego
+      </h1>
+      <p class="text-base text-brand-slate leading-relaxed font-light max-w-3xl">
+        Building physical gathering spaces and low-pressure, high-value networks for founders, engineers, hardware builders, and investors across Southern California.
+      </p>
+    </section>
+
+    <!-- Group 1: San Diego County Startup Mixer -->
+    <section class="max-w-6xl w-full mx-auto px-6 py-16 border-b border-brand-border">
+      <div class="grid lg:grid-cols-12 gap-10 items-start">
+        
+        <div class="lg:col-span-5">
+          <span class="text-xs uppercase tracking-[0.2em] text-brand-gold font-semibold">Hosted Since March 2026</span>
+          <h2 class="font-serif text-2xl sm:text-3xl font-normal text-brand-charcoal mt-1 mb-4">San Diego County Startup Mixer</h2>
+          <p class="text-brand-slate text-sm leading-relaxed font-light mb-6">
+            A monthly gathering built to casually connect local founders, engineers, and investors. The goal is to keep things low-pressure while making high-value introductions across our growing San Diego startup ecosystem. Across all editions, the community has grown to over 300+ registered members[cite: 2].
+          </p>
+          <div class="flex flex-wrap gap-4">
+            <a href="https://eventship.com/host/nadim-abdel-meguid" target="_blank" rel="noopener noreferrer" class="px-5 py-2.5 bg-brand-charcoal text-white text-xs uppercase tracking-widest hover:bg-brand-gold transition-colors inline-flex items-center gap-2">
+              <span>Follow Host Page</span>
+              <span>↗</span>
+            </a>
+          </div>
+        </div>
+
+        <div class="lg:col-span-7 bg-brand-card p-6 sm:p-8 border border-brand-border shadow-sm">
+          <h3 class="font-serif text-lg font-normal text-brand-charcoal mb-4 pb-2 border-b border-brand-border">Core Pillars & Impact</h3>
+          <ul class="space-y-4 text-sm text-brand-slate font-light">
+            <li class="flex items-start gap-3">
+              <span class="text-brand-gold font-bold">•</span>
+              <div>
+                <strong class="font-medium text-brand-charcoal">Monthly Community Networking:</strong> Organizing casual gatherings for San Diego founders, software/hardware engineers, investors, and local startup talent.
+              </div>
+            </li>
+            <li class="flex items-start gap-3">
+              <span class="text-brand-gold font-bold">•</span>
+              <div>
+                <strong class="font-medium text-brand-charcoal">Attendee Matchmaking:</strong> Building and managing a structured directory to facilitate warm introductions, co-founder pairings, and strategic advisory connections.
+              </div>
+            </li>
+            <li class="flex items-start gap-3">
+              <span class="text-brand-gold font-bold">•</span>
+              <div>
+                <strong class="font-medium text-brand-charcoal">Venue & Logistics:</strong> Coordinating venue partnerships (such as Harland Brewing Co.) and community outreach to scale local entrepreneurial participation.
+              </div>
+            </li>
+          </ul>
+
+          <div class="mt-8 pt-6 border-t border-brand-border">
+            <h4 class="text-xs uppercase tracking-widest text-brand-charcoal font-semibold mb-3">Event History & Turnout</h4>
+            <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 text-xs text-brand-slate">
+              <div class="p-2 bg-brand-cream border border-brand-border"><span class="font-mono text-brand-gold">Mar 16, 2026:</span> 85 regs[cite: 2]</div>
+              <div class="p-2 bg-brand-cream border border-brand-border"><span class="font-mono text-brand-gold">Apr 13, 2026:</span> 53 regs[cite: 2]</div>
+              <div class="p-2 bg-brand-cream border border-brand-border"><span class="font-mono text-brand-gold">May 11, 2026:</span> 93 regs[cite: 2]</div>
+              <div class="p-2 bg-brand-cream border border-brand-border"><span class="font-mono text-brand-gold">Jun 08, 2026:</span> 73 regs[cite: 2]</div>
+              <div class="p-2 bg-brand-cream border border-brand-border"><span class="font-mono text-brand-gold">Jul 13, 2026:</span> 97 regs[cite: 2]</div>
+              <div class="p-2 bg-brand-cream border border-brand-border"><span class="font-mono text-brand-gold">Aug 10, 2026:</span> 58 regs[cite: 2]</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Group 2: San Diego Hardware Meetup -->
+    <section class="max-w-6xl w-full mx-auto px-6 py-16 border-b border-brand-border">
+      <div class="grid lg:grid-cols-12 gap-10 items-start">
+        
+        <div class="lg:col-span-5">
+          <span class="text-xs uppercase tracking-[0.2em] text-brand-gold font-semibold">Co-Organized Chapter</span>
+          <h2 class="font-serif text-2xl sm:text-3xl font-normal text-brand-charcoal mt-1 mb-4">San Diego Hardware Meetup</h2>
+          <p class="text-brand-slate text-sm leading-relaxed font-light mb-6">
+            Joining and helping co-organize the San Diego chapter of the national Hardware Meetup group. We bring together a community of creators building physical products across San Diego—from designers, founders, and engineers to investors[cite: 1].
+          </p>
+          <div class="flex flex-wrap gap-4">
+            <a href="https://luma.com/sd-hardware-meetup" target="_blank" rel="noopener noreferrer" class="px-5 py-2.5 bg-brand-charcoal text-white text-xs uppercase tracking-widest hover:bg-brand-gold transition-colors inline-flex items-center gap-2">
+              <span>View Luma Community</span>
+              <span>↗</span>
+            </a>
+          </div>
+        </div>
+
+        <div class="lg:col-span-7 bg-brand-card p-6 sm:p-8 border border-brand-border shadow-sm">
+          <h3 class="font-serif text-lg font-normal text-brand-charcoal mb-4 pb-2 border-b border-brand-border">Chapter Growth & Activities</h3>
+          <ul class="space-y-4 text-sm text-brand-slate font-light">
+            <li class="flex items-start gap-3">
+              <span class="text-brand-gold font-bold">•</span>
+              <div>
+                <strong class="font-medium text-brand-charcoal">Community Expansion:</strong> Helped grow chapter reach on Luma significantly alongside scaling professional updates on LinkedIn[cite: 1].
+              </div>
+            </li>
+            <li class="flex items-start gap-3">
+              <span class="text-brand-gold font-bold">•</span>
+              <div>
+                <strong class="font-medium text-brand-charcoal">Monthly Symposia & Field Trips:</strong> Hosting pre-planned speakers, continuing education field trips, and physical product showcase events.
+              </div>
+            </li>
+          </ul>
+
+          <div class="mt-8 pt-6 border-t border-brand-border">
+            <h4 class="text-xs uppercase tracking-widest text-brand-charcoal font-semibold mb-3">Key Chapter Gatherings</h4>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs text-brand-slate">
+              <div class="p-3 bg-brand-cream border border-brand-border">
+                <div class="font-mono text-brand-gold font-semibold">Feb 26, 2026</div>
+                <div class="text-brand-charcoal mt-1">44 Registrations[cite: 1]</div>
+              </div>
+              <div class="p-3 bg-brand-cream border border-brand-border">
+                <div class="font-mono text-brand-gold font-semibold">Apr 30, 2026</div>
+                <div class="text-brand-charcoal mt-1">57 Registrations[cite: 1]</div>
+              </div>
+              <div class="p-3 bg-brand-cream border border-brand-border">
+                <div class="font-mono text-brand-gold font-semibold">Jun 25, 2026</div>
+                <div class="text-brand-charcoal mt-1">87 Registrations[cite: 1]</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Call to Action -->
+    <section class="max-w-6xl w-full mx-auto px-6 py-20 text-center">
+      <h2 class="font-serif text-2xl sm:text-3xl font-normal text-brand-charcoal mb-4">Want to partner or attend the next session?</h2>
+      <p class="text-brand-slate text-sm font-light max-w-xl mx-auto mb-8">
+        Whether you're looking to showcase a physical product, pitch an early-stage startup, or collaborate on venue hosting, get in touch.
+      </p>
+      <a href="/#contact" class="px-6 py-3 bg-brand-charcoal text-white text-xs uppercase tracking-[0.2em] hover:bg-brand-gold transition-colors inline-block">
+        Get in Touch
+      </a>
+    </section>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="border-t border-brand-border py-10 bg-white">
+    <div class="max-w-6xl w-full mx-auto px-6 flex flex-col sm:flex-row justify-between items-center text-xs text-brand-slate gap-6">
+      
+      <div class="flex items-center gap-3">
+        <svg class="w-9 h-9 text-brand-charcoal" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <line x1="50" y1="12" x2="50" y2="19" stroke="#22252A" stroke-width="1.8" stroke-linecap="round"/>
+          <line x1="33" y1="18" x2="38" y2="23" stroke="#22252A" stroke-width="1.8" stroke-linecap="round"/>
+          <line x1="67" y1="18" x2="62" y2="23" stroke="#22252A" stroke-width="1.8" stroke-linecap="round"/>
+          <line x1="22" y1="32" x2="28" y2="34" stroke="#22252A" stroke-width="1.8" stroke-linecap="round"/>
+          <line x1="78" y1="32" x2="72" y2="34" stroke="#22252A" stroke-width="1.8" stroke-linecap="round"/>
+          <circle cx="50" cy="34" r="13" fill="#22252A" />
+          <polygon points="50,26 20,56 50,56" fill="#4A505A" />
+          <polygon points="50,26 50,56 80,56" fill="#22252A" />
+          <line x1="50" y1="26" x2="50" y2="56" stroke="#FFFFFF" stroke-width="1" />
+          <line x1="28" y1="60" x2="72" y2="60" stroke="#22252A" stroke-width="1.5" stroke-linecap="round"/>
+          <line x1="36" y1="64" x2="64" y2="64" stroke="#22252A" stroke-width="1.2" stroke-linecap="round"/>
+          <line x1="42" y1="68" x2="58" y2="68" stroke="#22252A" stroke-width="1" stroke-linecap="round"/>
+        </svg>
+        <div class="flex items-center gap-2">
+          <span class="font-serif tracking-widest text-brand-charcoal font-semibold">SOLEIL & STONE</span>
+          <span>•</span>
+          <span>San Diego, CA</span>
+        </div>
+      </div>
+
+      <span class="font-light">&copy; Soleil & Stone. All rights reserved.</span>
+    </div>
+  </footer>
+
+</body>
+</html>
