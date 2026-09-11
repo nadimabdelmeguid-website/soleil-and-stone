@@ -165,7 +165,6 @@
               <div class="py-2 text-brand-slate/30">27</div><div class="py-2 text-brand-slate/30">28</div><div class="py-2 text-brand-slate/30">29</div><div class="py-2 text-brand-slate/30">30</div><div class="py-2">1</div><div class="py-2">2</div><div class="py-2">3</div>
               <div class="py-2">4</div><div class="py-2">5</div><div class="py-2">6</div><div class="py-2">7</div><div class="py-2">8</div><div class="py-2">9</div><div class="py-2">10</div>
               <div class="py-2">11</div>
-              <!-- Attending LA Tech Week: Oct 12–18 -->
               <div onclick="scrollToEvent('event-oct12')" class="py-2 bg-brand-slate text-white font-bold cursor-pointer transition-transform hover:scale-105" title="Click to view LA Tech Week">12</div>
               <div onclick="scrollToEvent('event-oct12')" class="py-2 bg-brand-slate text-white font-bold cursor-pointer transition-transform hover:scale-105" title="Click to view LA Tech Week">13</div>
               <div onclick="scrollToEvent('event-oct12')" class="py-2 bg-brand-slate text-white font-bold cursor-pointer transition-transform hover:scale-105" title="Click to view LA Tech Week">14</div>
@@ -180,7 +179,6 @@
             <!-- November 2026 Date Grid -->
             <div id="calendar-nov2026" class="calendar-month hidden grid grid-cols-7 gap-1 text-center text-xs text-brand-slate">
               <div class="py-2">1</div>
-              <!-- Attending SD Startup Week: Nov 2–6 -->
               <div onclick="scrollToEvent('event-nov2')" class="py-2 bg-brand-slate text-white font-bold cursor-pointer transition-transform hover:scale-105" title="Click to view San Diego Startup Week">2</div>
               <div onclick="scrollToEvent('event-nov2')" class="py-2 bg-brand-slate text-white font-bold cursor-pointer transition-transform hover:scale-105" title="Click to view San Diego Startup Week">3</div>
               <div onclick="scrollToEvent('event-nov2')" class="py-2 bg-brand-slate text-white font-bold cursor-pointer transition-transform hover:scale-105" title="Click to view San Diego Startup Week">4</div>
@@ -211,17 +209,17 @@
 
           </div>
 
-          <!-- Past Hosted Events Section (Max 2 items) -->
+          <!-- Latest Past Events Section (Max 2 items, chronological / most recent) -->
           <div class="mt-6 pt-4 border-t border-brand-border flex flex-col gap-2 text-[11px] text-brand-slate">
-            <span class="font-medium text-brand-charcoal uppercase tracking-wider text-[10px]">Past Hosted Events:</span>
-            
-            <button onclick="scrollToEvent('event-aug10')" class="text-left text-brand-slate hover:text-brand-gold transition-colors flex items-center justify-between">
-              <span class="truncate">• Aug 10: San Diego County Startup Mixer</span>
-              <span class="text-[10px] text-brand-gold uppercase ml-2 flex-shrink-0">View →</span>
-            </button>
+            <span class="font-medium text-brand-charcoal uppercase tracking-wider text-[10px]">Latest Past Events:</span>
             
             <button onclick="scrollToEvent('event-sep9')" class="text-left text-brand-slate hover:text-brand-gold transition-colors flex items-center justify-between">
               <span class="truncate">• Sep 9: VibeCraft Slopathon & Showcase</span>
+              <span class="text-[10px] text-brand-gold uppercase ml-2 flex-shrink-0">View →</span>
+            </button>
+            
+            <button onclick="scrollToEvent('event-aug29')" class="text-left text-brand-slate hover:text-brand-gold transition-colors flex items-center justify-between">
+              <span class="truncate">• Aug 29: Founders Fire Demo Day</span>
               <span class="text-[10px] text-brand-gold uppercase ml-2 flex-shrink-0">View →</span>
             </button>
           </div>
@@ -365,7 +363,7 @@
           <div id="event-sep9" class="past-event p-6 sm:p-8 bg-brand-card border border-brand-border hover:border-brand-gold transition-all duration-300 shadow-sm flex flex-col justify-between opacity-90">
             <div>
               <div class="flex items-center justify-between mb-3">
-                <span class="text-[10px] font-semibold text-brand-slate uppercase tracking-[0.2em]">Past Attended Event</span>
+                <span class="text-[10px] font-semibold text-brand-slate uppercase tracking-[0.2em]">Past Event</span>
                 <span class="text-[10px] font-mono bg-brand-slate/10 text-brand-slate border border-brand-slate/20 px-2 py-0.5">Sep 9, 2026</span>
               </div>
               <h3 class="font-serif text-xl sm:text-2xl font-normal text-brand-charcoal mb-2">VibeCraft Slopathon & Project Showcase</h3>
@@ -389,7 +387,7 @@
           <div id="event-aug29" class="past-event p-6 sm:p-8 bg-brand-card border border-brand-border hover:border-brand-gold transition-all duration-300 shadow-sm flex flex-col justify-between opacity-90">
             <div>
               <div class="flex items-center justify-between mb-3">
-                <span class="text-[10px] font-semibold text-brand-slate uppercase tracking-[0.2em]">Past Attended Event</span>
+                <span class="text-[10px] font-semibold text-brand-slate uppercase tracking-[0.2em]">Past Event</span>
                 <span class="text-[10px] font-mono bg-brand-slate/10 text-brand-slate border border-brand-slate/20 px-2 py-0.5">Aug 29, 2026</span>
               </div>
               <h3 class="font-serif text-xl sm:text-2xl font-normal text-brand-charcoal mb-2">Founders Fire 🔥☀️ Daytime Demo Day</h3>
@@ -413,7 +411,7 @@
           <div id="event-aug27-howl" class="past-event p-6 sm:p-8 bg-brand-card border border-brand-border hover:border-brand-gold transition-all duration-300 shadow-sm flex flex-col justify-between opacity-90">
             <div>
               <div class="flex items-center justify-between mb-3">
-                <span class="text-[10px] font-semibold text-brand-slate uppercase tracking-[0.2em]">Past Attended Event</span>
+                <span class="text-[10px] font-semibold text-brand-slate uppercase tracking-[0.2em]">Past Event</span>
                 <span class="text-[10px] font-mono bg-brand-slate/10 text-brand-slate border border-brand-slate/20 px-2 py-0.5">Aug 27, 2026</span>
               </div>
               <h3 class="font-serif text-xl sm:text-2xl font-normal text-brand-charcoal mb-2">Howl House | End of Summer Party</h3>
@@ -437,7 +435,7 @@
           <div id="event-aug15" class="past-event p-6 sm:p-8 bg-brand-card border border-brand-border hover:border-brand-gold transition-all duration-300 shadow-sm flex flex-col justify-between opacity-90">
             <div>
               <div class="flex items-center justify-between mb-3">
-                <span class="text-[10px] font-semibold text-brand-slate uppercase tracking-[0.2em]">Past Attended Event</span>
+                <span class="text-[10px] font-semibold text-brand-slate uppercase tracking-[0.2em]">Past Event</span>
                 <span class="text-[10px] font-mono bg-brand-slate/10 text-brand-slate border border-brand-slate/20 px-2 py-0.5">Aug 15, 2026</span>
               </div>
               <h3 class="font-serif text-xl sm:text-2xl font-normal text-brand-charcoal mb-2">The Insider Series: U.S. Workplace Culture & Confidence</h3>
@@ -461,7 +459,7 @@
           <div id="event-aug10" class="past-event p-6 sm:p-8 bg-brand-card border border-brand-border hover:border-brand-gold transition-all duration-300 shadow-sm flex flex-col justify-between opacity-90">
             <div>
               <div class="flex items-center justify-between mb-3">
-                <span class="text-[10px] font-semibold text-brand-slate uppercase tracking-[0.2em]">Past Hosted Event</span>
+                <span class="text-[10px] font-semibold text-brand-slate uppercase tracking-[0.2em]">Past Event</span>
                 <span class="text-[10px] font-mono bg-brand-slate/10 text-brand-slate border border-brand-slate/20 px-2 py-0.5">Aug 10, 2026</span>
               </div>
               <h3 class="font-serif text-xl sm:text-2xl font-normal text-brand-charcoal mb-2">San Diego County Startup Mixer</h3>
