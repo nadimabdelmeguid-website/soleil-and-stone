@@ -500,7 +500,7 @@
       </div>
     </section>
 
-    <!-- 3. Featured Articles Preview Section -->
+    <!-- 3. Featured Articles Preview Section (Dynamically Synced Live) -->
     <section class="max-w-6xl w-full mx-auto px-6 py-20 border-b border-brand-border">
       <div class="flex flex-col sm:flex-row sm:items-end justify-between mb-10 gap-4">
         <div>
@@ -512,32 +512,10 @@
         </a>
       </div>
 
-      <div class="grid md:grid-cols-2 gap-8">
-        <article class="p-6 bg-brand-card border border-brand-border">
-          <div class="flex items-center gap-3 text-xs text-brand-slate mb-2">
-            <span class="font-mono text-brand-gold">2026-09-10</span>
-            <span>•</span>
-            <span class="uppercase tracking-wider">Ecosystem Building</span>
-          </div>
-          <h3 class="font-serif text-xl font-normal text-brand-charcoal mb-2">Growing a Community in San Diego: Why Networking Here Feels Different Than the Bay Area</h3>
-          <p class="text-brand-slate text-sm leading-relaxed font-light mb-4">
-            A personal perspective on building authentic local networks, shifting from transactional pitches to human-first connections, and why San Diego relationships often translate from the boardroom to the lineup.
-          </p>
-          <a href="/article-community-building.html" class="text-xs font-medium text-brand-gold uppercase tracking-wider">Read Full Article →</a>
-        </article>
-
-        <article class="p-6 bg-brand-card border border-brand-border">
-          <div class="flex items-center gap-3 text-xs text-brand-slate mb-2">
-            <span class="font-mono text-brand-gold">2026-08-28</span>
-            <span>•</span>
-            <span class="uppercase tracking-wider">Tradeshows</span>
-          </div>
-          <h3 class="font-serif text-xl font-normal text-brand-charcoal mb-2">Navigating Sensor & Component Trends on the Trade Show Floor</h3>
-          <p class="text-brand-slate text-sm leading-relaxed font-light mb-4">
-            Observations from West Coast technical expos on micro-acoustics, thermal bottlenecks, and fast-turn hardware NPI cycles.
-          </p>
-          <a href="/articles.html" class="text-xs font-medium text-brand-gold uppercase tracking-wider">Read Full Article →</a>
-        </article>
+      <div id="featured-articles-grid" class="grid md:grid-cols-2 gap-8">
+        <div class="col-span-2 text-center py-8 text-brand-slate text-sm font-light">
+          Loading latest featured articles...
+        </div>
       </div>
     </section>
 
@@ -626,7 +604,7 @@
     </div>
   </footer>
 
-  <!-- Arrow Navigation & Dynamic Current Month Script -->
+  <!-- Script for Calendar & Live Fetching of Latest 2 Featured Articles -->
   <script>
     const months = [
       { id: 'aug2026', title: 'August 2026' },
@@ -683,10 +661,89 @@
       }, 1500);
     }
 
+    // Live scraping of the articles page to automatically showcase the latest 2 articles
+    const articleFiles = [
+      {
+        url: '/article-community-building.html',
+        categoryName: 'Ecosystem Building'
+      },
+      {
+        url: '/article-acoustic-reality-gap.html',
+        categoryName: 'Hardware Engineering'
+      }
+    ];
+
+    async function loadFeaturedArticles() {
+      const container = document.getElementById('featured-articles-grid');
+      const parser = new DOMParser();
+      let articlesList = [];
+
+      for (const file of articleFiles) {
+        try {
+          const response = await fetch(file.url);
+          if (!response.ok) continue;
+          const htmlText = await response.text();
+          const doc = parser.parseFromString(htmlText, 'text/html');
+
+          const dateEl = doc.querySelector('section.border-b .font-mono') || doc.querySelector('.font-mono');
+          const date = dateEl ? dateEl.textContent.trim() : '2026-09-11';
+
+          const titleEl = doc.querySelector('section.border-b h1') || doc.querySelector('h1');
+          const title = titleEl ? titleEl.textContent.trim() : 'Untitled Article';
+          
+          const descEl = doc.querySelector('article.max-w-3xl > p.text-lg') || doc.querySelector('article p');
+          const description = descEl ? descEl.textContent.trim() : '';
+
+          articlesList.push({
+            url: file.url,
+            categoryName: file.categoryName,
+            title: title,
+            date: date,
+            description: description
+          });
+        } catch (e) {
+          console.error(`Error loading featured article from ${file.url}:`, e);
+        }
+      }
+
+      // Sort by date most recent to oldest
+      articlesList.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+      // Take only the latest 2 articles
+      const latestTwo = articlesList.slice(0, 2);
+
+      if (latestTwo.length === 0) {
+        container.innerHTML = `
+          <div class="col-span-2 text-center py-8 text-brand-slate text-sm font-light">
+            No featured articles available at the moment.
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = latestTwo.map(art => `
+        <article class="p-6 bg-brand-card border border-brand-border flex flex-col justify-between">
+          <div>
+            <div class="flex items-center gap-3 text-xs text-brand-slate mb-2">
+              <span class="font-mono text-brand-gold">${art.date}</span>
+              <span>•</span>
+              <span class="uppercase tracking-wider">${art.categoryName}</span>
+            </div>
+            <h3 class="font-serif text-xl font-normal text-brand-charcoal mb-2">${art.title}</h3>
+            <p class="text-brand-slate text-sm leading-relaxed font-light mb-4">
+              ${art.description}
+            </p>
+          </div>
+          <a href="${art.url}" class="text-xs font-medium text-brand-gold uppercase tracking-wider hover:underline">Read Full Article →</a>
+        </article>
+      `).join('');
+    }
+
     window.addEventListener('DOMContentLoaded', () => {
       const pastCards = document.querySelectorAll('.past-event');
       pastCards.forEach(card => card.classList.add('hidden'));
       updateMonthDisplay();
+      loadFeaturedArticles();
     });
   </script>
 
