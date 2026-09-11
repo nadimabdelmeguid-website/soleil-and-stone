@@ -291,7 +291,7 @@
       if (mixerEl) mixerEl.textContent = mixerCount;
       if (hardwareEl) hardwareEl.textContent = hardwareCount;
 
-      // Live LinkedIn live follower updater logic via proxy or fallback simulation (+75 applied)
+      // Live LinkedIn live follower updater logic via server-side CORS proxy or fallback simulation (+75 applied)
       async function fetchLiveFollowers() {
         const followersEl = document.getElementById('hardware-linkedin-followers');
         if (!followersEl) return;
@@ -319,7 +319,7 @@
           // Fallback gracefully if network/CORS restricts direct DOM extraction in browser environments
         }
 
-        // Dynamic baseline organic live calculation fallback with +75 offset
+        // Dynamic baseline organic live calculation fallback (+75 applied)
         const baseDate = new Date('2026-01-01');
         const diffDays = Math.floor((today - baseDate) / (1000 * 60 * 60 * 24));
         const liveCount = 1275 + Math.max(0, diffDays * 2);
