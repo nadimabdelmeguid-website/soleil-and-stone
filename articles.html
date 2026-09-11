@@ -41,7 +41,6 @@
   <!-- Header -->
   <header class="max-w-6xl w-full mx-auto px-6 py-8 flex flex-col sm:flex-row items-center justify-between border-b border-brand-border gap-6">
     <a href="/" class="flex items-center gap-4 group">
-      <!-- Refined Geometric Logo SVG -->
       <svg class="w-16 h-16 text-brand-gold" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
         <line x1="50" y1="12" x2="50" y2="19" stroke="#C5A059" stroke-width="1.8" stroke-linecap="round"/>
         <line x1="33" y1="18" x2="38" y2="23" stroke="#C5A059" stroke-width="1.8" stroke-linecap="round"/>
@@ -99,12 +98,12 @@
       </div>
     </section>
 
-    <!-- Articles Grid Section (Dynamically Loaded) -->
+    <!-- Articles Grid Section (Scraped Live from HTML files) -->
     <section class="max-w-6xl w-full mx-auto px-6 py-16">
       <div id="articles-grid" class="grid md:grid-cols-2 gap-10">
-        <!-- Dynamic content will be loaded here via JavaScript -->
+        <!-- Loading state -->
         <div class="col-span-2 text-center py-12 text-brand-slate text-sm font-light">
-          Loading articles...
+          Synchronizing article summaries and live metadata...
         </div>
       </div>
     </section>
@@ -115,7 +114,6 @@
   <footer class="border-t border-brand-border py-10 bg-white">
     <div class="max-w-6xl w-full mx-auto px-6 flex flex-col sm:flex-row justify-between items-center text-xs text-brand-slate gap-6">
       
-      <!-- Clickable Logo to return Home -->
       <a href="/" class="flex items-center gap-3 group">
         <svg class="w-9 h-9 text-brand-charcoal group-hover:text-brand-gold transition-colors" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
           <line x1="50" y1="12" x2="50" y2="19" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
@@ -142,34 +140,74 @@
     </div>
   </footer>
 
-  <!-- Dynamic Content & Filter Logic Script -->
+  <!-- Live HTML Scraping and Rendering Engine -->
   <script>
-    let currentCategory = 'all';
-    let allArticlesData = [];
-
-    async function loadArticles() {
-      try {
-        // Fetch the external JSON file containing article metadata and content links
-        const response = await fetch('/articles.json');
-        if (!response.ok) throw new Error('Failed to load articles configuration.');
-        
-        allArticlesData = await response.json();
-        renderArticles(currentCategory);
-      } catch (error) {
-        console.error(error);
-        document.getElementById('articles-grid').innerHTML = `
-          <div class="col-span-2 text-center py-12 text-brand-slate text-sm font-light">
-            Unable to load articles dynamically at the moment. Please check back later.
-          </div>
-        `;
+    // List your individual article file paths here. 
+    // Whenever you update the text inside any of these files, this script automatically 
+    // extracts the title, date, category, and first paragraph to display the latest snippet live.
+    const articleFiles = [
+      {
+        url: '/article-community-building.html',
+        categorySlug: 'ecosystem',
+        categoryName: 'Ecosystem Building'
+      },
+      {
+        url: '/article-acoustic-reality-gap.html',
+        categorySlug: 'hardware',
+        categoryName: 'Hardware Engineering'
       }
+    ];
+
+    let cachedArticles = [];
+    let currentFilter = 'all';
+
+    async function fetchAndParseArticles() {
+      const grid = document.getElementById('articles-grid');
+      const parser = new DOMParser();
+      let parsedArticles = [];
+
+      for (const file of articleFiles) {
+        try {
+          const response = await fetch(file.url);
+          if (!response.ok) continue;
+          const htmlText = await response.text();
+          const doc = parser.parseFromString(htmlText, 'text/html');
+
+          // Extract fields dynamically from the target HTML file
+          const title = doc.querySelector('h1') ? doc.querySelector('h1').textContent.trim() : 'Untitled Article';
+          const date = doc.querySelector('header .font-mono') ? doc.querySelector('header .font-mono').textContent.trim() : '2026-09-11';
+          
+          // Extract the first meaningful paragraph as the dynamic summary/excerpt
+          const firstParagraph = doc.querySelector('article p') ? doc.querySelector('article p').textContent.trim() : '';
+
+          // Estimate read time based on word count of the article text
+          const articleBodyText = doc.querySelector('article') ? doc.querySelector('article').textContent : '';
+          const wordCount = articleBodyText.split(/\s+/).length;
+          const readTime = Math.max(3, Math.ceil(wordCount / 200)) + ' min read';
+
+          parsedArticles.push({
+            url: file.url,
+            categorySlug: file.categorySlug,
+            categoryName: file.categoryName,
+            title: title,
+            date: date,
+            description: firstParagraph,
+            readTime: readTime
+          });
+        } catch (e) {
+          console.error(`Error loading content from ${file.url}:`, e);
+        }
+      }
+
+      cachedArticles = parsedArticles;
+      renderGrid(currentFilter);
     }
 
-    function renderArticles(category) {
+    function renderGrid(filter) {
       const grid = document.getElementById('articles-grid');
-      const filtered = category === 'all' 
-        ? allArticlesData 
-        : allArticlesData.filter(art => art.categorySlug === category);
+      const filtered = filter === 'all' 
+        ? cachedArticles 
+        : cachedArticles.filter(art => art.categorySlug === filter);
 
       if (filtered.length === 0) {
         grid.innerHTML = `
@@ -195,14 +233,14 @@
           </div>
           <div class="pt-4 border-t border-brand-border flex items-center justify-between">
             <span class="text-xs text-brand-slate">${art.readTime}</span>
-            <a href="${art.url}" class="text-xs font-semibold text-brand-gold uppercase tracking-widest hover:underline">${art.linkText || 'Read Full Article →'}</a>
+            <a href="${art.url}" class="text-xs font-semibold text-brand-gold uppercase tracking-widest hover:underline">Read Full Article →</a>
           </div>
         </article>
       `).join('');
     }
 
     function filterArticles(category) {
-      currentCategory = category;
+      currentFilter = category;
       const buttons = document.querySelectorAll('.filter-btn');
       buttons.forEach(btn => {
         btn.classList.remove('bg-brand-charcoal', 'text-white');
@@ -212,11 +250,11 @@
       event.currentTarget.classList.remove('bg-brand-card', 'text-brand-slate', 'border', 'border-brand-border');
       event.currentTarget.classList.add('bg-brand-charcoal', 'text-white');
 
-      renderArticles(category);
+      renderGrid(category);
     }
 
-    // Load articles on page initialization
-    window.addEventListener('DOMContentLoaded', loadArticles);
+    // Execute live scraping when page loads
+    window.addEventListener('DOMContentLoaded', fetchAndParseArticles);
   </script>
 
 </body>
