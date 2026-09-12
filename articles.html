@@ -98,7 +98,7 @@
       </div>
     </section>
 
-    <!-- Articles Grid Section (Live-scraped and sorted most recent to oldest) -->
+    <!-- Articles Grid Section -->
     <section class="max-w-6xl w-full mx-auto px-6 py-16">
       <div id="articles-grid" class="grid md:grid-cols-2 gap-10">
         <div class="col-span-2 text-center py-12 text-brand-slate text-sm font-light">
@@ -201,7 +201,6 @@
         }
       }
 
-      // Sort articles from most recent to oldest based on their extracted date string
       parsedArticles.sort((a, b) => new Date(b.date) - new Date(a.date));
 
       cachedArticles = parsedArticles;
