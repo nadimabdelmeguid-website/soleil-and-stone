@@ -75,7 +75,7 @@
 
     <nav class="flex items-center gap-6 text-xs uppercase tracking-widest font-medium text-brand-slate">
       <a href="/groups.html" class="hover:text-brand-gold transition-colors">Community Groups</a>
-      <a href="/articles.html" class="hover:text-brand-gold transition-colors">Articles</a>
+      <a href="/articles.html" class="text-brand-gold transition-colors">Articles</a>
       <a href="#contact" class="px-4 py-2 border border-brand-charcoal hover:border-brand-gold hover:bg-brand-gold hover:text-white transition-all text-[11px]">Connect</a>
     </nav>
   </header>
@@ -663,15 +663,19 @@
       }, 1500);
     }
 
-    // Live scraping of the articles page to automatically showcase the latest 2 articles
+    // Live scraping of the articles page using the correct /blogs/ folder path and all 3 articles
     const articleFiles = [
       {
-        url: '/article-community-building.html',
+        url: '/blogs/article-community-building.html',
         categoryName: 'Ecosystem Building'
       },
       {
-        url: '/article-acoustic-reality-gap.html',
+        url: '/blogs/article-acoustic-reality-gap.html',
         categoryName: 'Hardware Engineering'
+      },
+      {
+        url: '/blogs/article-grassroots-mixer.html',
+        categoryName: 'Ecosystem Building'
       }
     ];
 
