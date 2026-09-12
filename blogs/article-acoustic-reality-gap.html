@@ -154,13 +154,13 @@
       </p>
 
       <!-- Author Bio Box -->
-      <div class="mt-16 pt-8 border-t border-brand-border flex flex-col sm:flex-row items-center gap-6 bg-brand-card p-8 border">
+      <div class="mt-16 p-6 sm:p-8 bg-brand-card border border-brand-border flex flex-col sm:flex-row items-center gap-6">
         <div class="w-24 h-24 flex-shrink-0">
-          <img src="/profile.png" alt="Nadim Abdel Meguid" class="w-full h-auto grayscale object-cover border border-brand-border">
+          <img src="/profile.png" alt="Nadim Abdel Meguid" class="w-full h-full object-cover grayscale">
         </div>
-        <div class="text-center sm:text-left">
-          <h3 class="font-serif text-lg font-normal text-brand-charcoal mb-1">Nadim Abdel Meguid</h3>
-          <p class="text-xs uppercase tracking-widest text-brand-gold font-semibold mb-3">Author of this article</p>
+        <div>
+          <h3 class="font-serif text-xl font-normal text-brand-charcoal mb-1">Nadim Abdel Meguid</h3>
+          <span class="text-[10px] font-semibold text-brand-gold uppercase tracking-[0.2em] block mb-3">Author of this article</span>
           <p class="text-xs text-brand-slate font-light leading-relaxed">
             Ecosystem builder, technical sales professional, and community organizer based in San Diego, California. Passionate about connecting founders, hardware creators, and local entrepreneurs.
           </p>
@@ -168,6 +168,12 @@
       </div>
 
     </article>
+
+    <!-- Back to Articles Footer Nav -->
+    <section class="max-w-3xl w-full mx-auto px-6 py-12 border-t border-brand-border flex justify-between items-center text-xs uppercase tracking-widest">
+      <a href="/articles.html" class="text-brand-slate hover:text-brand-gold transition-colors">← Back to Articles</a>
+      <a href="/#contact" class="px-4 py-2 bg-brand-charcoal text-white hover:bg-brand-gold transition-colors">Connect with Nadim</a>
+    </section>
 
   </main>
 
@@ -196,6 +202,19 @@
           <span>San Diego, CA</span>
         </div>
       </a>
+
+      <div class="flex items-center gap-5">
+        <a href="https://www.linkedin.com/in/nadim-abdel-meguid-aa5229108/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn Profile" class="text-brand-slate hover:text-brand-gold transition-colors">
+          <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24">
+            <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.46 10.9v8.37H9.25V10.9H6.46M7.86 6.72a1.47 1.47 0 1 0 0 2.94 1.47 1.47 0 0 0 0-2.94Z"/>
+          </svg>
+        </a>
+        <a href="mailto:nadimabdelmeguid@gmail.com" aria-label="Direct Email" class="text-brand-slate hover:text-brand-gold transition-colors">
+          <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24">
+            <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
+          </svg>
+        </a>
+      </div>
 
       <span class="font-light">&copy; Soleil & Stone. All rights reserved.</span>
     </div>
