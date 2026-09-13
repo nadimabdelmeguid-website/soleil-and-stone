@@ -1,248 +1,320 @@
 ---
-import { events } from "../data/events";
-import { parseDate } from "../utils/events";
+import {
+  events
+} from "../data/events";
 
-const visibleEvents = events
-  .filter((event) => event.showOnHome)
-  .sort(
-    (a, b) =>
-      parseDate(a.startDate).getTime() -
-      parseDate(b.startDate).getTime()
-  );
-
-function formatDate(
-  startDate: string,
-  endDate?: string
-) {
-  const start = parseDate(startDate);
-  const end = parseDate(endDate || startDate);
-
-  if (startDate === (endDate || startDate)) {
-    return start.toLocaleDateString(
-      "en-US",
-      {
-        month: "short",
-        day: "numeric",
-        year: "numeric"
-      }
+const visibleEvents =
+  events
+    .filter(
+      (event) =>
+        event.showOnHome
+    )
+    .sort(
+      (a, b) =>
+        new Date(
+          `${a.startDate}T12:00:00`
+        ).getTime() -
+        new Date(
+          `${b.startDate}T12:00:00`
+        ).getTime()
     );
-  }
-
-  const sameMonth =
-    start.getFullYear() === end.getFullYear() &&
-    start.getMonth() === end.getMonth();
-
-  if (sameMonth) {
-    return `${start.toLocaleDateString(
-      "en-US",
-      {
-        month: "short",
-        day: "numeric"
-      }
-    )} – ${end.getDate()}, ${end.getFullYear()}`;
-  }
-
-  return `${start.toLocaleDateString(
-    "en-US",
-    {
-      month: "short",
-      day: "numeric"
-    }
-  )} – ${end.toLocaleDateString(
-    "en-US",
-    {
-      month: "short",
-      day: "numeric",
-      year: "numeric"
-    }
-  )}`;
-}
 ---
 
 <section
-  id="community"
   class="
-    max-w-6xl
-    w-full
-    mx-auto
-    px-6
-    py-20
-    border-b
+    border-y
     border-brand-border
+    bg-brand-cream
   "
 >
 
-  <!-- SECTION HEADER -->
-
   <div
     class="
-      flex
-      flex-col
-      sm:flex-row
-      sm:items-end
-      justify-between
-      mb-12
-      gap-4
+      max-w-6xl
+      w-full
+      mx-auto
+      px-6
+      py-16
     "
   >
 
-    <div>
-
-      <span
-        class="
-          text-xs
-          uppercase
-          tracking-[0.2em]
-          text-brand-gold
-          font-semibold
-        "
-      >
-        San Diego Ecosystem & Travel
-      </span>
-
-      <h2
-        class="
-          font-serif
-          text-3xl
-          font-normal
-          text-brand-charcoal
-          mt-1
-        "
-      >
-        Community Hub & Calendar
-      </h2>
-
-    </div>
-
-    <p
-      class="
-        text-brand-slate
-        text-sm
-        max-w-md
-        font-light
-      "
-    >
-      Upcoming ecosystem gatherings,
-      hosted community events,
-      and trade shows I'm attending.
-    </p>
-
-  </div>
-
-
-  <!-- CALENDAR + MONTH EVENTS -->
-
-  <div
-    class="
-      grid
-      lg:grid-cols-12
-      gap-8
-      mb-12
-    "
-  >
-
-    <!-- LEFT: CALENDAR -->
+    <!-- =================================================
+         SECTION HEADER
+         ================================================= -->
 
     <div
       class="
-        lg:col-span-5
-        p-6
-        bg-brand-card
-        border
-        border-brand-border
-        shadow-sm
         flex
         flex-col
+        lg:flex-row
+        lg:items-end
         justify-between
+        gap-6
+        mb-10
       "
     >
 
       <div>
+
+        <span
+          class="
+            text-[10px]
+            uppercase
+            tracking-[0.2em]
+            text-brand-gold
+            font-semibold
+          "
+        >
+          Community & Fieldwork
+        </span>
+
+
+        <h2
+          class="
+            font-serif
+            text-3xl
+            sm:text-4xl
+            text-brand-charcoal
+            mt-2
+          "
+        >
+          Community Hub & Calendar
+        </h2>
+
+      </div>
+
+
+      <!-- LEGEND -->
+
+      <div
+        class="
+          flex
+          flex-wrap
+          items-center
+          gap-x-5
+          gap-y-2
+          text-[10px]
+          uppercase
+          tracking-[0.14em]
+          text-brand-slate
+        "
+      >
+
+        <!-- HOST -->
+
+        <div
+          class="
+            flex
+            items-center
+            gap-2
+          "
+        >
+
+          <span
+            class="
+              w-2.5
+              h-2.5
+              rounded-full
+              bg-brand-gold
+            "
+          ></span>
+
+          <span>
+            Hosted / Co-Organized
+          </span>
+
+        </div>
+
+
+        <!-- EXHIBIT -->
+
+        <div
+          class="
+            flex
+            items-center
+            gap-2
+          "
+        >
+
+          <span
+            class="
+              w-2.5
+              h-2.5
+              rounded-full
+              bg-brand-charcoal
+            "
+          ></span>
+
+          <span>
+            Exhibitor
+          </span>
+
+        </div>
+
+
+        <!-- ATTEND -->
+
+        <div
+          class="
+            flex
+            items-center
+            gap-2
+          "
+        >
+
+          <span
+            class="
+              w-2.5
+              h-2.5
+              rounded-full
+              bg-brand-slate
+            "
+          ></span>
+
+          <span>
+            Attending
+          </span>
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+
+    <!-- =================================================
+         CALENDAR + EVENTS
+         ================================================= -->
+
+    <div
+      class="
+        grid
+        lg:grid-cols-12
+        gap-8
+        items-start
+      "
+    >
+
+      <!-- =================================================
+           CALENDAR
+           ================================================= -->
+
+      <div
+        class="
+          lg:col-span-5
+          bg-white
+          border
+          border-brand-border
+          p-5
+          sm:p-6
+        "
+      >
+
+        <!-- MONTH NAV -->
 
         <div
           class="
             flex
             items-center
             justify-between
-            border-b
-            border-brand-border
-            pb-4
-            mb-4
+            mb-6
           "
         >
 
           <button
             id="calendar-prev"
             type="button"
+            aria-label="Previous month"
             class="
-              text-brand-slate
-              hover:text-brand-gold
-              transition-colors
-              font-bold
-              px-2
-              py-1
+              w-9
+              h-9
               border
               border-brand-border
-              text-xs
+              text-brand-charcoal
+              hover:border-brand-gold
+              hover:text-brand-gold
+              transition-colors
             "
-            aria-label="Previous month"
           >
             ←
           </button>
 
-          <span
-            id="calendar-title"
+
+          <h3
+            id="calendar-month-title"
             class="
               font-serif
-              text-lg
-              font-normal
+              text-xl
               text-brand-charcoal
+              text-center
             "
-          ></span>
+          >
+          </h3>
+
 
           <button
             id="calendar-next"
             type="button"
+            aria-label="Next month"
             class="
-              text-brand-slate
-              hover:text-brand-gold
-              transition-colors
-              font-bold
-              px-2
-              py-1
+              w-9
+              h-9
               border
               border-brand-border
-              text-xs
+              text-brand-charcoal
+              hover:border-brand-gold
+              hover:text-brand-gold
+              transition-colors
             "
-            aria-label="Next month"
           >
             →
           </button>
 
         </div>
 
+
+        <!-- WEEKDAYS -->
+
         <div
           class="
             grid
             grid-cols-7
-            gap-1
-            text-center
-            text-[10px]
-            font-semibold
-            text-brand-slate
-            uppercase
-            tracking-wider
             mb-2
           "
         >
-          <div>S</div>
-          <div>M</div>
-          <div>T</div>
-          <div>W</div>
-          <div>T</div>
-          <div>F</div>
-          <div>S</div>
+
+          {
+            [
+              "S",
+              "M",
+              "T",
+              "W",
+              "T",
+              "F",
+              "S"
+            ].map(
+              (day) => (
+                <div
+                  class="
+                    text-center
+                    text-[9px]
+                    uppercase
+                    tracking-widest
+                    text-brand-slate
+                    py-2
+                  "
+                >
+                  {day}
+                </div>
+              )
+            )
+          }
+
         </div>
+
+
+        <!-- CALENDAR GRID -->
 
         <div
           id="calendar-grid"
@@ -250,89 +322,106 @@ function formatDate(
             grid
             grid-cols-7
             gap-1
-            text-center
-            text-xs
-            text-brand-slate
-          "
-        ></div>
-
-      </div>
-
-
-      <!-- MONTH SUMMARY -->
-
-      <div
-        class="
-          mt-8
-          pt-4
-          border-t
-          border-brand-border
-        "
-      >
-
-        <div
-          class="
-            text-[10px]
-            uppercase
-            tracking-wider
-            font-medium
-            text-brand-charcoal
-            mb-3
           "
         >
-          This Month
         </div>
 
-        <div
-          id="month-summary"
+
+        <!-- PRIORITY NOTE -->
+
+        <p
           class="
-            text-[11px]
+            mt-5
+            text-[10px]
             text-brand-slate
+            font-light
             leading-relaxed
           "
-        ></div>
+        >
+          When multiple events fall on the same date,
+          the calendar prioritizes hosted or co-organized
+          events first, then exhibitor appearances, then
+          attended events.
+        </p>
 
       </div>
 
 
-      <!-- Legend -->
+
+      <!-- =================================================
+           MONTH EVENTS
+           ================================================= -->
 
       <div
         class="
-          mt-6
-          pt-4
-          border-t
-          border-brand-border
-          flex
-          items-center
-          justify-between
-          text-[11px]
-          text-brand-slate
+          lg:col-span-7
         "
       >
 
-        <div class="flex items-center gap-2">
+        <div
+          class="
+            flex
+            items-center
+            justify-between
+            gap-4
+            mb-5
+          "
+        >
+
+          <div>
+
+            <span
+              class="
+                text-[10px]
+                uppercase
+                tracking-[0.18em]
+                text-brand-gold
+                font-semibold
+              "
+            >
+              Selected Month
+            </span>
+
+
+            <h3
+              id="event-month-title"
+              class="
+                font-serif
+                text-2xl
+                text-brand-charcoal
+                mt-1
+              "
+            >
+            </h3>
+
+          </div>
+
+
           <span
+            id="month-summary"
             class="
-              w-2.5
-              h-2.5
-              bg-brand-gold
-              inline-block
+              text-[10px]
+              uppercase
+              tracking-[0.14em]
+              text-brand-slate
+              text-right
             "
-          ></span>
-          Hosted Event
+          >
+          </span>
+
         </div>
 
-        <div class="flex items-center gap-2">
-          <span
-            class="
-              w-2.5
-              h-2.5
-              bg-brand-slate
-              inline-block
-            "
-          ></span>
-          Attending Event
+
+        <div
+          id="event-container"
+          class="
+            max-h-[540px]
+            overflow-y-auto
+            pr-2
+            space-y-5
+            custom-scrollbar
+          "
+        >
         </div>
 
       </div>
@@ -340,77 +429,57 @@ function formatDate(
     </div>
 
 
-    <!-- RIGHT: EVENTS FOR SELECTED MONTH ONLY -->
+    <!-- =================================================
+         CTA
+         ================================================= -->
 
     <div
-      id="event-container"
       class="
-        lg:col-span-7
-        max-h-[540px]
-        overflow-y-auto
-        pr-2
-        space-y-6
-        custom-scrollbar
-      "
-    ></div>
-
-  </div>
-
-
-  <!-- PARTNERSHIP CTA -->
-
-  <div
-    class="
-      p-6
-      bg-brand-gold/5
-      border
-      border-brand-gold/20
-      flex
-      flex-col
-      sm:flex-row
-      items-center
-      justify-between
-      gap-4
-    "
-  >
-
-    <p
-      class="
-        text-xs
-        text-brand-slate
-        font-light
+        mt-10
+        pt-8
+        border-t
+        border-brand-border
+        flex
+        flex-col
+        sm:flex-row
+        sm:items-center
+        justify-between
+        gap-5
       "
     >
 
-      <strong
+      <p
         class="
-          font-medium
-          text-brand-charcoal
+          text-sm
+          text-brand-slate
+          font-light
         "
       >
-        Want to collaborate or host?
-      </strong>
+        Interested in partnering on a community,
+        hardware or ecosystem event?
+      </p>
 
-      Open to partnerships with local venues,
-      hardware builders,
-      and regional startup ecosystem partners.
 
-    </p>
+      <a
+        href="/?type=partnership#contact"
+        class="
+          inline-flex
+          items-center
+          gap-2
+          text-[11px]
+          uppercase
+          tracking-[0.16em]
+          text-brand-charcoal
+          font-semibold
+          hover:text-brand-gold
+          transition-colors
+        "
+      >
+        Explore a Partnership
+        <span>→</span>
+      </a>
 
-    <a
-      href="/?type=partnership#contact"
-      class="
-        text-xs
-        uppercase
-        tracking-widest
-        font-medium
-        text-brand-gold
-        hover:underline
-        whitespace-nowrap
-      "
-    >
-      Get Involved →
-    </a>
+    </div>
 
   </div>
 
@@ -420,874 +489,1331 @@ function formatDate(
 <script
   is:inline
   define:vars={{
-    calendarEvents: visibleEvents.map(
-      (event) => ({
-        id: event.id,
-        title: event.title,
-        role: event.role,
-        typeLabel: event.typeLabel || null,
-        startDate: event.startDate,
-        endDate: event.endDate || event.startDate,
-        venue: event.venue || null,
-        city: event.city || null,
-        description: event.description || null,
-        url: event.url || null,
-        buttonLabel: event.buttonLabel || null
-      })
-    )
+    calendarEvents:
+      visibleEvents.map(
+        (event) => ({
+          id:
+            event.id,
+
+          title:
+            event.title,
+
+          role:
+            event.role,
+
+          participation:
+            event.participation,
+
+          communityId:
+            event.communityId,
+
+          startDate:
+            event.startDate,
+
+          endDate:
+            event.endDate,
+
+          venue:
+            event.venue,
+
+          city:
+            event.city,
+
+          description:
+            event.description,
+
+          url:
+            event.url,
+
+          buttonLabel:
+            event.buttonLabel,
+
+          typeLabel:
+            event.typeLabel,
+
+          registrations:
+            event.registrations
+        })
+      )
   }}
 >
 
-  const parseEventDate = (value) =>
-    new Date(`${value}T12:00:00`);
+  (() => {
 
+    /* ===================================================
+       DOM
+       =================================================== */
 
-  const today = new Date();
-
-
-  function formatEventDate(
-    startDate,
-    endDate
-  ) {
-    const start =
-      parseEventDate(startDate);
-
-    const end =
-      parseEventDate(
-        endDate || startDate
+    const calendarGrid =
+      document.getElementById(
+        "calendar-grid"
       );
+
+    const calendarTitle =
+      document.getElementById(
+        "calendar-month-title"
+      );
+
+    const eventMonthTitle =
+      document.getElementById(
+        "event-month-title"
+      );
+
+    const eventContainer =
+      document.getElementById(
+        "event-container"
+      );
+
+    const monthSummary =
+      document.getElementById(
+        "month-summary"
+      );
+
+    const prevButton =
+      document.getElementById(
+        "calendar-prev"
+      );
+
+    const nextButton =
+      document.getElementById(
+        "calendar-next"
+      );
+
 
     if (
-      startDate ===
-      (endDate || startDate)
+      !calendarGrid ||
+      !eventContainer
     ) {
-      return start.toLocaleDateString(
-        "en-US",
-        {
-          month: "short",
-          day: "numeric",
-          year: "numeric"
-        }
-      );
+      return;
     }
 
-    const sameMonth =
-      start.getFullYear() ===
-        end.getFullYear() &&
-      start.getMonth() ===
-        end.getMonth();
-
-    if (sameMonth) {
-      return `${start.toLocaleDateString(
-        "en-US",
-        {
-          month: "short",
-          day: "numeric"
-        }
-      )} – ${end.getDate()}, ${end.getFullYear()}`;
-    }
-
-    return `${start.toLocaleDateString(
-      "en-US",
-      {
-        month: "short",
-        day: "numeric"
-      }
-    )} – ${end.toLocaleDateString(
-      "en-US",
-      {
-        month: "short",
-        day: "numeric",
-        year: "numeric"
-      }
-    )}`;
-  }
 
 
-  function getInitialCalendarDate() {
+    /* ===================================================
+       DATE HELPERS
+       =================================================== */
 
-    const hasCurrentMonthEvent =
-      calendarEvents.some(
-        (event) =>
-          eventTouchesMonth(
-            event,
-            today.getFullYear(),
-            today.getMonth()
-          )
-      );
+    function parseEventDate(
+      value
+    ) {
 
-    if (hasCurrentMonthEvent) {
       return new Date(
-        today.getFullYear(),
-        today.getMonth(),
-        1
+        `${value}T12:00:00`
       );
+
     }
 
-    const nextEvent =
-      calendarEvents.find(
-        (event) =>
-          parseEventDate(
-            event.endDate
-          ) >= today
-      );
 
-    if (nextEvent) {
-      const date =
+    const today =
+      new Date();
+
+
+    today.setHours(
+      12,
+      0,
+      0,
+      0
+    );
+
+
+    function formatEventDate(
+      event
+    ) {
+
+      const start =
         parseEventDate(
-          nextEvent.startDate
+          event.startDate
         );
 
-      return new Date(
-        date.getFullYear(),
-        date.getMonth(),
-        1
-      );
+
+      const end =
+        event.endDate
+          ? parseEventDate(
+              event.endDate
+            )
+          : null;
+
+
+      const startText =
+        start.toLocaleDateString(
+          "en-US",
+          {
+            month:
+              "short",
+
+            day:
+              "numeric",
+
+            year:
+              "numeric"
+          }
+        );
+
+
+      if (!end) {
+        return startText;
+      }
+
+
+      if (
+        start.getFullYear() ===
+          end.getFullYear() &&
+        start.getMonth() ===
+          end.getMonth()
+      ) {
+
+        return `${start.toLocaleDateString(
+          "en-US",
+          {
+            month:
+              "short",
+
+            day:
+              "numeric"
+          }
+        )}–${end.getDate()}, ${end.getFullYear()}`;
+
+      }
+
+
+      return `${startText} – ${end.toLocaleDateString(
+        "en-US",
+        {
+          month:
+            "short",
+
+          day:
+            "numeric",
+
+          year:
+            "numeric"
+        }
+      )}`;
+
     }
 
-    return new Date(
-      today.getFullYear(),
-      today.getMonth(),
-      1
-    );
-  }
 
 
-  function eventTouchesMonth(
-    event,
-    year,
-    month
-  ) {
+    /* ===================================================
+       PARTICIPATION
+       =================================================== */
 
-    const monthStart =
-      new Date(
-        year,
-        month,
-        1,
-        0,
-        0,
-        0,
-        0
-      );
+    function getParticipation(
+      event
+    ) {
 
-    const monthEnd =
-      new Date(
-        year,
-        month + 1,
-        0,
+      if (
+        event.participation
+      ) {
+        return event.participation;
+      }
+
+
+      const label =
+        (
+          event.typeLabel ||
+          ""
+        ).toLowerCase();
+
+
+      if (
+        label.includes(
+          "exhibitor"
+        )
+      ) {
+        return "exhibitor";
+      }
+
+
+      if (
+        label.includes(
+          "co-organized"
+        )
+      ) {
+        return "co-organized";
+      }
+
+
+      if (
+        event.role ===
+        "hosted"
+      ) {
+        return "hosted";
+      }
+
+
+      return "attending";
+    }
+
+
+    /*
+     * VIEWING PRIORITY
+     *
+     * Host / Co-organize = 3
+     * Exhibit            = 2
+     * Attend             = 1
+     */
+
+    function getPriority(
+      event
+    ) {
+
+      const participation =
+        getParticipation(
+          event
+        );
+
+
+      if (
+        participation ===
+          "hosted" ||
+        participation ===
+          "co-organized"
+      ) {
+        return 3;
+      }
+
+
+      if (
+        participation ===
+        "exhibitor"
+      ) {
+        return 2;
+      }
+
+
+      return 1;
+    }
+
+
+    function getEventColor(
+      event
+    ) {
+
+      const participation =
+        getParticipation(
+          event
+        );
+
+
+      if (
+        participation ===
+          "hosted" ||
+        participation ===
+          "co-organized"
+      ) {
+
+        return "#C5A059";
+
+      }
+
+
+      if (
+        participation ===
+        "exhibitor"
+      ) {
+
+        return "#22252A";
+
+      }
+
+
+      return "#4A505A";
+
+    }
+
+
+
+    /* ===================================================
+       EVENT STATUS
+       =================================================== */
+
+    function isPastEvent(
+      event
+    ) {
+
+      const end =
+        parseEventDate(
+          event.endDate ||
+          event.startDate
+        );
+
+
+      end.setHours(
         23,
         59,
         59,
         999
       );
 
-    const eventStart =
-      parseEventDate(
-        event.startDate
-      );
 
-    eventStart.setHours(
-      0,
-      0,
-      0,
-      0
-    );
+      return end <
+        new Date();
 
-    const eventEnd =
-      parseEventDate(
-        event.endDate
-      );
-
-    eventEnd.setHours(
-      23,
-      59,
-      59,
-      999
-    );
-
-    return (
-      eventStart <= monthEnd &&
-      eventEnd >= monthStart
-    );
-  }
+    }
 
 
-  function eventsForMonth(
-    year,
-    month
-  ) {
 
-    const events =
-      calendarEvents.filter(
-        (event) =>
-          eventTouchesMonth(
-            event,
-            year,
-            month
+    /* ===================================================
+       INITIAL MONTH
+       =================================================== */
+
+    function getInitialCalendarDate() {
+
+      const upcoming =
+        calendarEvents
+          .filter(
+            (event) =>
+              !isPastEvent(
+                event
+              )
           )
-      );
-
-    /*
-     * Upcoming/current first.
-     * Past events from selected month last.
-     */
-    return events.sort(
-      (a, b) => {
-
-        const aEnd =
-          parseEventDate(
-            a.endDate
+          .sort(
+            (a, b) =>
+              parseEventDate(
+                a.startDate
+              ) -
+              parseEventDate(
+                b.startDate
+              )
           );
 
-        aEnd.setHours(
-          23,
-          59,
-          59,
-          999
-        );
 
-        const bEnd =
-          parseEventDate(
-            b.endDate
-          );
+      if (
+        upcoming.length
+      ) {
 
-        bEnd.setHours(
-          23,
-          59,
-          59,
-          999
-        );
-
-        const aPast =
-          aEnd < today;
-
-        const bPast =
-          bEnd < today;
-
-
-        if (
-          aPast !== bPast
-        ) {
-          return aPast ? 1 : -1;
-        }
-
-
-        return (
-          parseEventDate(
-            a.startDate
-          ) -
-          parseEventDate(
-            b.startDate
-          )
+        return parseEventDate(
+          upcoming[0].startDate
         );
 
       }
-    );
-
-  }
 
 
-  function eventForDate(date) {
+      if (
+        calendarEvents.length
+      ) {
 
-    const time =
-      date.getTime();
+        return parseEventDate(
+          calendarEvents[0].startDate
+        );
 
-    return calendarEvents.find(
-      (event) => {
+      }
 
-        const start =
-          parseEventDate(
-            event.startDate
-          );
 
-        start.setHours(
+      return new Date();
+
+    }
+
+
+    let currentDate =
+      getInitialCalendarDate();
+
+
+
+    /* ===================================================
+       MONTH FILTERING
+       =================================================== */
+
+    function eventTouchesMonth(
+      event,
+      year,
+      month
+    ) {
+
+      const eventStart =
+        parseEventDate(
+          event.startDate
+        );
+
+
+      const eventEnd =
+        parseEventDate(
+          event.endDate ||
+          event.startDate
+        );
+
+
+      const monthStart =
+        new Date(
+          year,
+          month,
+          1,
           0,
           0,
           0,
           0
         );
 
-        const end =
-          parseEventDate(
-            event.endDate
-          );
 
-        end.setHours(
+      const monthEnd =
+        new Date(
+          year,
+          month + 1,
+          0,
           23,
           59,
           59,
           999
         );
 
-        return (
-          time >=
-            start.getTime() &&
-          time <=
-            end.getTime()
-        );
 
-      }
-    );
-
-  }
-
-
-  function isPastEvent(
-    event
-  ) {
-
-    const end =
-      parseEventDate(
-        event.endDate
+      return (
+        eventStart <=
+          monthEnd &&
+        eventEnd >=
+          monthStart
       );
 
-    end.setHours(
-      23,
-      59,
-      59,
-      999
-    );
-
-    return end < today;
-  }
+    }
 
 
-  let calendarCursor =
-    getInitialCalendarDate();
+    function eventsForMonth(
+      year,
+      month
+    ) {
+
+      return calendarEvents
+        .filter(
+          (event) =>
+            eventTouchesMonth(
+              event,
+              year,
+              month
+            )
+        )
+        .sort(
+          (a, b) => {
+
+            const aPast =
+              isPastEvent(a);
+
+            const bPast =
+              isPastEvent(b);
 
 
-  const calendarTitle =
-    document.getElementById(
-      "calendar-title"
-    );
+            /*
+             * Upcoming / current first.
+             */
 
-  const calendarGrid =
-    document.getElementById(
-      "calendar-grid"
-    );
+            if (
+              aPast !==
+              bPast
+            ) {
 
-  const eventContainer =
-    document.getElementById(
-      "event-container"
-    );
+              return aPast
+                ? 1
+                : -1;
 
-  const monthSummary =
-    document.getElementById(
-      "month-summary"
-    );
+            }
 
 
-  function renderCalendar() {
+            const dateDifference =
+              parseEventDate(
+                a.startDate
+              ) -
+              parseEventDate(
+                b.startDate
+              );
 
-    const year =
-      calendarCursor.getFullYear();
 
-    const month =
-      calendarCursor.getMonth();
+            /*
+             * Same date:
+             * HOST → EXHIBIT → ATTEND
+             */
+
+            if (
+              dateDifference === 0
+            ) {
+
+              return (
+                getPriority(b) -
+                getPriority(a)
+              );
+
+            }
 
 
-    calendarTitle.textContent =
-      calendarCursor
-        .toLocaleDateString(
+            return dateDifference;
+
+          }
+        );
+
+    }
+
+
+
+    /* ===================================================
+       EVENTS FOR ONE CALENDAR DATE
+       =================================================== */
+
+    function eventsForDate(
+      date
+    ) {
+
+      return calendarEvents
+        .filter(
+          (event) => {
+
+            const start =
+              parseEventDate(
+                event.startDate
+              );
+
+
+            const end =
+              parseEventDate(
+                event.endDate ||
+                event.startDate
+              );
+
+
+            return (
+              date >=
+                start &&
+              date <=
+                end
+            );
+
+          }
+        )
+        .sort(
+          (a, b) =>
+            getPriority(b) -
+            getPriority(a)
+        );
+
+    }
+
+
+    /*
+     * Highest priority event controls
+     * calendar-cell color and click target.
+     */
+
+    function primaryEventForDate(
+      date
+    ) {
+
+      const matches =
+        eventsForDate(
+          date
+        );
+
+
+      return (
+        matches[0] ||
+        null
+      );
+
+    }
+
+
+
+    /* ===================================================
+       CALENDAR RENDERING
+       =================================================== */
+
+    function renderCalendar() {
+
+      const year =
+        currentDate.getFullYear();
+
+
+      const month =
+        currentDate.getMonth();
+
+
+      const monthName =
+        currentDate.toLocaleDateString(
           "en-US",
           {
-            month: "long",
-            year: "numeric"
+            month:
+              "long",
+
+            year:
+              "numeric"
           }
         );
 
 
-    const firstDay =
-      new Date(
-        year,
-        month,
-        1
-      );
+      if (
+        calendarTitle
+      ) {
+        calendarTitle.textContent =
+          monthName;
+      }
 
 
-    const gridStart =
-      new Date(
-        year,
-        month,
-        1 - firstDay.getDay()
-      );
+      if (
+        eventMonthTitle
+      ) {
+        eventMonthTitle.textContent =
+          monthName;
+      }
 
 
-    let html = "";
+      calendarGrid.innerHTML =
+        "";
 
 
-    for (
-      let i = 0;
-      i < 42;
-      i++
-    ) {
-
-      const day =
+      const firstDay =
         new Date(
-          gridStart
+          year,
+          month,
+          1
         );
 
-      day.setDate(
-        gridStart.getDate() + i
-      );
 
-      day.setHours(
-        12,
-        0,
-        0,
-        0
-      );
+      const lastDay =
+        new Date(
+          year,
+          month + 1,
+          0
+        );
 
 
-      const event =
-        eventForDate(day);
-
-      const inCurrentMonth =
-        day.getMonth() ===
-        month;
+      const startingWeekday =
+        firstDay.getDay();
 
 
-      let classes = `
-        min-h-[32px]
-        flex
-        items-center
-        justify-center
-        transition-all
-      `;
+      const daysInMonth =
+        lastDay.getDate();
 
 
-      if (!inCurrentMonth) {
-        classes +=
-          " opacity-30";
-      }
+      /*
+       * Blank leading cells.
+       */
 
-
-      if (
-        event &&
-        inCurrentMonth
+      for (
+        let i = 0;
+        i < startingWeekday;
+        i++
       ) {
 
-        classes +=
-          " cursor-pointer font-semibold text-white";
+        const blank =
+          document.createElement(
+            "div"
+          );
 
-        classes +=
-          event.role === "hosted"
-            ? " bg-[#C5A059]"
-            : " bg-[#4A505A]";
+
+        blank.className =
+          "aspect-square";
+
+
+        calendarGrid.appendChild(
+          blank
+        );
 
       }
 
 
-      if (
-        event &&
-        inCurrentMonth
+      for (
+        let day = 1;
+        day <=
+          daysInMonth;
+        day++
       ) {
 
-        html += `
+        const date =
+          new Date(
+            year,
+            month,
+            day,
+            12
+          );
 
-          <button
-            type="button"
-            data-calendar-event="${event.id}"
-            class="${classes}"
-            title="${event.title}"
-          >
-            ${day.getDate()}
-          </button>
 
-        `;
+        const primaryEvent =
+          primaryEventForDate(
+            date
+          );
 
-      } else {
 
-        html += `
+        const allEvents =
+          eventsForDate(
+            date
+          );
 
-          <div
-            class="${classes}"
-          >
-            ${day.getDate()}
-          </div>
 
-        `;
+        const button =
+          document.createElement(
+            primaryEvent
+              ? "button"
+              : "div"
+          );
+
+
+        button.className =
+          [
+            "relative",
+            "aspect-square",
+            "flex",
+            "items-center",
+            "justify-center",
+            "text-xs",
+            "border",
+            "transition-all",
+            "duration-200",
+
+            primaryEvent
+              ? "cursor-pointer hover:scale-[1.04]"
+              : "border-transparent text-brand-slate"
+          ].join(" ");
+
+
+        const dayNumber =
+          document.createElement(
+            "span"
+          );
+
+
+        dayNumber.textContent =
+          String(day);
+
+
+        dayNumber.className =
+          primaryEvent
+            ? "relative z-10 font-semibold"
+            : "";
+
+
+        button.appendChild(
+          dayNumber
+        );
+
+
+        if (
+          primaryEvent
+        ) {
+
+          const color =
+            getEventColor(
+              primaryEvent
+            );
+
+
+          button.style.backgroundColor =
+            color;
+
+
+          button.style.borderColor =
+            color;
+
+
+          button.style.color =
+            "#FFFFFF";
+
+
+          button.dataset.calendarEvent =
+            primaryEvent.id;
+
+
+          /*
+           * If 2+ events occur on this date,
+           * show a small count.
+           */
+
+          if (
+            allEvents.length >
+            1
+          ) {
+
+            const count =
+              document.createElement(
+                "span"
+              );
+
+
+            count.textContent =
+              `+${allEvents.length - 1}`;
+
+
+            count.className =
+              [
+                "absolute",
+                "top-1",
+                "right-1",
+                "text-[7px]",
+                "font-semibold",
+                "leading-none"
+              ].join(" ");
+
+
+            button.appendChild(
+              count
+            );
+
+          }
+
+
+          button.addEventListener(
+            "click",
+            () => {
+
+              scrollToEvent(
+                primaryEvent.id
+              );
+
+            }
+          );
+
+        }
+
+
+        calendarGrid.appendChild(
+          button
+        );
 
       }
 
     }
 
 
-    calendarGrid.innerHTML =
-      html;
 
-  }
+    /* ===================================================
+       EVENT CARDS
+       =================================================== */
 
+    function renderMonthEvents() {
 
-  function renderMonthEvents() {
-
-    const year =
-      calendarCursor.getFullYear();
-
-    const month =
-      calendarCursor.getMonth();
-
-    const monthEvents =
-      eventsForMonth(
-        year,
-        month
-      );
+      const year =
+        currentDate.getFullYear();
 
 
-    if (!monthEvents.length) {
+      const month =
+        currentDate.getMonth();
 
-      eventContainer.innerHTML = `
 
-        <div
-          class="
-            p-8
-            bg-brand-card
-            border
-            border-brand-border
-            text-brand-slate
-            text-sm
-            font-light
-          "
-        >
-          No events listed for
-          ${calendarCursor.toLocaleDateString(
+      const monthEvents =
+        eventsForMonth(
+          year,
+          month
+        );
+
+
+      eventContainer.innerHTML =
+        "";
+
+
+      if (
+        !monthEvents.length
+      ) {
+
+        const empty =
+          document.createElement(
+            "div"
+          );
+
+
+        empty.className =
+          [
+            "bg-white",
+            "border",
+            "border-brand-border",
+            "p-8",
+            "text-center",
+            "text-sm",
+            "text-brand-slate"
+          ].join(" ");
+
+
+        empty.textContent =
+          `No events listed for ${currentDate.toLocaleDateString(
             "en-US",
             {
-              month: "long",
-              year: "numeric"
+              month:
+                "long",
+
+              year:
+                "numeric"
             }
-          )}.
-        </div>
-
-      `;
-
-      monthSummary.textContent =
-        "No events this month.";
-
-      return;
-
-    }
+          )}.`;
 
 
-    const upcomingCount =
-      monthEvents.filter(
-        (event) =>
-          !isPastEvent(event)
-      ).length;
-
-    const pastCount =
-      monthEvents.filter(
-        (event) =>
-          isPastEvent(event)
-      ).length;
+        eventContainer.appendChild(
+          empty
+        );
 
 
-    const summaryParts = [];
-
-    if (upcomingCount) {
-      summaryParts.push(
-        `${upcomingCount} upcoming`
-      );
-    }
-
-    if (pastCount) {
-      summaryParts.push(
-        `${pastCount} past`
-      );
-    }
-
-    monthSummary.textContent =
-      summaryParts.join(" · ");
+        if (
+          monthSummary
+        ) {
+          monthSummary.textContent =
+            "No events";
+        }
 
 
-    eventContainer.innerHTML =
-      monthEvents
-        .map(
-          (event) => {
+        return;
 
-            const past =
-              isPastEvent(event);
+      }
 
-            const typeLabel =
-              past
-                ? "Past Event"
-                : (
-                    event.typeLabel ||
-                    (
-                      event.role ===
-                      "hosted"
-                        ? "Hosted Community Event"
-                        : "Attending Event"
-                    )
-                  );
 
-            const accentClass =
-              event.role === "hosted"
-                ? "text-brand-gold"
-                : "text-brand-slate";
+      const upcomingCount =
+        monthEvents.filter(
+          (event) =>
+            !isPastEvent(
+              event
+            )
+        ).length;
 
-            const buttonClass =
-              event.role === "hosted"
-                ? "bg-brand-charcoal text-white hover:bg-brand-gold"
-                : "border border-brand-border text-brand-charcoal hover:border-brand-gold";
 
-            return `
+      const pastCount =
+        monthEvents.length -
+        upcomingCount;
 
-              <article
-                id="event-${event.id}"
+
+      if (
+        monthSummary
+      ) {
+
+        const summaryParts =
+          [];
+
+
+        if (
+          upcomingCount
+        ) {
+
+          summaryParts.push(
+            `${upcomingCount} upcoming`
+          );
+
+        }
+
+
+        if (
+          pastCount
+        ) {
+
+          summaryParts.push(
+            `${pastCount} past`
+          );
+
+        }
+
+
+        monthSummary.textContent =
+          summaryParts.join(
+            " · "
+          );
+
+      }
+
+
+      monthEvents.forEach(
+        (event) => {
+
+          const card =
+            document.createElement(
+              "article"
+            );
+
+
+          card.id =
+            `event-${event.id}`;
+
+
+          card.className =
+            [
+              "event-card",
+              "bg-white",
+              "border",
+              "border-brand-border",
+              "p-6",
+              "transition-all",
+              "duration-300",
+
+              isPastEvent(event)
+                ? "opacity-90"
+                : ""
+            ].join(" ");
+
+
+          const participation =
+            getParticipation(
+              event
+            );
+
+
+          const color =
+            getEventColor(
+              event
+            );
+
+
+          const registrationText =
+            event.registrations
+              ? `<span class="text-brand-gold">•</span>
+                 <span>${event.registrations}+ registrations</span>`
+              : "";
+
+
+          card.innerHTML =
+            `
+              <div
                 class="
-                  event-card
-                  p-6
-                  sm:p-8
-                  bg-brand-card
-                  border
-                  border-brand-border
-                  shadow-sm
-                  transition-all
-                  duration-300
-                  ${past ? "opacity-90" : ""}
+                  flex
+                  flex-wrap
+                  items-center
+                  gap-2
+                  text-[10px]
+                  uppercase
+                  tracking-[0.15em]
+                  mb-3
                 "
               >
 
-                <div
-                  class="
-                    flex
-                    items-center
-                    justify-between
-                    gap-4
-                    mb-4
-                  "
+                <span
+                  class="font-semibold"
+                  style="color:${color}"
                 >
+                  ${
+                    event.typeLabel ||
+                    (
+                      participation === "exhibitor"
+                        ? "Exhibitor"
+                        : participation === "hosted" ||
+                          participation === "co-organized"
+                          ? "Hosted Event"
+                          : "Attending Event"
+                    )
+                  }
+                </span>
 
-                  <span
-                    class="
-                      text-[10px]
-                      uppercase
-                      tracking-[0.2em]
-                      font-semibold
-                      ${accentClass}
-                    "
-                  >
-                    ${typeLabel}
-                  </span>
+                <span class="text-brand-border">
+                  •
+                </span>
 
+                <span class="text-brand-slate">
+                  ${formatEventDate(event)}
+                </span>
 
-                  <span
-                    class="
-                      text-[10px]
-                      font-mono
-                      border
-                      border-brand-border
-                      px-2
-                      py-1
-                      text-brand-slate
-                      whitespace-nowrap
-                    "
-                  >
-                    ${formatEventDate(
-                      event.startDate,
-                      event.endDate
-                    )}
-                  </span>
-
-                </div>
-
-
-                <h3
-                  class="
-                    font-serif
-                    text-xl
-                    sm:text-2xl
-                    text-brand-charcoal
-                    mb-3
-                  "
-                >
-                  ${event.title}
-                </h3>
-
+                ${registrationText}
 
                 ${
-                  event.description
+                  isPastEvent(event)
                     ? `
-                      <p
-                        class="
-                          text-brand-slate
-                          text-sm
-                          leading-relaxed
-                          font-light
-                          mb-5
-                        "
-                      >
-                        ${event.description}
-                      </p>
+                      <span class="text-brand-border">
+                        •
+                      </span>
+
+                      <span class="text-brand-slate">
+                        Past Event
+                      </span>
                     `
                     : ""
                 }
 
-
-                <div
-                  class="
-                    pt-4
-                    border-t
-                    border-brand-border
-                    flex
-                    flex-col
-                    sm:flex-row
-                    sm:items-center
-                    justify-between
-                    gap-4
-                  "
-                >
-
-                  <div
-                    class="
-                      text-xs
-                      text-brand-slate
-                    "
-                  >
-
-                    ${
-                      event.venue
-                        ? `
-                          <div
-                            class="
-                              font-medium
-                              text-brand-charcoal
-                            "
-                          >
-                            ${event.venue}
-                          </div>
-                        `
-                        : ""
-                    }
-
-                    ${
-                      event.city
-                        ? `
-                          <div>
-                            ${event.city}
-                          </div>
-                        `
-                        : ""
-                    }
-
-                  </div>
+              </div>
 
 
-                  ${
-                    event.url
-                      ? `
-                        <a
-                          href="${event.url}"
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          class="
-                            px-5
-                            py-2.5
-                            text-xs
-                            uppercase
-                            tracking-widest
-                            transition-colors
-                            text-center
-                            ${buttonClass}
-                          "
-                        >
-                          ${event.buttonLabel ||
-                          "Event Information"}
-                          ↗
-                        </a>
-                      `
-                      : ""
-                  }
+              <h4
+                class="
+                  font-serif
+                  text-xl
+                  text-brand-charcoal
+                  leading-snug
+                  mb-3
+                "
+              >
+                ${event.title}
+              </h4>
 
-                </div>
 
-              </article>
+              ${
+                event.venue ||
+                event.city
+                  ? `
+                    <p
+                      class="
+                        text-xs
+                        text-brand-slate
+                        mb-3
+                      "
+                    >
+                      ${
+                        [
+                          event.venue,
+                          event.city
+                        ]
+                          .filter(Boolean)
+                          .join(" · ")
+                      }
+                    </p>
+                  `
+                  : ""
+              }
 
+
+              ${
+                event.description
+                  ? `
+                    <p
+                      class="
+                        text-sm
+                        text-brand-slate
+                        font-light
+                        leading-relaxed
+                      "
+                    >
+                      ${event.description}
+                    </p>
+                  `
+                  : ""
+              }
+
+
+              ${
+                event.url
+                  ? `
+                    <a
+                      href="${event.url}"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class="
+                        inline-flex
+                        items-center
+                        gap-2
+                        mt-5
+                        text-[10px]
+                        uppercase
+                        tracking-[0.16em]
+                        font-semibold
+                        text-brand-charcoal
+                        hover:text-brand-gold
+                        transition-colors
+                      "
+                    >
+                      ${
+                        event.buttonLabel ||
+                        "View Event"
+                      }
+
+                      <span>↗</span>
+                    </a>
+                  `
+                  : ""
+              }
             `;
 
-          }
-        )
-        .join("");
 
+          eventContainer.appendChild(
+            card
+          );
 
-    eventContainer.scrollTop = 0;
-
-  }
-
-
-  function renderAll() {
-
-    renderCalendar();
-
-    renderMonthEvents();
-
-  }
-
-
-  function scrollToEvent(
-    eventId
-  ) {
-
-    const card =
-      document.getElementById(
-        `event-${eventId}`
+        }
       );
 
-    if (!card) {
-      return;
     }
 
 
-    const cardTop =
-      card.offsetTop -
-      eventContainer.offsetTop;
 
+    /* ===================================================
+       CLICK → SCROLL TO CARD
+       =================================================== */
 
-    eventContainer.scrollTo({
-      top:
-        cardTop - 8,
+    function scrollToEvent(
+      id
+    ) {
 
-      behavior:
-        "smooth"
-    });
-
-
-    card.classList.add(
-      "ring-2",
-      "ring-brand-gold"
-    );
-
-
-    window.setTimeout(
-      () => {
-
-        card.classList.remove(
-          "ring-2",
-          "ring-brand-gold"
+      const card =
+        document.getElementById(
+          `event-${id}`
         );
 
-      },
-      1600
-    );
 
-  }
+      if (
+        !card
+      ) {
+        return;
+      }
 
 
-  document
-    .getElementById(
-      "calendar-prev"
-    )
-    ?.addEventListener(
+      const containerRect =
+        eventContainer
+          .getBoundingClientRect();
+
+
+      const cardRect =
+        card
+          .getBoundingClientRect();
+
+
+      const top =
+        (
+          cardRect.top -
+          containerRect.top
+        ) +
+        eventContainer.scrollTop;
+
+
+      eventContainer.scrollTo({
+        top:
+          Math.max(
+            0,
+            top - 8
+          ),
+
+        behavior:
+          "smooth"
+      });
+
+
+      card.classList.add(
+        "ring-2",
+        "ring-brand-gold"
+      );
+
+
+      window.setTimeout(
+        () => {
+
+          card.classList.remove(
+            "ring-2",
+            "ring-brand-gold"
+          );
+
+        },
+        1400
+      );
+
+    }
+
+
+
+    /* ===================================================
+       FULL RENDER
+       =================================================== */
+
+    function renderAll() {
+
+      renderCalendar();
+
+      renderMonthEvents();
+
+      eventContainer.scrollTop =
+        0;
+
+    }
+
+
+
+    /* ===================================================
+       MONTH NAV
+       =================================================== */
+
+    prevButton?.addEventListener(
       "click",
       () => {
 
-        calendarCursor =
+        currentDate =
           new Date(
-            calendarCursor.getFullYear(),
-            calendarCursor.getMonth() - 1,
+            currentDate.getFullYear(),
+            currentDate.getMonth() - 1,
             1
           );
+
 
         renderAll();
 
@@ -1295,20 +1821,17 @@ function formatDate(
     );
 
 
-  document
-    .getElementById(
-      "calendar-next"
-    )
-    ?.addEventListener(
+    nextButton?.addEventListener(
       "click",
       () => {
 
-        calendarCursor =
+        currentDate =
           new Date(
-            calendarCursor.getFullYear(),
-            calendarCursor.getMonth() + 1,
+            currentDate.getFullYear(),
+            currentDate.getMonth() + 1,
             1
           );
+
 
         renderAll();
 
@@ -1316,28 +1839,9 @@ function formatDate(
     );
 
 
-  calendarGrid
-    ?.addEventListener(
-      "click",
-      (event) => {
 
-        const button =
-          event.target.closest(
-            "[data-calendar-event]"
-          );
+    renderAll();
 
-        if (!button) {
-          return;
-        }
-
-        scrollToEvent(
-          button.dataset.calendarEvent
-        );
-
-      }
-    );
-
-
-  renderAll();
+  })();
 
 </script>
