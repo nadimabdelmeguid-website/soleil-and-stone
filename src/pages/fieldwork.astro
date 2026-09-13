@@ -11,13 +11,18 @@ import {
 
 import {
   isCompletedEvent,
-  getParticipationPriority
+  getParticipationPriority,
+  getProfessionalMetrics
 } from "../utils/eventMetrics";
 
 
 const now =
   new Date();
 
+
+/* =========================================================
+   FIELD NOTES
+   ========================================================= */
 
 const posts =
   (
@@ -31,6 +36,10 @@ const posts =
         post.data.published <= now
     );
 
+
+/* =========================================================
+   EVENTS
+   ========================================================= */
 
 const completedEvents =
   events
@@ -69,6 +78,20 @@ const upcomingEvents =
     );
 
 
+/* =========================================================
+   METRICS
+   ========================================================= */
+
+const metrics =
+  getProfessionalMetrics(
+    events
+  );
+
+
+/* =========================================================
+   FILTER OPTIONS
+   ========================================================= */
+
 const years =
   Array.from(
     new Set(
@@ -86,6 +109,63 @@ const years =
     );
 
 
+const months =
+  [
+    {
+      value: "0",
+      label: "January"
+    },
+    {
+      value: "1",
+      label: "February"
+    },
+    {
+      value: "2",
+      label: "March"
+    },
+    {
+      value: "3",
+      label: "April"
+    },
+    {
+      value: "4",
+      label: "May"
+    },
+    {
+      value: "5",
+      label: "June"
+    },
+    {
+      value: "6",
+      label: "July"
+    },
+    {
+      value: "7",
+      label: "August"
+    },
+    {
+      value: "8",
+      label: "September"
+    },
+    {
+      value: "9",
+      label: "October"
+    },
+    {
+      value: "10",
+      label: "November"
+    },
+    {
+      value: "11",
+      label: "December"
+    }
+  ];
+
+
+/* =========================================================
+   HELPERS
+   ========================================================= */
+
 function eventNotes(
   eventId: string
 ) {
@@ -101,20 +181,31 @@ function eventNotes(
 }
 
 
+function parseDate(
+  value: string
+) {
+
+  return new Date(
+    `${value}T12:00:00`
+  );
+
+}
+
+
 function formatDate(
   event
 ) {
 
   const start =
-    new Date(
-      `${event.startDate}T12:00:00`
+    parseDate(
+      event.startDate
     );
 
 
   const end =
     event.endDate
-      ? new Date(
-          `${event.endDate}T12:00:00`
+      ? parseDate(
+          event.endDate
         )
       : null;
 
@@ -265,56 +356,258 @@ function labelClass(
 
   <section
     class="
-      max-w-6xl
-      w-full
-      mx-auto
-      px-6
-      pt-16
-      pb-14
+      bg-white
     "
   >
 
-    <span
+    <div
       class="
-        text-[10px]
-        uppercase
-        tracking-[0.2em]
-        text-brand-gold
-        font-semibold
+        max-w-6xl
+        w-full
+        mx-auto
+        px-6
+        pt-16
+        pb-14
       "
     >
-      Industry Fieldwork
-    </span>
+
+      <span
+        class="
+          text-[10px]
+          uppercase
+          tracking-[0.2em]
+          text-brand-gold
+          font-semibold
+        "
+      >
+        Industry Fieldwork
+      </span>
 
 
-    <h1
+      <h1
+        class="
+          font-serif
+          text-4xl
+          sm:text-5xl
+          text-brand-charcoal
+          mt-2
+          mb-6
+        "
+      >
+        Learning From The Field
+      </h1>
+
+
+      <p
+        class="
+          text-base
+          text-brand-slate
+          font-light
+          leading-relaxed
+          max-w-3xl
+        "
+      >
+        Trade shows, technical communities, founder gatherings,
+        and industry programs shaping my view of how hardware
+        moves from engineering decisions to commercialization
+        and real-world adoption.
+      </p>
+
+    </div>
+
+  </section>
+
+
+
+  <!-- =====================================================
+       FIELDWORK METRICS
+       ===================================================== -->
+
+  <section
+    class="
+      border-y
+      border-brand-border
+      bg-brand-cream
+    "
+  >
+
+    <div
       class="
-        font-serif
-        text-4xl
-        sm:text-5xl
-        text-brand-charcoal
-        mt-2
-        mb-6
+        max-w-6xl
+        w-full
+        mx-auto
+        px-6
+        py-10
       "
     >
-      Learning From The Field
-    </h1>
+
+      <div
+        class="
+          grid
+          grid-cols-2
+          lg:grid-cols-4
+          border
+          border-brand-border
+          bg-white
+        "
+      >
+
+        <!-- PROFESSIONAL EVENTS -->
+
+        <div
+          class="
+            p-5
+            sm:p-6
+            border-b
+            border-r
+            border-brand-border
+            lg:border-b-0
+          "
+        >
+
+          <div
+            class="
+              font-serif
+              text-3xl
+              sm:text-4xl
+              text-brand-charcoal
+            "
+          >
+            {metrics.total}
+          </div>
 
 
-    <p
-      class="
-        text-base
-        text-brand-slate
-        font-light
-        leading-relaxed
-        max-w-3xl
-      "
-    >
-      Trade shows, technical communities, founder
-      gatherings, and industry programs shaping my view
-      of how hardware moves from engineering decisions
-      to commercialization and real-world adoption.
-    </p>
+          <div
+            class="
+              mt-2
+              text-[9px]
+              uppercase
+              tracking-[0.16em]
+              text-brand-slate
+            "
+          >
+            Professional Events
+          </div>
+
+        </div>
+
+
+        <!-- LED -->
+
+        <div
+          class="
+            p-5
+            sm:p-6
+            border-b
+            border-brand-border
+            lg:border-b-0
+            lg:border-r
+          "
+        >
+
+          <div
+            class="
+              font-serif
+              text-3xl
+              sm:text-4xl
+              text-brand-charcoal
+            "
+          >
+            {metrics.led}
+          </div>
+
+
+          <div
+            class="
+              mt-2
+              text-[9px]
+              uppercase
+              tracking-[0.16em]
+              text-brand-slate
+            "
+          >
+            Hosted / Co-Organized
+          </div>
+
+        </div>
+
+
+        <!-- EXHIBITOR -->
+
+        <div
+          class="
+            p-5
+            sm:p-6
+            border-r
+            border-brand-border
+          "
+        >
+
+          <div
+            class="
+              font-serif
+              text-3xl
+              sm:text-4xl
+              text-brand-charcoal
+            "
+          >
+            {metrics.exhibited}
+          </div>
+
+
+          <div
+            class="
+              mt-2
+              text-[9px]
+              uppercase
+              tracking-[0.16em]
+              text-brand-slate
+            "
+          >
+            Exhibitor Appearances
+          </div>
+
+        </div>
+
+
+        <!-- CITIES -->
+
+        <div
+          class="
+            p-5
+            sm:p-6
+          "
+        >
+
+          <div
+            class="
+              font-serif
+              text-3xl
+              sm:text-4xl
+              text-brand-charcoal
+            "
+          >
+            {metrics.cities}
+          </div>
+
+
+          <div
+            class="
+              mt-2
+              text-[9px]
+              uppercase
+              tracking-[0.16em]
+              text-brand-slate
+            "
+          >
+            Cities
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
 
   </section>
 
@@ -326,10 +619,11 @@ function labelClass(
 
   {
     upcomingEvents.length > 0 && (
+
       <section
         class="
-          bg-brand-cream
-          border-y
+          bg-white
+          border-b
           border-brand-border
         "
       >
@@ -340,102 +634,203 @@ function labelClass(
             w-full
             mx-auto
             px-6
-            py-12
+            py-14
           "
         >
 
-          <span
-            class="
-              text-[10px]
-              uppercase
-              tracking-[0.18em]
-              text-brand-gold
-              font-semibold
-            "
-          >
-            Upcoming
-          </span>
-
+          <!-- HEADER -->
 
           <div
             class="
-              grid
-              md:grid-cols-2
-              lg:grid-cols-3
-              gap-5
-              mt-6
+              flex
+              items-end
+              justify-between
+              gap-6
+              mb-6
             "
           >
 
+            <div>
+
+              <span
+                class="
+                  text-[10px]
+                  uppercase
+                  tracking-[0.18em]
+                  text-brand-gold
+                  font-semibold
+                "
+              >
+                Upcoming
+              </span>
+
+
+              <h2
+                class="
+                  font-serif
+                  text-3xl
+                  text-brand-charcoal
+                  mt-2
+                "
+              >
+                Next In The Field
+              </h2>
+
+            </div>
+
+
             {
-              upcomingEvents.map(
-                (event) => (
-                  <a
-                    href={event.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    class="
-                      block
-                      bg-white
-                      border
-                      border-brand-border
-                      p-6
-                      hover:border-brand-gold
-                      transition-colors
-                    "
-                  >
+              upcomingEvents.length > 3 && (
 
-                    <span
-                      class:list={[
-                        "text-[9px]",
-                        "uppercase",
-                        "tracking-[0.14em]",
-                        "font-semibold",
-                        labelClass(event)
-                      ]}
-                    >
-                      {labelFor(event)}
-                    </span>
+                <span
+                  class="
+                    hidden
+                    sm:block
+                    text-[9px]
+                    uppercase
+                    tracking-[0.14em]
+                    text-brand-slate
+                  "
+                >
+                  Scroll To Explore →
+                </span>
 
-
-                    <h3
-                      class="
-                        font-serif
-                        text-lg
-                        text-brand-charcoal
-                        mt-2
-                      "
-                    >
-                      {event.title}
-                    </h3>
-
-
-                    <p
-                      class="
-                        text-xs
-                        text-brand-slate
-                        mt-3
-                      "
-                    >
-                      {formatDate(event)}
-
-                      {
-                        event.city
-                          ? ` · ${event.city}`
-                          : ""
-                      }
-                    </p>
-
-                  </a>
-                )
               )
             }
+
+          </div>
+
+
+
+          <!-- HORIZONTAL SCROLLER -->
+
+          <div
+            class="
+              overflow-x-auto
+              pb-3
+              custom-scrollbar
+            "
+          >
+
+            <div
+              class="
+                grid
+                grid-flow-col
+                auto-cols-[86%]
+                sm:auto-cols-[48%]
+                lg:auto-cols-[calc((100%-2.5rem)/3)]
+                gap-5
+              "
+            >
+
+              {
+                upcomingEvents.map(
+                  (event) => (
+
+                    <a
+                      href={event.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class="
+                        block
+                        bg-brand-cream
+                        border
+                        border-brand-border
+                        p-6
+                        hover:border-brand-gold
+                        transition-colors
+                      "
+                    >
+
+                      <div
+                        class="
+                          flex
+                          items-center
+                          justify-between
+                          gap-4
+                        "
+                      >
+
+                        <span
+                          class:list={[
+                            "text-[9px]",
+                            "uppercase",
+                            "tracking-[0.14em]",
+                            "font-semibold",
+                            labelClass(event)
+                          ]}
+                        >
+                          {labelFor(event)}
+                        </span>
+
+
+                        <span
+                          class="
+                            text-[9px]
+                            text-brand-slate
+                          "
+                        >
+                          ↗
+                        </span>
+
+                      </div>
+
+
+                      <h3
+                        class="
+                          font-serif
+                          text-lg
+                          sm:text-xl
+                          text-brand-charcoal
+                          mt-4
+                          leading-snug
+                        "
+                      >
+                        {event.title}
+                      </h3>
+
+
+                      <p
+                        class="
+                          text-xs
+                          text-brand-slate
+                          mt-4
+                        "
+                      >
+                        {formatDate(event)}
+                      </p>
+
+
+                      {
+                        event.city && (
+
+                          <p
+                            class="
+                              text-xs
+                              text-brand-slate
+                              mt-1
+                            "
+                          >
+                            {event.city}
+                          </p>
+
+                        )
+                      }
+
+                    </a>
+
+                  )
+                )
+              }
+
+            </div>
 
           </div>
 
         </div>
 
       </section>
+
     )
   }
 
@@ -447,426 +842,1039 @@ function labelClass(
 
   <section
     class="
-      max-w-6xl
-      w-full
-      mx-auto
-      px-6
-      py-16
+      bg-brand-cream
     "
   >
 
-    {
-      years.map(
-        (year) => {
+    <div
+      class="
+        max-w-6xl
+        w-full
+        mx-auto
+        px-6
+        py-16
+      "
+    >
 
-          const yearEvents =
-            completedEvents.filter(
-              (event) =>
-                new Date(
-                  `${event.startDate}T12:00:00`
-                ).getFullYear() ===
-                year
-            );
+      <!-- ARCHIVE HEADER -->
+
+      <div
+        class="
+          flex
+          flex-col
+          lg:flex-row
+          lg:items-end
+          justify-between
+          gap-8
+          mb-8
+        "
+      >
+
+        <div>
+
+          <span
+            class="
+              text-[10px]
+              uppercase
+              tracking-[0.18em]
+              text-brand-gold
+              font-semibold
+            "
+          >
+            Archive
+          </span>
 
 
-          return (
-            <div
+          <h2
+            class="
+              font-serif
+              text-3xl
+              sm:text-4xl
+              text-brand-charcoal
+              mt-2
+            "
+          >
+            Past Fieldwork
+          </h2>
+
+        </div>
+
+
+
+        <!-- FILTERS -->
+
+        <div
+          class="
+            flex
+            flex-col
+            sm:flex-row
+            gap-3
+            w-full
+            lg:w-auto
+          "
+        >
+
+          <!-- YEAR -->
+
+          <div
+            class="
+              min-w-[160px]
+            "
+          >
+
+            <label
+              for="fieldwork-year"
               class="
-                mb-16
-                last:mb-0
+                block
+                text-[9px]
+                uppercase
+                tracking-[0.14em]
+                text-brand-slate
+                mb-2
+              "
+            >
+              Year
+            </label>
+
+
+            <select
+              id="fieldwork-year"
+              class="
+                w-full
+                bg-white
+                border
+                border-brand-border
+                px-4
+                py-3
+                text-xs
+                text-brand-charcoal
+                outline-none
+                focus:border-brand-gold
               "
             >
 
-              <div
-                class="
-                  flex
-                  items-center
-                  gap-5
-                  mb-7
-                "
+              <option
+                value="all"
               >
+                All Years
+              </option>
 
-                <h2
+
+              {
+                years.map(
+                  (year) => (
+
+                    <option
+                      value={String(year)}
+                    >
+                      {year}
+                    </option>
+
+                  )
+                )
+              }
+
+            </select>
+
+          </div>
+
+
+
+          <!-- MONTH -->
+
+          <div
+            class="
+              min-w-[180px]
+            "
+          >
+
+            <label
+              for="fieldwork-month"
+              class="
+                block
+                text-[9px]
+                uppercase
+                tracking-[0.14em]
+                text-brand-slate
+                mb-2
+              "
+            >
+              Month
+            </label>
+
+
+            <select
+              id="fieldwork-month"
+              class="
+                w-full
+                bg-white
+                border
+                border-brand-border
+                px-4
+                py-3
+                text-xs
+                text-brand-charcoal
+                outline-none
+                focus:border-brand-gold
+              "
+            >
+
+              <option
+                value="all"
+              >
+                All Months
+              </option>
+
+
+              {
+                months.map(
+                  (month) => (
+
+                    <option
+                      value={month.value}
+                    >
+                      {month.label}
+                    </option>
+
+                  )
+                )
+              }
+
+            </select>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+
+      <!-- RESULT COUNT -->
+
+      <div
+        class="
+          flex
+          items-center
+          justify-between
+          gap-4
+          mb-5
+          pb-4
+          border-b
+          border-brand-border
+        "
+      >
+
+        <span
+          id="fieldwork-result-count"
+          class="
+            text-[9px]
+            uppercase
+            tracking-[0.14em]
+            text-brand-slate
+          "
+        >
+          {completedEvents.length}
+          {" "}
+          Events
+        </span>
+
+
+        <button
+          id="fieldwork-reset"
+          type="button"
+          class="
+            text-[9px]
+            uppercase
+            tracking-[0.14em]
+            text-brand-charcoal
+            font-semibold
+            hover:text-brand-gold
+            transition-colors
+          "
+        >
+          Reset Filters
+        </button>
+
+      </div>
+
+
+
+      <!-- =================================================
+           EVENT ARCHIVE
+           ================================================= -->
+
+      <div
+        id="fieldwork-archive"
+        class="
+          space-y-3
+        "
+      >
+
+        {
+          completedEvents.map(
+            (event) => {
+
+              const relatedNotes =
+                eventNotes(
+                  event.id
+                );
+
+
+              const eventDate =
+                parseDate(
+                  event.startDate
+                );
+
+
+              const eventYear =
+                eventDate.getFullYear();
+
+
+              const eventMonth =
+                eventDate.getMonth();
+
+
+              return (
+
+                <details
                   class="
-                    font-serif
-                    text-3xl
-                    text-brand-charcoal
+                    fieldwork-event
+                    group
+                    bg-white
+                    border
+                    border-brand-border
+                    open:border-brand-gold
+                    transition-colors
                   "
+                  data-year={String(eventYear)}
+                  data-month={String(eventMonth)}
                 >
-                  {year}
-                </h2>
+
+                  <!-- =====================================
+                       COLLAPSED SUMMARY
+                       ===================================== -->
+
+                  <summary
+                    class="
+                      list-none
+                      cursor-pointer
+                      px-5
+                      py-5
+                      sm:px-6
+                      flex
+                      flex-col
+                      sm:flex-row
+                      sm:items-center
+                      gap-4
+                      sm:gap-6
+                    "
+                  >
+
+                    <!-- DATE / ROLE -->
+
+                    <div
+                      class="
+                        sm:w-[165px]
+                        sm:shrink-0
+                      "
+                    >
+
+                      <span
+                        class:list={[
+                          "text-[9px]",
+                          "uppercase",
+                          "tracking-[0.15em]",
+                          "font-semibold",
+                          labelClass(event)
+                        ]}
+                      >
+                        {labelFor(event)}
+                      </span>
 
 
-                <div
-                  class="
-                    h-px
-                    flex-1
-                    bg-brand-border
-                  "
-                ></div>
+                      <p
+                        class="
+                          text-[11px]
+                          text-brand-slate
+                          mt-1.5
+                        "
+                      >
+                        {formatDate(event)}
+                      </p>
 
-              </div>
-
-
-              <div
-                class="
-                  space-y-5
-                "
-              >
-
-                {
-                  yearEvents.map(
-                    (event) => {
-
-                      const relatedNotes =
-                        eventNotes(
-                          event.id
-                        );
+                    </div>
 
 
-                      return (
-                        <article
-                          class="
-                            border
-                            border-brand-border
-                            p-6
-                            sm:p-7
-                          "
-                        >
 
-                          <div
+                    <!-- TITLE -->
+
+                    <div
+                      class="
+                        flex-1
+                        min-w-0
+                      "
+                    >
+
+                      <h3
+                        class="
+                          font-serif
+                          text-lg
+                          sm:text-xl
+                          text-brand-charcoal
+                          leading-snug
+                        "
+                      >
+                        {event.title}
+                      </h3>
+
+
+                      {
+                        event.city && (
+
+                          <p
                             class="
-                              grid
-                              lg:grid-cols-12
-                              gap-6
+                              text-[10px]
+                              text-brand-slate
+                              mt-1
                             "
                           >
+                            {event.city}
+                          </p>
+
+                        )
+                      }
+
+                    </div>
+
+
+
+                    <!-- QUICK METADATA -->
+
+                    <div
+                      class="
+                        flex
+                        items-center
+                        gap-4
+                        sm:justify-end
+                        sm:min-w-[150px]
+                      "
+                    >
+
+                      {
+                        typeof event.registrations ===
+                          "number" && (
+
+                          <span
+                            class="
+                              text-[9px]
+                              uppercase
+                              tracking-[0.12em]
+                              text-brand-gold
+                              font-semibold
+                            "
+                          >
+                            {event.registrations}
+                            {" "}
+                            Registrations
+                          </span>
+
+                        )
+                      }
+
+
+                      <span
+                        class="
+                          text-lg
+                          text-brand-charcoal
+                          transition-transform
+                          group-open:rotate-45
+                        "
+                      >
+                        +
+                      </span>
+
+                    </div>
+
+                  </summary>
+
+
+
+                  <!-- =====================================
+                       EXPANDED CONTENT
+                       ===================================== -->
+
+                  <div
+                    class="
+                      border-t
+                      border-brand-border
+                      px-5
+                      py-6
+                      sm:px-6
+                      sm:py-7
+                    "
+                  >
+
+                    <div
+                      class="
+                        grid
+                        lg:grid-cols-12
+                        gap-8
+                      "
+                    >
+
+                      <!-- EVENT DETAILS -->
+
+                      <div
+                        class="
+                          lg:col-span-8
+                        "
+                      >
+
+                        {
+                          event.description && (
+
+                            <p
+                              class="
+                                text-sm
+                                text-brand-slate
+                                leading-relaxed
+                                font-light
+                                max-w-2xl
+                              "
+                            >
+                              {event.description}
+                            </p>
+
+                          )
+                        }
+
+
+
+                        <!-- PARTNERS / SPONSORS -->
+
+                        {
+                          (
+                            event.sponsors?.length > 0 ||
+                            event.partners?.length > 0
+                          ) && (
 
                             <div
                               class="
-                                lg:col-span-3
+                                mt-6
+                                flex
+                                flex-col
+                                gap-2
                               "
                             >
-
-                              <span
-                                class:list={[
-                                  "text-[9px]",
-                                  "uppercase",
-                                  "tracking-[0.15em]",
-                                  "font-semibold",
-                                  labelClass(event)
-                                ]}
-                              >
-                                {labelFor(event)}
-                              </span>
-
-
-                              <p
-                                class="
-                                  text-xs
-                                  text-brand-slate
-                                  mt-2
-                                "
-                              >
-                                {formatDate(event)}
-                              </p>
-
-
-                              {
-                                event.city && (
-                                  <p
-                                    class="
-                                      text-xs
-                                      text-brand-slate
-                                      mt-1
-                                    "
-                                  >
-                                    {event.city}
-                                  </p>
-                                )
-                              }
-
-                            </div>
-
-
-                            <div
-                              class="
-                                lg:col-span-6
-                              "
-                            >
-
-                              <h3
-                                class="
-                                  font-serif
-                                  text-xl
-                                  sm:text-2xl
-                                  text-brand-charcoal
-                                  mb-3
-                                "
-                              >
-                                {event.title}
-                              </h3>
-
-
-                              {
-                                event.description && (
-                                  <p
-                                    class="
-                                      text-sm
-                                      text-brand-slate
-                                      leading-relaxed
-                                      font-light
-                                    "
-                                  >
-                                    {event.description}
-                                  </p>
-                                )
-                              }
-
-
-                              {
-                                event.registrations && (
-                                  <p
-                                    class="
-                                      text-xs
-                                      text-brand-gold
-                                      font-semibold
-                                      mt-4
-                                    "
-                                  >
-                                    {event.registrations}
-                                    +
-                                    {" "}
-                                    registrations
-                                  </p>
-                                )
-                              }
-
 
                               {
                                 event.sponsors?.length > 0 && (
+
                                   <p
                                     class="
                                       text-xs
                                       text-brand-slate
-                                      mt-3
                                     "
                                   >
                                     Sponsored by:
                                     {" "}
+
                                     <span
                                       class="
                                         text-brand-charcoal
                                         font-semibold
                                       "
                                     >
-                                      {event.sponsors.join(", ")}
+                                      {
+                                        event.sponsors.join(
+                                          ", "
+                                        )
+                                      }
                                     </span>
                                   </p>
+
                                 )
                               }
 
 
                               {
                                 event.partners?.length > 0 && (
+
                                   <p
                                     class="
                                       text-xs
                                       text-brand-slate
-                                      mt-2
                                     "
                                   >
                                     Event collaborators:
                                     {" "}
+
                                     <span
                                       class="
                                         text-brand-charcoal
                                         font-semibold
                                       "
                                     >
-                                      {event.partners.join(", ")}
-                                    </span>
-                                  </p>
-                                )
-                              }
-
-
-                              {
-                                event.speakers?.length > 0 && (
-                                  <div
-                                    class="
-                                      mt-4
-                                    "
-                                  >
-
-                                    <p
-                                      class="
-                                        text-[9px]
-                                        uppercase
-                                        tracking-[0.14em]
-                                        text-brand-slate
-                                        mb-2
-                                      "
-                                    >
-                                      Speakers
-                                    </p>
-
-
-                                    <div
-                                      class="
-                                        space-y-1
-                                      "
-                                    >
-
                                       {
-                                        event.speakers.map(
-                                          (speaker) => (
-                                            <p
-                                              class="
-                                                text-xs
-                                                text-brand-slate
-                                              "
-                                            >
-                                              <span
-                                                class="
-                                                  text-brand-charcoal
-                                                  font-semibold
-                                                "
-                                              >
-                                                {speaker.name}
-                                              </span>
-
-                                              {
-                                                speaker.title
-                                                  ? ` · ${speaker.title}`
-                                                  : ""
-                                              }
-
-                                              {" · "}
-
-                                              {speaker.company}
-                                            </p>
-                                          )
+                                        event.partners.join(
+                                          ", "
                                         )
                                       }
+                                    </span>
+                                  </p>
 
-                                    </div>
-
-                                  </div>
                                 )
                               }
 
                             </div>
 
+                          )
+                        }
+
+
+
+                        <!-- SPEAKERS -->
+
+                        {
+                          event.speakers?.length > 0 && (
 
                             <div
                               class="
-                                lg:col-span-3
+                                mt-7
+                                pt-6
+                                border-t
+                                border-brand-border
                               "
                             >
 
-                              <a
-                                href={event.url}
-                                target="_blank"
-                                rel="noopener noreferrer"
+                              <p
                                 class="
-                                  inline-flex
-                                  items-center
-                                  gap-2
-                                  text-[10px]
+                                  text-[9px]
                                   uppercase
-                                  tracking-[0.15em]
+                                  tracking-[0.14em]
+                                  text-brand-gold
                                   font-semibold
-                                  text-brand-charcoal
-                                  hover:text-brand-gold
-                                  transition-colors
+                                  mb-3
                                 "
                               >
-                                View Event
-
-                                <span>
-                                  ↗
-                                </span>
-                              </a>
+                                Speakers
+                              </p>
 
 
-                              {
-                                relatedNotes.length > 0 && (
-                                  <div
-                                    class="
-                                      mt-6
-                                      pt-5
-                                      border-t
-                                      border-brand-border
-                                    "
-                                  >
+                              <div
+                                class="
+                                  grid
+                                  md:grid-cols-2
+                                  gap-x-8
+                                  gap-y-2
+                                "
+                              >
 
-                                    <div
-                                      class="
-                                        text-[9px]
-                                        uppercase
-                                        tracking-[0.14em]
-                                        text-brand-gold
-                                        mb-3
-                                      "
-                                    >
-                                      Related Field Notes
-                                    </div>
+                                {
+                                  event.speakers.map(
+                                    (speaker) => (
+
+                                      <p
+                                        class="
+                                          text-xs
+                                          text-brand-slate
+                                          leading-relaxed
+                                        "
+                                      >
+
+                                        <span
+                                          class="
+                                            text-brand-charcoal
+                                            font-semibold
+                                          "
+                                        >
+                                          {speaker.name}
+                                        </span>
 
 
-                                    <div
-                                      class="
-                                        space-y-3
-                                      "
-                                    >
+                                        {
+                                          speaker.title
+                                            ? ` · ${speaker.title}`
+                                            : ""
+                                        }
 
-                                      {
-                                        relatedNotes.map(
-                                          (post) => (
-                                            <a
-                                              href={`/field-notes/${post.id}/`}
-                                              class="
-                                                block
-                                                text-xs
-                                                text-brand-charcoal
-                                                hover:text-brand-gold
-                                                transition-colors
-                                              "
-                                            >
-                                              {post.data.title}
-                                              {" "}
-                                              →
-                                            </a>
-                                          )
-                                        )
-                                      }
 
-                                    </div>
+                                        {" · "}
 
-                                  </div>
-                                )
-                              }
+                                        {speaker.company}
+
+                                      </p>
+
+                                    )
+                                  )
+                                }
+
+                              </div>
 
                             </div>
 
-                          </div>
+                          )
+                        }
 
-                        </article>
-                      );
+                      </div>
 
-                    }
-                  )
-                }
 
-              </div>
 
-            </div>
+                      <!-- LINKS -->
+
+                      <div
+                        class="
+                          lg:col-span-4
+                          lg:border-l
+                          lg:border-brand-border
+                          lg:pl-8
+                      "
+                      >
+
+                        <a
+                          href={event.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          class="
+                            inline-flex
+                            items-center
+                            gap-2
+                            text-[10px]
+                            uppercase
+                            tracking-[0.15em]
+                            font-semibold
+                            text-brand-charcoal
+                            hover:text-brand-gold
+                            transition-colors
+                          "
+                        >
+                          View Event
+
+                          <span>
+                            ↗
+                          </span>
+                        </a>
+
+
+
+                        {
+                          relatedNotes.length > 0 && (
+
+                            <div
+                              class="
+                                mt-7
+                                pt-6
+                                border-t
+                                border-brand-border
+                              "
+                            >
+
+                              <div
+                                class="
+                                  text-[9px]
+                                  uppercase
+                                  tracking-[0.14em]
+                                  text-brand-gold
+                                  font-semibold
+                                  mb-3
+                                "
+                              >
+                                Related Field Notes
+                              </div>
+
+
+                              <div
+                                class="
+                                  space-y-3
+                                "
+                              >
+
+                                {
+                                  relatedNotes.map(
+                                    (post) => (
+
+                                      <a
+                                        href={`/field-notes/${post.id}/`}
+                                        class="
+                                          block
+                                          text-xs
+                                          text-brand-charcoal
+                                          hover:text-brand-gold
+                                          transition-colors
+                                        "
+                                      >
+                                        {post.data.title}
+                                        {" "}
+                                        →
+                                      </a>
+
+                                    )
+                                  )
+                                }
+
+                              </div>
+
+                            </div>
+
+                          )
+                        }
+
+                      </div>
+
+                    </div>
+
+                  </div>
+
+                </details>
+
+              );
+
+            }
+          )
+        }
+
+      </div>
+
+
+
+      <!-- EMPTY STATE -->
+
+      <div
+        id="fieldwork-empty"
+        class="
+          hidden
+          bg-white
+          border
+          border-brand-border
+          px-6
+          py-10
+          text-center
+        "
+      >
+
+        <p
+          class="
+            font-serif
+            text-xl
+            text-brand-charcoal
+          "
+        >
+          No events found.
+        </p>
+
+
+        <p
+          class="
+            text-xs
+            text-brand-slate
+            mt-2
+          "
+        >
+          Try selecting a different year or month.
+        </p>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+
+  <!-- =====================================================
+       FILTER SCRIPT
+       ===================================================== -->
+
+  <script is:inline>
+
+    (() => {
+
+      const yearSelect =
+        document.getElementById(
+          "fieldwork-year"
+        );
+
+
+      const monthSelect =
+        document.getElementById(
+          "fieldwork-month"
+        );
+
+
+      const resetButton =
+        document.getElementById(
+          "fieldwork-reset"
+        );
+
+
+      const resultCount =
+        document.getElementById(
+          "fieldwork-result-count"
+        );
+
+
+      const emptyState =
+        document.getElementById(
+          "fieldwork-empty"
+        );
+
+
+      const events =
+        Array.from(
+          document.querySelectorAll(
+            ".fieldwork-event"
+          )
+        );
+
+
+      if (
+        !yearSelect ||
+        !monthSelect
+      ) {
+
+        return;
+
+      }
+
+
+
+      function applyFilters() {
+
+        const selectedYear =
+          yearSelect.value;
+
+
+        const selectedMonth =
+          monthSelect.value;
+
+
+        let visibleCount =
+          0;
+
+
+        events.forEach(
+          (event) => {
+
+            const matchesYear =
+              selectedYear ===
+                "all" ||
+              event.dataset.year ===
+                selectedYear;
+
+
+            const matchesMonth =
+              selectedMonth ===
+                "all" ||
+              event.dataset.month ===
+                selectedMonth;
+
+
+            const visible =
+              matchesYear &&
+              matchesMonth;
+
+
+            event.classList.toggle(
+              "hidden",
+              !visible
+            );
+
+
+            /*
+             * Collapse events whenever
+             * filters change so the
+             * archive stays compact.
+             */
+
+            if (
+              event.open
+            ) {
+
+              event.open =
+                false;
+
+            }
+
+
+            if (
+              visible
+            ) {
+
+              visibleCount +=
+                1;
+
+            }
+
+          }
+        );
+
+
+        if (
+          resultCount
+        ) {
+
+          resultCount.textContent =
+            `${visibleCount} ${
+              visibleCount ===
+              1
+                ? "Event"
+                : "Events"
+            }`;
+
+        }
+
+
+        if (
+          emptyState
+        ) {
+
+          emptyState.classList.toggle(
+            "hidden",
+            visibleCount !==
+              0
           );
 
         }
-      )
-    }
 
-  </section>
+      }
+
+
+
+      yearSelect.addEventListener(
+        "change",
+        applyFilters
+      );
+
+
+      monthSelect.addEventListener(
+        "change",
+        applyFilters
+      );
+
+
+      resetButton?.addEventListener(
+        "click",
+        () => {
+
+          yearSelect.value =
+            "all";
+
+
+          monthSelect.value =
+            "all";
+
+
+          applyFilters();
+
+        }
+      );
+
+
+      applyFilters();
+
+    })();
+
+  </script>
 
 </BaseLayout>
