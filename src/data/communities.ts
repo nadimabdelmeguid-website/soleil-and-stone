@@ -1,24 +1,45 @@
-export const communities = [
+export interface Community {
+  id: string;
+
+  name: string;
+
+  role: string;
+
+  description: string;
+
+  members: number;
+
+  linkedinFollowers?: number;
+
+  primaryUrl: string;
+
+  primaryLabel: string;
+
+  secondaryUrl?: string;
+
+  secondaryLabel?: string;
+
+  focus: string[];
+}
+
+
+export const communities: Community[] = [
+
   {
-    id: "startup-mixer",
+    id:
+      "startup-mixer",
 
     name:
       "San Diego County Startup Mixer",
 
-    roleLabel:
+    role:
       "Hosted Since March 2026",
 
     description:
-      "A monthly gathering built to casually connect local founders, engineers, and investors. The goal is to keep things low-pressure while making high-value introductions across our growing San Diego startup ecosystem.",
+      "A recurring gathering designed to make it easier for founders, engineers, investors, operators and people exploring the San Diego startup ecosystem to meet in a relaxed, low-pressure setting.",
 
     members:
       300,
-
-    membersSuffix:
-      "+",
-
-    membersLabel:
-      "Registered Members",
 
     primaryUrl:
       "https://eventship.com/host/nadim-abdel-meguid",
@@ -32,35 +53,16 @@ export const communities = [
     secondaryLabel:
       "Partner With The Mixer",
 
-    pillarsTitle:
-      "What We're Building",
-
-    pillars: [
-      {
-        title:
-          "Monthly gatherings",
-
-        text:
-          "Casual startup meetups designed around conversation rather than formal pitching."
-      },
-
-      {
-        title:
-          "Thoughtful introductions",
-
-        text:
-          "Connecting founders, engineers, investors and advisors when there is genuine overlap."
-      },
-
-      {
-        title:
-          "Local partnerships",
-
-        text:
-          "Working with venues and ecosystem partners to create accessible gathering spaces across San Diego."
-      }
+    focus: [
+      "Founder & operator connections",
+      "Thoughtful introductions",
+      "Low-pressure networking",
+      "Local ecosystem building",
+      "Recurring community touchpoints",
+      "Cross-industry conversations"
     ]
   },
+
 
   {
     id:
@@ -69,72 +71,38 @@ export const communities = [
     name:
       "San Diego Hardware Meetup",
 
-    roleLabel:
-      "Co-Organized Chapter Since January 2026",
+    role:
+      "Co-Organized Since January 2026",
 
     description:
-      "Joining and helping co-organize the San Diego chapter of the national Hardware Meetup group. We bring together creators building physical products across San Diego—from designers, founders, and engineers to investors.",
+      "A technical community bringing together hardware founders, engineers, designers, manufacturers and product leaders around the challenges of building and scaling physical products.",
 
     members:
       300,
 
-    membersSuffix:
-      "+",
-
-    membersLabel:
-      "Community Members",
-
     linkedinFollowers:
       75,
-
-    linkedinFollowersSuffix:
-      "+",
-
-    linkedinFollowersLabel:
-      "LinkedIn Followers",
 
     primaryUrl:
       "https://luma.com/sd-hardware-meetup",
 
     primaryLabel:
-      "View Upcoming Events",
-
-    linkedinUrl:
-      "https://www.linkedin.com/company/san-diego-hardware-meetup/",
+      "View Hardware Meetup",
 
     secondaryUrl:
       "/?type=partnership#contact",
 
     secondaryLabel:
-      "Partner With Us",
+      "Partner With The Meetup",
 
-    pillarsTitle:
-      "What Happens At The Meetup",
-
-    pillars: [
-      {
-        title:
-          "Founder & builder conversations",
-
-        text:
-          "Bringing together people actually designing and shipping physical products."
-      },
-
-      {
-        title:
-          "Speakers & technical sessions",
-
-        text:
-          "Practical conversations around engineering, manufacturing and product development."
-      },
-
-      {
-        title:
-          "Field trips & showcases",
-
-        text:
-          "Getting the community inside factories, labs and companies instead of keeping everything in conference rooms."
-      }
+    focus: [
+      "Hardware commercialization",
+      "Product development",
+      "Design & engineering",
+      "Manufacturing & scale",
+      "Technical founder conversations",
+      "Industry knowledge sharing"
     ]
   }
+
 ];
