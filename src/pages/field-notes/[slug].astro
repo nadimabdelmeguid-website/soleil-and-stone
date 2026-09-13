@@ -1,44 +1,59 @@
 ---
-import {
-  getCollection,
-  render
-} from "astro:content";
-
-import BaseLayout
-  from "../../layouts/BaseLayout.astro";
-
-import FieldNoteLayout
-  from "../../layouts/FieldNoteLayout.astro";
-
+import { getCollection, render } from "astro:content";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import FieldNoteLayout from "../../layouts/FieldNoteLayout.astro";
 
 export async function getStaticPaths() {
+  const now = new Date();
 
-  const posts =
-    await getCollection("fieldNotes");
-
-
-  return posts
+  const posts = (await getCollection("fieldNotes"))
     .filter(
-      (post) => !post.data.draft
+      (post) =>
+        !post.data.draft &&
+        post.data.published <= now
     )
-    .map(
-      (post) => ({
-        params: {
-          slug: post.id
-        },
-
-        props: {
-          post
-        }
-      })
+    .sort(
+      (a, b) =>
+        b.data.published.getTime() -
+        a.data.published.getTime()
     );
+
+  return posts.map((post) => {
+    const otherPosts =
+      posts.filter(
+        (candidate) =>
+          candidate.id !== post.id
+      );
+
+    const sameCategory =
+      otherPosts.filter(
+        (candidate) =>
+          candidate.data.categorySlug ===
+          post.data.categorySlug
+      );
+
+    const recommendedPost =
+      sameCategory[0] ??
+      otherPosts[0] ??
+      null;
+
+    return {
+      params: {
+        slug: post.id
+      },
+
+      props: {
+        post,
+        recommendedPost
+      }
+    };
+  });
 }
 
-
 const {
-  post
+  post,
+  recommendedPost
 } = Astro.props;
-
 
 const {
   Content
@@ -52,6 +67,7 @@ const {
 
   <FieldNoteLayout
     post={post}
+    recommendedPost={recommendedPost}
   >
 
     <Content />
