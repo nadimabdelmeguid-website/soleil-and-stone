@@ -11,9 +11,11 @@ export const communities = [
     description:
       "A monthly gathering built to casually connect local founders, engineers, and investors. The goal is to keep things low-pressure while making high-value introductions across our growing San Diego startup ecosystem.",
 
-    members: 300,
+    members:
+      300,
 
-    membersSuffix: "+",
+    membersSuffix:
+      "+",
 
     membersLabel:
       "Registered Members",
@@ -25,7 +27,7 @@ export const communities = [
       "View Upcoming Mixers",
 
     secondaryUrl:
-      "/#contact?type=partnership",
+      "/?type=partnership#contact",
 
     secondaryLabel:
       "Partner With The Mixer",
@@ -35,7 +37,8 @@ export const communities = [
 
     pillars: [
       {
-        title: "Monthly gatherings",
+        title:
+          "Monthly gatherings",
 
         text:
           "Casual startup meetups designed around conversation rather than formal pitching."
@@ -60,7 +63,8 @@ export const communities = [
   },
 
   {
-    id: "hardware-meetup",
+    id:
+      "hardware-meetup",
 
     name:
       "San Diego Hardware Meetup",
@@ -71,16 +75,20 @@ export const communities = [
     description:
       "Joining and helping co-organize the San Diego chapter of the national Hardware Meetup group. We bring together creators building physical products across San Diego—from designers, founders, and engineers to investors.",
 
-    members: 300,
+    members:
+      300,
 
-    membersSuffix: "+",
+    membersSuffix:
+      "+",
 
     membersLabel:
       "Community Members",
 
-    linkedinFollowers: 75,
+    linkedinFollowers:
+      75,
 
-    linkedinFollowersSuffix: "+",
+    linkedinFollowersSuffix:
+      "+",
 
     linkedinFollowersLabel:
       "LinkedIn Followers",
@@ -95,7 +103,7 @@ export const communities = [
       "https://www.linkedin.com/company/san-diego-hardware-meetup/",
 
     secondaryUrl:
-      "/#contact?type=partnership",
+      "/?type=partnership#contact",
 
     secondaryLabel:
       "Partner With Us",
