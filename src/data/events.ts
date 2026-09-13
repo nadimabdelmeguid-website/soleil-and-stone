@@ -25,7 +25,11 @@ export interface SiteEvent {
 
   description?: string;
 
-  url?: string;
+  /**
+   * REQUIRED:
+   * Every calendar event must point somewhere.
+   */
+  url: string;
 
   buttonLabel?: string;
 
@@ -34,8 +38,8 @@ export interface SiteEvent {
   showOnHome?: boolean;
 
   /**
-   * Use only when you have a registration number
-   * you can substantiate.
+   * Add only when you have a registration
+   * number you can substantiate.
    */
   registrations?: number;
 }
@@ -48,32 +52,44 @@ export const events: SiteEvent[] = [
   // =====================================================
 
   {
-    id: "ces-2027",
+    id:
+      "ces-2027",
 
-    title: "CES 2027",
+    title:
+      "CES 2027",
 
-    role: "attending",
+    role:
+      "attending",
 
-    participation: "exhibitor",
+    participation:
+      "exhibitor",
 
-    startDate: "2027-01-06",
+    startDate:
+      "2027-01-06",
 
-    endDate: "2027-01-09",
+    endDate:
+      "2027-01-09",
 
-    venue: "Las Vegas Convention Center",
+    venue:
+      "Las Vegas Convention Center",
 
-    city: "Las Vegas",
+    city:
+      "Las Vegas",
 
     description:
       "Exhibiting at CES with a focus on consumer electronics, embedded technologies, acoustics, sensing and hardware commercialization.",
 
-    url: "https://www.ces.tech/",
+    url:
+      "https://www.ces.tech/",
 
-    buttonLabel: "View CES",
+    buttonLabel:
+      "View CES",
 
-    typeLabel: "Exhibitor",
+    typeLabel:
+      "Exhibitor",
 
-    showOnHome: true
+    showOnHome:
+      true
   },
 
 
@@ -82,59 +98,83 @@ export const events: SiteEvent[] = [
   // =====================================================
 
   {
-    id: "aems-2026",
+    id:
+      "aems-2026",
 
     title:
       "Anaheim Electronics & Manufacturing Show 2026",
 
-    role: "attending",
+    role:
+      "attending",
 
-    participation: "exhibitor",
+    participation:
+      "exhibitor",
 
-    startDate: "2026-11-10",
+    startDate:
+      "2026-11-10",
 
-    endDate: "2026-11-11",
+    endDate:
+      "2026-11-11",
 
-    venue: "Anaheim Convention Center",
+    venue:
+      "Anaheim Convention Center",
 
-    city: "Anaheim",
+    city:
+      "Anaheim",
 
     description:
       "Exhibiting at AEMS across electronics, manufacturing, automation, components and product-development technologies.",
 
-    url: "https://www.anaheimshow.com/",
+    url:
+      "https://www.anaheimshow.com/",
 
-    buttonLabel: "View Show",
+    buttonLabel:
+      "View Show",
 
-    typeLabel: "Exhibitor",
+    typeLabel:
+      "Exhibitor",
 
-    showOnHome: true
+    showOnHome:
+      true
   },
 
 
   {
-    id: "san-diego-startup-week-2026",
+    id:
+      "san-diego-startup-week-2026",
 
     title:
       "San Diego Startup Week",
 
-    role: "attending",
+    role:
+      "attending",
 
-    participation: "attending",
+    participation:
+      "attending",
 
-    startDate: "2026-11-02",
+    startDate:
+      "2026-11-02",
 
-    endDate: "2026-11-06",
+    endDate:
+      "2026-11-06",
 
-    city: "San Diego",
+    city:
+      "San Diego",
 
     description:
       "Founder, investor, startup and ecosystem programming across San Diego.",
 
+    url:
+      "https://sandiegostartupweek.org/",
+
+    buttonLabel:
+      "View Event",
+
     typeLabel:
       "Attending Ecosystem Event",
 
-    showOnHome: true
+    showOnHome:
+      true
   },
 
 
@@ -143,34 +183,44 @@ export const events: SiteEvent[] = [
   // =====================================================
 
   {
-    id: "la-tech-week-2026",
+    id:
+      "la-tech-week-2026",
 
     title:
       "LA Tech Week",
 
-    role: "attending",
+    role:
+      "attending",
 
-    participation: "attending",
+    participation:
+      "attending",
 
-    startDate: "2026-10-12",
+    startDate:
+      "2026-10-12",
 
-    endDate: "2026-10-18",
+    endDate:
+      "2026-10-18",
 
-    venue: "Various Venues",
+    venue:
+      "Various Venues",
 
-    city: "Los Angeles",
+    city:
+      "Los Angeles",
 
     description:
       "A week of founder, investor and technology events across the Los Angeles innovation ecosystem.",
 
-    url: "https://www.tech-week.com/",
+    url:
+      "https://www.tech-week.com/",
 
-    buttonLabel: "View Event",
+    buttonLabel:
+      "View Event",
 
     typeLabel:
       "Attending Ecosystem Event",
 
-    showOnHome: true
+    showOnHome:
+      true
   },
 
 
@@ -179,23 +229,29 @@ export const events: SiteEvent[] = [
   // =====================================================
 
   {
-    id: "embedded-world-na-2026",
+    id:
+      "embedded-world-na-2026",
 
     title:
       "embedded world North America",
 
-    role: "attending",
+    role:
+      "attending",
 
-    participation: "attending",
+    participation:
+      "attending",
 
-    startDate: "2026-09-22",
+    startDate:
+      "2026-09-22",
 
-    endDate: "2026-09-24",
+    endDate:
+      "2026-09-24",
 
     venue:
       "Anaheim Convention Center",
 
-    city: "Anaheim",
+    city:
+      "Anaheim",
 
     description:
       "Embedded systems, electronics, IoT, hardware and software exhibition and technical conference.",
@@ -203,12 +259,14 @@ export const events: SiteEvent[] = [
     url:
       "https://embedded-world-na.com/",
 
-    buttonLabel: "View Event",
+    buttonLabel:
+      "View Event",
 
     typeLabel:
       "Attending Trade Show",
 
-    showOnHome: true
+    showOnHome:
+      true
   },
 
 
@@ -219,14 +277,17 @@ export const events: SiteEvent[] = [
     title:
       "San Diego County Startup Mixer",
 
-    role: "hosted",
+    role:
+      "hosted",
 
-    participation: "hosted",
+    participation:
+      "hosted",
 
     communityId:
       "startup-mixer",
 
-    startDate: "2026-09-14",
+    startDate:
+      "2026-09-14",
 
     venue:
       "Harland Brewing",
@@ -237,10 +298,17 @@ export const events: SiteEvent[] = [
     description:
       "Monthly gathering connecting founders, engineers, investors and operators across the San Diego startup ecosystem.",
 
+    url:
+      "https://eventship.com/event/san-diego-county-startup-mixer-5",
+
+    buttonLabel:
+      "View Event",
+
     typeLabel:
       "Hosted Community Event",
 
-    showOnHome: true
+    showOnHome:
+      true
   },
 
 
@@ -251,9 +319,11 @@ export const events: SiteEvent[] = [
     title:
       "Astra Commons: San Diego",
 
-    role: "attending",
+    role:
+      "attending",
 
-    participation: "attending",
+    participation:
+      "attending",
 
     startDate:
       "2026-09-13",
@@ -276,7 +346,8 @@ export const events: SiteEvent[] = [
     typeLabel:
       "Attending Builder Event",
 
-    showOnHome: true
+    showOnHome:
+      true
   },
 
 
@@ -287,9 +358,11 @@ export const events: SiteEvent[] = [
     title:
       "VibeCraft",
 
-    role: "attending",
+    role:
+      "attending",
 
-    participation: "attending",
+    participation:
+      "attending",
 
     startDate:
       "2026-09-09",
@@ -300,10 +373,17 @@ export const events: SiteEvent[] = [
     description:
       "Builder and startup showcase within San Diego's technology community.",
 
+    url:
+      "https://eventship.com/event/vibecraft-slopathon-compete-for-a-chance-to-win-big?code=VIBE20",
+
+    buttonLabel:
+      "View Event",
+
     typeLabel:
       "Attending Community Event",
 
-    showOnHome: true
+    showOnHome:
+      true
   },
 
 
@@ -318,9 +398,11 @@ export const events: SiteEvent[] = [
     title:
       "Founders Fire Daytime Demo Day",
 
-    role: "attending",
+    role:
+      "attending",
 
-    participation: "attending",
+    participation:
+      "attending",
 
     startDate:
       "2026-08-29",
@@ -340,7 +422,8 @@ export const events: SiteEvent[] = [
     typeLabel:
       "Attending Startup Event",
 
-    showOnHome: true
+    showOnHome:
+      true
   },
 
 
@@ -351,9 +434,11 @@ export const events: SiteEvent[] = [
     title:
       "Howl House | End of Summer Party",
 
-    role: "attending",
+    role:
+      "attending",
 
-    participation: "attending",
+    participation:
+      "attending",
 
     startDate:
       "2026-08-27",
@@ -373,7 +458,8 @@ export const events: SiteEvent[] = [
     typeLabel:
       "Attending Ecosystem Event",
 
-    showOnHome: true
+    showOnHome:
+      true
   },
 
 
@@ -384,9 +470,11 @@ export const events: SiteEvent[] = [
     title:
       "The Insider Series: U.S. Workplace Culture",
 
-    role: "attending",
+    role:
+      "attending",
 
-    participation: "attending",
+    participation:
+      "attending",
 
     startDate:
       "2026-08-15",
@@ -406,7 +494,8 @@ export const events: SiteEvent[] = [
     typeLabel:
       "Attending Professional Event",
 
-    showOnHome: true
+    showOnHome:
+      true
   },
 
 
@@ -417,9 +506,11 @@ export const events: SiteEvent[] = [
     title:
       "San Diego County Startup Mixer",
 
-    role: "hosted",
+    role:
+      "hosted",
 
-    participation: "hosted",
+    participation:
+      "hosted",
 
     communityId:
       "startup-mixer",
@@ -445,7 +536,8 @@ export const events: SiteEvent[] = [
     typeLabel:
       "Hosted Community Event",
 
-    showOnHome: true
+    showOnHome:
+      true
   },
 
 
@@ -460,9 +552,11 @@ export const events: SiteEvent[] = [
     title:
       "San Diego County Startup Mixer",
 
-    role: "hosted",
+    role:
+      "hosted",
 
-    participation: "hosted",
+    participation:
+      "hosted",
 
     communityId:
       "startup-mixer",
@@ -476,10 +570,17 @@ export const events: SiteEvent[] = [
     description:
       "Monthly founder and startup ecosystem gathering in San Diego.",
 
+    url:
+      "https://eventship.com/event/san-diego-county-startup-mixer-2",
+
+    buttonLabel:
+      "View Event",
+
     typeLabel:
       "Hosted Community Event",
 
-    showOnHome: true
+    showOnHome:
+      true
   },
 
 
@@ -490,9 +591,11 @@ export const events: SiteEvent[] = [
     title:
       "Founder Fridays",
 
-    role: "attending",
+    role:
+      "attending",
 
-    participation: "attending",
+    participation:
+      "attending",
 
     startDate:
       "2026-07-10",
@@ -512,7 +615,8 @@ export const events: SiteEvent[] = [
     typeLabel:
       "Attending Founder Event",
 
-    showOnHome: true
+    showOnHome:
+      true
   },
 
 
@@ -557,7 +661,8 @@ export const events: SiteEvent[] = [
     typeLabel:
       "Co-Organized Hardware Event",
 
-    showOnHome: true
+    showOnHome:
+      true
   },
 
 
@@ -586,10 +691,17 @@ export const events: SiteEvent[] = [
     description:
       "Monthly founder and startup ecosystem gathering in San Diego.",
 
+    url:
+      "https://eventship.com/host/nadim-abdel-meguid",
+
+    buttonLabel:
+      "View Events",
+
     typeLabel:
       "Hosted Community Event",
 
-    showOnHome: true
+    showOnHome:
+      true
   },
 
 
@@ -622,10 +734,17 @@ export const events: SiteEvent[] = [
     description:
       "Monthly founder and startup ecosystem gathering in San Diego.",
 
+    url:
+      "https://eventship.com/event/san-diego-county-startup-mixer-copy",
+
+    buttonLabel:
+      "View Event",
+
     typeLabel:
       "Hosted Community Event",
 
-    showOnHome: true
+    showOnHome:
+      true
   },
 
 
@@ -670,7 +789,8 @@ export const events: SiteEvent[] = [
     typeLabel:
       "Co-Organized Hardware Event",
 
-    showOnHome: true
+    showOnHome:
+      true
   },
 
 
@@ -699,10 +819,17 @@ export const events: SiteEvent[] = [
     description:
       "Monthly founder and startup ecosystem gathering in San Diego.",
 
+    url:
+      "https://eventship.com/event/san-diego-county-startup-mixer-1",
+
+    buttonLabel:
+      "View Event",
+
     typeLabel:
       "Hosted Community Event",
 
-    showOnHome: true
+    showOnHome:
+      true
   },
 
 
@@ -741,7 +868,8 @@ export const events: SiteEvent[] = [
     typeLabel:
       "Attending Medtech Event",
 
-    showOnHome: true
+    showOnHome:
+      true
   },
 
 
@@ -776,7 +904,8 @@ export const events: SiteEvent[] = [
     typeLabel:
       "Attending Startup Event",
 
-    showOnHome: true
+    showOnHome:
+      true
   },
 
 
@@ -805,10 +934,17 @@ export const events: SiteEvent[] = [
     description:
       "First event in the recurring San Diego County Startup Mixer series.",
 
+    url:
+      "https://eventship.com/event/san-diego-county-startup-mixer",
+
+    buttonLabel:
+      "View Event",
+
     typeLabel:
       "Hosted Community Event",
 
-    showOnHome: true
+    showOnHome:
+      true
   },
 
 
@@ -853,7 +989,47 @@ export const events: SiteEvent[] = [
     typeLabel:
       "Co-Organized Hardware Event",
 
-    showOnHome: true
+    showOnHome:
+      true
+  },
+
+
+  {
+    id:
+      "hardtech-seattle-feb-2026",
+
+    title:
+      "Hardtech in Seattle: Funding & Traction Before You Can Build",
+
+    role:
+      "attending",
+
+    participation:
+      "attending",
+
+    startDate:
+      "2026-02-20",
+
+    venue:
+      "Virtual",
+
+    city:
+      "Seattle",
+
+    description:
+      "Hardtech founder discussion focused on funding, pilots, LOIs and commercial traction before full product build.",
+
+    url:
+      "https://luma.com/13fmeea7?tk=KQfQmu",
+
+    buttonLabel:
+      "View Event",
+
+    typeLabel:
+      "Attending Hardtech Event",
+
+    showOnHome:
+      true
   },
 
 
@@ -888,7 +1064,8 @@ export const events: SiteEvent[] = [
     typeLabel:
       "Attending Startup Event",
 
-    showOnHome: true
+    showOnHome:
+      true
   },
 
 
@@ -923,7 +1100,8 @@ export const events: SiteEvent[] = [
     typeLabel:
       "Attending Founder Event",
 
-    showOnHome: true
+    showOnHome:
+      true
   },
 
 
@@ -965,7 +1143,8 @@ export const events: SiteEvent[] = [
     typeLabel:
       "Attending Hardware Event",
 
-    showOnHome: true
+    showOnHome:
+      true
   },
 
 
@@ -1000,7 +1179,44 @@ export const events: SiteEvent[] = [
     typeLabel:
       "Attending Startup Event",
 
-    showOnHome: true
+    showOnHome:
+      true
+  },
+
+
+  {
+    id:
+      "medtech-mixer-jan-2026",
+
+    title:
+      "San Diego Medtech Mixer",
+
+    role:
+      "attending",
+
+    participation:
+      "attending",
+
+    startDate:
+      "2026-01-08",
+
+    city:
+      "San Diego",
+
+    description:
+      "Medical technology ecosystem gathering connecting founders, engineers, clinicians and investors.",
+
+    url:
+      "https://eventship.com/event/san-diego-medtech-mixer",
+
+    buttonLabel:
+      "View Event",
+
+    typeLabel:
+      "Attending Medtech Event",
+
+    showOnHome:
+      true
   },
 
 
@@ -1123,7 +1339,44 @@ export const events: SiteEvent[] = [
     typeLabel:
       "Attending Life Sciences Event",
 
-    showOnHome: true
+    showOnHome:
+      true
+  },
+
+
+  {
+    id:
+      "business-networking-nov-2025",
+
+    title:
+      "San Diego Business Networking Group",
+
+    role:
+      "attending",
+
+    participation:
+      "attending",
+
+    startDate:
+      "2025-11-20",
+
+    city:
+      "San Diego",
+
+    description:
+      "Regional professional networking gathering connecting business owners, professionals and local operators.",
+
+    url:
+      "https://eventship.com/event/11-20-25-san-diego-s-fastest-growing-business-networking-group",
+
+    buttonLabel:
+      "View Event",
+
+    typeLabel:
+      "Attending Professional Event",
+
+    showOnHome:
+      true
   },
 
 
@@ -1158,7 +1411,8 @@ export const events: SiteEvent[] = [
     typeLabel:
       "Attending Medtech Event",
 
-    showOnHome: true
+    showOnHome:
+      true
   },
 
 
@@ -1191,13 +1445,17 @@ export const events: SiteEvent[] = [
     description:
       "Startup and expert matchmaking event focused on connecting early-stage companies with technical, scientific and commercialization expertise.",
 
+    url:
+      "https://eventship.com/event/simbiosyx-matching-startups-with-verified-experts-to-fuel-innovation-1",
+
     buttonLabel:
       "View Event",
 
     typeLabel:
       "Attending Innovation Event",
 
-    showOnHome: true
+    showOnHome:
+      true
   },
 
 
@@ -1242,7 +1500,8 @@ export const events: SiteEvent[] = [
     typeLabel:
       "Exhibitor",
 
-    showOnHome: true
+    showOnHome:
+      true
   },
 
 
@@ -1283,7 +1542,8 @@ export const events: SiteEvent[] = [
     typeLabel:
       "Attending Trade Show",
 
-    showOnHome: true
+    showOnHome:
+      true
   },
 
 
@@ -1322,7 +1582,8 @@ export const events: SiteEvent[] = [
     typeLabel:
       "Attending Startup Event",
 
-    showOnHome: true
+    showOnHome:
+      true
   },
 
 
@@ -1367,7 +1628,8 @@ export const events: SiteEvent[] = [
     typeLabel:
       "Exhibitor",
 
-    showOnHome: true
+    showOnHome:
+      true
   },
 
 
@@ -1412,7 +1674,8 @@ export const events: SiteEvent[] = [
     typeLabel:
       "Attending Trade Show",
 
-    showOnHome: true
+    showOnHome:
+      true
   },
 
 
@@ -1457,7 +1720,8 @@ export const events: SiteEvent[] = [
     typeLabel:
       "Exhibitor",
 
-    showOnHome: true
+    showOnHome:
+      true
   }
 
 ];
