@@ -32,9 +32,6 @@ export interface SiteEvent {
 
   description?: string;
 
-  /*
-   * Every public event should have a supporting URL.
-   */
   url: string;
 
   buttonLabel?: string;
@@ -43,33 +40,22 @@ export interface SiteEvent {
 
   showOnHome?: boolean;
 
-  /*
-   * Registration count.
-   *
-   * These numbers are included in impact metrics only
-   * for events you hosted or co-organized.
-   */
   registrations?: number;
 
-  /*
-   * Formal event sponsors.
-   */
   sponsors?: string[];
 
-  /*
-   * Organizations that collaborated on,
-   * co-hosted or formally supported an event.
-   */
   partners?: string[];
 
-  /*
-   * Invited/programmed speakers.
-   */
   speakers?: EventSpeaker[];
 }
 
 
 export const events: SiteEvent[] = [
+
+  // =====================================================
+  // 2027
+  // =====================================================
+
 
   // =====================================================
   // JANUARY 2027
@@ -101,7 +87,7 @@ export const events: SiteEvent[] = [
       "Las Vegas",
 
     description:
-      "Exhibiting at CES with a focus on consumer electronics, embedded technologies, acoustics, sensing and hardware commercialization.",
+      "Exhibiting at CES across consumer electronics, embedded technologies, acoustics, sensing and hardware commercialization.",
 
     url:
       "https://www.ces.tech/",
@@ -115,6 +101,12 @@ export const events: SiteEvent[] = [
     showOnHome:
       true
   },
+
+
+
+  // =====================================================
+  // 2026
+  // =====================================================
 
 
   // =====================================================
@@ -147,7 +139,7 @@ export const events: SiteEvent[] = [
       "Anaheim",
 
     description:
-      "Exhibiting at AEMS across electronics, manufacturing, automation, components and product-development technologies.",
+      "Exhibiting at AEMS across electronics, manufacturing, components, medical technology and product-development technologies.",
 
     url:
       "https://www.anaheimshow.com/",
@@ -202,6 +194,7 @@ export const events: SiteEvent[] = [
   },
 
 
+
   // =====================================================
   // OCTOBER 2026
   // =====================================================
@@ -246,6 +239,7 @@ export const events: SiteEvent[] = [
     showOnHome:
       true
   },
+
 
 
   // =====================================================
@@ -314,13 +308,13 @@ export const events: SiteEvent[] = [
       "2026-09-14",
 
     venue:
-      "Harland Brewing",
+      "Harland Brewing Co. - Bay Park",
 
     city:
       "San Diego",
 
     description:
-      "Monthly gathering connecting founders, engineers, investors and operators across the San Diego startup ecosystem.",
+      "Monthly gathering connecting founders, tech professionals, investors and people interested in the growing San Diego startup ecosystem.",
 
     url:
       "https://eventship.com/event/san-diego-county-startup-mixer-5",
@@ -330,6 +324,12 @@ export const events: SiteEvent[] = [
 
     typeLabel:
       "Hosted Community Event",
+
+    /*
+     * Add registrations after the event
+     * once the final Eventship confirmed
+     * count is available.
+     */
 
     showOnHome:
       true
@@ -404,11 +404,12 @@ export const events: SiteEvent[] = [
       "View Event",
 
     typeLabel:
-      "Attending Community Event",
+      "Attending Builder Event",
 
     showOnHome:
       true
   },
+
 
 
   // =====================================================
@@ -507,7 +508,7 @@ export const events: SiteEvent[] = [
       "San Diego",
 
     description:
-      "Professional-development and networking session focused on workplace culture and navigating professional environments in the U.S.",
+      "Professional-development and networking session focused on workplace culture and navigating professional environments in the United States.",
 
     url:
       "https://eventship.com/event/the-insider-series-u-s-workplace-culture-confidence-for-international-professionals",
@@ -543,13 +544,13 @@ export const events: SiteEvent[] = [
       "2026-08-10",
 
     venue:
-      "Harland Brewing",
+      "Harland Brewing Co. - Bay Park",
 
     city:
       "San Diego",
 
     description:
-      "Monthly gathering connecting founders, engineers, investors and operators across the San Diego startup ecosystem.",
+      "Monthly founder and startup ecosystem gathering focused on low-pressure networking, new connections and sharing what people are building across San Diego.",
 
     url:
       "https://eventship.com/event/san-diego-county-startup-mixer-4",
@@ -566,6 +567,7 @@ export const events: SiteEvent[] = [
     showOnHome:
       true
   },
+
 
 
   // =====================================================
@@ -591,11 +593,14 @@ export const events: SiteEvent[] = [
     startDate:
       "2026-07-13",
 
+    venue:
+      "Harland Brewing Co. - Bay Park",
+
     city:
       "San Diego",
 
     description:
-      "Monthly founder and startup ecosystem gathering in San Diego.",
+      "Monthly founder and startup ecosystem gathering focused on making useful connections across San Diego.",
 
     url:
       "https://eventship.com/event/san-diego-county-startup-mixer-2",
@@ -650,6 +655,7 @@ export const events: SiteEvent[] = [
   },
 
 
+
   // =====================================================
   // JUNE 2026
   // =====================================================
@@ -659,7 +665,7 @@ export const events: SiteEvent[] = [
       "hardware-meetup-jun-2026",
 
     title:
-      "San Diego Hardware Meetup | The Road to Scale",
+      "10th San Diego Hardware Meetup | The Road to Scale: San Diego's Zero-to-One Hardware Story",
 
     role:
       "hosted",
@@ -680,7 +686,7 @@ export const events: SiteEvent[] = [
       "Vista",
 
     description:
-      "Co-organized hardware community event focused on the journey from ideation and prototyping through manufacturing and scale.",
+      "Co-organized hardware community program focused on the path from ideation and prototyping through manufacturing, commercialization and scale.",
 
     url:
       "https://luma.com/5nonbesc",
@@ -757,12 +763,20 @@ export const events: SiteEvent[] = [
     startDate:
       "2026-06-08",
 
+    venue:
+      "Harland Brewing Co. - Bay Park",
+
     city:
       "San Diego",
 
     description:
-      "Monthly founder and startup ecosystem gathering in San Diego.",
+      "Monthly founder and startup ecosystem gathering focused on networking, potential co-founder connections and sharing what people are building across San Diego.",
 
+    /*
+     * We do not yet have a confirmed direct event URL
+     * for the June event, so the verified host page
+     * is intentionally used instead.
+     */
     url:
       "https://eventship.com/host/nadim-abdel-meguid",
 
@@ -778,6 +792,7 @@ export const events: SiteEvent[] = [
     showOnHome:
       true
   },
+
 
 
   // =====================================================
@@ -803,11 +818,14 @@ export const events: SiteEvent[] = [
     startDate:
       "2026-05-11",
 
+    venue:
+      "Harland Brewing Co. - Bay Park",
+
     city:
       "San Diego",
 
     description:
-      "Monthly founder and startup ecosystem gathering in San Diego.",
+      "Monthly founder and startup ecosystem gathering focused on low-pressure networking, co-founder matching and sharing what people are building in San Diego.",
 
     url:
       "https://eventship.com/event/san-diego-county-startup-mixer-copy",
@@ -826,6 +844,7 @@ export const events: SiteEvent[] = [
   },
 
 
+
   // =====================================================
   // APRIL 2026
   // =====================================================
@@ -835,7 +854,7 @@ export const events: SiteEvent[] = [
       "hardware-meetup-apr-2026",
 
     title:
-      "San Diego Hardware Meetup | Medtech",
+      "9th San Diego Hardware Meetup | Medtech - Pathway to Patient-Ready",
 
     role:
       "hosted",
@@ -856,7 +875,7 @@ export const events: SiteEvent[] = [
       "San Diego",
 
     description:
-      "Co-organized hardware meetup focused on medical technology, product design and the path toward patient-ready hardware.",
+      "Co-organized hardware meetup focused on medical technology, industrial design, product development and the path toward patient-ready hardware.",
 
     url:
       "https://luma.com/5j00ovnt",
@@ -883,7 +902,7 @@ export const events: SiteEvent[] = [
           "Founder & CEO",
 
         company:
-          "The Disabler Soloist"
+          "The Disabled Soloist"
       },
 
       {
@@ -933,11 +952,14 @@ export const events: SiteEvent[] = [
     startDate:
       "2026-04-13",
 
+    venue:
+      "Harland Brewing Co. - Bay Park",
+
     city:
       "San Diego",
 
     description:
-      "Monthly founder and startup ecosystem gathering in San Diego.",
+      "Monthly founder and startup ecosystem gathering focused on low-pressure networking, potential co-founder matching and sharing what people are building in San Diego.",
 
     url:
       "https://eventship.com/event/san-diego-county-startup-mixer-1",
@@ -954,6 +976,7 @@ export const events: SiteEvent[] = [
     showOnHome:
       true
   },
+
 
 
   // =====================================================
@@ -1051,11 +1074,14 @@ export const events: SiteEvent[] = [
     startDate:
       "2026-03-16",
 
+    venue:
+      "Harland Brewing Co. - Bay Park",
+
     city:
       "San Diego",
 
     description:
-      "First event in the recurring San Diego County Startup Mixer series.",
+      "The return of the San Diego County Startup Mixer series, bringing together founders, tech professionals, investors and people interested in the local startup ecosystem.",
 
     url:
       "https://eventship.com/event/san-diego-county-startup-mixer",
@@ -1074,6 +1100,7 @@ export const events: SiteEvent[] = [
   },
 
 
+
   // =====================================================
   // FEBRUARY 2026
   // =====================================================
@@ -1083,7 +1110,7 @@ export const events: SiteEvent[] = [
       "hardware-meetup-feb-2026",
 
     title:
-      "San Diego Hardware Meetup | Hardware for Defense",
+      "8th San Diego Hardware Meetup | Hardware for Defense",
 
     role:
       "hosted",
@@ -1098,7 +1125,7 @@ export const events: SiteEvent[] = [
       "2026-02-26",
 
     venue:
-      "Downtown Works Mission Valley",
+      "Downtown Works - Mission Valley",
 
     city:
       "San Diego",
@@ -1120,6 +1147,10 @@ export const events: SiteEvent[] = [
 
     sponsors: [
       "Downtown Works"
+    ],
+
+    partners: [
+      "informal"
     ],
 
     speakers: [
@@ -1145,6 +1176,10 @@ export const events: SiteEvent[] = [
           "Dronekyll"
       },
 
+      /*
+       * Ryan Roberts was identified in the
+       * event material you provided.
+       */
       {
         name:
           "Ryan Roberts",
@@ -1185,7 +1220,7 @@ export const events: SiteEvent[] = [
       "Seattle",
 
     description:
-      "Hardtech founder discussion focused on funding, pilots, LOIs and commercial traction before full product build.",
+      "Hardtech founder discussion focused on funding, pilots, letters of intent and commercial traction before full product build.",
 
     url:
       "https://luma.com/13fmeea7?tk=KQfQmu",
@@ -1273,6 +1308,7 @@ export const events: SiteEvent[] = [
   },
 
 
+
   // =====================================================
   // JANUARY 2026
   // =====================================================
@@ -1300,7 +1336,7 @@ export const events: SiteEvent[] = [
       "San Diego",
 
     description:
-      "Hardware product-development open house featuring labs, prototyping, engineering and production-ready product development.",
+      "Hardware product-development open house featuring prototyping, engineering and production-oriented product development.",
 
     url:
       "https://eventship.com/event/in-n-out-cookout-open-house",
@@ -1411,7 +1447,7 @@ export const events: SiteEvent[] = [
       "Las Vegas",
 
     description:
-      "Hosted during CES as an industry networking event connecting professionals across device design, medtech, wearables, robotics, IoT and embedded systems.",
+      "Industry networking event hosted during CES, connecting professionals across device design, medtech, wearables, robotics, IoT and embedded systems.",
 
     url:
       "https://info.volersystems.com/voler-systems-networking-tour-2026-vegas?hs_preview=yXGGYDiG-201589438253",
@@ -1478,6 +1514,12 @@ export const events: SiteEvent[] = [
     showOnHome:
       true
   },
+
+
+
+  // =====================================================
+  // 2025
+  // =====================================================
 
 
   // =====================================================
@@ -1592,6 +1634,7 @@ export const events: SiteEvent[] = [
   },
 
 
+
   // =====================================================
   // OCTOBER 2025
   // =====================================================
@@ -1601,7 +1644,7 @@ export const events: SiteEvent[] = [
       "simbiosyx-oct-2025",
 
     title:
-      "Simbiosyx: Startup & Expert Matching",
+      "Seamless Connections: AI-Powered Matchmaking Between Startups and Experts",
 
     role:
       "attending",
@@ -1619,10 +1662,10 @@ export const events: SiteEvent[] = [
       "San Diego",
 
     description:
-      "Startup and expert matchmaking event focused on connecting early-stage companies with technical, scientific and commercialization expertise.",
+      "Innovation ecosystem event exploring AI-powered matchmaking between startups and technical, scientific, regulatory and commercialization experts.",
 
     url:
-      "https://eventship.com/event/simbiosyx-matching-startups-with-verified-experts-to-fuel-innovation-1",
+      "https://eventship.com/event/10-07-25-seamless-connections-ai-powered-matchmaking-between-startups-and-experts",
 
     buttonLabel:
       "View Event",
@@ -1633,6 +1676,7 @@ export const events: SiteEvent[] = [
     showOnHome:
       true
   },
+
 
 
   // =====================================================
@@ -1707,7 +1751,7 @@ export const events: SiteEvent[] = [
       "Denver",
 
     description:
-      "Industry engagement across smart-home technology, audio, connected devices and product integration.",
+      "Industry engagement across smart-home technology, professional audio, connected devices and product integration.",
 
     url:
       "https://cediaexpo.com/",
@@ -1721,6 +1765,7 @@ export const events: SiteEvent[] = [
     showOnHome:
       true
   },
+
 
 
   // =====================================================
@@ -1763,6 +1808,7 @@ export const events: SiteEvent[] = [
   },
 
 
+
   // =====================================================
   // JUNE 2025
   // =====================================================
@@ -1793,7 +1839,7 @@ export const events: SiteEvent[] = [
       "Santa Clara",
 
     description:
-      "Exhibited with Seltech at a major sensing, electronics and embedded-systems industry event.",
+      "Exhibited with Seltech at an industry event spanning sensing, electronics, embedded systems and connected technologies.",
 
     url:
       "https://www.sensorsconverge.com/",
@@ -1807,6 +1853,7 @@ export const events: SiteEvent[] = [
     showOnHome:
       true
   },
+
 
 
   // =====================================================
@@ -1853,6 +1900,7 @@ export const events: SiteEvent[] = [
     showOnHome:
       true
   },
+
 
 
   // =====================================================
