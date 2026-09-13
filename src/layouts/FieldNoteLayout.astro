@@ -2,7 +2,10 @@
 import AuthorCard from "../components/AuthorCard.astro";
 import { readingTime } from "../utils/readingTime";
 
-const { post } = Astro.props;
+const {
+  post,
+  recommendedPost
+} = Astro.props;
 
 const publishedDate =
   post.data.published.toLocaleDateString(
@@ -16,6 +19,18 @@ const publishedDate =
 
 const readTime =
   readingTime(post.body ?? "");
+
+const recommendedDate =
+  recommendedPost
+    ? recommendedPost.data.published.toLocaleDateString(
+        "en-US",
+        {
+          month: "short",
+          day: "numeric",
+          year: "numeric"
+        }
+      )
+    : null;
 ---
 
 <article>
@@ -36,8 +51,6 @@ const readTime =
     "
   >
 
-    <!-- BACK LINK -->
-
     <a
       href="/field-notes/"
       class="
@@ -57,8 +70,6 @@ const readTime =
     </a>
 
 
-    <!-- CATEGORY -->
-
     <div
       class="
         text-[10px]
@@ -72,8 +83,6 @@ const readTime =
       {post.data.category}
     </div>
 
-
-    <!-- TITLE -->
 
     <h1
       class="
@@ -91,8 +100,6 @@ const readTime =
     </h1>
 
 
-    <!-- DESCRIPTION -->
-
     <p
       class="
         max-w-3xl
@@ -108,8 +115,6 @@ const readTime =
       {post.data.description}
     </p>
 
-
-    <!-- META -->
 
     <div
       class="
@@ -130,11 +135,7 @@ const readTime =
         {publishedDate}
       </span>
 
-      <span
-        class="
-          text-brand-gold
-        "
-      >
+      <span class="text-brand-gold">
         •
       </span>
 
@@ -142,11 +143,7 @@ const readTime =
         {readTime} min read
       </span>
 
-      <span
-        class="
-          text-brand-gold
-        "
-      >
+      <span class="text-brand-gold">
         •
       </span>
 
@@ -183,11 +180,7 @@ const readTime =
       "
     >
 
-      <div
-        class="
-          field-note-body
-        "
-      >
+      <div class="field-note-body">
         <slot />
       </div>
 
@@ -214,6 +207,164 @@ const readTime =
     <AuthorCard />
 
   </section>
+
+
+
+  <!-- =====================================================
+       RECOMMENDED NEXT
+       ===================================================== -->
+
+  {
+    recommendedPost && (
+
+      <section
+        class="
+          border-t
+          border-brand-border
+          bg-white
+        "
+      >
+
+        <div
+          class="
+            max-w-4xl
+            w-full
+            mx-auto
+            px-6
+            py-16
+          "
+        >
+
+          <span
+            class="
+              text-[10px]
+              uppercase
+              tracking-[0.2em]
+              text-brand-gold
+              font-semibold
+            "
+          >
+            Recommended Next
+          </span>
+
+
+          <a
+            href={`/field-notes/${recommendedPost.id}/`}
+            class="
+              group
+              block
+              mt-5
+              p-7
+              sm:p-8
+              border
+              border-brand-border
+              bg-brand-cream
+              hover:border-brand-gold/60
+              transition-colors
+            "
+          >
+
+            <div
+              class="
+                flex
+                flex-wrap
+                items-center
+                gap-2
+                text-[10px]
+                uppercase
+                tracking-[0.15em]
+                mb-4
+              "
+            >
+
+              <span
+                class="
+                  text-brand-gold
+                  font-semibold
+                "
+              >
+                {recommendedPost.data.category}
+              </span>
+
+
+              <span class="text-brand-border">
+                •
+              </span>
+
+
+              <span class="text-brand-slate">
+                {recommendedDate}
+              </span>
+
+            </div>
+
+
+            <div
+              class="
+                flex
+                flex-col
+                sm:flex-row
+                sm:items-end
+                justify-between
+                gap-6
+              "
+            >
+
+              <div class="max-w-2xl">
+
+                <h2
+                  class="
+                    font-serif
+                    text-2xl
+                    sm:text-3xl
+                    text-brand-charcoal
+                    leading-snug
+                    mb-3
+                    group-hover:text-brand-gold
+                    transition-colors
+                  "
+                >
+                  {recommendedPost.data.title}
+                </h2>
+
+
+                <p
+                  class="
+                    text-sm
+                    text-brand-slate
+                    leading-relaxed
+                    font-light
+                  "
+                >
+                  {recommendedPost.data.description}
+                </p>
+
+              </div>
+
+
+              <span
+                class="
+                  text-brand-gold
+                  text-2xl
+                  transition-transform
+                  duration-300
+                  group-hover:translate-x-1
+                  flex-shrink-0
+                "
+              >
+                →
+              </span>
+
+            </div>
+
+          </a>
+
+        </div>
+
+      </section>
+
+    )
+  }
 
 
 
