@@ -1,43 +1,50 @@
 ---
-import {
-  getCollection
-} from "astro:content";
+import { getCollection } from "astro:content";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import ArticleCard from "../../components/ArticleCard.astro";
 
-import BaseLayout
-  from "../../layouts/BaseLayout.astro";
+const now = new Date();
 
-import ArticleCard
-  from "../../components/ArticleCard.astro";
-
-
-const now =
-  new Date();
-
-
-const posts =
-  (
-    await getCollection(
-      "fieldNotes"
-    )
-  )
-
+const posts = (await getCollection("fieldNotes"))
   .filter(
-    post =>
+    (post) =>
       !post.data.draft &&
       post.data.published <= now
   )
-
   .sort(
     (a, b) =>
       b.data.published.getTime() -
       a.data.published.getTime()
   );
+
+const filters = [
+  {
+    label: "All",
+    value: "all"
+  },
+  {
+    label: "Ecosystems & Community",
+    value: "ecosystem"
+  },
+  {
+    label: "Trade Shows",
+    value: "tradeshows"
+  },
+  {
+    label: "Hardware & Manufacturing",
+    value: "hardware"
+  }
+];
 ---
 
 <BaseLayout
   title="SOLEIL & STONE | Field Notes"
-  description="Field notes on entrepreneurship, hardware, community building, trade shows and the West Coast innovation ecosystem."
+  description="Field notes on community building, hardware, manufacturing, trade shows and the ecosystems where ideas become companies."
 >
+
+  <!-- =====================================================
+       HERO
+       ===================================================== -->
 
   <section
     class="
@@ -64,10 +71,10 @@ const posts =
         uppercase
         tracking-[0.2em]
         font-semibold
-        mb-4
+        mb-6
       "
     >
-      Field Notes & Perspectives
+      Field Notes
     </span>
 
 
@@ -78,160 +85,457 @@ const posts =
         sm:text-4xl
         lg:text-5xl
         text-brand-charcoal
+        tracking-wide
+        leading-[1.2]
         mb-6
       "
     >
-      Articles & Field Notes
+      Observations From The Field
     </h1>
 
 
     <p
       class="
+        max-w-3xl
         text-base
+        sm:text-lg
         text-brand-slate
         leading-relaxed
         font-light
-        max-w-3xl
-        mb-8
       "
     >
-      Field notes on entrepreneurship,
-      hardware, community building,
-      trade shows, and the people and ideas
-      shaping the West Coast innovation ecosystem.
+      Notes on community building, hardware,
+      manufacturing, trade shows and the ecosystems
+      where ideas move from conversation to execution.
     </p>
-
-
-    <div
-      id="filters"
-      class="
-        flex
-        flex-wrap
-        gap-3
-      "
-    >
-
-      <button
-        data-filter="all"
-        class="
-          filter-button
-          active
-        "
-      >
-        All Notes
-      </button>
-
-
-      <button
-        data-filter="ecosystem"
-        class="filter-button"
-      >
-        Ecosystems & Community
-      </button>
-
-
-      <button
-        data-filter="tradeshows"
-        class="filter-button"
-      >
-        Trade Shows
-      </button>
-
-
-      <button
-        data-filter="hardware"
-        class="filter-button"
-      >
-        Hardware & Manufacturing
-      </button>
-
-    </div>
 
   </section>
 
 
+  <!-- =====================================================
+       ARCHIVE
+       ===================================================== -->
+
   <section
-    id="article-grid"
     class="
       max-w-6xl
       w-full
       mx-auto
       px-6
       py-16
-      grid
-      md:grid-cols-2
-      gap-10
     "
   >
 
-    {
-      posts.map(
-        post => (
+    <!-- FILTERS -->
 
-          <div
-            class="article-wrapper"
-            data-category={post.data.categorySlug}
-          >
+    <div
+      class="
+        flex
+        flex-wrap
+        items-center
+        gap-3
+        mb-12
+      "
+      aria-label="Filter field notes"
+    >
 
-            <ArticleCard
-              post={post}
-            />
+      {
+        filters.map(
+          (filter, index) => (
 
-          </div>
+            <button
+              type="button"
+              data-filter={filter.value}
+              class:list={[
+                "field-note-filter",
+                "px-4 py-2",
+                "border",
+                "text-[11px]",
+                "uppercase",
+                "tracking-[0.16em]",
+                "transition-all",
+                "duration-200",
 
+                index === 0
+                  ? "active border-brand-charcoal bg-brand-charcoal text-white"
+                  : "border-brand-border text-brand-slate hover:border-brand-gold hover:text-brand-gold"
+              ]}
+            >
+              {filter.label}
+            </button>
+
+          )
         )
-      )
-    }
+      }
+
+    </div>
+
+
+    <!-- ARTICLE COUNT -->
+
+    <div
+      class="
+        flex
+        items-center
+        justify-between
+        gap-4
+        pb-5
+        mb-8
+        border-b
+        border-brand-border
+      "
+    >
+
+      <h2
+        class="
+          font-serif
+          text-xl
+          sm:text-2xl
+          text-brand-charcoal
+        "
+      >
+        Latest Notes
+      </h2>
+
+
+      <span
+        id="article-count"
+        class="
+          text-xs
+          uppercase
+          tracking-[0.15em]
+          text-brand-slate
+        "
+      >
+        {posts.length}
+        {posts.length === 1 ? " Note" : " Notes"}
+      </span>
+
+    </div>
+
+
+    <!-- ARTICLE GRID -->
+
+    <div
+      id="field-notes-grid"
+      class="
+        grid
+        md:grid-cols-2
+        gap-7
+      "
+    >
+
+      {
+        posts.map(
+          (post) => (
+
+            <div
+              class="field-note-item"
+              data-category={post.data.categorySlug}
+            >
+              <ArticleCard post={post} />
+            </div>
+
+          )
+        )
+      }
+
+    </div>
+
+
+    <!-- EMPTY STATE -->
+
+    <div
+      id="field-notes-empty"
+      class="
+        hidden
+        py-16
+        text-center
+        border
+        border-brand-border
+        bg-white
+      "
+    >
+
+      <p
+        class="
+          font-serif
+          text-xl
+          text-brand-charcoal
+          mb-2
+        "
+      >
+        No field notes in this category yet.
+      </p>
+
+
+      <p
+        class="
+          text-sm
+          text-brand-slate
+          font-light
+        "
+      >
+        More notes are coming soon.
+      </p>
+
+    </div>
 
   </section>
 
 
-  <script>
+  <!-- =====================================================
+       CLOSING CTA
+       ===================================================== -->
 
-    const buttons =
-      document.querySelectorAll(
-        "[data-filter]"
+  <section
+    class="
+      border-t
+      border-brand-border
+    "
+  >
+
+    <div
+      class="
+        max-w-6xl
+        w-full
+        mx-auto
+        px-6
+        py-20
+        text-center
+      "
+    >
+
+      <span
+        class="
+          text-xs
+          uppercase
+          tracking-[0.2em]
+          text-brand-gold
+          font-semibold
+        "
+      >
+        Continue The Conversation
+      </span>
+
+
+      <h2
+        class="
+          font-serif
+          text-3xl
+          sm:text-4xl
+          text-brand-charcoal
+          mt-2
+          mb-5
+        "
+      >
+        Have a Perspective to Share?
+      </h2>
+
+
+      <p
+        class="
+          max-w-2xl
+          mx-auto
+          text-sm
+          sm:text-base
+          leading-relaxed
+          text-brand-slate
+          font-light
+          mb-8
+        "
+      >
+        If you're working on something related to
+        hardware, startups, community building or
+        ecosystem development, I'd be interested
+        to hear what you're seeing from the field.
+      </p>
+
+
+      <a
+        href="/?type=hello#contact"
+        class="
+          inline-flex
+          items-center
+          gap-2
+          px-6
+          py-3
+          bg-brand-charcoal
+          text-white
+          text-xs
+          uppercase
+          tracking-[0.2em]
+          hover:bg-brand-gold
+          transition-colors
+        "
+      >
+        Start a Conversation
+        <span>→</span>
+      </a>
+
+    </div>
+
+  </section>
+
+
+  <!-- =====================================================
+       FILTER LOGIC
+       ===================================================== -->
+
+  <script is:inline>
+
+    const filterButtons =
+      Array.from(
+        document.querySelectorAll(
+          ".field-note-filter"
+        )
+      );
+
+    const items =
+      Array.from(
+        document.querySelectorAll(
+          ".field-note-item"
+        )
+      );
+
+    const countElement =
+      document.getElementById(
+        "article-count"
+      );
+
+    const emptyState =
+      document.getElementById(
+        "field-notes-empty"
       );
 
 
-    const articles =
-      document.querySelectorAll(
-        ".article-wrapper"
+    const updateCount = (
+      count
+    ) => {
+
+      if (!countElement) return;
+
+      countElement.textContent =
+        `${count} ${
+          count === 1
+            ? "Note"
+            : "Notes"
+        }`;
+
+    };
+
+
+    const setActiveButton = (
+      activeButton
+    ) => {
+
+      filterButtons.forEach(
+        (button) => {
+
+          button.classList.remove(
+            "active",
+            "border-brand-charcoal",
+            "bg-brand-charcoal",
+            "text-white"
+          );
+
+
+          button.classList.add(
+            "border-brand-border",
+            "text-brand-slate"
+          );
+
+        }
       );
 
 
-    buttons.forEach(
-      button => {
+      activeButton.classList.remove(
+        "border-brand-border",
+        "text-brand-slate"
+      );
+
+
+      activeButton.classList.add(
+        "active",
+        "border-brand-charcoal",
+        "bg-brand-charcoal",
+        "text-white"
+      );
+
+    };
+
+
+    const filterNotes = (
+      category
+    ) => {
+
+      let visibleCount = 0;
+
+
+      items.forEach(
+        (item) => {
+
+          const itemCategory =
+            item.dataset.category;
+
+
+          const visible =
+            category === "all" ||
+            itemCategory === category;
+
+
+          item.classList.toggle(
+            "hidden",
+            !visible
+          );
+
+
+          if (visible) {
+            visibleCount++;
+          }
+
+        }
+      );
+
+
+      updateCount(
+        visibleCount
+      );
+
+
+      if (emptyState) {
+
+        emptyState.classList.toggle(
+          "hidden",
+          visibleCount !== 0
+        );
+
+      }
+
+    };
+
+
+    filterButtons.forEach(
+      (button) => {
 
         button.addEventListener(
           "click",
           () => {
 
-            const filter =
+            const category =
               button.dataset.filter;
 
 
-            buttons.forEach(
-              item =>
-                item.classList.remove(
-                  "active"
-                )
+            if (!category) return;
+
+
+            setActiveButton(
+              button
             );
 
 
-            button.classList.add(
-              "active"
-            );
-
-
-            articles.forEach(
-              article => {
-
-                article.hidden =
-                  filter !== "all" &&
-                  article.dataset.category !== filter;
-
-              }
+            filterNotes(
+              category
             );
 
           }
@@ -241,54 +545,5 @@ const posts =
     );
 
   </script>
-
-
-  <style>
-
-    .filter-button {
-      padding:
-        0.55rem 1rem;
-
-      border:
-        1px solid #E8E5DA;
-
-      background:
-        #FFFFFF;
-
-      color:
-        #4A505A;
-
-      font-size:
-        0.75rem;
-
-      font-weight:
-        600;
-
-      letter-spacing:
-        0.08em;
-
-      text-transform:
-        uppercase;
-    }
-
-
-    .filter-button:hover {
-      border-color:
-        #C5A059;
-    }
-
-
-    .filter-button.active {
-      background:
-        #22252A;
-
-      color:
-        white;
-
-      border-color:
-        #22252A;
-    }
-
-  </style>
 
 </BaseLayout>
