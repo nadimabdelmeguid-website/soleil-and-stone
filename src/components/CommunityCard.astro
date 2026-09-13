@@ -1,0 +1,385 @@
+---
+import {
+  events
+} from "../data/events";
+
+import {
+  completedHostedEventCount
+} from "../utils/events";
+
+
+const {
+  community
+} = Astro.props;
+
+
+const eventCount =
+  completedHostedEventCount(
+    events,
+    community.id,
+    2026
+  );
+---
+
+<section
+  class="
+    max-w-6xl
+    w-full
+    mx-auto
+    px-6
+    py-16
+    border-b
+    border-brand-border
+  "
+>
+
+  <div
+    class="
+      grid
+      lg:grid-cols-12
+      gap-10
+      items-start
+    "
+  >
+
+    <div
+      class="
+        lg:col-span-5
+      "
+    >
+
+      <span
+        class="
+          text-xs
+          uppercase
+          tracking-[0.2em]
+          text-brand-gold
+          font-semibold
+        "
+      >
+        {community.roleLabel}
+      </span>
+
+
+      <h2
+        class="
+          font-serif
+          text-2xl
+          sm:text-3xl
+          text-brand-charcoal
+          mt-1
+          mb-4
+        "
+      >
+        {community.name}
+      </h2>
+
+
+      <p
+        class="
+          text-brand-slate
+          text-sm
+          leading-relaxed
+          font-light
+          mb-6
+        "
+      >
+        {community.description}
+      </p>
+
+
+      <div
+        class="
+          flex
+          flex-wrap
+          gap-4
+        "
+      >
+
+        <a
+          href={community.primaryUrl}
+          target="_blank"
+          class="
+            px-5
+            py-2.5
+            bg-brand-charcoal
+            text-white
+            text-xs
+            uppercase
+            tracking-widest
+            hover:bg-brand-gold
+          "
+        >
+          {community.primaryLabel} ↗
+        </a>
+
+
+        {
+          community.linkedinUrl && (
+
+            <a
+              href={community.linkedinUrl}
+              target="_blank"
+              class="
+                px-5
+                py-2.5
+                border
+                border-brand-border
+                text-xs
+                uppercase
+                tracking-widest
+              "
+            >
+              Follow on LinkedIn ↗
+            </a>
+
+          )
+        }
+
+
+        <a
+          href={community.secondaryUrl}
+          class="
+            px-5
+            py-2.5
+            border
+            border-brand-charcoal
+            text-xs
+            uppercase
+            tracking-widest
+          "
+        >
+          {community.secondaryLabel} →
+        </a>
+
+      </div>
+
+    </div>
+
+
+    <div
+      class="
+        lg:col-span-7
+        bg-brand-card
+        p-8
+        border
+        border-brand-border
+        shadow-sm
+      "
+    >
+
+      <h3
+        class="
+          font-serif
+          text-lg
+          mb-4
+          pb-3
+          border-b
+          border-brand-border
+        "
+      >
+        {community.pillarsTitle}
+      </h3>
+
+
+      <ul
+        class="
+          space-y-4
+          text-sm
+          text-brand-slate
+        "
+      >
+
+        {
+          community.pillars.map(
+            pillar => (
+
+              <li
+                class="
+                  flex
+                  gap-3
+                "
+              >
+
+                <span
+                  class="
+                    text-brand-gold
+                  "
+                >
+                  •
+                </span>
+
+
+                <p>
+
+                  <strong
+                    class="
+                      text-brand-charcoal
+                    "
+                  >
+                    {pillar.title}:
+                  </strong>
+
+                  {" "}
+
+                  {pillar.text}
+
+                </p>
+
+              </li>
+
+            )
+          )
+        }
+
+      </ul>
+
+
+      <div
+        class="
+          mt-8
+          pt-6
+          border-t
+          border-brand-border
+        "
+      >
+
+        <h4
+          class="
+            text-xs
+            uppercase
+            tracking-widest
+            font-semibold
+            mb-4
+          "
+        >
+          Community Metrics
+        </h4>
+
+
+        <div
+          class="
+            grid
+            sm:grid-cols-3
+            gap-4
+          "
+        >
+
+          <div
+            class="
+              p-4
+              bg-brand-cream
+              border
+              border-brand-border
+              text-center
+            "
+          >
+
+            <div
+              class="
+                font-serif
+                text-2xl
+                text-brand-gold
+              "
+            >
+              {community.members}
+              {community.membersSuffix}
+            </div>
+
+            <div
+              class="
+                text-xs
+                uppercase
+                text-brand-slate
+                mt-1
+              "
+            >
+              {community.membersLabel}
+            </div>
+
+          </div>
+
+
+          {
+            community.linkedinFollowers && (
+
+              <div
+                class="
+                  p-4
+                  bg-brand-cream
+                  border
+                  border-brand-border
+                  text-center
+                "
+              >
+
+                <div
+                  class="
+                    font-serif
+                    text-2xl
+                    text-brand-gold
+                  "
+                >
+                  {community.linkedinFollowers}
+                  {community.linkedinFollowersSuffix}
+                </div>
+
+                <div
+                  class="
+                    text-xs
+                    uppercase
+                    text-brand-slate
+                    mt-1
+                  "
+                >
+                  {community.linkedinFollowersLabel}
+                </div>
+
+              </div>
+
+            )
+          }
+
+
+          <div
+            class="
+              p-4
+              bg-brand-cream
+              border
+              border-brand-border
+              text-center
+            "
+          >
+
+            <div
+              class="
+                font-serif
+                text-2xl
+                text-brand-charcoal
+              "
+            >
+              {eventCount}
+            </div>
+
+            <div
+              class="
+                text-xs
+                uppercase
+                text-brand-slate
+                mt-1
+              "
+            >
+              Events Hosted in 2026
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</section>
