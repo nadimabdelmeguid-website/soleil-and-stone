@@ -6,81 +6,30 @@ import {
 import BaseLayout from "../../layouts/BaseLayout.astro";
 
 
-const notes =
-  (
-    await getCollection(
-      "field-notes"
-    )
-  )
-    .filter(
-      (note) => {
-        const date =
-          new Date(
-            note.data.date
-          );
-
-        return date <=
-          new Date();
-      }
-    )
-    .sort(
-      (a, b) =>
-        new Date(
-          b.data.date
-        ).getTime() -
-        new Date(
-          a.data.date
-        ).getTime()
-    );
-
-
-const categories =
-  [
-    {
-      label:
-        "All Notes",
-      value:
-        "all"
-    },
-    {
-      label:
-        "Ecosystems & Community",
-      value:
-        "ecosystems"
-    },
-    {
-      label:
-        "Trade Shows",
-      value:
-        "tradeshows"
-    },
-    {
-      label:
-        "Hardware & Manufacturing",
-      value:
-        "hardware"
-    }
-  ];
-
-
-function formatDate(
-  value
-) {
-
-  return new Date(
-    value
-  ).toLocaleDateString(
-    "en-US",
-    {
-      month:
-        "long",
-      day:
-        "numeric",
-      year:
-        "numeric"
-    }
+const allNotes =
+  await getCollection(
+    "field-notes"
   );
 
+
+function getNoteDate(
+  note
+) {
+  return new Date(
+    note.data.date ??
+    note.data.publishDate ??
+    note.data.publishedAt
+  );
+}
+
+
+function getCategory(
+  note
+) {
+  return (
+    note.data.category ??
+    "ecosystems"
+  );
 }
 
 
@@ -101,13 +50,98 @@ function getCategoryLabel(
 
 
   return (
-    labels[
-      category
-    ] ??
+    labels[category] ??
     category
   );
 
 }
+
+
+function formatDate(
+  value
+) {
+
+  return new Date(
+    value
+  ).toLocaleDateString(
+    "en-US",
+    {
+      month:
+        "long",
+
+      day:
+        "numeric",
+
+      year:
+        "numeric"
+    }
+  );
+
+}
+
+
+const now =
+  new Date();
+
+
+const notes =
+  allNotes
+    .filter(
+      (note) => {
+        const date =
+          getNoteDate(
+            note
+          );
+
+        return (
+          !Number.isNaN(
+            date.getTime()
+          ) &&
+          date <= now
+        );
+      }
+    )
+    .sort(
+      (a, b) =>
+        getNoteDate(
+          b
+        ).getTime() -
+        getNoteDate(
+          a
+        ).getTime()
+    );
+
+
+const categories = [
+  {
+    label:
+      "All Notes",
+
+    value:
+      "all"
+  },
+  {
+    label:
+      "Ecosystems & Community",
+
+    value:
+      "ecosystems"
+  },
+  {
+    label:
+      "Trade Shows",
+
+    value:
+      "tradeshows"
+  },
+  {
+    label:
+      "Hardware & Manufacturing",
+
+    value:
+      "hardware"
+  }
+];
 ---
 
 <BaseLayout
@@ -116,7 +150,7 @@ function getCategoryLabel(
 >
 
   <!-- =====================================================
-       HERO — WHITE
+       HERO
        ===================================================== -->
 
   <section
@@ -137,26 +171,6 @@ function getCategoryLabel(
         pb-14
       "
     >
-
-      <span
-        class="
-          inline-block
-          px-3
-          py-1
-          bg-brand-gold/10
-          border
-          border-brand-gold/30
-          text-brand-gold
-          text-[10px]
-          uppercase
-          tracking-[0.2em]
-          font-semibold
-          mb-6
-        "
-      >
-        Notes From The Field
-      </span>
-
 
       <h1
         class="
@@ -197,7 +211,7 @@ function getCategoryLabel(
 
 
   <!-- =====================================================
-       INTRO + FILTERS — CREAM
+       FILTER BAR
        ===================================================== -->
 
   <section
@@ -214,26 +228,21 @@ function getCategoryLabel(
         w-full
         mx-auto
         px-6
-        py-12
+        py-8
       "
     >
 
       <div
         class="
-          grid
-          lg:grid-cols-12
-          gap-8
-          items-end
+          flex
+          flex-col
+          gap-5
         "
       >
 
         <!-- INTRO -->
 
-        <div
-          class="
-            lg:col-span-7
-          "
-        >
+        <div>
 
           <span
             class="
@@ -248,115 +257,73 @@ function getCategoryLabel(
           </span>
 
 
-          <h2
-            class="
-              font-serif
-              text-3xl
-              sm:text-4xl
-              text-brand-charcoal
-              mt-2
-              mb-4
-            "
-          >
-            Ideas, observations,
-            and lessons from the field.
-          </h2>
-
-
           <p
             class="
               text-sm
               text-brand-slate
               leading-relaxed
               font-light
-              max-w-2xl
+              max-w-3xl
+              mt-2
             "
           >
-            Notes on building communities,
-            attending industry events,
-            working across hardware ecosystems,
-            and understanding how technical
-            products move toward real-world adoption.
+            Notes on communities, industry events,
+            hardware ecosystems and technical
+            commercialization.
           </p>
 
         </div>
 
 
 
-        <!-- FILTER LABEL -->
+        <!-- FILTERS -->
 
         <div
           class="
-            lg:col-span-5
-            lg:text-right
+            flex
+            flex-wrap
+            gap-2
           "
         >
 
-          <div
-            class="
-              text-[9px]
-              uppercase
-              tracking-[0.18em]
-              text-brand-slate
-              mb-3
-            "
-          >
-            Browse By Topic
-          </div>
+          {
+            categories.map(
+              (
+                category,
+                index
+              ) => (
+
+                <button
+                  type="button"
+                  data-filter={
+                    category.value
+                  }
+                  class:list={[
+                    "field-filter",
+                    "inline-flex",
+                    "items-center",
+                    "px-4",
+                    "py-2.5",
+                    "border",
+                    "text-[9px]",
+                    "uppercase",
+                    "tracking-[0.15em]",
+                    "font-semibold",
+                    "transition-colors",
+
+                    index === 0
+                      ? "is-active bg-brand-charcoal text-white border-brand-charcoal"
+                      : "bg-white text-brand-slate border-brand-border hover:border-brand-gold hover:text-brand-gold"
+                  ]}
+                >
+                  {category.label}
+                </button>
+
+              )
+            )
+          }
 
         </div>
-
-      </div>
-
-
-
-      <!-- FILTERS -->
-
-      <div
-        class="
-          flex
-          flex-wrap
-          gap-2
-          mt-8
-        "
-      >
-
-        {
-          categories.map(
-            (
-              category,
-              index
-            ) => (
-
-              <button
-                type="button"
-                data-filter={
-                  category.value
-                }
-                class:list={[
-                  "field-filter",
-                  "inline-flex",
-                  "items-center",
-                  "px-4",
-                  "py-2.5",
-                  "border",
-                  "text-[9px]",
-                  "uppercase",
-                  "tracking-[0.15em]",
-                  "font-semibold",
-                  "transition-colors",
-
-                  index === 0
-                    ? "is-active bg-brand-charcoal text-white border-brand-charcoal"
-                    : "bg-white text-brand-slate border-brand-border hover:border-brand-gold hover:text-brand-gold"
-                ]}
-              >
-                {category.label}
-              </button>
-
-            )
-          )
-        }
 
       </div>
 
@@ -367,7 +334,7 @@ function getCategoryLabel(
 
 
   <!-- =====================================================
-       NOTES LISTING — WHITE
+       NOTES
        ===================================================== -->
 
   <section
@@ -382,20 +349,18 @@ function getCategoryLabel(
         w-full
         mx-auto
         px-6
-        py-16
+        py-14
       "
     >
 
-      <!-- SECTION HEADER -->
+      <!-- HEADER -->
 
       <div
         class="
           flex
-          flex-col
-          sm:flex-row
-          sm:items-end
+          items-end
           justify-between
-          gap-4
+          gap-6
           mb-8
         "
       >
@@ -431,7 +396,7 @@ function getCategoryLabel(
 
         <div
           class="
-            text-[10px]
+            text-[9px]
             uppercase
             tracking-[0.14em]
             text-brand-slate
@@ -444,16 +409,14 @@ function getCategoryLabel(
           </span>
 
           {" "}
-          published
+          notes
         </div>
 
       </div>
 
 
 
-      <!-- =================================================
-           ARTICLE GRID
-           ================================================= -->
+      <!-- GRID -->
 
       <div
         id="field-notes-grid"
@@ -474,17 +437,19 @@ function getCategoryLabel(
               <article
                 data-note-card
                 data-category={
-                  note.data.category
+                  getCategory(
+                    note
+                  )
                 }
                 class="
                   group
                   border
                   border-brand-border
                   bg-white
-                  min-h-[285px]
+                  min-h-[250px]
                   flex
                   flex-col
-                  transition-all
+                  transition-colors
                   hover:border-brand-gold
                   hover:bg-brand-cream
                 "
@@ -497,11 +462,10 @@ function getCategoryLabel(
                     flex-col
                     h-full
                     p-6
-                    sm:p-7
                   "
                 >
 
-                  <!-- TOP META -->
+                  <!-- META -->
 
                   <div
                     class="
@@ -509,7 +473,7 @@ function getCategoryLabel(
                       items-start
                       justify-between
                       gap-4
-                      mb-7
+                      mb-6
                     "
                   >
 
@@ -530,7 +494,9 @@ function getCategoryLabel(
                       >
                         {
                           getCategoryLabel(
-                            note.data.category
+                            getCategory(
+                              note
+                            )
                           )
                         }
                       </span>
@@ -547,7 +513,9 @@ function getCategoryLabel(
                       >
                         {
                           formatDate(
-                            note.data.date
+                            getNoteDate(
+                              note
+                            )
                           )
                         }
                       </div>
@@ -555,13 +523,10 @@ function getCategoryLabel(
                     </div>
 
 
-
-                    <!-- EDITORIAL NUMBER -->
-
                     <span
                       class="
                         font-serif
-                        text-2xl
+                        text-xl
                         text-brand-border
                         group-hover:text-brand-gold
                         transition-colors
@@ -587,7 +552,6 @@ function getCategoryLabel(
                     class="
                       font-serif
                       text-2xl
-                      sm:text-[1.7rem]
                       text-brand-charcoal
                       leading-snug
                       group-hover:text-brand-gold
@@ -625,12 +589,12 @@ function getCategoryLabel(
 
 
 
-                  <!-- BOTTOM -->
+                  <!-- FOOTER -->
 
                   <div
                     class="
                       mt-auto
-                      pt-7
+                      pt-6
                     "
                   >
 
@@ -642,7 +606,6 @@ function getCategoryLabel(
                         flex
                         items-center
                         justify-between
-                        gap-4
                       "
                     >
 
@@ -657,7 +620,7 @@ function getCategoryLabel(
                           transition-colors
                         "
                       >
-                        Read Field Note
+                        Read Note
                       </span>
 
 
@@ -698,7 +661,7 @@ function getCategoryLabel(
           border-brand-border
           bg-brand-cream
           px-6
-          py-12
+          py-10
           text-center
         "
       >
@@ -723,10 +686,6 @@ function getCategoryLabel(
 </BaseLayout>
 
 
-
-<!-- =====================================================
-     FILTER SCRIPT
-     ===================================================== -->
 
 <script is:inline>
   (() => {
@@ -768,12 +727,6 @@ function getCategoryLabel(
             const isActive =
               button ===
               activeButton;
-
-
-            button.classList.toggle(
-              "is-active",
-              isActive
-            );
 
 
             button.classList.toggle(
@@ -860,8 +813,7 @@ function getCategoryLabel(
                 if (
                   shouldShow
                 ) {
-                  visible +=
-                    1;
+                  visible += 1;
                 }
 
               }
