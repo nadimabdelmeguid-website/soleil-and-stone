@@ -30,7 +30,40 @@ export interface SiteEvent {
 
 
 export const events: SiteEvent[] = [
+{
+  id:
+    "astra-commons-san-diego-2026",
 
+  title:
+    "Astra Commons: San Diego",
+
+  role:
+    "attending",
+
+  startDate:
+    "2026-09-13",
+
+  venue:
+    "Caffè Calabria",
+
+  city:
+    "San Diego",
+
+  description:
+    "A casual builder meetup bringing together developers, students, founders and community members around the launch of GPT-6 Astra.",
+
+  url:
+    "https://luma.com/tasj011w?tk=E8RFCm",
+
+  buttonLabel:
+    "View Event",
+
+  typeLabel:
+    "Attending Community Event",
+
+  showOnHome:
+    true
+},
   {
     id: "mixer-2026-03-16",
     title: "San Diego County Startup Mixer",
