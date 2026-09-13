@@ -1,5 +1,5 @@
 ---
-title: "Growing a Community in San Diego: Why Networking Here Feels Different Than the Bay Area"
+title: "Why San Diego Networks Differ"
 description: "A personal perspective on building authentic local networks, shifting from transactional pitches to human-first connections, and why San Diego relationships often translate from the boardroom to the lineup."
 published: 2026-09-10
 category: "Ecosystems & Community"
