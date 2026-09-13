@@ -606,7 +606,7 @@
     </div>
   </footer>
 
-  <!-- Script for Calendar, Live Featured Articles & AJAX Google Sheet Form Submission -->
+  <!-- Script for Calendar, Live Featured Articles with Scheduled Release Filtering, & AJAX Google Sheet Form Submission -->
   <script>
     const months = [
       { id: 'aug2026', title: 'August 2026' },
@@ -663,7 +663,7 @@
       }, 1500);
     }
 
-    // Live scraping of the articles page using the correct /blogs/ folder path and all 3 articles
+    // Live scraping of the articles page using the correct /blogs/ folder path and all articles
     const articleFiles = [
       {
         url: '/blogs/article-community-building.html',
@@ -684,6 +684,10 @@
       const parser = new DOMParser();
       let articlesList = [];
 
+      // Get today's date at midnight for accurate scheduled publishing check
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
       for (const file of articleFiles) {
         try {
           const response = await fetch(file.url);
@@ -692,7 +696,13 @@
           const doc = parser.parseFromString(htmlText, 'text/html');
 
           const dateEl = doc.querySelector('section.border-b .font-mono') || doc.querySelector('.font-mono');
-          const date = dateEl ? dateEl.textContent.trim() : '2026-09-11';
+          const dateStr = dateEl ? dateEl.textContent.trim() : '2026-09-11';
+
+          // Parse article date and check if it is in the future
+          const articleDate = new Date(dateStr + 'T00:00:00');
+          if (articleDate > today) {
+            continue; // Skip future-dated articles
+          }
 
           const titleEl = doc.querySelector('section.border-b h1') || doc.querySelector('h1');
           const title = titleEl ? titleEl.textContent.trim() : 'Untitled Article';
@@ -704,7 +714,7 @@
             url: file.url,
             categoryName: file.categoryName,
             title: title,
-            date: date,
+            date: dateStr,
             description: description
           });
         } catch (e) {
@@ -715,7 +725,7 @@
       // Sort by date most recent to oldest
       articlesList.sort((a, b) => new Date(b.date) - new Date(a.date));
 
-      // Take only the latest 2 articles
+      // Take only the latest 2 published articles
       const latestTwo = articlesList.slice(0, 2);
 
       if (latestTwo.length === 0) {
