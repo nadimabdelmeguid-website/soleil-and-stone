@@ -7,10 +7,11 @@ import { site } from "../data/site";
   class="
     border-t
     border-brand-border
-    py-10
     bg-white
+    py-10
   "
 >
+
   <div
     class="
       max-w-6xl
@@ -19,58 +20,53 @@ import { site } from "../data/site";
       px-6
       flex
       flex-col
-      sm:flex-row
-      justify-between
+      md:flex-row
       items-center
+      justify-between
+      gap-7
       text-xs
       text-brand-slate
-      gap-6
     "
   >
 
-    <!-- LEFT: BRAND -->
+    <!-- BRAND -->
 
-    <a
-      href="/"
+    <div
       class="
         flex
+        flex-col
+        sm:flex-row
         items-center
         gap-3
-        group
       "
     >
-      <Logo small />
 
-      <div
+      <Logo
+        variant="wordmark"
+        className="
+          w-[170px]
+          sm:w-[190px]
+        "
+      />
+
+      <span
         class="
-          flex
-          items-center
-          gap-2
+          hidden
+          sm:inline
+          text-brand-slate
         "
       >
-        <span
-          class="
-            font-serif
-            tracking-widest
-            text-brand-charcoal
-            font-semibold
-            group-hover:text-brand-gold
-            transition-colors
-          "
-        >
-          {site.name}
-        </span>
+        •
+      </span>
 
-        <span>•</span>
+      <span>
+        {site.location}
+      </span>
 
-        <span>
-          {site.location}
-        </span>
-      </div>
-    </a>
+    </div>
 
 
-    <!-- CENTER: SOCIAL ICONS -->
+    <!-- SOCIAL ICONS -->
 
     <div
       class="
@@ -80,13 +76,13 @@ import { site } from "../data/site";
       "
     >
 
-      <!-- LinkedIn -->
+      <!-- LINKEDIN -->
 
       <a
         href={site.linkedin}
         target="_blank"
         rel="noopener noreferrer"
-        aria-label="LinkedIn profile"
+        aria-label="LinkedIn"
         title="LinkedIn"
         class="
           text-brand-slate
@@ -94,24 +90,52 @@ import { site } from "../data/site";
           transition-colors
         "
       >
+
         <svg
           viewBox="0 0 24 24"
-          class="w-5 h-5"
+          class="
+            w-5
+            h-5
+          "
           fill="currentColor"
           aria-hidden="true"
         >
+
           <path
-            d="M20.45 20.45h-3.56v-5.57c0-1.33-.03-3.04-1.85-3.04-1.85 0-2.13 1.45-2.13 2.94v5.67H9.35V8.98h3.42v1.57h.05c.47-.9 1.64-1.85 3.37-1.85 3.6 0 4.26 2.37 4.26 5.45v6.3zM5.34 7.41a2.07 2.07 0 1 1 0-4.14 2.07 2.07 0 0 1 0 4.14zM7.12 20.45H3.56V8.98h3.56v11.47z"
+            d="
+              M20.45 20.45h-3.56
+              v-5.57
+              c0-1.33-.03-3.04-1.85-3.04
+              -1.85 0-2.13 1.45-2.13 2.94
+              v5.67H9.35
+              V8.98h3.42
+              v1.57h.05
+              c.47-.9 1.64-1.85 3.37-1.85
+              3.6 0 4.26 2.37 4.26 5.45
+              v6.3z
+
+              M5.34 7.41
+              a2.07 2.07 0 1 1 0-4.14
+              2.07 2.07 0 0 1 0 4.14z
+
+              M7.12 20.45
+              H3.56
+              V8.98
+              h3.56
+              v11.47z
+            "
           />
+
         </svg>
+
       </a>
 
 
-      <!-- Email -->
+      <!-- EMAIL -->
 
       <a
         href={site.email}
-        aria-label="Send email"
+        aria-label="Email"
         title="Email"
         class="
           text-brand-slate
@@ -119,9 +143,13 @@ import { site } from "../data/site";
           transition-colors
         "
       >
+
         <svg
           viewBox="0 0 24 24"
-          class="w-5 h-5"
+          class="
+            w-5
+            h-5
+          "
           fill="none"
           stroke="currentColor"
           stroke-width="1.7"
@@ -129,6 +157,7 @@ import { site } from "../data/site";
           stroke-linejoin="round"
           aria-hidden="true"
         >
+
           <rect
             x="3"
             y="5"
@@ -140,18 +169,28 @@ import { site } from "../data/site";
           <path
             d="m3 7 9 6 9-6"
           />
+
         </svg>
+
       </a>
 
     </div>
 
 
-    <!-- RIGHT: COPYRIGHT -->
+    <!-- COPYRIGHT -->
 
-    <span class="font-light">
-      © {new Date().getFullYear()} Soleil & Stone.
+    <div
+      class="
+        font-light
+        text-center
+        md:text-right
+      "
+    >
+      © {new Date().getFullYear()}
+      Soleil & Stone.
       All rights reserved.
-    </span>
+    </div>
 
   </div>
+
 </footer>
