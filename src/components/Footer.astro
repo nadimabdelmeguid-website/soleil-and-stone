@@ -1,6 +1,14 @@
 ---
 import Logo from "./Logo.astro";
-import { site } from "../data/site";
+
+import {
+  site
+} from "../data/site";
+
+
+const year =
+  new Date()
+    .getFullYear();
 ---
 
 <footer
@@ -8,7 +16,6 @@ import { site } from "../data/site";
     border-t
     border-brand-border
     bg-white
-    py-10
   "
 >
 
@@ -18,176 +25,279 @@ import { site } from "../data/site";
       w-full
       mx-auto
       px-6
-      flex
-      flex-col
-      md:flex-row
-      items-center
-      justify-between
-      gap-7
-      text-xs
-      text-brand-slate
+      py-10
     "
   >
 
-    <!-- BRAND -->
-
     <div
       class="
-        flex
-        flex-col
-        sm:flex-row
-        items-center
-        gap-3
+        grid
+        md:grid-cols-12
+        gap-8
+        items-start
       "
     >
 
-      <Logo
-        variant="wordmark"
-        className="
-          w-[170px]
-          sm:w-[190px]
-        "
-      />
+      <!-- BRAND -->
 
-      <span
+      <div
         class="
-          hidden
-          sm:inline
-          text-brand-slate
-        "
-      >
-        •
-      </span>
-
-      <span>
-        {site.location}
-      </span>
-
-    </div>
-
-
-    <!-- SOCIAL ICONS -->
-
-    <div
-      class="
-        flex
-        items-center
-        gap-5
-      "
-    >
-
-      <!-- LINKEDIN -->
-
-      <a
-        href={site.linkedin}
-        target="_blank"
-        rel="noopener noreferrer"
-        aria-label="LinkedIn"
-        title="LinkedIn"
-        class="
-          text-brand-slate
-          hover:text-brand-gold
-          transition-colors
+          md:col-span-5
         "
       >
 
-        <svg
-          viewBox="0 0 24 24"
+        <Logo
+          variant="wordmark"
+          width="190"
+        />
+
+
+        <p
           class="
-            w-5
-            h-5
+            text-xs
+            text-brand-slate
+            font-light
+            mt-4
           "
-          fill="currentColor"
-          aria-hidden="true"
+        >
+          {site.location}
+        </p>
+
+
+        <p
+          class="
+            text-xs
+            text-brand-slate
+            font-light
+            leading-relaxed
+            max-w-sm
+            mt-3
+          "
+        >
+          Hardware, commercialization,
+          innovation ecosystems, and
+          observations from the field.
+        </p>
+
+      </div>
+
+
+
+      <!-- SITE -->
+
+      <div
+        class="
+          md:col-span-3
+        "
+      >
+
+        <div
+          class="
+            text-[9px]
+            uppercase
+            tracking-[0.16em]
+            text-brand-gold
+            font-semibold
+            mb-4
+          "
+        >
+          Explore
+        </div>
+
+
+        <div
+          class="
+            flex
+            flex-col
+            gap-3
+          "
         >
 
-          <path
-            d="
-              M20.45 20.45h-3.56
-              v-5.57
-              c0-1.33-.03-3.04-1.85-3.04
-              -1.85 0-2.13 1.45-2.13 2.94
-              v5.67H9.35
-              V8.98h3.42
-              v1.57h.05
-              c.47-.9 1.64-1.85 3.37-1.85
-              3.6 0 4.26 2.37 4.26 5.45
-              v6.3z
-
-              M5.34 7.41
-              a2.07 2.07 0 1 1 0-4.14
-              2.07 2.07 0 0 1 0 4.14z
-
-              M7.12 20.45
-              H3.56
-              V8.98
-              h3.56
-              v11.47z
+          <a
+            href="/community/"
+            class="
+              text-xs
+              text-brand-slate
+              hover:text-brand-gold
+              transition-colors
             "
-          />
-
-        </svg>
-
-      </a>
+          >
+            Community
+          </a>
 
 
-      <!-- EMAIL -->
+          <a
+            href="/field-notes/"
+            class="
+              text-xs
+              text-brand-slate
+              hover:text-brand-gold
+              transition-colors
+            "
+          >
+            Field Notes
+          </a>
 
-      <a
-        href={site.email}
-        aria-label="Email"
-        title="Email"
+
+          <a
+            href="/about/"
+            class="
+              text-xs
+              text-brand-slate
+              hover:text-brand-gold
+              transition-colors
+            "
+          >
+            About
+          </a>
+
+
+          <a
+            href="/fieldwork/"
+            class="
+              text-xs
+              text-brand-slate
+              hover:text-brand-gold
+              transition-colors
+            "
+          >
+            Industry Fieldwork
+          </a>
+
+        </div>
+
+      </div>
+
+
+
+      <!-- CONNECT -->
+
+      <div
         class="
-          text-brand-slate
-          hover:text-brand-gold
-          transition-colors
+          md:col-span-4
+          md:text-right
         "
       >
 
-        <svg
-          viewBox="0 0 24 24"
+        <div
           class="
-            w-5
-            h-5
+            text-[9px]
+            uppercase
+            tracking-[0.16em]
+            text-brand-gold
+            font-semibold
+            mb-4
           "
-          fill="none"
-          stroke="currentColor"
-          stroke-width="1.7"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          aria-hidden="true"
+        >
+          Connect
+        </div>
+
+
+        <div
+          class="
+            flex
+            md:justify-end
+            gap-3
+          "
         >
 
-          <rect
-            x="3"
-            y="5"
-            width="18"
-            height="14"
-            rx="1.5"
-          />
+          <a
+            href={site.linkedin}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="LinkedIn"
+            class="
+              w-9
+              h-9
+              flex
+              items-center
+              justify-center
+              border
+              border-brand-border
+              text-brand-charcoal
+              hover:text-brand-gold
+              hover:border-brand-gold
+              transition-colors
+            "
+          >
 
-          <path
-            d="m3 7 9 6 9-6"
-          />
+            <svg
+              viewBox="0 0 24 24"
+              width="16"
+              height="16"
+              fill="currentColor"
+              aria-hidden="true"
+            >
+              <path
+                d="M6.5 8.5H3.2V19h3.3V8.5ZM4.85 3A1.93 1.93 0 1 0 4.85 6.86 1.93 1.93 0 0 0 4.85 3ZM19 13.02c0-3.16-1.69-4.63-3.94-4.63-1.81 0-2.63 1-3.09 1.7V8.5H8.68V19h3.29v-5.2c0-1.37.26-2.7 1.96-2.7 1.68 0 1.7 1.57 1.7 2.79V19H19v-5.98Z"
+              />
+            </svg>
 
-        </svg>
+          </a>
 
-      </a>
+
+          <a
+            href={site.email}
+            aria-label="Email"
+            class="
+              w-9
+              h-9
+              flex
+              items-center
+              justify-center
+              border
+              border-brand-border
+              text-brand-charcoal
+              hover:text-brand-gold
+              hover:border-brand-gold
+              transition-colors
+            "
+          >
+
+            <svg
+              viewBox="0 0 24 24"
+              width="16"
+              height="16"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.7"
+              aria-hidden="true"
+            >
+              <rect
+                x="3"
+                y="5"
+                width="18"
+                height="14"
+                rx="1"
+              />
+
+              <path
+                d="m4 7 8 6 8-6"
+              />
+            </svg>
+
+          </a>
+
+        </div>
+
+      </div>
 
     </div>
 
 
-    <!-- COPYRIGHT -->
 
     <div
       class="
+        mt-10
+        pt-6
+        border-t
+        border-brand-border
+        text-[10px]
+        text-brand-slate
         font-light
-        text-center
-        md:text-right
       "
     >
-      © {new Date().getFullYear()}
-      Soleil & Stone.
+      © {year} Soleil & Stone.
       All rights reserved.
     </div>
 
