@@ -46,16 +46,6 @@ const year =
         "
       >
 
-        <!--
-          Use the exact footer wordmark asset directly.
-
-          File:
-          /public/brand/logo-wordmark.png
-
-          Public assets are referenced without /public
-          in the browser URL.
-        -->
-
         <a
           href="/"
           aria-label="Soleil & Stone home"
@@ -125,13 +115,6 @@ const year =
           Explore
         </div>
 
-
-        <!--
-          2 × 2 layout
-
-          Community        About
-          Field Notes      Industry Fieldwork
-        -->
 
         <div
           class="
@@ -348,38 +331,22 @@ const year =
 
 <style>
 
-  /*
-   * Footer-specific wordmark.
-   *
-   * This bypasses Logo.astro entirely, so nothing else
-   * can enlarge the image.
-   */
-
   .footer-wordmark {
     display: block;
-
-    width: 120px;
-
-    max-width: 120px;
-
+    width: 140px;
+    max-width: 140px;
     height: auto;
-
     object-fit: contain;
   }
 
-
-  /*
-   * Slightly smaller on mobile.
-   */
 
   @media (
     max-width: 767px
   ) {
 
     .footer-wordmark {
-      width: 110px;
-
-      max-width: 110px;
+      width: 125px;
+      max-width: 125px;
     }
 
   }
