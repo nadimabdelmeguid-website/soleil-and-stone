@@ -1,49 +1,40 @@
 ---
-import {
-  getCollection
-} from "astro:content";
+import { getCollection } from "astro:content";
 
-import BaseLayout
-  from "../layouts/BaseLayout.astro";
-
-import ArticleCard
-  from "../components/ArticleCard.astro";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import ArticleCard from "../components/ArticleCard.astro";
+import HomeEvents from "../components/HomeEvents.astro";
 
 
-const now =
-  new Date();
+const now = new Date();
 
 
 const featuredPosts =
   (
-    await getCollection(
-      "fieldNotes"
+    await getCollection("fieldNotes")
+  )
+    .filter(
+      (post) =>
+        !post.data.draft &&
+        post.data.featured &&
+        post.data.published <= now
     )
-  )
-
-  .filter(
-    post =>
-      !post.data.draft &&
-      post.data.featured &&
-      post.data.published <= now
-  )
-
-  .sort(
-    (a, b) =>
-      b.data.published.getTime() -
-      a.data.published.getTime()
-  )
-
-  .slice(
-    0,
-    2
-  );
+    .sort(
+      (a, b) =>
+        b.data.published.getTime() -
+        a.data.published.getTime()
+    )
+    .slice(0, 2);
 ---
 
 <BaseLayout
   title="SOLEIL & STONE"
   description="Entrepreneurship, hardware, ecosystem building and community across the West Coast innovation ecosystem."
 >
+
+  <!-- =========================================================
+       1. HERO
+       ========================================================= -->
 
   <section
     class="
@@ -67,6 +58,8 @@ const featuredPosts =
         md:gap-14
       "
     >
+
+      <!-- Portrait -->
 
       <div
         class="
@@ -92,7 +85,12 @@ const featuredPosts =
             alt="Nadim Abdel Meguid"
             class="
               w-full
+              h-auto
               grayscale
+              hover:grayscale-0
+              transition-all
+              duration-500
+              object-cover
             "
           />
 
@@ -100,6 +98,8 @@ const featuredPosts =
 
       </div>
 
+
+      <!-- Hero copy -->
 
       <div class="flex-1">
 
@@ -129,6 +129,9 @@ const featuredPosts =
             text-3xl
             sm:text-4xl
             lg:text-5xl
+            font-normal
+            tracking-wide
+            text-brand-charcoal
             leading-[1.2]
             mb-6
           "
@@ -146,15 +149,13 @@ const featuredPosts =
             leading-relaxed
             font-light
             mb-6
+            max-w-3xl
           "
         >
-          Raised in Cairo,
-          trained as an Industrial Engineer
-          in France, and shaped by San Francisco's
-          tech ecosystem. Now based in San Diego,
-          I'm building founder networks,
-          hardware communities, and spaces where
-          ideas and people can connect.
+          Raised in Cairo, trained as an Industrial Engineer in France,
+          and shaped by San Francisco's tech ecosystem.
+          Now based in San Diego, I'm building founder networks,
+          hardware communities, and spaces where ideas and people can connect.
         </p>
 
 
@@ -168,10 +169,15 @@ const featuredPosts =
             text-xs
             uppercase
             tracking-widest
-            inline-block
+            hover:bg-brand-gold
+            transition-colors
+            inline-flex
+            items-center
+            gap-2
           "
         >
-          Explore the Community →
+          <span>Explore the Community</span>
+          <span>→</span>
         </a>
 
       </div>
@@ -180,6 +186,21 @@ const featuredPosts =
 
   </section>
 
+
+
+  <!-- =========================================================
+       2. COMMUNITY HUB + CALENDAR
+       Powered by src/data/events.ts
+       ========================================================= -->
+
+  <HomeEvents />
+
+
+
+  <!-- =========================================================
+       3. FEATURED FIELD NOTES
+       Powered automatically by Markdown content collection
+       ========================================================= -->
 
   <section
     class="
@@ -196,9 +217,12 @@ const featuredPosts =
     <div
       class="
         flex
+        flex-col
+        sm:flex-row
+        sm:items-end
         justify-between
-        items-end
         mb-10
+        gap-4
       "
     >
 
@@ -221,6 +245,8 @@ const featuredPosts =
           class="
             font-serif
             text-3xl
+            font-normal
+            text-brand-charcoal
             mt-1
           "
         >
@@ -236,7 +262,10 @@ const featuredPosts =
           text-xs
           uppercase
           tracking-widest
+          font-medium
           text-brand-gold
+          hover:underline
+          whitespace-nowrap
         "
       >
         View All Field Notes →
@@ -245,30 +274,53 @@ const featuredPosts =
     </div>
 
 
-    <div
-      class="
-        grid
-        md:grid-cols-2
-        gap-8
-      "
-    >
+    {
+      featuredPosts.length > 0 ? (
 
-      {
-        featuredPosts.map(
-          post => (
+        <div
+          class="
+            grid
+            md:grid-cols-2
+            gap-8
+          "
+        >
 
-            <ArticleCard
-              post={post}
-            />
+          {
+            featuredPosts.map(
+              (post) => (
+                <ArticleCard post={post} />
+              )
+            )
+          }
 
-          )
-        )
-      }
+        </div>
 
-    </div>
+      ) : (
+
+        <div
+          class="
+            p-8
+            bg-brand-card
+            border
+            border-brand-border
+            text-brand-slate
+            text-sm
+            font-light
+          "
+        >
+          New Field Notes are coming soon.
+        </div>
+
+      )
+    }
 
   </section>
 
+
+
+  <!-- =========================================================
+       4. CONTACT
+       ========================================================= -->
 
   <section
     id="contact"
@@ -281,11 +333,7 @@ const featuredPosts =
     "
   >
 
-    <div
-      class="
-        max-w-2xl
-      "
-    >
+    <div class="max-w-2xl">
 
       <span
         class="
@@ -304,6 +352,8 @@ const featuredPosts =
         class="
           font-serif
           text-3xl
+          font-normal
+          text-brand-charcoal
           mt-1
           mb-4
         "
@@ -318,19 +368,433 @@ const featuredPosts =
           text-sm
           font-light
           mb-8
+          leading-relaxed
         "
       >
-        Reach out to connect around startups,
-        hardware, community events,
-        speaking opportunities,
+        Reach out to connect around startups, hardware,
+        community events, speaking opportunities,
         partnerships, or ideas worth exploring.
       </p>
 
 
-      <!-- Keep your current contact form here -->
+      <form
+        id="contact-form"
+        action="https://script.google.com/macros/s/AKfycbxKtCKaU1D2tbC-np9R-a_R4A-CMgJuaNnGH3TPyBCK4whhThTE6t7u35yWoym4eXZN/exec"
+        method="POST"
+        class="space-y-5"
+      >
+
+        <!-- Name -->
+
+        <div>
+
+          <label
+            for="contact-name"
+            class="
+              block
+              text-xs
+              uppercase
+              tracking-wider
+              text-brand-slate
+              mb-2
+            "
+          >
+            Your Name
+          </label>
+
+
+          <input
+            id="contact-name"
+            type="text"
+            name="name"
+            required
+            autocomplete="name"
+            class="
+              w-full
+              px-4
+              py-3
+              bg-brand-card
+              border
+              border-brand-border
+              text-sm
+              text-brand-charcoal
+              focus:outline-none
+              focus:border-brand-gold
+              transition-colors
+            "
+          />
+
+        </div>
+
+
+        <!-- Email -->
+
+        <div>
+
+          <label
+            for="contact-email"
+            class="
+              block
+              text-xs
+              uppercase
+              tracking-wider
+              text-brand-slate
+              mb-2
+            "
+          >
+            Email Address
+          </label>
+
+
+          <input
+            id="contact-email"
+            type="email"
+            name="email"
+            required
+            autocomplete="email"
+            class="
+              w-full
+              px-4
+              py-3
+              bg-brand-card
+              border
+              border-brand-border
+              text-sm
+              text-brand-charcoal
+              focus:outline-none
+              focus:border-brand-gold
+              transition-colors
+            "
+          />
+
+        </div>
+
+
+        <!-- Inquiry type -->
+
+        <div>
+
+          <label
+            for="contact-type"
+            class="
+              block
+              text-xs
+              uppercase
+              tracking-wider
+              text-brand-slate
+              mb-2
+            "
+          >
+            Inquiry Type
+          </label>
+
+
+          <select
+            id="contact-type"
+            name="type"
+            class="
+              w-full
+              px-4
+              py-3
+              bg-brand-card
+              border
+              border-brand-border
+              text-sm
+              text-brand-charcoal
+              focus:outline-none
+              focus:border-brand-gold
+              transition-colors
+            "
+          >
+
+            <option value="hello">
+              Say Hello
+            </option>
+
+            <option value="community">
+              Community / Event
+            </option>
+
+            <option value="speaking">
+              Speaking
+            </option>
+
+            <option value="partnership">
+              Partnership
+            </option>
+
+            <option value="other">
+              Other
+            </option>
+
+          </select>
+
+        </div>
+
+
+        <!-- Message -->
+
+        <div>
+
+          <label
+            for="contact-message"
+            class="
+              block
+              text-xs
+              uppercase
+              tracking-wider
+              text-brand-slate
+              mb-2
+            "
+          >
+            Message
+          </label>
+
+
+          <textarea
+            id="contact-message"
+            name="message"
+            rows="5"
+            required
+            class="
+              w-full
+              px-4
+              py-3
+              bg-brand-card
+              border
+              border-brand-border
+              text-sm
+              text-brand-charcoal
+              focus:outline-none
+              focus:border-brand-gold
+              transition-colors
+              resize-y
+            "
+          ></textarea>
+
+        </div>
+
+
+        <!-- Submit -->
+
+        <div>
+
+          <button
+            type="submit"
+            id="submit-btn"
+            class="
+              px-6
+              py-3
+              bg-brand-charcoal
+              text-white
+              text-xs
+              uppercase
+              tracking-[0.2em]
+              hover:bg-brand-gold
+              transition-colors
+              disabled:opacity-50
+              disabled:cursor-not-allowed
+            "
+          >
+            Send Message
+          </button>
+
+
+          <p
+            id="form-status"
+            class="
+              text-xs
+              mt-4
+              hidden
+              font-medium
+            "
+          ></p>
+
+        </div>
+
+      </form>
 
     </div>
 
   </section>
+
+
+
+  <!-- =========================================================
+       CONTACT FORM JAVASCRIPT
+       ========================================================= -->
+
+  <script is:inline>
+
+    const contactForm =
+      document.getElementById("contact-form");
+
+
+    if (contactForm) {
+
+      /*
+       * Allows links such as:
+       * /?type=partnership#contact
+       *
+       * to automatically select Partnership.
+       */
+
+      const params =
+        new URLSearchParams(
+          window.location.search
+        );
+
+
+      const requestedType =
+        params.get("type");
+
+
+      const inquirySelect =
+        document.getElementById(
+          "contact-type"
+        );
+
+
+      if (
+        requestedType &&
+        inquirySelect
+      ) {
+
+        const optionExists =
+          Array.from(
+            inquirySelect.options
+          ).some(
+            (option) =>
+              option.value === requestedType
+          );
+
+
+        if (optionExists) {
+
+          inquirySelect.value =
+            requestedType;
+
+        }
+
+      }
+
+
+
+      contactForm.addEventListener(
+        "submit",
+        async (event) => {
+
+          event.preventDefault();
+
+
+          const submitButton =
+            document.getElementById(
+              "submit-btn"
+            );
+
+
+          const statusElement =
+            document.getElementById(
+              "form-status"
+            );
+
+
+          submitButton.disabled =
+            true;
+
+
+          submitButton.textContent =
+            "Sending...";
+
+
+          statusElement.classList.add(
+            "hidden"
+          );
+
+
+          try {
+
+            const response =
+              await fetch(
+                contactForm.action,
+                {
+                  method: "POST",
+
+                  body:
+                    new FormData(
+                      contactForm
+                    )
+                }
+              );
+
+
+            const result =
+              await response.json();
+
+
+            if (
+              result.result !==
+              "success"
+            ) {
+
+              throw new Error(
+                result.error ||
+                "Submission failed"
+              );
+
+            }
+
+
+            statusElement.textContent =
+              "Thank you! Your message has been sent successfully.";
+
+
+            statusElement.className =
+              "text-xs mt-4 font-medium text-green-600";
+
+
+            contactForm.reset();
+
+          }
+
+          catch (error) {
+
+            console.error(
+              "Contact form error:",
+              error
+            );
+
+
+            statusElement.textContent =
+              "Something went wrong. Please try again or email directly.";
+
+
+            statusElement.className =
+              "text-xs mt-4 font-medium text-red-600";
+
+          }
+
+          finally {
+
+            submitButton.disabled =
+              false;
+
+
+            submitButton.textContent =
+              "Send Message";
+
+
+            statusElement.classList.remove(
+              "hidden"
+            );
+
+          }
+
+        }
+      );
+
+    }
+
+  </script>
 
 </BaseLayout>
