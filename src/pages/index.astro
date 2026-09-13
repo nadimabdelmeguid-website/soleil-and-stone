@@ -13,6 +13,10 @@ import {
 } from "../data/site";
 
 
+/* =========================================================
+   FIELD NOTES
+   ========================================================= */
+
 const now =
   new Date();
 
@@ -35,6 +39,12 @@ const fieldNotes =
     );
 
 
+/*
+ * Homepage:
+ * show the two newest published notes
+ * that are marked as featured.
+ */
+
 const featuredNotes =
   fieldNotes
     .filter(
@@ -49,7 +59,7 @@ const featuredNotes =
 
 <BaseLayout
   title="SOLEIL & STONE | Hardware, Commercialization & Innovation Ecosystems"
-  description="Field observations, communities and projects at the intersection of hardware, commercialization and innovation ecosystems."
+  description="Field observations, communities and projects at the intersection of hardware commercialization, industry fieldwork and innovation ecosystems."
 >
 
   <!-- =====================================================
@@ -58,131 +68,364 @@ const featuredNotes =
 
   <section
     class="
-      max-w-6xl
-      w-full
-      mx-auto
-      px-6
-      pt-20
-      pb-20
+      bg-white
+      border-b
+      border-brand-border
     "
   >
 
     <div
       class="
-        max-w-4xl
+        max-w-6xl
+        w-full
         mx-auto
-        text-center
+        px-6
+        pt-20
+        pb-16
       "
     >
 
-      <span
-        class="
-          inline-block
-          text-[10px]
-          uppercase
-          tracking-[0.22em]
-          text-brand-gold
-          font-semibold
-          mb-6
-        "
-      >
-        {site.author.tagline}
-      </span>
-
-
-      <h1
-        class="
-          font-serif
-          text-4xl
-          sm:text-5xl
-          lg:text-6xl
-          text-brand-charcoal
-          leading-[1.12]
-          font-normal
-          tracking-wide
-          mb-7
-        "
-      >
-        Global Perspective.
-        <br />
-
-        Technical Mindset.
-        <br />
-
-        Local Impact.
-      </h1>
-
-
-      <p
-        class="
-          text-base
-          sm:text-lg
-          text-brand-slate
-          leading-relaxed
-          font-light
-          max-w-3xl
-          mx-auto
-        "
-      >
-        Raised in Cairo, trained as an Industrial Engineer
-        in France, and shaped by the Bay Area technology
-        ecosystem. Now based in San Diego, I work at the
-        intersection of hardware, commercialization, and
-        community—connecting engineers, founders,
-        manufacturers, investors, and operators to help
-        technical ideas move toward real-world adoption.
-      </p>
-
+      <!-- =================================================
+           HERO INTRO
+           ================================================= -->
 
       <div
         class="
-          flex
-          flex-wrap
-          justify-center
-          gap-x-7
-          gap-y-3
-          mt-8
+          max-w-4xl
+          mx-auto
+          text-center
         "
       >
 
-        <a
-          href="/community/"
+        <span
           class="
-            inline-flex
-            items-center
-            gap-2
-            text-[11px]
+            inline-block
+            text-[10px]
             uppercase
-            tracking-[0.16em]
+            tracking-[0.22em]
+            text-brand-gold
             font-semibold
+            mb-6
+          "
+        >
+          {site.author.tagline}
+        </span>
+
+
+        <h1
+          class="
+            font-serif
+            text-4xl
+            sm:text-5xl
+            lg:text-6xl
             text-brand-charcoal
-            hover:text-brand-gold
-            transition-colors
+            leading-[1.12]
+            font-normal
+            tracking-wide
+            mb-7
           "
         >
-          Explore Community
-          <span>→</span>
-        </a>
+          Global Perspective.
+          <br />
+
+          Technical Mindset.
+          <br />
+
+          Local Impact.
+        </h1>
 
 
-        <a
-          href="/about/"
+        <p
           class="
-            inline-flex
-            items-center
-            gap-2
-            text-[11px]
-            uppercase
-            tracking-[0.16em]
-            font-semibold
+            text-base
+            sm:text-lg
             text-brand-slate
-            hover:text-brand-gold
-            transition-colors
+            leading-relaxed
+            font-light
+            max-w-3xl
+            mx-auto
           "
         >
-          More About Me
-          <span>→</span>
-        </a>
+          I work at the intersection of hardware commercialization
+          and innovation ecosystems, connecting technical product
+          development, manufacturing resources, market intelligence,
+          and regional networks to help technologies move toward
+          real-world adoption.
+        </p>
+
+      </div>
+
+
+
+      <!-- =================================================
+           THREE PILLARS
+           ================================================= -->
+
+      <div
+        class="
+          max-w-5xl
+          mx-auto
+          mt-14
+          pt-10
+          border-t
+          border-brand-border
+        "
+      >
+
+        <div
+          class="
+            grid
+            md:grid-cols-3
+            gap-8
+            md:gap-0
+          "
+        >
+
+          <!-- HARDWARE COMMERCIALIZATION -->
+
+          <div
+            class="
+              md:pr-8
+            "
+          >
+
+            <div
+              class="
+                border-t
+                border-brand-gold
+                pt-5
+              "
+            >
+
+              <span
+                class="
+                  text-[9px]
+                  uppercase
+                  tracking-[0.2em]
+                  text-brand-gold
+                  font-semibold
+                "
+              >
+                01
+              </span>
+
+
+              <h2
+                class="
+                  font-serif
+                  text-xl
+                  text-brand-charcoal
+                  mt-2
+                  mb-3
+                "
+              >
+                Hardware Commercialization
+              </h2>
+
+
+              <p
+                class="
+                  text-sm
+                  text-brand-slate
+                  leading-relaxed
+                  font-light
+                "
+              >
+                Connecting engineering decisions, product
+                development, manufacturing resources and market
+                needs to help technical products move toward
+                adoption.
+              </p>
+
+            </div>
+
+          </div>
+
+
+
+          <!-- INDUSTRY FIELDWORK -->
+
+          <div
+            class="
+              md:px-8
+              md:border-l
+              md:border-brand-border
+            "
+          >
+
+            <div
+              class="
+                border-t
+                border-brand-gold
+                pt-5
+              "
+            >
+
+              <span
+                class="
+                  text-[9px]
+                  uppercase
+                  tracking-[0.2em]
+                  text-brand-gold
+                  font-semibold
+                "
+              >
+                02
+              </span>
+
+
+              <h2
+                class="
+                  font-serif
+                  text-xl
+                  text-brand-charcoal
+                  mt-2
+                  mb-3
+                "
+              >
+                Industry Fieldwork
+              </h2>
+
+
+              <p
+                class="
+                  text-sm
+                  text-brand-slate
+                  leading-relaxed
+                  font-light
+                "
+              >
+                Learning directly from trade shows, manufacturers,
+                founders and technical teams to understand how
+                technologies, markets and industries are evolving.
+              </p>
+
+            </div>
+
+          </div>
+
+
+
+          <!-- INNOVATION ECOSYSTEMS -->
+
+          <div
+            class="
+              md:pl-8
+              md:border-l
+              md:border-brand-border
+            "
+          >
+
+            <div
+              class="
+                border-t
+                border-brand-gold
+                pt-5
+              "
+            >
+
+              <span
+                class="
+                  text-[9px]
+                  uppercase
+                  tracking-[0.2em]
+                  text-brand-gold
+                  font-semibold
+                "
+              >
+                03
+              </span>
+
+
+              <h2
+                class="
+                  font-serif
+                  text-xl
+                  text-brand-charcoal
+                  mt-2
+                  mb-3
+                "
+              >
+                Innovation Ecosystems
+              </h2>
+
+
+              <p
+                class="
+                  text-sm
+                  text-brand-slate
+                  leading-relaxed
+                  font-light
+                "
+              >
+                Building connections among engineers, founders,
+                manufacturers, investors and operators to strengthen
+                regional innovation networks.
+              </p>
+
+            </div>
+
+          </div>
+
+        </div>
+
+
+
+        <!-- =================================================
+             HERO CTAS
+             ================================================= -->
+
+        <div
+          class="
+            flex
+            flex-wrap
+            justify-center
+            gap-x-7
+            gap-y-3
+            mt-10
+          "
+        >
+
+          <a
+            href="/community/"
+            class="
+              inline-flex
+              items-center
+              gap-2
+              text-[11px]
+              uppercase
+              tracking-[0.16em]
+              font-semibold
+              text-brand-charcoal
+              hover:text-brand-gold
+              transition-colors
+            "
+          >
+            Explore Community
+            <span>→</span>
+          </a>
+
+
+          <a
+            href="/about/"
+            class="
+              inline-flex
+              items-center
+              gap-2
+              text-[11px]
+              uppercase
+              tracking-[0.16em]
+              font-semibold
+              text-brand-slate
+              hover:text-brand-gold
+              transition-colors
+            "
+          >
+            More About Me
+            <span>→</span>
+          </a>
+
+        </div>
 
       </div>
 
@@ -193,7 +436,7 @@ const featuredNotes =
 
 
   <!-- =====================================================
-       CALENDAR
+       COMMUNITY HUB & CALENDAR
        ===================================================== -->
 
   <HomeEvents />
@@ -206,95 +449,112 @@ const featuredNotes =
 
   <section
     class="
-      max-w-6xl
-      w-full
-      mx-auto
-      px-6
-      py-16
+      bg-white
+      border-t
+      border-brand-border
     "
   >
 
     <div
       class="
-        flex
-        flex-col
-        sm:flex-row
-        sm:items-end
-        justify-between
-        gap-5
-        mb-8
+        max-w-6xl
+        w-full
+        mx-auto
+        px-6
+        py-16
       "
     >
 
-      <div>
+      <!-- SECTION HEADER -->
 
-        <span
+      <div
+        class="
+          flex
+          flex-col
+          sm:flex-row
+          sm:items-end
+          justify-between
+          gap-5
+          mb-8
+        "
+      >
+
+        <div>
+
+          <span
+            class="
+              text-[10px]
+              uppercase
+              tracking-[0.2em]
+              text-brand-gold
+              font-semibold
+            "
+          >
+            Field Notes
+          </span>
+
+
+          <h2
+            class="
+              font-serif
+              text-3xl
+              sm:text-4xl
+              text-brand-charcoal
+              mt-2
+            "
+          >
+            Observations From The Field
+          </h2>
+
+        </div>
+
+
+        <a
+          href="/field-notes/"
           class="
-            text-[10px]
+            inline-flex
+            items-center
+            gap-2
+            text-[11px]
             uppercase
-            tracking-[0.2em]
-            text-brand-gold
+            tracking-[0.16em]
             font-semibold
-          "
-        >
-          Field Notes
-        </span>
-
-
-        <h2
-          class="
-            font-serif
-            text-3xl
-            sm:text-4xl
             text-brand-charcoal
-            mt-2
+            hover:text-brand-gold
+            transition-colors
           "
         >
-          Observations From The Field
-        </h2>
+          All Field Notes
+          <span>→</span>
+        </a>
 
       </div>
 
 
-      <a
-        href="/field-notes/"
+
+      <!-- FEATURED NOTES -->
+
+      <div
         class="
-          inline-flex
-          items-center
-          gap-2
-          text-[11px]
-          uppercase
-          tracking-[0.16em]
-          font-semibold
-          text-brand-charcoal
-          hover:text-brand-gold
-          transition-colors
+          grid
+          md:grid-cols-2
+          gap-5
         "
       >
-        All Field Notes
-        <span>→</span>
-      </a>
 
-    </div>
+        {
+          featuredNotes.map(
+            (post) => (
 
+              <ArticleCard
+                post={post}
+              />
 
-    <div
-      class="
-        grid
-        md:grid-cols-2
-        gap-5
-      "
-    >
-
-      {
-        featuredNotes.map(
-          (post) => (
-            <ArticleCard
-              post={post}
-            />
+            )
           )
-        )
-      }
+        }
+
+      </div>
 
     </div>
 
@@ -332,6 +592,8 @@ const featuredNotes =
           gap-12
         "
       >
+
+        <!-- CONTACT INTRO -->
 
         <div
           class="
@@ -384,6 +646,9 @@ const featuredNotes =
         </div>
 
 
+
+        <!-- CONTACT FORM -->
+
         <div
           class="
             lg:col-span-7
@@ -398,6 +663,8 @@ const featuredNotes =
               gap-5
             "
           >
+
+            <!-- NAME + EMAIL -->
 
             <div
               class="
@@ -446,6 +713,7 @@ const featuredNotes =
               </div>
 
 
+
               <div>
 
                 <label
@@ -487,6 +755,9 @@ const featuredNotes =
             </div>
 
 
+
+            <!-- INQUIRY TYPE -->
+
             <div>
 
               <label
@@ -521,23 +792,37 @@ const featuredNotes =
                 "
               >
 
-                <option value="hello">
+                <option
+                  value="hello"
+                >
                   General / Hello
                 </option>
 
-                <option value="community">
+
+                <option
+                  value="community"
+                >
                   Community
                 </option>
 
-                <option value="partnership">
+
+                <option
+                  value="partnership"
+                >
                   Partnership
                 </option>
 
-                <option value="speaking">
+
+                <option
+                  value="speaking"
+                >
                   Speaking
                 </option>
 
-                <option value="other">
+
+                <option
+                  value="other"
+                >
                   Other
                 </option>
 
@@ -545,6 +830,9 @@ const featuredNotes =
 
             </div>
 
+
+
+            <!-- MESSAGE -->
 
             <div>
 
@@ -586,6 +874,9 @@ const featuredNotes =
             </div>
 
 
+
+            <!-- SUBMIT -->
+
             <button
               type="submit"
               class="
@@ -618,5 +909,63 @@ const featuredNotes =
     </div>
 
   </section>
+
+
+
+  <!-- =====================================================
+       PRESELECT CONTACT INQUIRY FROM URL
+
+       Example:
+       /?type=partnership#contact
+       ===================================================== -->
+
+  <script is:inline>
+    (() => {
+
+      const params =
+        new URLSearchParams(
+          window.location.search
+        );
+
+
+      const requestedType =
+        params.get(
+          "type"
+        );
+
+
+      const select =
+        document.getElementById(
+          "type"
+        );
+
+
+      if (
+        !requestedType ||
+        !select
+      ) {
+        return;
+      }
+
+
+      const option =
+        Array.from(
+          select.options
+        ).find(
+          (item) =>
+            item.value ===
+            requestedType
+        );
+
+
+      if (
+        option
+      ) {
+        select.value =
+          requestedType;
+      }
+
+    })();
+  </script>
 
 </BaseLayout>
