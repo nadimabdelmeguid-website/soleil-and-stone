@@ -1,3 +1,10 @@
+export interface EventSpeaker {
+  name: string;
+  title?: string;
+  company: string;
+}
+
+
 export interface SiteEvent {
   id: string;
 
@@ -7,7 +14,7 @@ export interface SiteEvent {
     | "hosted"
     | "attending";
 
-  participation?:
+  participation:
     | "hosted"
     | "co-organized"
     | "exhibitor"
@@ -25,9 +32,9 @@ export interface SiteEvent {
 
   description?: string;
 
-  /**
-   * REQUIRED:
-   * Every calendar event must point somewhere.
+  /*
+   * Every public calendar event
+   * should have a supporting URL.
    */
   url: string;
 
@@ -37,11 +44,26 @@ export interface SiteEvent {
 
   showOnHome?: boolean;
 
-  /**
-   * Registration count for events you hosted/co-organized.
-   * Add only when you have a supported number.
+  /*
+   * Registration count.
+   *
+   * For the metrics, registrations are
+   * counted only when the event was
+   * hosted or co-organized.
    */
   registrations?: number;
+
+  /*
+   * Organizations that formally sponsored
+   * an event you hosted/co-organized.
+   */
+  sponsors?: string[];
+
+  /*
+   * Speakers appearing at an event
+   * you hosted/co-organized.
+   */
+  speakers?: EventSpeaker[];
 }
 
 
@@ -52,21 +74,29 @@ export const events: SiteEvent[] = [
   // =====================================================
 
   {
-    id: "ces-2027",
+    id:
+      "ces-2027",
 
-    title: "CES 2027",
+    title:
+      "CES 2027",
 
-    role: "attending",
+    role:
+      "attending",
 
-    participation: "exhibitor",
+    participation:
+      "exhibitor",
 
-    startDate: "2027-01-06",
+    startDate:
+      "2027-01-06",
 
-    endDate: "2027-01-09",
+    endDate:
+      "2027-01-09",
 
-    venue: "Las Vegas Convention Center",
+    venue:
+      "Las Vegas Convention Center",
 
-    city: "Las Vegas",
+    city:
+      "Las Vegas",
 
     description:
       "Exhibiting at CES with a focus on consumer electronics, embedded technologies, acoustics, sensing and hardware commercialization.",
@@ -90,7 +120,8 @@ export const events: SiteEvent[] = [
   // =====================================================
 
   {
-    id: "aems-2026",
+    id:
+      "aems-2026",
 
     title:
       "Anaheim Electronics & Manufacturing Show 2026",
@@ -527,6 +558,9 @@ export const events: SiteEvent[] = [
     typeLabel:
       "Hosted Community Event",
 
+    registrations:
+      58,
+
     showOnHome:
       true
   },
@@ -569,6 +603,9 @@ export const events: SiteEvent[] = [
 
     typeLabel:
       "Hosted Community Event",
+
+    registrations:
+      97,
 
     showOnHome:
       true
@@ -655,6 +692,45 @@ export const events: SiteEvent[] = [
     registrations:
       87,
 
+    sponsors: [
+      "SEACOMP"
+    ],
+
+    speakers: [
+      {
+        name:
+          "Alex Cordeiro",
+
+        title:
+          "Industrial Designer & Founder",
+
+        company:
+          "dip"
+      },
+
+      {
+        name:
+          "Derek Jackson",
+
+        title:
+          "VP of Sales",
+
+        company:
+          "SEACOMP"
+      },
+
+      {
+        name:
+          "Aliasgar Morbi, Ph.D.",
+
+        title:
+          "Co-Founder",
+
+        company:
+          "Velavu"
+      }
+    ],
+
     showOnHome:
       true
   },
@@ -693,6 +769,9 @@ export const events: SiteEvent[] = [
 
     typeLabel:
       "Hosted Community Event",
+
+    registrations:
+      73,
 
     showOnHome:
       true
@@ -736,6 +815,9 @@ export const events: SiteEvent[] = [
 
     typeLabel:
       "Hosted Community Event",
+
+    registrations:
+      93,
 
     showOnHome:
       true
@@ -786,6 +868,45 @@ export const events: SiteEvent[] = [
     registrations:
       57,
 
+    sponsors: [
+      "Expertise Engineering"
+    ],
+
+    speakers: [
+      {
+        name:
+          "Kaheawai Kaonohi",
+
+        title:
+          "Founder & CEO",
+
+        company:
+          "The Disabler Soloist"
+      },
+
+      {
+        name:
+          "Young Lee",
+
+        title:
+          "Lead Industrial Designer",
+
+        company:
+          "Dexcom"
+      },
+
+      {
+        name:
+          "Brian Coullahan",
+
+        title:
+          "Director, Regional Market Development",
+
+        company:
+          "Element Biosciences"
+      }
+    ],
+
     showOnHome:
       true
   },
@@ -824,6 +945,9 @@ export const events: SiteEvent[] = [
 
     typeLabel:
       "Hosted Community Event",
+
+    registrations:
+      53,
 
     showOnHome:
       true
@@ -940,6 +1064,9 @@ export const events: SiteEvent[] = [
     typeLabel:
       "Hosted Community Event",
 
+    registrations:
+      85,
+
     showOnHome:
       true
   },
@@ -975,7 +1102,7 @@ export const events: SiteEvent[] = [
       "San Diego",
 
     description:
-      "Co-organized hardware meetup focused on defense and dual-use technologies, with founders and technical product builders.",
+      "Co-organized hardware meetup focused on defense and dual-use technologies, bringing together founders, engineers and technical product builders.",
 
     url:
       "https://luma.com/l61iif8f",
@@ -988,6 +1115,45 @@ export const events: SiteEvent[] = [
 
     registrations:
       44,
+
+    sponsors: [
+      "Downtown Works"
+    ],
+
+    speakers: [
+      {
+        name:
+          "Tom Cotton",
+
+        title:
+          "Lead Product Engineer",
+
+        company:
+          "Motive Labs"
+      },
+
+      {
+        name:
+          "Clayton Karmel",
+
+        title:
+          "Founder",
+
+        company:
+          "Dronekyll"
+      },
+
+      {
+        name:
+          "Ryan Roberts",
+
+        title:
+          "CEO",
+
+        company:
+          "QHR"
+      }
+    ],
 
     showOnHome:
       true
