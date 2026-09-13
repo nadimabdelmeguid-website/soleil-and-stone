@@ -1,0 +1,151 @@
+---
+import {
+  readingTime
+} from "../utils/readingTime";
+
+
+const {
+  post
+} = Astro.props;
+
+
+const date =
+  post.data.published
+    .toLocaleDateString(
+      "en-US",
+      {
+        month: "short",
+        day: "numeric",
+        year: "numeric"
+      }
+    )
+    .toUpperCase();
+
+
+const minutes =
+  readingTime(
+    post.body ?? ""
+  );
+---
+
+<article
+  class="
+    p-8
+    bg-brand-card
+    border
+    border-brand-border
+    shadow-sm
+    flex
+    flex-col
+    justify-between
+    min-h-full
+  "
+  data-category={post.data.categorySlug}
+>
+
+  <div>
+
+    <div
+      class="
+        flex
+        items-center
+        gap-3
+        text-xs
+        text-brand-slate
+        mb-3
+      "
+    >
+
+      <span
+        class="
+          font-mono
+          text-brand-gold
+        "
+      >
+        {date}
+      </span>
+
+      <span>
+        •
+      </span>
+
+      <span
+        class="
+          uppercase
+          tracking-wider
+          font-medium
+        "
+      >
+        {post.data.category}
+      </span>
+
+    </div>
+
+
+    <h2
+      class="
+        font-serif
+        text-xl
+        sm:text-2xl
+        text-brand-charcoal
+        mb-4
+      "
+    >
+      {post.data.title}
+    </h2>
+
+
+    <p
+      class="
+        text-brand-slate
+        text-sm
+        leading-relaxed
+        font-light
+        mb-6
+      "
+    >
+      {post.data.description}
+    </p>
+
+  </div>
+
+
+  <div
+    class="
+      pt-4
+      border-t
+      border-brand-border
+      flex
+      items-center
+      justify-between
+      gap-4
+    "
+  >
+
+    <span
+      class="
+        text-xs
+        text-brand-slate
+      "
+    >
+      {minutes} min read
+    </span>
+
+
+    <a
+      href={`/field-notes/${post.id}/`}
+      class="
+        text-xs
+        font-semibold
+        text-brand-gold
+        uppercase
+        tracking-widest
+        hover:underline
+      "
+    >
+      Read Article →
+    </a>
+
+  </div>
+
+</article>
