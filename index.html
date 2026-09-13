@@ -74,8 +74,8 @@
     </a>
 
     <nav class="flex items-center gap-6 text-xs uppercase tracking-widest font-medium text-brand-slate">
-      <a href="/groups.html" class="hover:text-brand-gold transition-colors">Community Groups</a>
-      <a href="/articles.html" class="text-brand-gold transition-colors">Articles</a>
+      <a href="/groups.html" class="hover:text-brand-gold transition-colors">Community</a>
+      <a href="/articles.html" class="hover:text-brand-gold transition-colors">Field Notes</a>
       <a href="#contact" class="px-4 py-2 border border-brand-charcoal hover:border-brand-gold hover:bg-brand-gold hover:text-white transition-all text-[11px]">Connect</a>
     </nav>
   </header>
@@ -102,11 +102,11 @@
             Global Perspective. Technical Mindset. Local Impact.
           </h1>
           <p class="text-base text-brand-slate leading-relaxed font-light mb-6">
-            Raised in Cairo, trained as an Industrial Engineer in France, and forged in San Francisco’s tech ecosystem. Today, I’m based in San Diego, actively building local founder networks, hardware meetups, and startup communities.
+            Raised in Cairo, trained as an Industrial Engineer in France, and shaped by San Francisco’s tech ecosystem. Now based in San Diego, I’m building founder networks, hardware communities, and spaces where ideas and people can connect.
           </p>
           <div class="flex flex-wrap gap-4">
             <a href="/groups.html" class="px-5 py-2.5 bg-brand-charcoal text-white text-xs uppercase tracking-widest hover:bg-brand-gold transition-colors inline-flex items-center gap-2">
-              <span>Explore My Community Groups</span>
+              <span>Explore the Community</span>
               <span>→</span>
             </a>
           </div>
@@ -156,7 +156,7 @@
               <div class="py-2">13</div>
               <div onclick="scrollToEvent('event-sep14')" class="py-2 bg-brand-gold text-white font-bold cursor-pointer transition-transform hover:scale-105" title="Click to view San Diego County Startup Mixer">14</div>
               <div class="py-2">15</div><div class="py-2">16</div><div class="py-2">17</div><div class="py-2">18</div>
-              <div onclick="scrollToEvent('event-sep19')" class="py-2 bg-brand-slate text-white font-bold cursor-pointer transition-transform hover:scale-105" title="Click to view California Rum Fest">19</div>
+              <div class="py-2">19</div>
               <div class="py-2">20</div><div class="py-2">21</div>
               <div onclick="scrollToEvent('event-sep22')" class="py-2 bg-brand-slate text-white font-bold cursor-pointer transition-transform hover:scale-105" title="Click to view Embedded World">22</div>
               <div onclick="scrollToEvent('event-sep22')" class="py-2 bg-brand-slate text-white font-bold cursor-pointer transition-transform hover:scale-105" title="Click to view Embedded World">23</div>
@@ -264,30 +264,6 @@
               </div>
               <a href="https://eventship.com/event/san-diego-county-startup-mixer-5" target="_blank" rel="noopener noreferrer" class="px-4 py-2 bg-brand-charcoal text-white text-xs uppercase tracking-widest hover:bg-brand-gold transition-colors text-center inline-flex items-center justify-center gap-2">
                 <span>Register on Eventship</span>
-                <span>↗</span>
-              </a>
-            </div>
-          </div>
-
-          <!-- Event Card: Sep 19 (California Rum Fest) -->
-          <div id="event-sep19" class="p-6 sm:p-8 bg-brand-card border border-brand-border hover:border-brand-gold transition-all duration-300 shadow-sm flex flex-col justify-between">
-            <div>
-              <div class="flex items-center justify-between mb-3">
-                <span class="text-[10px] font-semibold text-brand-slate uppercase tracking-[0.2em]">Attending Event</span>
-                <span class="text-[10px] font-mono bg-brand-slate/10 text-brand-slate border border-brand-slate/20 px-2 py-0.5">Sep 19, 2026</span>
-              </div>
-              <h3 class="font-serif text-xl sm:text-2xl font-normal text-brand-charcoal mb-2">California Rum Festival</h3>
-              <p class="text-brand-slate text-sm leading-relaxed font-light mb-4">
-                Attending the annual boutique rum festival in Emeryville, exploring artisanal spirits, industry distributors, and craft beverage innovation.
-              </p>
-            </div>
-            <div class="pt-4 border-t border-brand-border flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-              <div class="text-xs text-brand-slate">
-                <div class="font-medium text-brand-charcoal">Trader Vic's</div>
-                <div class="font-light">Emeryville, CA</div>
-              </div>
-              <a href="https://californiarumfest.com/" target="_blank" rel="noopener noreferrer" class="px-4 py-2 border border-brand-border bg-brand-cream text-brand-charcoal text-xs uppercase tracking-widest hover:border-brand-gold transition-colors text-center inline-flex items-center justify-center gap-2">
-                <span>Event Website</span>
                 <span>↗</span>
               </a>
             </div>
@@ -525,7 +501,7 @@
         <span class="text-xs uppercase tracking-[0.2em] text-brand-gold font-semibold">Direct Engagement</span>
         <h2 class="font-serif text-3xl font-normal text-brand-charcoal mt-1 mb-4">Connect or Get in Touch</h2>
         <p class="text-brand-slate text-sm font-light mb-8 leading-relaxed">
-          Reach out for general networking, speaker requests for hardware panels, or partnership opportunities for San Diego community events.
+          Reach out to connect around startups, hardware, community events, speaking opportunities, partnerships, or ideas worth exploring.
         </p>
 
         <!-- Connected Google Apps Script Form with AJAX Submission and Success Message Handling -->
@@ -541,10 +517,11 @@
           <div>
             <label class="block text-xs uppercase tracking-wider text-brand-slate mb-1">Inquiry Type</label>
             <select name="type" class="w-full px-4 py-2.5 bg-brand-card border border-brand-border text-sm focus:outline-none focus:border-brand-gold">
-              <option value="general">General Networking</option>
-              <option value="event">Startup Mixer / Community Event</option>
-              <option value="speaking">Speaking & Panel Opportunities</option>
-              <option value="sponsorship">Sponsorship</option>
+              <option value="hello">Say Hello</option>
+              <option value="community">Community / Event</option>
+              <option value="speaking">Speaking</option>
+              <option value="partnership">Partnership</option>
+              <option value="other">Other</option>
             </select>
           </div>
           <div>
