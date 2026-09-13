@@ -63,7 +63,7 @@
 
     <nav class="flex items-center gap-6 text-xs uppercase tracking-widest font-medium text-brand-slate">
       <a href="/groups.html" class="hover:text-brand-gold transition-colors">Community Groups</a>
-      <a href="/articles.html" class="hover:text-brand-gold transition-colors">Articles</a>
+      <a href="/articles.html" class="text-brand-gold transition-colors font-semibold">Articles</a>
       <a href="/#contact" class="px-4 py-2 border border-brand-charcoal hover:border-brand-gold hover:bg-brand-gold hover:text-white transition-all text-[11px]">Connect</a>
     </nav>
   </header>
@@ -73,7 +73,8 @@
     <!-- Article Header Section -->
     <section class="max-w-4xl w-full mx-auto px-6 py-16 border-b border-brand-border">
       <div class="flex items-center gap-3 text-xs text-brand-slate mb-4">
-        <span class="font-mono text-brand-gold">2026-09-12</span>
+        <!-- Added id="article-date" for precise scraping and validation -->
+        <span id="article-date" class="font-mono text-brand-gold">2026-09-12</span>
         <span>•</span>
         <span class="uppercase tracking-widest font-semibold">Ecosystem Building</span>
       </div>
