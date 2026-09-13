@@ -1,0 +1,892 @@
+---
+import { events } from "../data/events";
+import { parseDate, isPastEvent } from "../utils/events";
+
+const visibleEvents = events
+  .filter((event) => event.showOnHome)
+  .sort(
+    (a, b) =>
+      parseDate(a.startDate).getTime() -
+      parseDate(b.startDate).getTime()
+  );
+
+const upcomingEvents =
+  visibleEvents.filter((event) => !isPastEvent(event));
+
+const pastEvents =
+  visibleEvents
+    .filter((event) => isPastEvent(event))
+    .reverse();
+
+const firstUpcoming =
+  upcomingEvents[0];
+
+const secondUpcoming =
+  upcomingEvents[1];
+
+function formatDate(startDate: string, endDate?: string) {
+  const start = parseDate(startDate);
+
+  if (!endDate || endDate === startDate) {
+    return start.toLocaleDateString(
+      "en-US",
+      {
+        month: "short",
+        day: "numeric",
+        year: "numeric"
+      }
+    );
+  }
+
+  const end = parseDate(endDate);
+
+  if (
+    start.getMonth() === end.getMonth() &&
+    start.getFullYear() === end.getFullYear()
+  ) {
+    return `${start.toLocaleDateString(
+      "en-US",
+      {
+        month: "short",
+        day: "numeric"
+      }
+    )} – ${end.getDate()}, ${end.getFullYear()}`;
+  }
+
+  return `${start.toLocaleDateString(
+    "en-US",
+    {
+      month: "short",
+      day: "numeric"
+    }
+  )} – ${end.toLocaleDateString(
+    "en-US",
+    {
+      month: "short",
+      day: "numeric",
+      year: "numeric"
+    }
+  )}`;
+}
+---
+
+<section
+  id="community"
+  class="
+    max-w-6xl
+    w-full
+    mx-auto
+    px-6
+    py-20
+    border-b
+    border-brand-border
+  "
+>
+
+  <div
+    class="
+      flex
+      flex-col
+      sm:flex-row
+      sm:items-end
+      justify-between
+      mb-12
+      gap-4
+    "
+  >
+
+    <div>
+
+      <span
+        class="
+          text-xs
+          uppercase
+          tracking-[0.2em]
+          text-brand-gold
+          font-semibold
+        "
+      >
+        San Diego Ecosystem & Travel
+      </span>
+
+      <h2
+        class="
+          font-serif
+          text-3xl
+          font-normal
+          text-brand-charcoal
+          mt-1
+        "
+      >
+        Community Hub & Calendar
+      </h2>
+
+    </div>
+
+
+    <p
+      class="
+        text-brand-slate
+        text-sm
+        max-w-md
+        font-light
+      "
+    >
+      Upcoming ecosystem gatherings,
+      hosted community events,
+      and trade shows I'm attending.
+    </p>
+
+  </div>
+
+
+  <div
+    class="
+      grid
+      lg:grid-cols-12
+      gap-8
+      mb-12
+    "
+  >
+
+    <!-- CALENDAR -->
+
+    <div
+      class="
+        lg:col-span-5
+        p-6
+        bg-brand-card
+        border
+        border-brand-border
+        shadow-sm
+      "
+    >
+
+      <div
+        class="
+          flex
+          items-center
+          justify-between
+          border-b
+          border-brand-border
+          pb-4
+          mb-4
+        "
+      >
+
+        <button
+          id="calendar-prev"
+          class="
+            px-2
+            py-1
+            border
+            border-brand-border
+            text-brand-slate
+            hover:text-brand-gold
+          "
+        >
+          ←
+        </button>
+
+
+        <span
+          id="calendar-title"
+          class="
+            font-serif
+            text-lg
+            text-brand-charcoal
+          "
+        ></span>
+
+
+        <button
+          id="calendar-next"
+          class="
+            px-2
+            py-1
+            border
+            border-brand-border
+            text-brand-slate
+            hover:text-brand-gold
+          "
+        >
+          →
+        </button>
+
+      </div>
+
+
+      <div
+        class="
+          grid
+          grid-cols-7
+          gap-1
+          text-center
+          text-[10px]
+          font-semibold
+          text-brand-slate
+          uppercase
+          tracking-wider
+          mb-2
+        "
+      >
+        <div>S</div>
+        <div>M</div>
+        <div>T</div>
+        <div>W</div>
+        <div>T</div>
+        <div>F</div>
+        <div>S</div>
+      </div>
+
+
+      <div
+        id="calendar-grid"
+        class="
+          grid
+          grid-cols-7
+          gap-1
+          text-center
+          text-xs
+          text-brand-slate
+        "
+      ></div>
+
+
+      <div
+        class="
+          mt-8
+          pt-4
+          border-t
+          border-brand-border
+        "
+      >
+
+        <div
+          class="
+            text-[10px]
+            uppercase
+            tracking-wider
+            font-medium
+            text-brand-charcoal
+            mb-3
+          "
+        >
+          Latest Past Events:
+        </div>
+
+
+        <div
+          class="
+            flex
+            flex-col
+            gap-2
+          "
+        >
+
+          {
+            pastEvents.slice(0, 2).map((event) => (
+              <div
+                class="
+                  flex
+                  justify-between
+                  gap-3
+                  text-[11px]
+                  text-brand-slate
+                "
+              >
+
+                <span>
+                  • {event.title}
+                </span>
+
+                {
+                  event.url && (
+                    <a
+                      href={event.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class="
+                        text-brand-gold
+                        whitespace-nowrap
+                      "
+                    >
+                      VIEW →
+                    </a>
+                  )
+                }
+
+              </div>
+            ))
+          }
+
+        </div>
+
+      </div>
+
+
+      <div
+        class="
+          mt-6
+          pt-4
+          border-t
+          border-brand-border
+          flex
+          justify-between
+          text-[11px]
+          text-brand-slate
+        "
+      >
+
+        <div class="flex items-center gap-2">
+
+          <span
+            class="
+              w-2.5
+              h-2.5
+              bg-brand-gold
+              inline-block
+            "
+          ></span>
+
+          Hosted Event
+
+        </div>
+
+
+        <div class="flex items-center gap-2">
+
+          <span
+            class="
+              w-2.5
+              h-2.5
+              bg-brand-slate
+              inline-block
+            "
+          ></span>
+
+          Attending Event
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <!-- UPCOMING EVENTS -->
+
+    <div
+      class="
+        lg:col-span-7
+        space-y-6
+      "
+    >
+
+      {
+        [firstUpcoming, secondUpcoming]
+          .filter(Boolean)
+          .map((event) => (
+
+            <article
+              class="
+                p-6
+                sm:p-8
+                bg-brand-card
+                border
+                border-brand-border
+                shadow-sm
+              "
+            >
+
+              <div
+                class="
+                  flex
+                  items-center
+                  justify-between
+                  gap-4
+                  mb-4
+                "
+              >
+
+                <span
+                  class:list={[
+                    "text-[10px] uppercase tracking-[0.2em] font-semibold",
+
+                    event.role === "hosted"
+                      ? "text-brand-gold"
+                      : "text-brand-slate"
+                  ]}
+                >
+                  {
+                    event.typeLabel ||
+                    (
+                      event.role === "hosted"
+                        ? "Hosted Community Event"
+                        : "Attending Event"
+                    )
+                  }
+                </span>
+
+
+                <span
+                  class="
+                    text-[10px]
+                    font-mono
+                    border
+                    border-brand-border
+                    px-2
+                    py-1
+                    text-brand-slate
+                  "
+                >
+                  {
+                    formatDate(
+                      event.startDate,
+                      event.endDate
+                    )
+                  }
+                </span>
+
+              </div>
+
+
+              <h3
+                class="
+                  font-serif
+                  text-xl
+                  sm:text-2xl
+                  text-brand-charcoal
+                  mb-3
+                "
+              >
+                {event.title}
+              </h3>
+
+
+              {
+                event.description && (
+
+                  <p
+                    class="
+                      text-brand-slate
+                      text-sm
+                      leading-relaxed
+                      font-light
+                      mb-5
+                    "
+                  >
+                    {event.description}
+                  </p>
+
+                )
+              }
+
+
+              <div
+                class="
+                  pt-4
+                  border-t
+                  border-brand-border
+                  flex
+                  flex-col
+                  sm:flex-row
+                  sm:items-center
+                  justify-between
+                  gap-4
+                "
+              >
+
+                <div
+                  class="
+                    text-xs
+                    text-brand-slate
+                  "
+                >
+
+                  {
+                    event.venue && (
+                      <div
+                        class="
+                          font-medium
+                          text-brand-charcoal
+                        "
+                      >
+                        {event.venue}
+                      </div>
+                    )
+                  }
+
+
+                  {
+                    event.city && (
+                      <div>
+                        {event.city}
+                      </div>
+                    )
+                  }
+
+                </div>
+
+
+                {
+                  event.url && (
+
+                    <a
+                      href={event.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class:list={[
+                        "px-5 py-2.5 text-xs uppercase tracking-widest transition-colors",
+
+                        event.role === "hosted"
+                          ? "bg-brand-charcoal text-white hover:bg-brand-gold"
+                          : "border border-brand-border text-brand-charcoal hover:border-brand-gold"
+                      ]}
+                    >
+                      {event.buttonLabel || "Event Information"} ↗
+                    </a>
+
+                  )
+                }
+
+              </div>
+
+            </article>
+
+          ))
+      }
+
+    </div>
+
+  </div>
+
+
+  <div
+    class="
+      p-6
+      bg-brand-gold/5
+      border
+      border-brand-gold/20
+      flex
+      flex-col
+      sm:flex-row
+      items-center
+      justify-between
+      gap-4
+    "
+  >
+
+    <p
+      class="
+        text-xs
+        text-brand-slate
+        font-light
+      "
+    >
+
+      <strong
+        class="
+          font-medium
+          text-brand-charcoal
+        "
+      >
+        Want to collaborate or host?
+      </strong>
+
+      Open to partnerships with local venues,
+      hardware builders,
+      and regional startup ecosystem partners.
+
+    </p>
+
+
+    <a
+      href="/#contact"
+      class="
+        text-xs
+        uppercase
+        tracking-widest
+        font-medium
+        text-brand-gold
+        hover:underline
+        whitespace-nowrap
+      "
+    >
+      Get Involved →
+    </a>
+
+  </div>
+
+</section>
+
+
+<script
+  is:inline
+  define:vars={{
+    calendarEvents:
+      visibleEvents.map((event) => ({
+        id: event.id,
+        title: event.title,
+        role: event.role,
+        startDate: event.startDate,
+        endDate: event.endDate || event.startDate
+      }))
+  }}
+>
+
+  const parseDate = (value) =>
+    new Date(`${value}T12:00:00`);
+
+
+  const today =
+    new Date();
+
+
+  const nextEvent =
+    calendarEvents.find(
+      event =>
+        parseDate(
+          event.endDate
+        ) >= today
+    );
+
+
+  const baseDate =
+    nextEvent
+      ? parseDate(nextEvent.startDate)
+      : today;
+
+
+  let calendarCursor =
+    new Date(
+      baseDate.getFullYear(),
+      baseDate.getMonth(),
+      1
+    );
+
+
+  const title =
+    document.getElementById(
+      "calendar-title"
+    );
+
+
+  const grid =
+    document.getElementById(
+      "calendar-grid"
+    );
+
+
+  function eventForDate(date) {
+
+    const time =
+      date.getTime();
+
+
+    return calendarEvents.find(
+      event => {
+
+        const start =
+          parseDate(
+            event.startDate
+          );
+
+
+        start.setHours(
+          0,
+          0,
+          0,
+          0
+        );
+
+
+        const end =
+          parseDate(
+            event.endDate
+          );
+
+
+        end.setHours(
+          23,
+          59,
+          59,
+          999
+        );
+
+
+        return (
+          time >= start.getTime() &&
+          time <= end.getTime()
+        );
+
+      }
+    );
+
+  }
+
+
+  function renderCalendar() {
+
+    const year =
+      calendarCursor.getFullYear();
+
+
+    const month =
+      calendarCursor.getMonth();
+
+
+    title.textContent =
+      calendarCursor
+        .toLocaleDateString(
+          "en-US",
+          {
+            month: "long",
+            year: "numeric"
+          }
+        );
+
+
+    const first =
+      new Date(
+        year,
+        month,
+        1
+      );
+
+
+    const start =
+      new Date(
+        year,
+        month,
+        1 - first.getDay()
+      );
+
+
+    let html = "";
+
+
+    for (
+      let i = 0;
+      i < 42;
+      i++
+    ) {
+
+      const day =
+        new Date(start);
+
+
+      day.setDate(
+        start.getDate() + i
+      );
+
+
+      day.setHours(
+        12,
+        0,
+        0,
+        0
+      );
+
+
+      const event =
+        eventForDate(day);
+
+
+      const inMonth =
+        day.getMonth() === month;
+
+
+      let classes = `
+        min-h-[32px]
+        flex
+        items-center
+        justify-center
+      `;
+
+
+      if (!inMonth) {
+        classes +=
+          " opacity-30";
+      }
+
+
+      if (event) {
+
+        classes +=
+          event.role === "hosted"
+
+            ? " bg-[#C5A059] text-white font-semibold"
+
+            : " bg-[#4A505A] text-white font-semibold";
+
+      }
+
+
+      html += `
+
+        <div
+          class="${classes}"
+          title="${event?.title || ""}"
+        >
+          ${day.getDate()}
+        </div>
+
+      `;
+
+    }
+
+
+    grid.innerHTML =
+      html;
+
+  }
+
+
+  document
+    .getElementById(
+      "calendar-prev"
+    )
+    .addEventListener(
+      "click",
+      () => {
+
+        calendarCursor =
+          new Date(
+            calendarCursor.getFullYear(),
+            calendarCursor.getMonth() - 1,
+            1
+          );
+
+
+        renderCalendar();
+
+      }
+    );
+
+
+  document
+    .getElementById(
+      "calendar-next"
+    )
+    .addEventListener(
+      "click",
+      () => {
+
+        calendarCursor =
+          new Date(
+            calendarCursor.getFullYear(),
+            calendarCursor.getMonth() + 1,
+            1
+          );
+
+
+        renderCalendar();
+
+      }
+    );
+
+
+  renderCalendar();
+
+</script>
