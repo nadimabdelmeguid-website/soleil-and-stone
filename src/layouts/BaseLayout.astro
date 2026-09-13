@@ -4,7 +4,6 @@ import Footer from "../components/Footer.astro";
 
 import "../styles/global.css";
 
-
 interface Props {
   title: string;
   description?: string;
@@ -12,8 +11,7 @@ interface Props {
 
 const {
   title,
-  description =
-    "Soleil & Stone"
+  description = "Soleil & Stone"
 } = Astro.props;
 ---
 
@@ -30,24 +28,20 @@ const {
     charset="UTF-8"
   />
 
-
   <meta
     name="viewport"
     content="width=device-width, initial-scale=1.0"
   />
-
 
   <meta
     name="description"
     content={description}
   />
 
-
   <meta
     name="theme-color"
-    content="#F9F8F3"
+    content="#FFFFFF"
   />
-
 
   <title>
     {title}
@@ -64,13 +58,11 @@ const {
     href="/brand/favicon.png"
   />
 
-
   <link
     rel="shortcut icon"
     type="image/png"
     href="/brand/favicon.png"
   />
-
 
   <link
     rel="apple-touch-icon"
@@ -87,47 +79,23 @@ const {
     src="https://cdn.tailwindcss.com"
   ></script>
 
-
   <script is:inline>
-
     tailwind.config = {
-
       theme: {
-
         extend: {
-
           colors: {
-
             brand: {
-
-              cream:
-                "#F9F8F3",
-
-              card:
-                "#FFFFFF",
-
-              charcoal:
-                "#22252A",
-
-              slate:
-                "#4A505A",
-
-              gold:
-                "#C5A059",
-
-              goldlight:
-                "#E5C98B",
-
-              border:
-                "#E8E5DA"
-
+              cream: "#F9F8F3",
+              card: "#FFFFFF",
+              charcoal: "#22252A",
+              slate: "#4A505A",
+              gold: "#C5A059",
+              goldlight: "#E5C98B",
+              border: "#E8E5DA"
             }
-
           },
 
-
           fontFamily: {
-
             serif: [
               "Cinzel",
               "Georgia",
@@ -139,15 +107,10 @@ const {
               "Inter",
               "sans-serif"
             ]
-
           }
-
         }
-
       }
-
     };
-
   </script>
 
 
@@ -160,13 +123,11 @@ const {
     href="https://fonts.googleapis.com"
   />
 
-
   <link
     rel="preconnect"
     href="https://fonts.gstatic.com"
     crossorigin
   />
-
 
   <link
     href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap"
@@ -178,7 +139,7 @@ const {
 
 <body
   class="
-    bg-brand-cream
+    bg-white
     text-brand-charcoal
     min-h-screen
     flex
@@ -192,17 +153,13 @@ const {
 
   <Header />
 
-
   <main
     class="
       flex-grow
     "
   >
-
     <slot />
-
   </main>
-
 
   <Footer />
 
