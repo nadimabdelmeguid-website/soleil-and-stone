@@ -1,422 +1,46 @@
 ---
-import BaseLayout from "../../layouts/BaseLayout.astro";
+import {
+  getCollection
+} from "astro:content";
+
+import BaseLayout
+  from "../../layouts/BaseLayout.astro";
+
+import ArticleCard
+  from "../../components/ArticleCard.astro";
 
 
 /* =========================================================
-   LOAD FIELD NOTES DIRECTLY
+   LOAD PUBLISHED FIELD NOTES
    ========================================================= */
 
-const noteModules =
-  import.meta.glob(
-    "../../content/field-notes/*.{md,mdx}",
-    {
-      eager: true
-    }
-  );
-
-
-/* =========================================================
-   HELPERS
-   ========================================================= */
-
-function getFileSlug(
-  path: string
-) {
-  return (
-    path
-      .split("/")
-      .pop()
-      ?.replace(
-        /\.(md|mdx)$/,
-        ""
-      ) ?? ""
-  );
-}
-
-
-function getData(
-  module: any
-) {
-  return (
-    module.frontmatter ??
-    module.data ??
-    {}
-  );
-}
-
-
-function parseNoteDate(
-  data: any
-) {
-
-  const value =
-    data.date ??
-    data.published ??
-    data.publishDate ??
-    data.publishedAt;
-
-
-  if (!value) {
-    return null;
-  }
-
-
-  if (
-    value instanceof Date
-  ) {
-    return value;
-  }
-
-
-  /*
-   * Noon avoids timezone movement to the
-   * previous calendar day.
-   */
-
-  const date =
-    new Date(
-      `${value}T12:00:00`
-    );
-
-
-  return Number.isNaN(
-    date.getTime()
-  )
-    ? null
-    : date;
-
-}
-
-
-function normalizeCategory(
-  value: any
-) {
-
-  const category =
-    String(
-      value ?? ""
-    )
-      .trim()
-      .toLowerCase();
-
-
-  if (
-    category === "ecosystem" ||
-    category === "ecosystems" ||
-    category === "ecosystems & community" ||
-    category === "ecosystem & community"
-  ) {
-    return "ecosystem";
-  }
-
-
-  if (
-    category === "tradeshow" ||
-    category === "tradeshows" ||
-    category === "trade show" ||
-    category === "trade shows" ||
-    category === "trade-show" ||
-    category === "trade-shows"
-  ) {
-    return "tradeshows";
-  }
-
-
-  if (
-    category === "hardware" ||
-    category === "hardware & manufacturing" ||
-    category === "hardware and manufacturing"
-  ) {
-    return "hardware";
-  }
-
-
-  return (
-    category ||
-    "ecosystem"
-  );
-
-}
-
-
-function getCategory(
-  data: any
-) {
-
-  return normalizeCategory(
-    data.categorySlug ??
-    data.category ??
-    data.categoryName
-  );
-
-}
-
-
-function getCategoryLabel(
-  data: any
-) {
-
-  if (
-    data.categoryName
-  ) {
-    return data.categoryName;
-  }
-
-
-  const category =
-    getCategory(
-      data
-    );
-
-
-  const labels: Record<
-    string,
-    string
-  > = {
-
-    ecosystem:
-      "Ecosystems & Community",
-
-    tradeshows:
-      "Trade Shows",
-
-    hardware:
-      "Hardware & Manufacturing"
-
-  };
-
-
-  return (
-    labels[category] ??
-    "Field Notes"
-  );
-
-}
-
-
-function formatDate(
-  date: Date | null
-) {
-
-  if (!date) {
-    return "";
-  }
-
-
-  return date
-    .toLocaleDateString(
-      "en-US",
-      {
-        month:
-          "short",
-
-        day:
-          "numeric",
-
-        year:
-          "numeric"
-      }
-    )
-    .toUpperCase();
-
-}
-
-
-function getDescription(
-  data: any
-) {
-
-  return (
-    data.description ??
-    data.excerpt ??
-    ""
-  );
-
-}
-
-
-function getReadMinutes(
-  data: any
-) {
-
-  return (
-    data.readMinutes ??
-    data.readingTime ??
-    null
-  );
-
-}
-
-
-function getNoteUrl(
-  data: any,
-  slug: string
-) {
-
-  if (
-    data.url
-  ) {
-    return data.url;
-  }
-
-
-  return (
-    `/field-notes/${slug}/`
-  );
-
-}
-
-
-/* =========================================================
-   TODAY
-
-   Normalize today to end-of-day so a note dated today
-   appears throughout its publication day.
-   ========================================================= */
-
-const today =
+const now =
   new Date();
 
-today.setHours(
-  23,
-  59,
-  59,
-  999
-);
 
-
-/* =========================================================
-   BUILD NOTES
-
-   IMPORTANT:
-   Future-dated notes are excluded here.
-   ========================================================= */
-
-const notes =
-  Object.entries(
-    noteModules
+const posts =
+  (
+    await getCollection(
+      "fieldNotes"
+    )
   )
-    .map(
-      (
-        [
-          path,
-          module
-        ]
-      ) => {
-
-        const data =
-          getData(
-            module
-          );
-
-
-        const slug =
-          getFileSlug(
-            path
-          );
-
-
-        const date =
-          parseNoteDate(
-            data
-          );
-
-
-        return {
-
-          slug,
-
-          data,
-
-          date,
-
-          category:
-            getCategory(
-              data
-            ),
-
-          categoryLabel:
-            getCategoryLabel(
-              data
-            ),
-
-          url:
-            getNoteUrl(
-              data,
-              slug
-            )
-
-        };
-
-      }
-    )
-
-    /*
-     * PUBLICATION RULES
-     */
-
     .filter(
-      (
-        note
-      ) => {
-
-        /*
-         * Never publish drafts.
-         */
-
-        if (
-          note.data.draft === true
-        ) {
-          return false;
-        }
-
-
-        /*
-         * Require a valid publication date.
-         *
-         * This prevents an accidentally unfinished
-         * note from appearing publicly.
-         */
-
-        if (
-          !note.date
-        ) {
-          return false;
-        }
-
-
-        /*
-         * Future date = hidden.
-         */
-
-        if (
-          note.date > today
-        ) {
-          return false;
-        }
-
-
-        return true;
-
-      }
+      (post) =>
+        !post.data.draft &&
+        post.data.published <= now
     )
-
-    /*
-     * NEWEST → OLDEST
-     */
-
     .sort(
-      (
-        a,
-        b
-      ) =>
-        b.date!.getTime() -
-        a.date!.getTime()
+      (a, b) =>
+        b.data.published.getTime() -
+        a.data.published.getTime()
     );
 
 
-const categories = [
+/* =========================================================
+   FILTERS
+   ========================================================= */
 
+const filters = [
   {
     label:
       "All Notes",
@@ -448,17 +72,16 @@ const categories = [
     value:
       "hardware"
   }
-
 ];
 ---
 
 <BaseLayout
   title="SOLEIL & STONE | Field Notes"
-  description="Notes and observations on hardware, commercialization, trade shows, community building and innovation ecosystems."
+  description="Observations from the field on hardware, commercialization, innovation ecosystems, trade shows and community building."
 >
 
   <!-- =====================================================
-       HERO — WHITE
+       HERO
        ===================================================== -->
 
   <section
@@ -539,7 +162,7 @@ const categories = [
 
 
   <!-- =====================================================
-       FILTER AREA — CREAM
+       FILTER AREA
        ===================================================== -->
 
   <section
@@ -589,33 +212,32 @@ const categories = [
 
 
 
-      <!-- FILTERS -->
-
       <div
+        id="filters"
         class="
           flex
           flex-wrap
+          items-center
           gap-2
           mt-5
         "
+        aria-label="Filter field notes"
       >
 
         {
-          categories.map(
+          filters.map(
             (
-              category,
+              filter,
               index
             ) => (
 
               <button
                 type="button"
                 data-filter={
-                  category.value
+                  filter.value
                 }
                 class:list={[
-                  "field-filter",
-                  "inline-flex",
-                  "items-center",
+                  "field-note-filter",
                   "px-4",
                   "py-2.5",
                   "border",
@@ -626,11 +248,11 @@ const categories = [
                   "transition-colors",
 
                   index === 0
-                    ? "bg-brand-charcoal text-white border-brand-charcoal"
-                    : "bg-white text-brand-slate border-brand-border hover:border-brand-gold hover:text-brand-gold"
+                    ? "active border-brand-charcoal bg-brand-charcoal text-white"
+                    : "border-brand-border bg-white text-brand-slate hover:border-brand-gold hover:text-brand-gold"
                 ]}
               >
-                {category.label}
+                {filter.label}
               </button>
 
             )
@@ -646,7 +268,7 @@ const categories = [
 
 
   <!-- =====================================================
-       NOTES — WHITE
+       PUBLISHED NOTES
        ===================================================== -->
 
   <section
@@ -706,7 +328,8 @@ const categories = [
         </div>
 
 
-        <div
+        <span
+          id="article-count"
           class="
             text-[9px]
             uppercase
@@ -714,304 +337,79 @@ const categories = [
             text-brand-slate
           "
         >
-
-          <span
-            id="visible-note-count"
-          >
-            {notes.length}
-          </span>
-
-          {" "}
-
-          <span
-            id="visible-note-label"
-          >
-            {
-              notes.length === 1
-                ? "note"
-                : "notes"
-            }
-          </span>
-
-        </div>
+          {posts.length}
+          {posts.length === 1 ? " Note" : " Notes"}
+        </span>
 
       </div>
 
 
 
       <!-- =================================================
-           FIELD NOTE CARDS
+           ARTICLE GRID
            ================================================= -->
 
-      {
-        notes.length > 0 && (
+      <div
+        id="field-notes-grid"
+        class="
+          grid
+          md:grid-cols-2
+          gap-5
+        "
+      >
 
-          <div
-            id="field-notes-grid"
-            class="
-              grid
-              md:grid-cols-2
-              gap-5
-            "
-          >
+        {
+          posts.map(
+            (post) => (
 
-            {
-              notes.map(
-                (
-                  note
-                ) => (
+              <div
+                class="field-note-item"
+                data-category={
+                  post.data.categorySlug
+                }
+              >
 
-                  <article
-                    data-note-card
-                    data-category={
-                      note.category
-                    }
-                    class="
-                      group
-                      bg-white
-                      border
-                      border-brand-border
-                      transition-colors
-                      duration-200
-                      hover:border-brand-gold
-                    "
-                  >
+                <ArticleCard
+                  post={post}
+                />
 
-                    <a
-                      href={
-                        note.url
-                      }
-                      class="
-                        block
-                        h-full
-                        p-5
-                      "
-                      aria-label={`Read ${note.data.title}`}
-                    >
+              </div>
 
-                      <!-- =================================
-                           META
-                           ================================= -->
+            )
+          )
+        }
 
-                      <div
-                        class="
-                          flex
-                          flex-wrap
-                          items-center
-                          gap-2
-                          text-[9px]
-                          uppercase
-                          tracking-[0.14em]
-                          mb-4
-                        "
-                      >
-
-                        <span
-                          class="
-                            text-brand-gold
-                            font-semibold
-                          "
-                        >
-                          {
-                            note.categoryLabel
-                          }
-                        </span>
-
-
-                        <span
-                          class="
-                            text-brand-border
-                          "
-                        >
-                          •
-                        </span>
-
-
-                        <span
-                          class="
-                            text-brand-slate
-                          "
-                        >
-                          {
-                            formatDate(
-                              note.date
-                            )
-                          }
-                        </span>
-
-                      </div>
-
-
-
-                      <!-- =================================
-                           TITLE
-                           ================================= -->
-
-                      <h3
-                        class="
-                          font-serif
-                          text-xl
-                          sm:text-[1.35rem]
-                          text-brand-charcoal
-                          leading-snug
-                          group-hover:text-brand-gold
-                          transition-colors
-                        "
-                      >
-                        {note.data.title}
-                      </h3>
-
-
-
-                      <!-- =================================
-                           DESCRIPTION
-                           ================================= -->
-
-                      {
-                        getDescription(
-                          note.data
-                        ) && (
-
-                          <p
-                            class="
-                              text-xs
-                              sm:text-sm
-                              text-brand-slate
-                              leading-relaxed
-                              font-light
-                              mt-3
-                            "
-                          >
-                            {
-                              getDescription(
-                                note.data
-                              )
-                            }
-                          </p>
-
-                        )
-                      }
-
-
-
-                      <!-- =================================
-                           FOOTER
-                           ================================= -->
-
-                      <div
-                        class="
-                          border-t
-                          border-brand-border
-                          mt-4
-                          pt-3
-                          flex
-                          items-center
-                          justify-between
-                          gap-4
-                        "
-                      >
-
-                        <span
-                          class="
-                            text-[9px]
-                            uppercase
-                            tracking-[0.14em]
-                            text-brand-slate
-                          "
-                        >
-                          {
-                            getReadMinutes(
-                              note.data
-                            )
-                              ? `${getReadMinutes(
-                                  note.data
-                                )} min read`
-                              : "Field Note"
-                          }
-                        </span>
-
-
-                        <span
-                          class="
-                            text-[9px]
-                            uppercase
-                            tracking-[0.16em]
-                            text-brand-charcoal
-                            font-semibold
-                            group-hover:text-brand-gold
-                            transition-colors
-                          "
-                        >
-                          Read →
-
-                        </span>
-
-                      </div>
-
-                    </a>
-
-                  </article>
-
-                )
-              )
-            }
-
-          </div>
-
-        )
-      }
+      </div>
 
 
 
       <!-- =================================================
-           NO NOTES
+           EMPTY FILTER STATE
            ================================================= -->
-
-      {
-        notes.length === 0 && (
-
-          <div
-            class="
-              border
-              border-brand-border
-              bg-brand-cream
-              px-6
-              py-10
-              text-center
-            "
-          >
-
-            <p
-              class="
-                text-sm
-                text-brand-slate
-                font-light
-              "
-            >
-              No Field Notes are currently published.
-            </p>
-
-          </div>
-
-        )
-      }
-
-
-
-      <!-- FILTER EMPTY STATE -->
 
       <div
         id="field-notes-empty"
         class="
           hidden
+          py-12
+          text-center
           border
           border-brand-border
           bg-brand-cream
-          px-6
-          py-10
-          text-center
         "
       >
+
+        <p
+          class="
+            font-serif
+            text-xl
+            text-brand-charcoal
+            mb-2
+          "
+        >
+          No field notes in this category yet.
+        </p>
+
 
         <p
           class="
@@ -1020,8 +418,7 @@ const categories = [
             font-light
           "
         >
-          No Field Notes are published
-          in this category yet.
+          More notes are coming soon.
         </p>
 
       </div>
@@ -1035,178 +432,189 @@ const categories = [
 
 
 <!-- =====================================================
-     FILTER SCRIPT
+     FILTER LOGIC
      ===================================================== -->
 
 <script is:inline>
-  (() => {
 
-    const buttons =
-      Array.from(
-        document.querySelectorAll(
-          ".field-filter"
-        )
-      );
-
-
-    const cards =
-      Array.from(
-        document.querySelectorAll(
-          "[data-note-card]"
-        )
-      );
+  const filterButtons =
+    Array.from(
+      document.querySelectorAll(
+        ".field-note-filter"
+      )
+    );
 
 
-    const count =
-      document.getElementById(
-        "visible-note-count"
-      );
+  const items =
+    Array.from(
+      document.querySelectorAll(
+        ".field-note-item"
+      )
+    );
 
 
-    const label =
-      document.getElementById(
-        "visible-note-label"
-      );
+  const countElement =
+    document.getElementById(
+      "article-count"
+    );
 
 
-    const emptyState =
-      document.getElementById(
-        "field-notes-empty"
-      );
+  const emptyState =
+    document.getElementById(
+      "field-notes-empty"
+    );
 
 
-    function setActiveButton(
+  const updateCount =
+    (count) => {
+
+      if (
+        !countElement
+      ) {
+        return;
+      }
+
+
+      countElement.textContent =
+        `${count} ${
+          count === 1
+            ? "Note"
+            : "Notes"
+        }`;
+
+    };
+
+
+  const setActiveButton =
+    (
       activeButton
-    ) {
+    ) => {
 
-      buttons.forEach(
+      filterButtons.forEach(
         (button) => {
 
-          const active =
-            button ===
-            activeButton;
-
-
-          button.classList.toggle(
-            "bg-brand-charcoal",
-            active
-          );
-
-
-          button.classList.toggle(
-            "text-white",
-            active
-          );
-
-
-          button.classList.toggle(
+          button.classList.remove(
+            "active",
             "border-brand-charcoal",
-            active
+            "bg-brand-charcoal",
+            "text-white"
           );
 
 
-          button.classList.toggle(
-            "bg-white",
-            !active
-          );
-
-
-          button.classList.toggle(
-            "text-brand-slate",
-            !active
-          );
-
-
-          button.classList.toggle(
+          button.classList.add(
             "border-brand-border",
-            !active
+            "bg-white",
+            "text-brand-slate"
+          );
+
+        }
+      );
+
+
+      activeButton.classList.remove(
+        "border-brand-border",
+        "bg-white",
+        "text-brand-slate"
+      );
+
+
+      activeButton.classList.add(
+        "active",
+        "border-brand-charcoal",
+        "bg-brand-charcoal",
+        "text-white"
+      );
+
+    };
+
+
+  const filterNotes =
+    (
+      category
+    ) => {
+
+      let visibleCount =
+        0;
+
+
+      items.forEach(
+        (item) => {
+
+          const itemCategory =
+            item.dataset.category;
+
+
+          const visible =
+            category === "all" ||
+            itemCategory === category;
+
+
+          item.classList.toggle(
+            "hidden",
+            !visible
+          );
+
+
+          if (
+            visible
+          ) {
+            visibleCount++;
+          }
+
+        }
+      );
+
+
+      updateCount(
+        visibleCount
+      );
+
+
+      if (
+        emptyState
+      ) {
+
+        emptyState.classList.toggle(
+          "hidden",
+          visibleCount !== 0
+        );
+
+      }
+
+    };
+
+
+  filterButtons.forEach(
+    (button) => {
+
+      button.addEventListener(
+        "click",
+        () => {
+
+          const category =
+            button.dataset.filter;
+
+
+          if (
+            !category
+          ) {
+            return;
+          }
+
+
+          setActiveButton(
+            button
+          );
+
+
+          filterNotes(
+            category
           );
 
         }
       );
 
     }
+  );
 
-
-    buttons.forEach(
-      (button) => {
-
-        button.addEventListener(
-          "click",
-          () => {
-
-            const filter =
-              button.dataset.filter;
-
-
-            setActiveButton(
-              button
-            );
-
-
-            let visible =
-              0;
-
-
-            cards.forEach(
-              (card) => {
-
-                const shouldShow =
-                  filter === "all" ||
-                  card.dataset.category ===
-                    filter;
-
-
-                card.classList.toggle(
-                  "hidden",
-                  !shouldShow
-                );
-
-
-                if (
-                  shouldShow
-                ) {
-                  visible += 1;
-                }
-
-              }
-            );
-
-
-            if (
-              count
-            ) {
-              count.textContent =
-                String(
-                  visible
-                );
-            }
-
-
-            if (
-              label
-            ) {
-              label.textContent =
-                visible === 1
-                  ? "note"
-                  : "notes";
-            }
-
-
-            if (
-              emptyState
-            ) {
-              emptyState.classList.toggle(
-                "hidden",
-                visible !== 0
-              );
-            }
-
-          }
-        );
-
-      }
-    );
-
-  })();
 </script>
