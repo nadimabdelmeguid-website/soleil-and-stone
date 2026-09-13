@@ -1,0 +1,113 @@
+---
+import Logo
+  from "./Logo.astro";
+
+import {
+  site
+} from "../data/site";
+---
+
+<footer
+  class="
+    border-t
+    border-brand-border
+    py-10
+    bg-white
+  "
+>
+
+  <div
+    class="
+      max-w-6xl
+      w-full
+      mx-auto
+      px-6
+      flex
+      flex-col
+      sm:flex-row
+      justify-between
+      items-center
+      text-xs
+      text-brand-slate
+      gap-6
+    "
+  >
+
+    <a
+      href="/"
+      class="
+        flex
+        items-center
+        gap-3
+      "
+    >
+
+      <Logo small />
+
+
+      <div
+        class="
+          flex
+          items-center
+          gap-2
+        "
+      >
+
+        <span
+          class="
+            font-serif
+            tracking-widest
+            text-brand-charcoal
+            font-semibold
+          "
+        >
+          {site.name}
+        </span>
+
+        <span>
+          •
+        </span>
+
+        <span>
+          {site.location}
+        </span>
+
+      </div>
+
+    </a>
+
+
+    <div
+      class="
+        flex
+        items-center
+        gap-5
+      "
+    >
+
+      <a
+        href={site.linkedin}
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        LinkedIn
+      </a>
+
+
+      <a
+        href={site.email}
+      >
+        Email
+      </a>
+
+    </div>
+
+
+    <span>
+      © {new Date().getFullYear()}
+      Soleil & Stone.
+    </span>
+
+  </div>
+
+</footer>
