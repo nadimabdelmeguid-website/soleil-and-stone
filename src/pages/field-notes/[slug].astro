@@ -1,1 +1,61 @@
+---
+import {
+  getCollection,
+  render
+} from "astro:content";
 
+import BaseLayout
+  from "../../layouts/BaseLayout.astro";
+
+import FieldNoteLayout
+  from "../../layouts/FieldNoteLayout.astro";
+
+
+export async function getStaticPaths() {
+
+  const posts =
+    await getCollection("fieldNotes");
+
+
+  return posts
+    .filter(
+      (post) => !post.data.draft
+    )
+    .map(
+      (post) => ({
+        params: {
+          slug: post.id
+        },
+
+        props: {
+          post
+        }
+      })
+    );
+}
+
+
+const {
+  post
+} = Astro.props;
+
+
+const {
+  Content
+} = await render(post);
+---
+
+<BaseLayout
+  title={`${post.data.title} | SOLEIL & STONE`}
+  description={post.data.description}
+>
+
+  <FieldNoteLayout
+    post={post}
+  >
+
+    <Content />
+
+  </FieldNoteLayout>
+
+</BaseLayout>
