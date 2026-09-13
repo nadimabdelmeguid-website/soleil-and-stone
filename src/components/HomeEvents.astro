@@ -306,20 +306,6 @@ const visibleEvents =
         >
         </div>
 
-
-        <p
-          class="
-            mt-4
-            text-[9px]
-            text-brand-slate
-            font-light
-            leading-relaxed
-          "
-        >
-          Hosted and co-organized events take priority over
-          exhibitor appearances and attended events when dates overlap.
-        </p>
-
       </div>
 
 
@@ -417,75 +403,52 @@ const visibleEvents =
         border-t
         border-brand-border
         flex
-        flex-col
-        sm:flex-row
-        sm:items-center
-        justify-between
-        gap-4
+        flex-wrap
+        items-center
+        justify-end
+        gap-x-6
+        gap-y-2
       "
     >
 
-      <p
+      <a
+        href="/fieldwork/"
         class="
-          text-xs
+          inline-flex
+          items-center
+          gap-2
+          text-[10px]
+          uppercase
+          tracking-[0.15em]
+          text-brand-charcoal
+          font-semibold
+          hover:text-brand-gold
+          transition-colors
+        "
+      >
+        Fieldwork Archive
+        <span>→</span>
+      </a>
+
+
+      <a
+        href="/?type=partnership#contact"
+        class="
+          inline-flex
+          items-center
+          gap-2
+          text-[10px]
+          uppercase
+          tracking-[0.15em]
           text-brand-slate
-          font-light
+          font-semibold
+          hover:text-brand-gold
+          transition-colors
         "
       >
-        A running record of community building,
-        technical events and industry fieldwork.
-      </p>
-
-
-      <div
-        class="
-          flex
-          flex-wrap
-          gap-x-6
-          gap-y-2
-        "
-      >
-
-        <a
-          href="/fieldwork/"
-          class="
-            inline-flex
-            items-center
-            gap-2
-            text-[10px]
-            uppercase
-            tracking-[0.15em]
-            text-brand-charcoal
-            font-semibold
-            hover:text-brand-gold
-            transition-colors
-          "
-        >
-          Fieldwork Archive
-          <span>→</span>
-        </a>
-
-
-        <a
-          href="/?type=partnership#contact"
-          class="
-            inline-flex
-            items-center
-            gap-2
-            text-[10px]
-            uppercase
-            tracking-[0.15em]
-            text-brand-slate
-            font-semibold
-            hover:text-brand-gold
-            transition-colors
-          "
-        >
-          Partner On An Event
-          <span>→</span>
-        </a>
-
-      </div>
+        Partner On An Event
+        <span>→</span>
+      </a>
 
     </div>
 
