@@ -87,8 +87,13 @@ const {
 
 
 /* =====================================================
-   ARTICLE SEO
+   SEO
    ===================================================== */
+
+const siteOrigin =
+  Astro.site?.origin ??
+  "https://soleilandstone.co";
+
 
 const seoTitle =
   `${post.data.title} | Soleil & Stone`;
@@ -100,6 +105,93 @@ const publishedTime =
 
 const canonicalURL =
   `/field-notes/${post.id}/`;
+
+
+const articleURL =
+  new URL(
+    canonicalURL,
+    siteOrigin
+  ).href;
+
+
+const socialImage =
+  new URL(
+    "/brand/social-default.png",
+    siteOrigin
+  ).href;
+
+
+const publisherLogo =
+  new URL(
+    "/brand/logo-primary.png",
+    siteOrigin
+  ).href;
+
+
+/* =====================================================
+   STRUCTURED DATA
+   ===================================================== */
+
+const articleSchema = {
+
+  "@context":
+    "https://schema.org",
+
+  "@type":
+    "Article",
+
+  headline:
+    post.data.title,
+
+  description:
+    post.data.description,
+
+  datePublished:
+    publishedTime,
+
+  mainEntityOfPage: {
+    "@type":
+      "WebPage",
+
+    "@id":
+      articleURL
+  },
+
+  author: {
+    "@type":
+      "Person",
+
+    name:
+      post.data.author,
+
+    url:
+      "https://soleilandstone.co/"
+  },
+
+  publisher: {
+    "@type":
+      "Organization",
+
+    name:
+      "Soleil & Stone",
+
+    url:
+      "https://soleilandstone.co/",
+
+    logo: {
+      "@type":
+        "ImageObject",
+
+      url:
+        publisherLogo
+    }
+  },
+
+  image: [
+    socialImage
+  ]
+
+};
 ---
 
 <BaseLayout
@@ -109,6 +201,12 @@ const canonicalURL =
   publishedTime={publishedTime}
   canonicalURL={canonicalURL}
 >
+
+  <script
+    type="application/ld+json"
+    set:html={JSON.stringify(articleSchema)}
+  />
+
 
   <FieldNoteLayout
     post={post}
