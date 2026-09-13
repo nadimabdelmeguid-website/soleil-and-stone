@@ -745,53 +745,48 @@ export const events: SiteEvent[] = [
 
 
   {
-    id:
-      "startup-mixer-jun-2026",
+  id:
+    "startup-mixer-jun-2026",
 
-    title:
-      "San Diego County Startup Mixer",
+  title:
+    "San Diego County Startup Mixer",
 
-    role:
-      "hosted",
+  role:
+    "hosted",
 
-    participation:
-      "hosted",
+  participation:
+    "hosted",
 
-    communityId:
-      "startup-mixer",
+  communityId:
+    "startup-mixer",
 
-    startDate:
-      "2026-06-08",
+  startDate:
+    "2026-06-08",
 
-    venue:
-      "Harland Brewing Co. - Bay Park",
+  venue:
+    "Harland Brewing Co. - Bay Park",
 
-    city:
-      "San Diego",
+  city:
+    "San Diego",
 
-    description:
-      "Monthly founder and startup ecosystem gathering focused on networking, potential co-founder connections and sharing what people are building across San Diego.",
+  description:
+    "Monthly founder and startup ecosystem gathering focused on networking, potential co-founder connections and sharing what people are building across San Diego.",
 
-    /*
-     * We do not yet have a confirmed direct event URL
-     * for the June event, so the verified host page
-     * is intentionally used instead.
-     */
-    url:
-      "https://eventship.com/host/nadim-abdel-meguid",
+  url:
+    "https://eventship.com/event/san-diego-county-startup-mixer-3",
 
-    buttonLabel:
-      "View Events",
+  buttonLabel:
+    "View Event",
 
-    typeLabel:
-      "Hosted Community Event",
+  typeLabel:
+    "Hosted Community Event",
 
-    registrations:
-      73,
+  registrations:
+    73,
 
-    showOnHome:
-      true
-  },
+  showOnHome:
+    true
+},
 
 
 
@@ -1402,7 +1397,7 @@ export const events: SiteEvent[] = [
       "attending",
 
     startDate:
-      "2026-01-08",
+      "2026-01-15",
 
     city:
       "San Diego",
@@ -1725,46 +1720,46 @@ export const events: SiteEvent[] = [
   },
 
 
-  {
-    id:
-      "cedia-expo-2025",
+ {
+  id:
+    "cedia-expo-2025",
 
-    title:
-      "CEDIA Expo 2025",
+  title:
+    "CEDIA Expo 2025",
 
-    role:
-      "attending",
+  role:
+    "attending",
 
-    participation:
-      "attending",
+  participation:
+    "attending",
 
-    startDate:
-      "2025-09-04",
+  startDate:
+    "2025-09-03",
 
-    endDate:
-      "2025-09-06",
+  endDate:
+    "2025-09-06",
 
-    venue:
-      "Colorado Convention Center",
+  venue:
+    "Colorado Convention Center",
 
-    city:
-      "Denver",
+  city:
+    "Denver",
 
-    description:
-      "Industry engagement across smart-home technology, professional audio, connected devices and product integration.",
+  description:
+    "Industry engagement across smart-home technology, professional audio, connected devices and product integration.",
 
-    url:
-      "https://cediaexpo.com/",
+  url:
+    "https://cediaexpo.com/",
 
-    buttonLabel:
-      "View Show",
+  buttonLabel:
+    "View Show",
 
-    typeLabel:
-      "Attending Trade Show",
+  typeLabel:
+    "Attending Trade Show",
 
-    showOnHome:
-      true
-  },
+  showOnHome:
+    true
+},
 
 
 
