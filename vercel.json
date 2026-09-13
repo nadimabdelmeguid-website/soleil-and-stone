@@ -1,0 +1,29 @@
+{
+  "redirects": [
+    {
+      "source": "/groups.html",
+      "destination": "/community/",
+      "permanent": true
+    },
+    {
+      "source": "/articles.html",
+      "destination": "/field-notes/",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/article-grassroots-mixer.html",
+      "destination": "/field-notes/grassroots-mixer/",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/article-community-building.html",
+      "destination": "/field-notes/san-diego-community/",
+      "permanent": true
+    },
+    {
+      "source": "/blogs/article-acoustic-reality-gap.html",
+      "destination": "/field-notes/acoustic-reality-gap/",
+      "permanent": true
+    }
+  ]
+}
