@@ -19,7 +19,8 @@ import {
 /* =========================================================
    COMMUNITY MEMBERSHIPS
 
-   Automatically calculated from communities.ts
+   Membership figures may represent a growing community
+   size / lower-bound estimate, so the UI can still show "+".
    ========================================================= */
 
 const communityMemberships =
@@ -44,9 +45,6 @@ const communityMemberships =
    - belong to a community
    - are completed
    - were hosted or co-organized
-
-   This prevents trade shows / general attended events
-   from affecting Community metrics.
    ========================================================= */
 
 const communityEvents =
@@ -68,7 +66,11 @@ const communityEvents =
 
 
 /* =========================================================
-   COMMUNITY REGISTRATIONS
+   EXACT COMMUNITY REGISTRATIONS
+
+   These figures are taken directly from events.ts.
+   No "+" is added because the registration counts
+   are accurately tracked.
    ========================================================= */
 
 const communityRegistrations =
@@ -89,7 +91,7 @@ const communityRegistrations =
 /* =========================================================
    UNIQUE COMMUNITY SPEAKERS
 
-   Duplicate names are counted only once.
+   Duplicate speaker names count once.
    ========================================================= */
 
 const communitySpeakers =
@@ -390,7 +392,7 @@ const communitySpeakerCount =
               mb-2
             "
           >
-            {communityRegistrations}+
+            {communityRegistrations}
           </div>
 
 
