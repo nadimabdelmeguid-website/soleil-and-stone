@@ -1,18 +1,19 @@
 ---
-import {
-  getCollection
-} from "astro:content";
-
 import BaseLayout from "../../layouts/BaseLayout.astro";
 
 
 /* =========================================================
-   LOAD FIELD NOTES
+   LOAD FIELD NOTES DIRECTLY FROM THE CONTENT FOLDER
+
+   This intentionally does NOT use getCollection().
    ========================================================= */
 
-const allNotes =
-  await getCollection(
-    "field-notes"
+const noteModules =
+  import.meta.glob(
+    "../../content/field-notes/*.{md,mdx}",
+    {
+      eager: true
+    }
   );
 
 
@@ -20,15 +21,51 @@ const allNotes =
    HELPERS
    ========================================================= */
 
+function getFileSlug(
+  path: string
+) {
+
+  return path
+    .split("/")
+    .pop()
+    ?.replace(
+      /\.(md|mdx)$/,
+      ""
+    ) ?? "";
+
+}
+
+
+function getData(
+  module: any
+) {
+
+  /*
+   * Astro Markdown imports normally expose
+   * frontmatter under `frontmatter`.
+   *
+   * `data` is included as a fallback so this
+   * also survives other content configurations.
+   */
+
+  return (
+    module.frontmatter ??
+    module.data ??
+    {}
+  );
+
+}
+
+
 function getNoteDate(
-  note
+  data: any
 ) {
 
   const value =
-    note.data.published ??
-    note.data.date ??
-    note.data.publishDate ??
-    note.data.publishedAt;
+    data.date ??
+    data.published ??
+    data.publishDate ??
+    data.publishedAt;
 
 
   if (!value) {
@@ -36,12 +73,17 @@ function getNoteDate(
   }
 
 
-  const date =
+  if (
     value instanceof Date
-      ? value
-      : new Date(
-          `${value}T12:00:00`
-        );
+  ) {
+    return value;
+  }
+
+
+  const date =
+    new Date(
+      `${value}T12:00:00`
+    );
 
 
   return Number.isNaN(
@@ -54,7 +96,7 @@ function getNoteDate(
 
 
 function normalizeCategory(
-  value
+  value: any
 ) {
 
   const category =
@@ -76,7 +118,9 @@ function normalizeCategory(
 
 
   if (
+    category === "tradeshow" ||
     category === "tradeshows" ||
+    category === "trade show" ||
     category === "trade shows" ||
     category === "trade-show" ||
     category === "trade-shows"
@@ -94,42 +138,48 @@ function normalizeCategory(
   }
 
 
-  return category || "ecosystem";
+  return (
+    category ||
+    "ecosystem"
+  );
 
 }
 
 
 function getCategory(
-  note
+  data: any
 ) {
 
   return normalizeCategory(
-    note.data.categorySlug ??
-    note.data.category ??
-    note.data.categoryName
+    data.categorySlug ??
+    data.category
   );
 
 }
 
 
 function getCategoryLabel(
-  note
+  data: any
 ) {
 
   if (
-    note.data.categoryName
+    data.categoryName
   ) {
-    return note.data.categoryName;
+    return data.categoryName;
   }
 
 
   const category =
     getCategory(
-      note
+      data
     );
 
 
-  const labels = {
+  const labels: Record<
+    string,
+    string
+  > = {
+
     ecosystem:
       "Ecosystems & Community",
 
@@ -138,6 +188,7 @@ function getCategoryLabel(
 
     hardware:
       "Hardware & Manufacturing"
+
   };
 
 
@@ -150,7 +201,7 @@ function getCategoryLabel(
 
 
 function formatDate(
-  date
+  date: Date | null
 ) {
 
   if (!date) {
@@ -176,12 +227,12 @@ function formatDate(
 
 
 function getDescription(
-  note
+  data: any
 ) {
 
   return (
-    note.data.description ??
-    note.data.excerpt ??
+    data.description ??
+    data.excerpt ??
     ""
   );
 
@@ -189,62 +240,43 @@ function getDescription(
 
 
 function getReadMinutes(
-  note
+  data: any
 ) {
 
   return (
-    note.data.readMinutes ??
-    note.data.readingTime ??
+    data.readMinutes ??
+    data.readingTime ??
     null
   );
 
 }
 
 
-function getSlug(
-  note
-) {
-
-  return note.id
-    .replace(
-      /\.md$/,
-      ""
-    )
-    .replace(
-      /\.mdx$/,
-      ""
-    );
-
-}
-
-
 function getNoteUrl(
-  note
+  data: any,
+  slug: string
 ) {
 
   /*
-   * If an explicit URL exists in the metadata,
-   * use it.
-   *
-   * Otherwise use the Astro dynamic route.
+   * Explicit URL wins when supplied.
    */
 
   if (
-    note.data.url
+    data.url
   ) {
-    return note.data.url;
+    return data.url;
   }
 
 
-  return `/field-notes/${getSlug(
-    note
-  )}/`;
+  return (
+    `/field-notes/${slug}/`
+  );
 
 }
 
 
 /* =========================================================
-   PUBLISHED NOTES
+   BUILD NOTE ARRAY
    ========================================================= */
 
 const now =
@@ -252,12 +284,67 @@ const now =
 
 
 const notes =
-  allNotes
+  Object.entries(
+    noteModules
+  )
+    .map(
+      (
+        [
+          path,
+          module
+        ]
+      ) => {
+
+        const data =
+          getData(
+            module
+          );
+
+
+        const slug =
+          getFileSlug(
+            path
+          );
+
+
+        return {
+
+          slug,
+
+          data,
+
+          date:
+            getNoteDate(
+              data
+            ),
+
+          category:
+            getCategory(
+              data
+            ),
+
+          categoryLabel:
+            getCategoryLabel(
+              data
+            ),
+
+          url:
+            getNoteUrl(
+              data,
+              slug
+            )
+
+        };
+
+      }
+    )
     .filter(
-      (note) => {
+      (
+        note
+      ) => {
 
         /*
-         * Respect draft metadata if present.
+         * Hide drafts.
          */
 
         if (
@@ -267,63 +354,59 @@ const notes =
         }
 
 
-        const date =
-          getNoteDate(
-            note
-          );
-
-
         /*
-         * Don't silently remove an article just because
-         * its date field is missing.
+         * If no date exists, still show it rather than
+         * silently dropping the article.
          */
 
-        if (!date) {
+        if (
+          !note.date
+        ) {
           return true;
         }
 
 
+        /*
+         * Hide scheduled future notes.
+         */
+
         return (
-          date <= now
+          note.date <= now
         );
 
       }
     )
     .sort(
-      (a, b) => {
-
-        const dateA =
-          getNoteDate(
-            a
-          );
-
-        const dateB =
-          getNoteDate(
-            b
-          );
-
+      (
+        a,
+        b
+      ) => {
 
         if (
-          !dateA &&
-          !dateB
+          !a.date &&
+          !b.date
         ) {
           return 0;
         }
 
 
-        if (!dateA) {
+        if (
+          !a.date
+        ) {
           return 1;
         }
 
 
-        if (!dateB) {
+        if (
+          !b.date
+        ) {
           return -1;
         }
 
 
         return (
-          dateB.getTime() -
-          dateA.getTime()
+          b.date.getTime() -
+          a.date.getTime()
         );
 
       }
@@ -331,6 +414,7 @@ const notes =
 
 
 const categories = [
+
   {
     label:
       "All Notes",
@@ -362,6 +446,7 @@ const categories = [
     value:
       "hardware"
   }
+
 ];
 ---
 
@@ -371,7 +456,7 @@ const categories = [
 >
 
   <!-- =====================================================
-       HERO — WHITE
+       HERO
        ===================================================== -->
 
   <section
@@ -454,7 +539,7 @@ const categories = [
 
 
   <!-- =====================================================
-       FILTER AREA — CREAM
+       FILTER BAR
        ===================================================== -->
 
   <section
@@ -504,7 +589,7 @@ const categories = [
 
 
 
-      <!-- FILTER BUTTONS -->
+      <!-- FILTERS -->
 
       <div
         class="
@@ -561,7 +646,7 @@ const categories = [
 
 
   <!-- =====================================================
-       PUBLISHED NOTES — WHITE
+       PUBLISHED NOTES
        ===================================================== -->
 
   <section
@@ -580,7 +665,7 @@ const categories = [
       "
     >
 
-      <!-- SECTION HEADING -->
+      <!-- HEADER -->
 
       <div
         class="
@@ -641,9 +726,11 @@ const categories = [
           <span
             id="visible-note-label"
           >
-            {notes.length === 1
-              ? "note"
-              : "notes"}
+            {
+              notes.length === 1
+                ? "note"
+                : "notes"
+            }
           </span>
 
         </div>
@@ -653,7 +740,7 @@ const categories = [
 
 
       <!-- =================================================
-           NOTES GRID
+           NOTE CARDS
            ================================================= -->
 
       {
@@ -673,298 +760,279 @@ const categories = [
                 (
                   note,
                   index
-                ) => {
+                ) => (
 
-                  const noteDate =
-                    getNoteDate(
-                      note
-                    );
+                  <article
+                    data-note-card
+                    data-category={
+                      note.category
+                    }
+                    class="
+                      group
+                      bg-white
+                      border
+                      border-brand-border
+                      min-h-[260px]
+                      flex
+                      flex-col
+                      transition-all
+                      duration-200
+                      hover:border-brand-gold
+                      hover:bg-brand-cream
+                    "
+                  >
 
+                    <!-- ENTIRE CARD IS LINKED -->
 
-                  const noteUrl =
-                    getNoteUrl(
-                      note
-                    );
-
-
-                  const readMinutes =
-                    getReadMinutes(
-                      note
-                    );
-
-
-                  return (
-
-                    <article
-                      data-note-card
-                      data-category={
-                        getCategory(
-                          note
-                        )
+                    <a
+                      href={
+                        note.url
                       }
                       class="
-                        group
-                        border
-                        border-brand-border
-                        bg-white
                         flex
                         flex-col
-                        min-h-[260px]
-                        transition-all
-                        duration-200
-                        hover:border-brand-gold
-                        hover:bg-brand-cream
+                        h-full
+                        p-6
+                        sm:p-7
                       "
+                      aria-label={`Read ${note.data.title}`}
                     >
 
-                      <!--
-                        Entire card is clickable.
-                      -->
+                      <!-- META -->
 
-                      <a
-                        href={noteUrl}
+                      <div
                         class="
                           flex
-                          flex-col
-                          h-full
-                          p-6
-                          sm:p-7
+                          items-start
+                          justify-between
+                          gap-5
+                          mb-6
                         "
-                        aria-label={`Read ${note.data.title}`}
                       >
 
-                        <!-- TOP META -->
+                        <div>
 
-                        <div
-                          class="
-                            flex
-                            items-start
-                            justify-between
-                            gap-5
-                            mb-6
-                          "
-                        >
-
-                          <div>
-
-                            <!-- CATEGORY -->
-
-                            <span
-                              class="
-                                inline-flex
-                                px-2.5
-                                py-1
-                                bg-brand-gold/10
-                                text-[8px]
-                                uppercase
-                                tracking-[0.15em]
-                                text-brand-gold
-                                font-semibold
-                              "
-                            >
-                              {
-                                getCategoryLabel(
-                                  note
-                                )
-                              }
-                            </span>
-
-
-                            <!-- DATE -->
-
-                            {
-                              noteDate && (
-
-                                <div
-                                  class="
-                                    text-[9px]
-                                    uppercase
-                                    tracking-[0.14em]
-                                    text-brand-slate
-                                    mt-3
-                                  "
-                                >
-                                  {
-                                    formatDate(
-                                      noteDate
-                                    )
-                                  }
-                                </div>
-
-                              )
-                            }
-
-                          </div>
-
-
-
-                          <!-- EDITORIAL NUMBER -->
+                          <!-- CATEGORY -->
 
                           <span
                             class="
-                              font-serif
-                              text-xl
-                              text-brand-border
-                              group-hover:text-brand-gold
-                              transition-colors
+                              inline-flex
+                              px-2.5
+                              py-1
+                              bg-brand-gold/10
+                              text-[8px]
+                              uppercase
+                              tracking-[0.15em]
+                              text-brand-gold
+                              font-semibold
                             "
                           >
                             {
-                              String(
-                                index + 1
-                              ).padStart(
-                                2,
-                                "0"
-                              )
+                              note.categoryLabel
                             }
                           </span>
+
+
+                          <!-- DATE -->
+
+                          {
+                            note.date && (
+
+                              <div
+                                class="
+                                  text-[9px]
+                                  uppercase
+                                  tracking-[0.14em]
+                                  text-brand-slate
+                                  mt-3
+                                "
+                              >
+                                {
+                                  formatDate(
+                                    note.date
+                                  )
+                                }
+                              </div>
+
+                            )
+                          }
 
                         </div>
 
 
 
-                        <!-- TITLE -->
+                        <!-- NUMBER -->
 
-                        <h3
+                        <span
                           class="
                             font-serif
-                            text-2xl
-                            text-brand-charcoal
-                            leading-snug
+                            text-xl
+                            text-brand-border
                             group-hover:text-brand-gold
                             transition-colors
                           "
                         >
-                          {note.data.title}
-                        </h3>
+                          {
+                            String(
+                              index + 1
+                            ).padStart(
+                              2,
+                              "0"
+                            )
+                          }
+                        </span>
+
+                      </div>
 
 
 
-                        <!-- DESCRIPTION -->
+                      <!-- TITLE -->
 
-                        {
-                          getDescription(
-                            note
-                          ) && (
-
-                            <p
-                              class="
-                                text-xs
-                                sm:text-sm
-                                text-brand-slate
-                                leading-relaxed
-                                font-light
-                                mt-4
-                                max-w-xl
-                              "
-                            >
-                              {
-                                getDescription(
-                                  note
-                                )
-                              }
-                            </p>
-
-                          )
-                        }
+                      <h3
+                        class="
+                          font-serif
+                          text-2xl
+                          text-brand-charcoal
+                          leading-snug
+                          group-hover:text-brand-gold
+                          transition-colors
+                        "
+                      >
+                        {note.data.title}
+                      </h3>
 
 
 
-                        <!-- CARD FOOTER -->
+                      <!-- DESCRIPTION -->
+
+                      {
+                        getDescription(
+                          note.data
+                        ) && (
+
+                          <p
+                            class="
+                              text-xs
+                              sm:text-sm
+                              text-brand-slate
+                              leading-relaxed
+                              font-light
+                              mt-4
+                              max-w-xl
+                            "
+                          >
+                            {
+                              getDescription(
+                                note.data
+                              )
+                            }
+                          </p>
+
+                        )
+                      }
+
+
+
+                      <!-- FOOTER -->
+
+                      <div
+                        class="
+                          mt-auto
+                          pt-6
+                        "
+                      >
 
                         <div
                           class="
-                            mt-auto
-                            pt-6
+                            border-t
+                            border-brand-border
+                            pt-4
+                            flex
+                            items-center
+                            justify-between
+                            gap-5
                           "
                         >
 
                           <div
                             class="
-                              border-t
-                              border-brand-border
-                              pt-4
                               flex
                               items-center
-                              justify-between
-                              gap-5
+                              flex-wrap
+                              gap-3
                             "
                           >
 
-                            <div
-                              class="
-                                flex
-                                items-center
-                                gap-3
-                              "
-                            >
-
-                              <span
-                                class="
-                                  text-[9px]
-                                  uppercase
-                                  tracking-[0.16em]
-                                  text-brand-charcoal
-                                  font-semibold
-                                  group-hover:text-brand-gold
-                                  transition-colors
-                                "
-                              >
-                                Read Field Note
-                              </span>
-
-
-                              {
-                                readMinutes && (
-
-                                  <>
-                                    <span
-                                      class="
-                                        text-brand-border
-                                      "
-                                    >
-                                      •
-                                    </span>
-
-
-                                    <span
-                                      class="
-                                        text-[9px]
-                                        text-brand-slate
-                                      "
-                                    >
-                                      {readMinutes} min read
-                                    </span>
-                                  </>
-
-                                )
-                              }
-
-                            </div>
-
-
                             <span
                               class="
-                                text-brand-slate
+                                text-[9px]
+                                uppercase
+                                tracking-[0.16em]
+                                text-brand-charcoal
+                                font-semibold
                                 group-hover:text-brand-gold
-                                group-hover:translate-x-1
-                                transition-all
+                                transition-colors
                               "
                             >
-                              →
+                              Read Field Note
                             </span>
+
+
+                            {
+                              getReadMinutes(
+                                note.data
+                              ) && (
+
+                                <>
+                                  <span
+                                    class="
+                                      text-brand-border
+                                    "
+                                  >
+                                    •
+                                  </span>
+
+
+                                  <span
+                                    class="
+                                      text-[9px]
+                                      text-brand-slate
+                                    "
+                                  >
+                                    {
+                                      getReadMinutes(
+                                        note.data
+                                      )
+                                    } min read
+                                  </span>
+                                </>
+
+                              )
+                            }
 
                           </div>
 
+
+                          <span
+                            class="
+                              text-brand-slate
+                              group-hover:text-brand-gold
+                              group-hover:translate-x-1
+                              transition-all
+                            "
+                          >
+                            →
+                          </span>
+
                         </div>
 
-                      </a>
+                      </div>
 
-                    </article>
+                    </a>
 
-                  );
+                  </article>
 
-                }
+                )
               )
             }
 
@@ -976,14 +1044,13 @@ const categories = [
 
 
       <!-- =================================================
-           NO PUBLISHED ARTICLES
+           NO NOTES
            ================================================= -->
 
       {
         notes.length === 0 && (
 
           <div
-            id="no-notes-initial"
             class="
               border
               border-brand-border
@@ -1096,7 +1163,8 @@ const categories = [
         (button) => {
 
           const isActive =
-            button === activeButton;
+            button ===
+            activeButton;
 
 
           button.classList.toggle(
@@ -1188,15 +1256,21 @@ const categories = [
             );
 
 
-            if (count) {
+            if (
+              count
+            ) {
+
               count.textContent =
                 String(
                   visible
                 );
+
             }
 
 
-            if (label) {
+            if (
+              label
+            ) {
 
               label.textContent =
                 visible === 1
@@ -1206,7 +1280,9 @@ const categories = [
             }
 
 
-            if (emptyState) {
+            if (
+              emptyState
+            ) {
 
               emptyState.classList.toggle(
                 "hidden",
