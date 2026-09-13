@@ -153,26 +153,82 @@ const {
 
   <Header />
 
+
   <main
-    class="
-      flex-grow
-    "
+    class="flex-grow"
   >
     <slot />
   </main>
+
 
   <Footer />
 
 
   <!-- =====================================================
-       CLOUDFLARE ANALYTICS
+       CLOUDFLARE WEB ANALYTICS
+
+       Analytics is disabled when:
+
+       localStorage:
+       soleil_analytics_optout = "true"
+
+       It is also disabled automatically on localhost.
        ===================================================== -->
 
-  <script
-    defer
-    src="https://static.cloudflareinsights.com/beacon.min.js"
-    data-cf-beacon='{"token":"25f4f77c623a4a2ca7120f9843fc9735"}'
-  ></script>
+  <script is:inline>
+    (() => {
+
+      const ANALYTICS_OPT_OUT_KEY =
+        "soleil_analytics_optout";
+
+      const isLocalhost =
+        window.location.hostname === "localhost" ||
+        window.location.hostname === "127.0.0.1";
+
+      const hasOptedOut =
+        localStorage.getItem(
+          ANALYTICS_OPT_OUT_KEY
+        ) === "true";
+
+
+      if (
+        isLocalhost ||
+        hasOptedOut
+      ) {
+        console.info(
+          "Soleil & Stone analytics disabled for this browser."
+        );
+
+        return;
+      }
+
+
+      const beacon =
+        document.createElement(
+          "script"
+        );
+
+      beacon.src =
+        "https://static.cloudflareinsights.com/beacon.min.js";
+
+      beacon.defer =
+        true;
+
+      beacon.setAttribute(
+        "data-cf-beacon",
+        JSON.stringify({
+          token:
+            "25f4f77c623a4a2ca7120f9843fc9735"
+        })
+      );
+
+
+      document.body.appendChild(
+        beacon
+      );
+
+    })();
+  </script>
 
 </body>
 
