@@ -12,15 +12,15 @@ import {
 } from "../data/events";
 
 import {
-  getProfessionalMetrics
+  isCompletedEvent
 } from "../utils/eventMetrics";
 
 
-const metrics =
-  getProfessionalMetrics(
-    events
-  );
+/* =========================================================
+   COMMUNITY MEMBERSHIPS
 
+   Automatically calculated from communities.ts
+   ========================================================= */
 
 const communityMemberships =
   communities.reduce(
@@ -35,6 +35,108 @@ const communityMemberships =
       ),
     0
   );
+
+
+/* =========================================================
+   COMPLETED COMMUNITY EVENTS LED
+
+   Only events that:
+   - belong to a community
+   - are completed
+   - were hosted or co-organized
+
+   This prevents trade shows / general attended events
+   from affecting Community metrics.
+   ========================================================= */
+
+const communityEvents =
+  events.filter(
+    (event) =>
+      Boolean(
+        event.communityId
+      ) &&
+      isCompletedEvent(
+        event
+      ) &&
+      (
+        event.participation ===
+          "hosted" ||
+        event.participation ===
+          "co-organized"
+      )
+  );
+
+
+/* =========================================================
+   COMMUNITY REGISTRATIONS
+   ========================================================= */
+
+const communityRegistrations =
+  communityEvents.reduce(
+    (
+      total,
+      event
+    ) =>
+      total +
+      (
+        event.registrations ??
+        0
+      ),
+    0
+  );
+
+
+/* =========================================================
+   UNIQUE COMMUNITY SPEAKERS
+
+   Duplicate names are counted only once.
+   ========================================================= */
+
+const communitySpeakers =
+  new Map<
+    string,
+    {
+      name: string;
+      title?: string;
+      company: string;
+    }
+  >();
+
+
+communityEvents
+  .flatMap(
+    (event) =>
+      event.speakers ??
+      []
+  )
+  .forEach(
+    (speaker) => {
+
+      const key =
+        speaker.name
+          .trim()
+          .toLowerCase();
+
+
+      if (
+        !communitySpeakers.has(
+          key
+        )
+      ) {
+
+        communitySpeakers.set(
+          key,
+          speaker
+        );
+
+      }
+
+    }
+  );
+
+
+const communitySpeakerCount =
+  communitySpeakers.size;
 ---
 
 <BaseLayout
@@ -123,7 +225,7 @@ const communityMemberships =
 
 
   <!-- =====================================================
-       PROFESSIONAL TRACK RECORD — CREAM
+       COMMUNITY TRACK RECORD — CREAM
        ===================================================== -->
 
   <section
@@ -144,6 +246,8 @@ const communityMemberships =
       "
     >
 
+      <!-- SECTION HEADER -->
+
       <div
         class="
           mb-8
@@ -159,7 +263,7 @@ const communityMemberships =
             font-semibold
           "
         >
-          Professional Track Record
+          Community Track Record
         </span>
 
 
@@ -172,7 +276,7 @@ const communityMemberships =
             mt-2
           "
         >
-          Activity Across The Ecosystem
+          Growing Through Consistent Programming
         </h2>
 
       </div>
@@ -180,7 +284,7 @@ const communityMemberships =
 
 
       <!-- =================================================
-           METRICS
+           COMMUNITY METRICS
            ================================================= -->
 
       <div
@@ -195,9 +299,7 @@ const communityMemberships =
         "
       >
 
-        <!-- =================================================
-             PRIMARY ROW
-             ================================================= -->
+        <!-- COMMUNITY MEMBERSHIPS -->
 
         <div
           class="
@@ -211,146 +313,6 @@ const communityMemberships =
               font-serif
               text-3xl
               text-brand-gold
-              mb-2
-            "
-          >
-            {metrics.led}
-          </div>
-
-
-          <div
-            class="
-              text-[10px]
-              uppercase
-              tracking-[0.15em]
-              text-brand-slate
-            "
-          >
-            Hosted / Co-Organized
-          </div>
-
-        </div>
-
-
-
-        <div
-          class="
-            bg-white
-            p-6
-          "
-        >
-
-          <div
-            class="
-              font-serif
-              text-3xl
-              text-brand-gold
-              mb-2
-            "
-          >
-            {metrics.registrationsLed}+
-          </div>
-
-
-          <div
-            class="
-              text-[10px]
-              uppercase
-              tracking-[0.15em]
-              text-brand-slate
-            "
-          >
-            Registrations Across Events Led
-          </div>
-
-        </div>
-
-
-
-        <div
-          class="
-            bg-white
-            p-6
-          "
-        >
-
-          <div
-            class="
-              font-serif
-              text-3xl
-              text-brand-gold
-              mb-2
-            "
-          >
-            {metrics.speakers}
-          </div>
-
-
-          <div
-            class="
-              text-[10px]
-              uppercase
-              tracking-[0.15em]
-              text-brand-slate
-            "
-          >
-            Industry Speakers
-          </div>
-
-        </div>
-
-
-
-        <div
-          class="
-            bg-white
-            p-6
-          "
-        >
-
-          <div
-            class="
-              font-serif
-              text-3xl
-              text-brand-gold
-              mb-2
-            "
-          >
-            {metrics.organizationsEngaged}
-          </div>
-
-
-          <div
-            class="
-              text-[10px]
-              uppercase
-              tracking-[0.15em]
-              text-brand-slate
-            "
-          >
-            Industry Organizations Engaged
-          </div>
-
-        </div>
-
-
-
-        <!-- =================================================
-             SECONDARY ROW
-             ================================================= -->
-
-        <div
-          class="
-            bg-[#FCFBF7]
-            p-6
-          "
-        >
-
-          <div
-            class="
-              font-serif
-              text-3xl
-              text-brand-charcoal
               mb-2
             "
           >
@@ -364,6 +326,7 @@ const communityMemberships =
               uppercase
               tracking-[0.15em]
               text-brand-slate
+              leading-relaxed
             "
           >
             Community Memberships
@@ -373,9 +336,11 @@ const communityMemberships =
 
 
 
+        <!-- COMMUNITY EVENTS LED -->
+
         <div
           class="
-            bg-[#FCFBF7]
+            bg-white
             p-6
           "
         >
@@ -384,11 +349,11 @@ const communityMemberships =
             class="
               font-serif
               text-3xl
-              text-brand-charcoal
+              text-brand-gold
               mb-2
             "
           >
-            {metrics.exhibited}
+            {communityEvents.length}
           </div>
 
 
@@ -398,18 +363,21 @@ const communityMemberships =
               uppercase
               tracking-[0.15em]
               text-brand-slate
+              leading-relaxed
             "
           >
-            Trade Shows Exhibited
+            Community Events Led
           </div>
 
         </div>
 
 
 
+        <!-- COMMUNITY REGISTRATIONS -->
+
         <div
           class="
-            bg-[#FCFBF7]
+            bg-white
             p-6
           "
         >
@@ -418,11 +386,11 @@ const communityMemberships =
             class="
               font-serif
               text-3xl
-              text-brand-charcoal
+              text-brand-gold
               mb-2
             "
           >
-            {metrics.total}+
+            {communityRegistrations}+
           </div>
 
 
@@ -432,18 +400,21 @@ const communityMemberships =
               uppercase
               tracking-[0.15em]
               text-brand-slate
+              leading-relaxed
             "
           >
-            Professional Events
+            Community Registrations
           </div>
 
         </div>
 
 
 
+        <!-- INDUSTRY SPEAKERS -->
+
         <div
           class="
-            bg-[#FCFBF7]
+            bg-white
             p-6
           "
         >
@@ -452,11 +423,11 @@ const communityMemberships =
             class="
               font-serif
               text-3xl
-              text-brand-slate
+              text-brand-gold
               mb-2
             "
           >
-            {metrics.attended}
+            {communitySpeakerCount}
           </div>
 
 
@@ -466,9 +437,10 @@ const communityMemberships =
               uppercase
               tracking-[0.15em]
               text-brand-slate
+              leading-relaxed
             "
           >
-            Events Attended
+            Industry Speakers
           </div>
 
         </div>
@@ -488,9 +460,11 @@ const communityMemberships =
   {
     communities.map(
       (community) => (
+
         <CommunityCard
           community={community}
         />
+
       )
     )
   }
