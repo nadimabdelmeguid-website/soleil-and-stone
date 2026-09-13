@@ -1,0 +1,103 @@
+---
+interface Props {
+  small?: boolean;
+}
+
+const {
+  small = false
+} = Astro.props;
+---
+
+<svg
+  class={small
+    ? "w-9 h-9"
+    : "w-16 h-16"
+  }
+  viewBox="0 0 100 100"
+  fill="none"
+  xmlns="http://www.w3.org/2000/svg"
+  aria-hidden="true"
+>
+
+  <line
+    x1="50"
+    y1="12"
+    x2="50"
+    y2="19"
+    stroke="#C5A059"
+    stroke-width="1.8"
+    stroke-linecap="round"
+  />
+
+  <line
+    x1="33"
+    y1="18"
+    x2="38"
+    y2="23"
+    stroke="#C5A059"
+    stroke-width="1.8"
+    stroke-linecap="round"
+  />
+
+  <line
+    x1="67"
+    y1="18"
+    x2="62"
+    y2="23"
+    stroke="#C5A059"
+    stroke-width="1.8"
+    stroke-linecap="round"
+  />
+
+  <circle
+    cx="50"
+    cy="34"
+    r="13"
+    fill="#C5A059"
+  />
+
+  <polygon
+    points="50,26 20,56 50,56"
+    fill="#D5C29C"
+  />
+
+  <polygon
+    points="50,26 50,56 80,56"
+    fill="#363A40"
+  />
+
+  <line
+    x1="50"
+    y1="26"
+    x2="50"
+    y2="56"
+    stroke="#F9F8F3"
+  />
+
+  <line
+    x1="28"
+    y1="60"
+    x2="72"
+    y2="60"
+    stroke="#C5A059"
+    stroke-width="1.5"
+  />
+
+  <line
+    x1="36"
+    y1="64"
+    x2="64"
+    y2="64"
+    stroke="#C5A059"
+    stroke-width="1.2"
+  />
+
+  <line
+    x1="42"
+    y1="68"
+    x2="58"
+    y2="68"
+    stroke="#C5A059"
+  />
+
+</svg>
