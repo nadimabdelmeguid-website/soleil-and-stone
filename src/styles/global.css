@@ -1,0 +1,121 @@
+.field-note-body {
+  color: #22252A;
+
+  font-size: 1rem;
+
+  font-weight: 300;
+
+  line-height: 1.85;
+}
+
+
+.field-note-body > * + * {
+  margin-top: 2rem;
+}
+
+
+.field-note-body h2 {
+  margin-top: 3.25rem;
+
+  font-family:
+    "Cinzel",
+    Georgia,
+    serif;
+
+  font-size: 1.5rem;
+
+  line-height: 1.4;
+
+  color: #22252A;
+}
+
+
+.field-note-body h3 {
+  margin-top: 2.5rem;
+
+  font-family:
+    "Cinzel",
+    Georgia,
+    serif;
+
+  font-size: 1.2rem;
+
+  color: #22252A;
+}
+
+
+.field-note-body p {
+  color: #4A505A;
+}
+
+
+.field-note-body strong {
+  color: #22252A;
+
+  font-weight: 500;
+}
+
+
+.field-note-body em {
+  color: #4A505A;
+}
+
+
+.field-note-body ul,
+.field-note-body ol {
+  padding-left: 1.5rem;
+
+  color: #4A505A;
+}
+
+
+.field-note-body ul {
+  list-style: disc;
+}
+
+
+.field-note-body li + li {
+  margin-top: 0.75rem;
+}
+
+
+.field-note-body blockquote {
+  margin: 2rem 0;
+
+  padding: 1.5rem;
+
+  background: #FFFFFF;
+
+  border: 1px solid #E8E5DA;
+
+  border-left:
+    3px solid #C5A059;
+
+  color: #4A505A;
+
+  font-style: italic;
+}
+
+
+.field-note-body a {
+  color: #C5A059;
+
+  text-decoration: underline;
+
+  text-underline-offset: 3px;
+}
+
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 5px;
+}
+
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: #F9F8F3;
+}
+
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #C5A059;
+}
