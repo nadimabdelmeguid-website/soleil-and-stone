@@ -361,7 +361,7 @@ function hardwareTopic(
                 class="
                   font-serif
                   text-lg
-                  text-brand-gold
+                  text-brand-charcoal
                 "
               >
                 +
@@ -439,41 +439,16 @@ function hardwareTopic(
 
             <div
               class="
-                flex
-                items-baseline
-                gap-1
+                font-serif
+                text-3xl
+                text-brand-gold
               "
             >
-
-              <span
-                class="
-                  font-serif
-                  text-3xl
-                  text-brand-gold
-                "
-              >
-                {
-                  registrations > 0
-                    ? registrations
-                    : "—"
-                }
-              </span>
-
-
               {
-                registrations > 0 && (
-                  <span
-                    class="
-                      font-serif
-                      text-lg
-                      text-brand-gold
-                    "
-                  >
-                    +
-                  </span>
-                )
+                registrations > 0
+                  ? registrations
+                  : "—"
               }
-
             </div>
 
 
