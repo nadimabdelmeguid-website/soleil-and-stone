@@ -35,7 +35,7 @@ const visibleEvents =
       w-full
       mx-auto
       px-6
-      py-16
+      py-14
     "
   >
 
@@ -50,8 +50,8 @@ const visibleEvents =
         lg:flex-row
         lg:items-end
         justify-between
-        gap-6
-        mb-10
+        gap-5
+        mb-8
       "
     >
 
@@ -94,15 +94,13 @@ const visibleEvents =
           items-center
           gap-x-5
           gap-y-2
-          text-[10px]
+          text-[9px]
           uppercase
           tracking-[0.14em]
           text-brand-slate
         "
       >
 
-        <!-- HOST -->
-
         <div
           class="
             flex
@@ -110,24 +108,18 @@ const visibleEvents =
             gap-2
           "
         >
-
           <span
             class="
-              w-2.5
-              h-2.5
+              w-2
+              h-2
               rounded-full
               bg-brand-gold
             "
           ></span>
 
-          <span>
-            Hosted / Co-Organized
-          </span>
-
+          Hosted / Co-Organized
         </div>
 
-
-        <!-- EXHIBIT -->
 
         <div
           class="
@@ -136,24 +128,18 @@ const visibleEvents =
             gap-2
           "
         >
-
           <span
             class="
-              w-2.5
-              h-2.5
+              w-2
+              h-2
               rounded-full
               bg-brand-charcoal
             "
           ></span>
 
-          <span>
-            Exhibitor
-          </span>
-
+          Exhibitor
         </div>
 
-
-        <!-- ATTEND -->
 
         <div
           class="
@@ -162,20 +148,16 @@ const visibleEvents =
             gap-2
           "
         >
-
           <span
             class="
-              w-2.5
-              h-2.5
+              w-2
+              h-2
               rounded-full
               bg-brand-slate
             "
           ></span>
 
-          <span>
-            Attending
-          </span>
-
+          Attending
         </div>
 
       </div>
@@ -185,14 +167,14 @@ const visibleEvents =
 
 
     <!-- =================================================
-         CALENDAR + EVENTS GRID
+         CALENDAR AREA
          ================================================= -->
 
     <div
       class="
         grid
         lg:grid-cols-12
-        gap-8
+        gap-6
         items-start
       "
     >
@@ -208,7 +190,6 @@ const visibleEvents =
           border
           border-brand-border
           p-5
-          sm:p-6
         "
       >
 
@@ -219,7 +200,7 @@ const visibleEvents =
             flex
             items-center
             justify-between
-            mb-6
+            mb-5
           "
         >
 
@@ -228,8 +209,8 @@ const visibleEvents =
             type="button"
             aria-label="Previous month"
             class="
-              w-9
-              h-9
+              w-8
+              h-8
               border
               border-brand-border
               text-brand-charcoal
@@ -246,7 +227,7 @@ const visibleEvents =
             id="calendar-month-title"
             class="
               font-serif
-              text-xl
+              text-lg
               text-brand-charcoal
               text-center
             "
@@ -259,8 +240,8 @@ const visibleEvents =
             type="button"
             aria-label="Next month"
             class="
-              w-9
-              h-9
+              w-8
+              h-8
               border
               border-brand-border
               text-brand-charcoal
@@ -281,7 +262,7 @@ const visibleEvents =
           class="
             grid
             grid-cols-7
-            mb-2
+            mb-1
           "
         >
 
@@ -299,11 +280,11 @@ const visibleEvents =
                 <div
                   class="
                     text-center
-                    text-[9px]
+                    text-[8px]
                     uppercase
                     tracking-widest
                     text-brand-slate
-                    py-2
+                    py-1.5
                   "
                 >
                   {day}
@@ -314,8 +295,6 @@ const visibleEvents =
 
         </div>
 
-
-        <!-- CALENDAR GRID -->
 
         <div
           id="calendar-grid"
@@ -328,20 +307,17 @@ const visibleEvents =
         </div>
 
 
-        <!-- PRIORITY NOTE -->
-
         <p
           class="
-            mt-5
-            text-[10px]
+            mt-4
+            text-[9px]
             text-brand-slate
             font-light
             leading-relaxed
           "
         >
-          When activities overlap, the calendar prioritizes
-          hosted or co-organized events first, exhibitor
-          appearances second, and attended events third.
+          Hosted and co-organized events take priority over
+          exhibitor appearances and attended events when dates overlap.
         </p>
 
       </div>
@@ -349,7 +325,7 @@ const visibleEvents =
 
 
       <!-- =================================================
-           MONTH EVENTS
+           EVENT LIST
            ================================================= -->
 
       <div
@@ -361,10 +337,10 @@ const visibleEvents =
         <div
           class="
             flex
-            items-center
+            items-end
             justify-between
             gap-4
-            mb-5
+            mb-4
           "
         >
 
@@ -372,7 +348,7 @@ const visibleEvents =
 
             <span
               class="
-                text-[10px]
+                text-[9px]
                 uppercase
                 tracking-[0.18em]
                 text-brand-gold
@@ -387,7 +363,7 @@ const visibleEvents =
               id="event-month-title"
               class="
                 font-serif
-                text-2xl
+                text-xl
                 text-brand-charcoal
                 mt-1
               "
@@ -400,7 +376,7 @@ const visibleEvents =
           <span
             id="month-summary"
             class="
-              text-[10px]
+              text-[9px]
               uppercase
               tracking-[0.14em]
               text-brand-slate
@@ -415,10 +391,10 @@ const visibleEvents =
         <div
           id="event-container"
           class="
-            max-h-[540px]
+            max-h-[405px]
             overflow-y-auto
             pr-2
-            space-y-5
+            space-y-3
             custom-scrollbar
           "
         >
@@ -431,13 +407,13 @@ const visibleEvents =
 
 
     <!-- =================================================
-         CTA
+         BOTTOM LINKS
          ================================================= -->
 
     <div
       class="
-        mt-10
-        pt-8
+        mt-7
+        pt-6
         border-t
         border-brand-border
         flex
@@ -445,13 +421,13 @@ const visibleEvents =
         sm:flex-row
         sm:items-center
         justify-between
-        gap-5
+        gap-4
       "
     >
 
       <p
         class="
-          text-sm
+          text-xs
           text-brand-slate
           font-light
         "
@@ -466,7 +442,7 @@ const visibleEvents =
           flex
           flex-wrap
           gap-x-6
-          gap-y-3
+          gap-y-2
         "
       >
 
@@ -476,20 +452,17 @@ const visibleEvents =
             inline-flex
             items-center
             gap-2
-            text-[11px]
+            text-[10px]
             uppercase
-            tracking-[0.16em]
+            tracking-[0.15em]
             text-brand-charcoal
             font-semibold
             hover:text-brand-gold
             transition-colors
           "
         >
-          View Fieldwork Archive
-
-          <span>
-            →
-          </span>
+          Fieldwork Archive
+          <span>→</span>
         </a>
 
 
@@ -499,9 +472,9 @@ const visibleEvents =
             inline-flex
             items-center
             gap-2
-            text-[11px]
+            text-[10px]
             uppercase
-            tracking-[0.16em]
+            tracking-[0.15em]
             text-brand-slate
             font-semibold
             hover:text-brand-gold
@@ -509,10 +482,7 @@ const visibleEvents =
           "
         >
           Partner On An Event
-
-          <span>
-            →
-          </span>
+          <span>→</span>
         </a>
 
       </div>
@@ -537,14 +507,8 @@ const visibleEvents =
           title:
             event.title,
 
-          role:
-            event.role,
-
           participation:
             event.participation,
-
-          communityId:
-            event.communityId,
 
           startDate:
             event.startDate,
@@ -587,10 +551,6 @@ const visibleEvents =
 >
 
   (() => {
-
-    /* ===================================================
-       DOM
-       =================================================== */
 
     const calendarGrid =
       document.getElementById(
@@ -646,7 +606,7 @@ const visibleEvents =
 
 
     /* ===================================================
-       DATE HELPERS
+       HELPERS
        =================================================== */
 
     function parseEventDate(
@@ -703,8 +663,11 @@ const visibleEvents =
           : null;
 
 
-      const startText =
-        start.toLocaleDateString(
+      if (
+        !end
+      ) {
+
+        return start.toLocaleDateString(
           "en-US",
           {
             month:
@@ -717,13 +680,6 @@ const visibleEvents =
               "numeric"
           }
         );
-
-
-      if (
-        !end
-      ) {
-
-        return startText;
 
       }
 
@@ -749,7 +705,19 @@ const visibleEvents =
       }
 
 
-      return `${startText} – ${end.toLocaleDateString(
+      return `${start.toLocaleDateString(
+        "en-US",
+        {
+          month:
+            "short",
+
+          day:
+            "numeric",
+
+          year:
+            "numeric"
+        }
+      )} – ${end.toLocaleDateString(
         "en-US",
         {
           month:
@@ -766,45 +734,14 @@ const visibleEvents =
     }
 
 
-
-    /* ===================================================
-       PARTICIPATION
-       =================================================== */
-
-    function getParticipation(
-      event
-    ) {
-
-      return (
-        event.participation ||
-        "attending"
-      );
-
-    }
-
-
-    /*
-     * Priority:
-     *
-     * 3 = host / co-organize
-     * 2 = exhibit
-     * 1 = attend
-     */
-
     function getPriority(
       event
     ) {
 
-      const participation =
-        getParticipation(
-          event
-        );
-
-
       if (
-        participation ===
+        event.participation ===
           "hosted" ||
-        participation ===
+        event.participation ===
           "co-organized"
       ) {
 
@@ -814,7 +751,7 @@ const visibleEvents =
 
 
       if (
-        participation ===
+        event.participation ===
         "exhibitor"
       ) {
 
@@ -832,16 +769,10 @@ const visibleEvents =
       event
     ) {
 
-      const participation =
-        getParticipation(
-          event
-        );
-
-
       if (
-        participation ===
+        event.participation ===
           "hosted" ||
-        participation ===
+        event.participation ===
           "co-organized"
       ) {
 
@@ -851,7 +782,7 @@ const visibleEvents =
 
 
       if (
-        participation ===
+        event.participation ===
         "exhibitor"
       ) {
 
@@ -861,6 +792,47 @@ const visibleEvents =
 
 
       return "#4A505A";
+
+    }
+
+
+    function escapeHtml(
+      value
+    ) {
+
+      if (
+        value === null ||
+        value === undefined
+      ) {
+
+        return "";
+
+      }
+
+
+      return String(
+        value
+      )
+        .replace(
+          /&/g,
+          "&amp;"
+        )
+        .replace(
+          /</g,
+          "&lt;"
+        )
+        .replace(
+          />/g,
+          "&gt;"
+        )
+        .replace(
+          /"/g,
+          "&quot;"
+        )
+        .replace(
+          /'/g,
+          "&#039;"
+        );
 
     }
 
@@ -906,7 +878,7 @@ const visibleEvents =
         calendarEvents.length
       ) {
 
-        const latest =
+        return parseEventDate(
           [...calendarEvents]
             .sort(
               (a, b) =>
@@ -916,11 +888,8 @@ const visibleEvents =
                 parseEventDate(
                   a.startDate
                 )
-            )[0];
-
-
-        return parseEventDate(
-          latest.startDate
+            )[0]
+            .startDate
         );
 
       }
@@ -937,7 +906,7 @@ const visibleEvents =
 
 
     /* ===================================================
-       MONTH FILTERING
+       MONTH HELPERS
        =================================================== */
 
     function eventTouchesMonth(
@@ -946,13 +915,13 @@ const visibleEvents =
       month
     ) {
 
-      const eventStart =
+      const start =
         parseEventDate(
           event.startDate
         );
 
 
-      const eventEnd =
+      const end =
         parseEventDate(
           event.endDate ||
           event.startDate
@@ -963,11 +932,7 @@ const visibleEvents =
         new Date(
           year,
           month,
-          1,
-          0,
-          0,
-          0,
-          0
+          1
         );
 
 
@@ -984,9 +949,9 @@ const visibleEvents =
 
 
       return (
-        eventStart <=
+        start <=
           monthEnd &&
-        eventEnd >=
+        end >=
           monthStart
       );
 
@@ -1022,10 +987,6 @@ const visibleEvents =
               );
 
 
-            /*
-             * Upcoming/current first.
-             */
-
             if (
               aPast !==
               bPast
@@ -1047,13 +1008,9 @@ const visibleEvents =
               );
 
 
-            /*
-             * Same start date:
-             * host → exhibit → attend
-             */
-
             if (
-              dateDifference === 0
+              dateDifference ===
+              0
             ) {
 
               return (
@@ -1075,11 +1032,6 @@ const visibleEvents =
 
     }
 
-
-
-    /* ===================================================
-       EVENTS ON A SPECIFIC DAY
-       =================================================== */
 
     function eventsForDate(
       date
@@ -1112,56 +1064,14 @@ const visibleEvents =
           }
         )
         .sort(
-          (a, b) => {
-
-            const priorityDifference =
-              getPriority(
-                b
-              ) -
-              getPriority(
-                a
-              );
-
-
-            if (
-              priorityDifference !==
-              0
-            ) {
-
-              return priorityDifference;
-
-            }
-
-
-            return (
-              parseEventDate(
-                a.startDate
-              ) -
-              parseEventDate(
-                b.startDate
-              )
-            );
-
-          }
+          (a, b) =>
+            getPriority(
+              b
+            ) -
+            getPriority(
+              a
+            )
         );
-
-    }
-
-
-    function primaryEventForDate(
-      date
-    ) {
-
-      const matches =
-        eventsForDate(
-          date
-        );
-
-
-      return (
-        matches[0] ||
-        null
-      );
 
     }
 
@@ -1194,24 +1104,12 @@ const visibleEvents =
         );
 
 
-      if (
-        calendarTitle
-      ) {
-
-        calendarTitle.textContent =
-          monthName;
-
-      }
+      calendarTitle.textContent =
+        monthName;
 
 
-      if (
-        eventMonthTitle
-      ) {
-
-        eventMonthTitle.textContent =
-          monthName;
-
-      }
+      eventMonthTitle.textContent =
+        monthName;
 
 
       calendarGrid.innerHTML =
@@ -1226,29 +1124,17 @@ const visibleEvents =
         );
 
 
-      const lastDay =
+      const daysInMonth =
         new Date(
           year,
           month + 1,
           0
-        );
+        ).getDate();
 
-
-      const startingWeekday =
-        firstDay.getDay();
-
-
-      const daysInMonth =
-        lastDay.getDate();
-
-
-      /*
-       * Leading blank cells.
-       */
 
       for (
         let i = 0;
-        i < startingWeekday;
+        i < firstDay.getDay();
         i++
       ) {
 
@@ -1285,16 +1171,15 @@ const visibleEvents =
           );
 
 
-        const primaryEvent =
-          primaryEventForDate(
-            date
-          );
-
-
-        const allEvents =
+        const matches =
           eventsForDate(
             date
           );
+
+
+        const primaryEvent =
+          matches[0] ||
+          null;
 
 
         const element =
@@ -1312,40 +1197,21 @@ const visibleEvents =
             "flex",
             "items-center",
             "justify-center",
-            "text-xs",
+            "text-[11px]",
             "border",
-            "transition-all",
-            "duration-200",
 
             primaryEvent
-              ? "cursor-pointer hover:scale-[1.04]"
+              ? "cursor-pointer transition-transform hover:scale-[1.04]"
               : "border-transparent text-brand-slate"
           ].join(
             " "
           );
 
 
-        const dayNumber =
-          document.createElement(
-            "span"
-          );
-
-
-        dayNumber.textContent =
+        element.textContent =
           String(
             day
           );
-
-
-        dayNumber.className =
-          primaryEvent
-            ? "relative z-10 font-semibold"
-            : "";
-
-
-        element.appendChild(
-          dayNumber
-        );
 
 
         if (
@@ -1370,17 +1236,8 @@ const visibleEvents =
             "#FFFFFF";
 
 
-          element.dataset.calendarEvent =
-            primaryEvent.id;
-
-
-          /*
-           * Indicate additional events
-           * on the same date.
-           */
-
           if (
-            allEvents.length >
+            matches.length >
             1
           ) {
 
@@ -1391,20 +1248,11 @@ const visibleEvents =
 
 
             count.textContent =
-              `+${allEvents.length - 1}`;
+              `+${matches.length - 1}`;
 
 
             count.className =
-              [
-                "absolute",
-                "top-1",
-                "right-1",
-                "text-[7px]",
-                "font-semibold",
-                "leading-none"
-              ].join(
-                " "
-              );
+              "absolute top-1 right-1 text-[6px] font-semibold";
 
 
             element.appendChild(
@@ -1439,249 +1287,7 @@ const visibleEvents =
 
 
     /* ===================================================
-       EVENT CARD HELPERS
-       =================================================== */
-
-    function escapeHtml(
-      value
-    ) {
-
-      if (
-        value === null ||
-        value === undefined
-      ) {
-
-        return "";
-
-      }
-
-
-      return String(
-        value
-      )
-        .replace(
-          /&/g,
-          "&amp;"
-        )
-        .replace(
-          /</g,
-          "&lt;"
-        )
-        .replace(
-          />/g,
-          "&gt;"
-        )
-        .replace(
-          /"/g,
-          "&quot;"
-        )
-        .replace(
-          /'/g,
-          "&#039;"
-        );
-
-    }
-
-
-    function speakerHtml(
-      speakers
-    ) {
-
-      if (
-        !Array.isArray(
-          speakers
-        ) ||
-        speakers.length === 0
-      ) {
-
-        return "";
-
-      }
-
-
-      const rows =
-        speakers
-          .map(
-            (speaker) => {
-
-              const name =
-                escapeHtml(
-                  speaker.name
-                );
-
-
-              const company =
-                escapeHtml(
-                  speaker.company
-                );
-
-
-              const title =
-                speaker.title
-                  ? ` · ${escapeHtml(
-                      speaker.title
-                    )}`
-                  : "";
-
-
-              return `
-                <li
-                  class="
-                    text-xs
-                    text-brand-slate
-                    leading-relaxed
-                  "
-                >
-                  <span
-                    class="
-                      font-semibold
-                      text-brand-charcoal
-                    "
-                  >
-                    ${name}
-                  </span>
-
-                  ${title}
-
-                  · ${company}
-                </li>
-              `;
-
-            }
-          )
-          .join(
-            ""
-          );
-
-
-      return `
-        <div
-          class="
-            mt-5
-            pt-5
-            border-t
-            border-brand-border
-          "
-        >
-
-          <div
-            class="
-              text-[9px]
-              uppercase
-              tracking-[0.14em]
-              text-brand-slate
-              mb-3
-            "
-          >
-            Speakers
-          </div>
-
-          <ul
-            class="
-              space-y-2
-            "
-          >
-            ${rows}
-          </ul>
-
-        </div>
-      `;
-
-    }
-
-
-    function sponsorHtml(
-      sponsors
-    ) {
-
-      if (
-        !Array.isArray(
-          sponsors
-        ) ||
-        sponsors.length === 0
-      ) {
-
-        return "";
-
-      }
-
-
-      return `
-        <p
-          class="
-            text-xs
-            text-brand-slate
-            mt-4
-          "
-        >
-          <span
-            class="
-              font-semibold
-              text-brand-charcoal
-            "
-          >
-            Sponsored by:
-          </span>
-
-          ${escapeHtml(
-            sponsors.join(
-              ", "
-            )
-          )}
-        </p>
-      `;
-
-    }
-
-
-    function partnerHtml(
-      partners
-    ) {
-
-      if (
-        !Array.isArray(
-          partners
-        ) ||
-        partners.length === 0
-      ) {
-
-        return "";
-
-      }
-
-
-      return `
-        <p
-          class="
-            text-xs
-            text-brand-slate
-            mt-3
-            leading-relaxed
-          "
-        >
-          <span
-            class="
-              font-semibold
-              text-brand-charcoal
-            "
-          >
-            Event collaborators:
-          </span>
-
-          ${escapeHtml(
-            partners.join(
-              ", "
-            )
-          )}
-        </p>
-      `;
-
-    }
-
-
-
-    /* ===================================================
-       MONTH EVENT CARDS
+       COMPACT EVENT CARDS
        =================================================== */
 
     function renderMonthEvents() {
@@ -1706,55 +1312,29 @@ const visibleEvents =
 
 
       if (
-        !monthEvents.length
+        monthEvents.length === 0
       ) {
 
-        const empty =
-          document.createElement(
-            "div"
-          );
+        eventContainer.innerHTML =
+          `
+            <div
+              class="
+                bg-white
+                border
+                border-brand-border
+                p-6
+                text-center
+                text-xs
+                text-brand-slate
+              "
+            >
+              No events listed for this month.
+            </div>
+          `;
 
 
-        empty.className =
-          [
-            "bg-white",
-            "border",
-            "border-brand-border",
-            "p-8",
-            "text-center",
-            "text-sm",
-            "text-brand-slate"
-          ].join(
-            " "
-          );
-
-
-        empty.textContent =
-          `No events listed for ${currentDate.toLocaleDateString(
-            "en-US",
-            {
-              month:
-                "long",
-
-              year:
-                "numeric"
-            }
-          )}.`;
-
-
-        eventContainer.appendChild(
-          empty
-        );
-
-
-        if (
-          monthSummary
-        ) {
-
-          monthSummary.textContent =
-            "No events";
-
-        }
+        monthSummary.textContent =
+          "No events";
 
 
         return;
@@ -1762,7 +1342,7 @@ const visibleEvents =
       }
 
 
-      const upcomingCount =
+      const upcoming =
         monthEvents.filter(
           (event) =>
             !isPastEvent(
@@ -1771,47 +1351,41 @@ const visibleEvents =
         ).length;
 
 
-      const pastCount =
+      const past =
         monthEvents.length -
-        upcomingCount;
+        upcoming;
+
+
+      const summary =
+        [];
 
 
       if (
-        monthSummary
+        upcoming
       ) {
 
-        const parts =
-          [];
-
-
-        if (
-          upcomingCount
-        ) {
-
-          parts.push(
-            `${upcomingCount} upcoming`
-          );
-
-        }
-
-
-        if (
-          pastCount
-        ) {
-
-          parts.push(
-            `${pastCount} past`
-          );
-
-        }
-
-
-        monthSummary.textContent =
-          parts.join(
-            " · "
-          );
+        summary.push(
+          `${upcoming} upcoming`
+        );
 
       }
+
+
+      if (
+        past
+      ) {
+
+        summary.push(
+          `${past} past`
+        );
+
+      }
+
+
+      monthSummary.textContent =
+        summary.join(
+          " · "
+        );
 
 
       monthEvents.forEach(
@@ -1833,9 +1407,8 @@ const visibleEvents =
               "bg-white",
               "border",
               "border-brand-border",
-              "p-6",
+              "p-4",
               "transition-all",
-              "duration-300",
 
               isPastEvent(
                 event
@@ -1847,40 +1420,10 @@ const visibleEvents =
             );
 
 
-          const participation =
-            getParticipation(
-              event
-            );
-
-
           const color =
             getEventColor(
               event
             );
-
-
-          const registrationHtml =
-            typeof event.registrations ===
-              "number"
-              ? `
-                <span
-                  class="
-                    text-brand-border
-                  "
-                >
-                  •
-                </span>
-
-                <span
-                  class="
-                    text-brand-gold
-                    font-semibold
-                  "
-                >
-                  ${event.registrations}+ registrations
-                </span>
-              `
-              : "";
 
 
           const location =
@@ -1899,21 +1442,48 @@ const visibleEvents =
               );
 
 
-          const label =
-            event.typeLabel ||
-            (
-              participation ===
-                "exhibitor"
-                ? "Exhibitor"
-                : (
-                    participation ===
-                      "hosted" ||
-                    participation ===
-                      "co-organized"
-                  )
-                    ? "Hosted Event"
-                    : "Attending Event"
-            );
+          const registrations =
+            typeof event.registrations ===
+              "number"
+              ? `
+                <span class="text-brand-gold font-semibold">
+                  ${event.registrations} registrations
+                </span>
+              `
+              : "";
+
+
+          const sponsors =
+            event.sponsors?.length
+              ? `
+                <span>
+                  Sponsor:
+                  <strong class="text-brand-charcoal">
+                    ${escapeHtml(
+                      event.sponsors.join(
+                        ", "
+                      )
+                    )}
+                  </strong>
+                </span>
+              `
+              : "";
+
+
+          const speakers =
+            event.speakers?.length
+              ? `
+                <span>
+                  ${event.speakers.length}
+                  ${
+                    event.speakers.length ===
+                    1
+                      ? "speaker"
+                      : "speakers"
+                  }
+                </span>
+              `
+              : "";
 
 
           card.innerHTML =
@@ -1923,43 +1493,30 @@ const visibleEvents =
                   flex
                   flex-wrap
                   items-center
-                  gap-2
-                  text-[10px]
+                  gap-x-2
+                  gap-y-1
+                  text-[8px]
                   uppercase
-                  tracking-[0.15em]
-                  mb-3
+                  tracking-[0.13em]
+                  mb-2
                 "
               >
 
                 <span
-                  class="
-                    font-semibold
-                  "
-                  style="
-                    color:
-                    ${color}
-                  "
+                  class="font-semibold"
+                  style="color:${color}"
                 >
                   ${escapeHtml(
-                    label
+                    event.typeLabel ||
+                    "Professional Event"
                   )}
                 </span>
 
-
-                <span
-                  class="
-                    text-brand-border
-                  "
-                >
+                <span class="text-brand-border">
                   •
                 </span>
 
-
-                <span
-                  class="
-                    text-brand-slate
-                  "
-                >
+                <span class="text-brand-slate">
                   ${escapeHtml(
                     formatEventDate(
                       event
@@ -1967,30 +1524,13 @@ const visibleEvents =
                   )}
                 </span>
 
-
-                ${registrationHtml}
-
-
                 ${
-                  isPastEvent(
-                    event
-                  )
+                  registrations
                     ? `
-                      <span
-                        class="
-                          text-brand-border
-                        "
-                      >
+                      <span class="text-brand-border">
                         •
                       </span>
-
-                      <span
-                        class="
-                          text-brand-slate
-                        "
-                      >
-                        Past Event
-                      </span>
+                      ${registrations}
                     `
                     : ""
                 }
@@ -2001,10 +1541,11 @@ const visibleEvents =
               <h4
                 class="
                   font-serif
-                  text-xl
+                  text-base
+                  sm:text-lg
                   text-brand-charcoal
                   leading-snug
-                  mb-3
+                  mb-1.5
                 "
               >
                 ${escapeHtml(
@@ -2018,9 +1559,9 @@ const visibleEvents =
                   ? `
                     <p
                       class="
-                        text-xs
+                        text-[10px]
                         text-brand-slate
-                        mb-3
+                        mb-2
                       "
                     >
                       ${location}
@@ -2035,10 +1576,11 @@ const visibleEvents =
                   ? `
                     <p
                       class="
-                        text-sm
+                        text-xs
                         text-brand-slate
                         font-light
                         leading-relaxed
+                        line-clamp-2
                       "
                     >
                       ${escapeHtml(
@@ -2050,19 +1592,27 @@ const visibleEvents =
               }
 
 
-              ${sponsorHtml(
-                event.sponsors
-              )}
-
-
-              ${partnerHtml(
-                event.partners
-              )}
-
-
-              ${speakerHtml(
-                event.speakers
-              )}
+              ${
+                sponsors ||
+                speakers
+                  ? `
+                    <div
+                      class="
+                        flex
+                        flex-wrap
+                        gap-x-4
+                        gap-y-1
+                        mt-2.5
+                        text-[10px]
+                        text-brand-slate
+                      "
+                    >
+                      ${sponsors}
+                      ${speakers}
+                    </div>
+                  `
+                  : ""
+              }
 
 
               <a
@@ -2074,11 +1624,11 @@ const visibleEvents =
                 class="
                   inline-flex
                   items-center
-                  gap-2
-                  mt-5
-                  text-[10px]
+                  gap-1.5
+                  mt-3
+                  text-[9px]
                   uppercase
-                  tracking-[0.16em]
+                  tracking-[0.14em]
                   font-semibold
                   text-brand-charcoal
                   hover:text-brand-gold
@@ -2090,9 +1640,7 @@ const visibleEvents =
                   "View Event"
                 )}
 
-                <span>
-                  ↗
-                </span>
+                ↗
               </a>
             `;
 
@@ -2109,7 +1657,7 @@ const visibleEvents =
 
 
     /* ===================================================
-       CLICK → EVENT CARD
+       CARD SCROLL
        =================================================== */
 
     function scrollToEvent(
@@ -2141,20 +1689,12 @@ const visibleEvents =
           .getBoundingClientRect();
 
 
-      const top =
-        (
-          cardRect.top -
-          containerRect.top
-        ) +
-        eventContainer.scrollTop;
-
-
       eventContainer.scrollTo({
         top:
-          Math.max(
-            0,
-            top - 8
-          ),
+          eventContainer.scrollTop +
+          cardRect.top -
+          containerRect.top -
+          4,
 
         behavior:
           "smooth"
@@ -2162,30 +1702,26 @@ const visibleEvents =
 
 
       card.classList.add(
-        "ring-2",
+        "ring-1",
         "ring-brand-gold"
       );
 
 
-      window.setTimeout(
+      setTimeout(
         () => {
 
           card.classList.remove(
-            "ring-2",
+            "ring-1",
             "ring-brand-gold"
           );
 
         },
-        1400
+        1200
       );
 
     }
 
 
-
-    /* ===================================================
-       FULL RENDER
-       =================================================== */
 
     function renderAll() {
 
@@ -2199,10 +1735,6 @@ const visibleEvents =
     }
 
 
-
-    /* ===================================================
-       MONTH NAVIGATION
-       =================================================== */
 
     prevButton?.addEventListener(
       "click",
@@ -2238,7 +1770,6 @@ const visibleEvents =
 
       }
     );
-
 
 
     renderAll();
