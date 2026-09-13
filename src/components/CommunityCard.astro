@@ -13,10 +13,6 @@ const {
 } = Astro.props;
 
 
-/*
- * Completed events led through this community.
- */
-
 const communityEvents =
   events
     .filter(
@@ -137,7 +133,7 @@ function hardwareTopic(
 >
 
   <!-- =====================================================
-       INTRO + COMMUNITY SNAPSHOT
+       INTRO + SNAPSHOT
        ===================================================== -->
 
   <div
@@ -149,9 +145,7 @@ function hardwareTopic(
     "
   >
 
-    <!-- =================================================
-         COMMUNITY INTRO
-         ================================================= -->
+    <!-- INTRO -->
 
     <div
       class="
@@ -199,8 +193,6 @@ function hardwareTopic(
         {community.description}
       </p>
 
-
-      <!-- BUTTONS -->
 
       <div
         class="
@@ -275,9 +267,7 @@ function hardwareTopic(
 
 
 
-    <!-- =================================================
-         SNAPSHOT
-         ================================================= -->
+    <!-- SNAPSHOT -->
 
     <div
       class="
@@ -289,8 +279,6 @@ function hardwareTopic(
         sm:p-7
       "
     >
-
-      <!-- SNAPSHOT LABEL -->
 
       <div
         class="
@@ -307,9 +295,7 @@ function hardwareTopic(
 
 
 
-      <!-- =================================================
-           METRIC CARDS
-           ================================================= -->
+      <!-- METRICS -->
 
       <div
         class="
@@ -319,8 +305,6 @@ function hardwareTopic(
           gap-3
         "
       >
-
-        <!-- MEMBERS -->
 
         <div
           class="
@@ -350,7 +334,6 @@ function hardwareTopic(
               {community.members}
             </span>
 
-
             <span
               class="
                 font-serif
@@ -379,8 +362,6 @@ function hardwareTopic(
         </div>
 
 
-
-        <!-- EVENTS -->
 
         <div
           class="
@@ -418,8 +399,6 @@ function hardwareTopic(
         </div>
 
 
-
-        <!-- REGISTRATIONS -->
 
         <div
           class="
@@ -489,9 +468,7 @@ function hardwareTopic(
 
 
 
-      <!-- =================================================
-           SECONDARY HARDWARE METRICS
-           ================================================= -->
+      <!-- HARDWARE SECONDARY METRICS -->
 
       {
         community.id ===
@@ -552,9 +529,7 @@ function hardwareTopic(
 
 
 
-      <!-- =================================================
-           FOCUS
-           ================================================= -->
+      <!-- FOCUS -->
 
       <div
         class="
@@ -632,7 +607,7 @@ function hardwareTopic(
 
 
   <!-- =====================================================
-       PROGRAMMING HISTORY
+       TRACK RECORD
        ===================================================== -->
 
   {
@@ -692,6 +667,24 @@ function hardwareTopic(
 
           {
             community.id ===
+              "startup-mixer" && (
+              <p
+                class="
+                  text-[9px]
+                  uppercase
+                  tracking-[0.14em]
+                  text-brand-slate
+                "
+              >
+                Scroll to explore
+                <span class="ml-1">→</span>
+              </p>
+            )
+          }
+
+
+          {
+            community.id ===
               "hardware-meetup" && (
               <p
                 class="
@@ -713,7 +706,7 @@ function hardwareTopic(
 
 
         <!-- =================================================
-             STARTUP MIXER
+             MIXER HORIZONTAL TIMELINE
              ================================================= -->
 
         {
@@ -722,133 +715,145 @@ function hardwareTopic(
 
             <div
               class="
-                grid
-                sm:grid-cols-2
-                lg:grid-cols-3
+                mixer-scroll
+                flex
+                flex-nowrap
                 gap-4
+                overflow-x-auto
+                pb-4
+                snap-x
+                snap-mandatory
               "
             >
 
               {
-                communityEvents.map(
-                  (event) => (
+                /*
+                 * Oldest → newest makes the history
+                 * read naturally from left to right.
+                 */
+                [...communityEvents]
+                  .reverse()
+                  .map(
+                    (event) => (
 
-                    <a
-                      href={event.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      class="
-                        group
-                        bg-white
-                        border
-                        border-brand-border
-                        p-5
-                        hover:border-brand-gold
-                        transition-colors
-                      "
-                    >
-
-                      <div
+                      <a
+                        href={event.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
                         class="
-                          flex
-                          items-start
-                          justify-between
-                          gap-4
+                          group
+                          flex-none
+                          w-[230px]
+                          sm:w-[250px]
+                          bg-white
+                          border
+                          border-brand-border
+                          p-5
+                          snap-start
+                          hover:border-brand-gold
+                          transition-colors
                         "
                       >
 
-                        <div>
+                        <div
+                          class="
+                            flex
+                            items-start
+                            justify-between
+                            gap-3
+                          "
+                        >
 
-                          <div
-                            class="
-                              text-[9px]
-                              uppercase
-                              tracking-[0.16em]
-                              text-brand-gold
-                              font-semibold
-                              mb-2
-                            "
-                          >
-                            {formatMonth(
-                              event.startDate
-                            )}
+                          <div>
+
+                            <div
+                              class="
+                                text-[9px]
+                                uppercase
+                                tracking-[0.16em]
+                                text-brand-gold
+                                font-semibold
+                                mb-2
+                              "
+                            >
+                              {formatMonth(
+                                event.startDate
+                              )}
+                            </div>
+
+
+                            <div
+                              class="
+                                font-serif
+                                text-lg
+                                text-brand-charcoal
+                                group-hover:text-brand-gold
+                                transition-colors
+                              "
+                            >
+                              Startup Mixer
+                            </div>
+
                           </div>
 
 
-                          <div
+                          <span
                             class="
-                              font-serif
-                              text-lg
-                              text-brand-charcoal
-                              group-hover:text-brand-gold
-                              transition-colors
+                              text-xs
+                              text-brand-slate
                             "
                           >
-                            San Diego County
-                            <br />
-                            Startup Mixer
-                          </div>
+                            ↗
+                          </span>
 
                         </div>
 
 
-                        <span
-                          class="
-                            text-brand-slate
-                            text-xs
-                          "
-                        >
-                          ↗
-                        </span>
+                        {
+                          typeof event.registrations ===
+                            "number" && (
 
-                      </div>
-
-
-                      {
-                        typeof event.registrations ===
-                          "number" && (
-
-                          <div
-                            class="
-                              mt-5
-                              pt-4
-                              border-t
-                              border-brand-border
-                            "
-                          >
-
-                            <span
+                            <div
                               class="
-                                font-serif
-                                text-xl
-                                text-brand-gold
+                                mt-5
+                                pt-4
+                                border-t
+                                border-brand-border
                               "
                             >
-                              {event.registrations}
-                            </span>
+
+                              <span
+                                class="
+                                  font-serif
+                                  text-xl
+                                  text-brand-gold
+                                "
+                              >
+                                {event.registrations}
+                              </span>
 
 
-                            <span
-                              class="
-                                text-[9px]
-                                uppercase
-                                tracking-[0.13em]
-                                text-brand-slate
-                                ml-2
-                              "
-                            >
-                              registrations
-                            </span>
+                              <span
+                                class="
+                                  text-[9px]
+                                  uppercase
+                                  tracking-[0.13em]
+                                  text-brand-slate
+                                  ml-2
+                                "
+                              >
+                                registrations
+                              </span>
 
-                          </div>
+                            </div>
 
-                        )
-                      }
+                          )
+                        }
 
-                    </a>
+                      </a>
 
+                    )
                   )
-                )
               }
 
             </div>
@@ -859,7 +864,7 @@ function hardwareTopic(
 
 
         <!-- =================================================
-             HARDWARE MEETUP
+             HARDWARE PROGRAMMING
              ================================================= -->
 
         {
@@ -888,8 +893,6 @@ function hardwareTopic(
                         flex-col
                       "
                     >
-
-                      <!-- HEADER -->
 
                       <div
                         class="
@@ -940,8 +943,6 @@ function hardwareTopic(
 
 
 
-                      <!-- TITLE -->
-
                       <h4
                         class="
                           font-serif
@@ -956,8 +957,6 @@ function hardwareTopic(
                       </h4>
 
 
-
-                      <!-- SPONSOR -->
 
                       {
                         event.sponsors?.length > 0 && (
@@ -1002,8 +1001,6 @@ function hardwareTopic(
                       }
 
 
-
-                      <!-- SPEAKERS -->
 
                       {
                         event.speakers?.length > 0 && (
@@ -1082,8 +1079,6 @@ function hardwareTopic(
 
 
 
-                      <!-- LINK -->
-
                       <div
                         class="
                           mt-auto
@@ -1131,3 +1126,40 @@ function hardwareTopic(
   }
 
 </section>
+
+
+
+<style>
+
+  /*
+   * Horizontal Mixer history.
+   *
+   * Keeps the scrollbar subtle while still
+   * making the row obviously scrollable.
+   */
+
+  .mixer-scroll {
+    scrollbar-width: thin;
+    scrollbar-color:
+      #C5A059
+      #E8E5DA;
+  }
+
+
+  .mixer-scroll::-webkit-scrollbar {
+    height: 5px;
+  }
+
+
+  .mixer-scroll::-webkit-scrollbar-track {
+    background:
+      #E8E5DA;
+  }
+
+
+  .mixer-scroll::-webkit-scrollbar-thumb {
+    background:
+      #C5A059;
+  }
+
+</style>
