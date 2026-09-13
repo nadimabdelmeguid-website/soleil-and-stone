@@ -7,12 +7,52 @@ import "../styles/global.css";
 interface Props {
   title: string;
   description?: string;
+
+  image?: string;
+
+  type?: "website" | "article";
+
+  publishedTime?: string;
+
+  canonicalURL?: string;
 }
 
 const {
   title,
-  description = "Soleil & Stone"
+  description = "Soleil & Stone",
+  image = "/brand/logo-primary.png",
+  type = "website",
+  publishedTime,
+  canonicalURL
 } = Astro.props;
+
+
+/* =====================================================
+   SEO URLS
+   ===================================================== */
+
+const siteOrigin =
+  Astro.site?.origin ??
+  Astro.url.origin;
+
+
+const canonical =
+  canonicalURL
+    ? new URL(
+        canonicalURL,
+        siteOrigin
+      ).href
+    : new URL(
+        Astro.url.pathname,
+        siteOrigin
+      ).href;
+
+
+const socialImage =
+  new URL(
+    image,
+    siteOrigin
+  ).href;
 ---
 
 <!doctype html>
@@ -23,6 +63,10 @@ const {
 >
 
 <head>
+
+  <!-- =====================================================
+       CORE
+       ===================================================== -->
 
   <meta
     charset="UTF-8"
@@ -43,9 +87,104 @@ const {
     content="#FFFFFF"
   />
 
+  <meta
+    name="robots"
+    content="index, follow"
+  />
+
+
   <title>
     {title}
   </title>
+
+
+  <!-- =====================================================
+       CANONICAL
+       ===================================================== -->
+
+  <link
+    rel="canonical"
+    href={canonical}
+  />
+
+
+  <!-- =====================================================
+       OPEN GRAPH
+       LinkedIn / Facebook / Slack / iMessage / etc.
+       ===================================================== -->
+
+  <meta
+    property="og:type"
+    content={type}
+  />
+
+  <meta
+    property="og:site_name"
+    content="Soleil & Stone"
+  />
+
+  <meta
+    property="og:title"
+    content={title}
+  />
+
+  <meta
+    property="og:description"
+    content={description}
+  />
+
+  <meta
+    property="og:url"
+    content={canonical}
+  />
+
+  <meta
+    property="og:image"
+    content={socialImage}
+  />
+
+  <meta
+    property="og:image:alt"
+    content="Soleil & Stone"
+  />
+
+
+  {
+    type === "article" &&
+    publishedTime && (
+
+      <meta
+        property="article:published_time"
+        content={publishedTime}
+      />
+
+    )
+  }
+
+
+  <!-- =====================================================
+       X / TWITTER CARD
+       ===================================================== -->
+
+  <meta
+    name="twitter:card"
+    content="summary_large_image"
+  />
+
+  <meta
+    name="twitter:title"
+    content={title}
+  />
+
+  <meta
+    name="twitter:description"
+    content={description}
+  />
+
+  <meta
+    name="twitter:image"
+    content={socialImage}
+  />
 
 
   <!-- =====================================================
@@ -78,6 +217,7 @@ const {
     is:inline
     src="https://cdn.tailwindcss.com"
   ></script>
+
 
   <script is:inline>
     tailwind.config = {
@@ -172,18 +312,21 @@ const {
        localStorage:
        soleil_analytics_optout = "true"
 
-       It is also disabled automatically on localhost.
+       Also disabled automatically on localhost.
        ===================================================== -->
 
   <script is:inline>
+
     (() => {
 
       const ANALYTICS_OPT_OUT_KEY =
         "soleil_analytics_optout";
 
+
       const isLocalhost =
         window.location.hostname === "localhost" ||
         window.location.hostname === "127.0.0.1";
+
 
       const hasOptedOut =
         localStorage.getItem(
@@ -195,11 +338,13 @@ const {
         isLocalhost ||
         hasOptedOut
       ) {
+
         console.info(
           "Soleil & Stone analytics disabled for this browser."
         );
 
         return;
+
       }
 
 
@@ -208,11 +353,14 @@ const {
           "script"
         );
 
+
       beacon.src =
         "https://static.cloudflareinsights.com/beacon.min.js";
 
+
       beacon.defer =
         true;
+
 
       beacon.setAttribute(
         "data-cf-beacon",
@@ -228,6 +376,7 @@ const {
       );
 
     })();
+
   </script>
 
 </body>
