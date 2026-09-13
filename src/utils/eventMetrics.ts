@@ -102,14 +102,6 @@ export function getEventParticipation(
 }
 
 
-/*
- * Priority used by the calendar.
- *
- * 3 = Hosted / Co-organized
- * 2 = Exhibitor
- * 1 = Attending
- */
-
 export function getParticipationPriority(
   event: SiteEvent
 ) {
@@ -168,8 +160,7 @@ export function getProfessionalMetrics(
       (event) =>
         getEventParticipation(
           event
-        ) ===
-        "co-organized"
+        ) === "co-organized"
     );
 
 
@@ -178,8 +169,7 @@ export function getProfessionalMetrics(
       (event) =>
         getEventParticipation(
           event
-        ) ===
-        "exhibitor"
+        ) === "exhibitor"
     );
 
 
@@ -188,13 +178,40 @@ export function getProfessionalMetrics(
       (event) =>
         getEventParticipation(
           event
-        ) ===
-        "attending"
+        ) === "attending"
     );
 
 
-  const registrations =
-    completed.reduce(
+  /*
+   * Only events you led:
+   * hosted + co-organized.
+   */
+
+  const ledEvents =
+    completed.filter(
+      (event) => {
+
+        const participation =
+          getEventParticipation(
+            event
+          );
+
+
+        return (
+          participation === "hosted" ||
+          participation === "co-organized"
+        );
+
+      }
+    );
+
+
+  /*
+   * Total registrations across events led.
+   */
+
+  const registrationsLed =
+    ledEvents.reduce(
       (
         total,
         event
@@ -208,13 +225,25 @@ export function getProfessionalMetrics(
     );
 
 
+  /*
+   * Number of led events for which
+   * registration data is available.
+   */
+
+  const ledEventsWithRegistrationData =
+    ledEvents.filter(
+      (event) =>
+        typeof event.registrations ===
+        "number"
+    ).length;
+
+
   const cities =
     new Set(
       completed
         .map(
           (event) =>
-            event.city
-              ?.trim()
+            event.city?.trim()
         )
         .filter(
           (
@@ -246,7 +275,9 @@ export function getProfessionalMetrics(
     attended:
       attended.length,
 
-    registrations,
+    registrationsLed,
+
+    ledEventsWithRegistrationData,
 
     cities:
       cities.size
