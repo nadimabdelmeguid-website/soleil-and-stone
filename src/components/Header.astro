@@ -1,0 +1,117 @@
+---
+import Logo
+  from "./Logo.astro";
+
+import {
+  site
+} from "../data/site";
+
+
+const path =
+  Astro.url.pathname;
+---
+
+<header
+  class="
+    max-w-6xl
+    w-full
+    mx-auto
+    px-6
+    py-8
+    flex
+    flex-col
+    sm:flex-row
+    items-center
+    justify-between
+    border-b
+    border-brand-border
+    gap-6
+  "
+>
+
+  <a
+    href="/"
+    class="
+      flex
+      items-center
+      gap-4
+      group
+    "
+  >
+
+    <Logo />
+
+
+    <span
+      class="
+        font-serif
+        text-xl
+        tracking-[0.2em]
+        font-medium
+        text-brand-charcoal
+        group-hover:text-brand-gold
+        transition-colors
+      "
+    >
+      {site.name}
+    </span>
+
+  </a>
+
+
+  <nav
+    class="
+      flex
+      items-center
+      gap-6
+      text-xs
+      uppercase
+      tracking-widest
+      font-medium
+      text-brand-slate
+    "
+  >
+
+    {
+      site.navigation.map(
+        item => (
+
+          <a
+            href={item.href}
+            class:list={[
+              "transition-colors hover:text-brand-gold",
+
+              path.startsWith(
+                item.href
+              ) &&
+              "text-brand-gold font-semibold"
+            ]}
+          >
+            {item.label}
+          </a>
+
+        )
+      )
+    }
+
+
+    <a
+      href="/#contact"
+      class="
+        px-4
+        py-2
+        border
+        border-brand-charcoal
+        hover:border-brand-gold
+        hover:bg-brand-gold
+        hover:text-white
+        transition-all
+        text-[11px]
+      "
+    >
+      Connect
+    </a>
+
+  </nav>
+
+</header>
