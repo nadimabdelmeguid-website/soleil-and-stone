@@ -79,7 +79,23 @@ const upcomingEvents =
 
 
 /* =========================================================
-   DYNAMIC PROFESSIONAL METRICS
+   DYNAMIC FIELDWORK METRICS
+
+   Automatically calculated from events.ts:
+
+   total:
+   all completed professional events
+
+   exhibited:
+   completed events where participation = exhibitor
+
+   organizationsEngaged:
+   unique organizations represented through
+   sponsors, partners and speaker companies
+   across hosted / co-organized events
+
+   cities:
+   unique cities across completed events
    ========================================================= */
 
 const metrics =
@@ -426,7 +442,7 @@ function labelClass(
 
 
   <!-- =====================================================
-       DYNAMIC IMPACT METRICS
+       DYNAMIC FIELDWORK METRICS
        ===================================================== -->
 
   <section
@@ -458,7 +474,7 @@ function labelClass(
         "
       >
 
-        <!-- EVENTS LED -->
+        <!-- PROFESSIONAL EVENTS -->
 
         <div
           class="
@@ -479,7 +495,7 @@ function labelClass(
               text-brand-charcoal
             "
           >
-            {metrics.led}
+            {metrics.total}
           </div>
 
 
@@ -493,14 +509,14 @@ function labelClass(
               leading-relaxed
             "
           >
-            Events Led / Co-Organized
+            Professional Events
           </div>
 
         </div>
 
 
 
-        <!-- REGISTRATIONS -->
+        <!-- TRADE SHOWS EXHIBITED -->
 
         <div
           class="
@@ -521,7 +537,7 @@ function labelClass(
               text-brand-charcoal
             "
           >
-            {metrics.registrationsLed}+
+            {metrics.exhibited}
           </div>
 
 
@@ -535,47 +551,7 @@ function labelClass(
               leading-relaxed
             "
           >
-            Documented Registrations
-          </div>
-
-        </div>
-
-
-
-        <!-- SPEAKERS -->
-
-        <div
-          class="
-            p-5
-            sm:p-6
-            border-r
-            border-brand-border
-          "
-        >
-
-          <div
-            class="
-              font-serif
-              text-3xl
-              sm:text-4xl
-              text-brand-charcoal
-            "
-          >
-            {metrics.speakers}
-          </div>
-
-
-          <div
-            class="
-              mt-2
-              text-[9px]
-              uppercase
-              tracking-[0.16em]
-              text-brand-slate
-              leading-relaxed
-            "
-          >
-            Industry Speakers
+            Trade Shows Exhibited
           </div>
 
         </div>
@@ -588,6 +564,8 @@ function labelClass(
           class="
             p-5
             sm:p-6
+            border-r
+            border-brand-border
           "
         >
 
@@ -614,6 +592,44 @@ function labelClass(
             "
           >
             Industry Organizations Engaged
+          </div>
+
+        </div>
+
+
+
+        <!-- CITIES -->
+
+        <div
+          class="
+            p-5
+            sm:p-6
+          "
+        >
+
+          <div
+            class="
+              font-serif
+              text-3xl
+              sm:text-4xl
+              text-brand-charcoal
+            "
+          >
+            {metrics.cities}
+          </div>
+
+
+          <div
+            class="
+              mt-2
+              text-[9px]
+              uppercase
+              tracking-[0.16em]
+              text-brand-slate
+              leading-relaxed
+            "
+          >
+            Cities Across Fieldwork
           </div>
 
         </div>
@@ -923,6 +939,8 @@ function labelClass(
           "
         >
 
+          <!-- YEAR -->
+
           <div
             class="
               min-w-[160px]
@@ -986,6 +1004,8 @@ function labelClass(
           </div>
 
 
+
+          <!-- MONTH -->
 
           <div
             class="
@@ -1105,7 +1125,9 @@ function labelClass(
 
 
 
-      <!-- EVENT ARCHIVE -->
+      <!-- =================================================
+           EVENT ARCHIVE
+           ================================================= -->
 
       <div
         id="fieldwork-archive"
@@ -1154,6 +1176,10 @@ function labelClass(
                   data-month={String(eventMonth)}
                 >
 
+                  <!-- =====================================
+                       COLLAPSED SUMMARY
+                       ===================================== -->
+
                   <summary
                     class="
                       list-none
@@ -1169,6 +1195,8 @@ function labelClass(
                       sm:gap-6
                     "
                   >
+
+                    <!-- DATE / ROLE -->
 
                     <div
                       class="
@@ -1203,6 +1231,8 @@ function labelClass(
                     </div>
 
 
+
+                    <!-- TITLE -->
 
                     <div
                       class="
@@ -1243,6 +1273,8 @@ function labelClass(
                     </div>
 
 
+
+                    <!-- QUICK METADATA -->
 
                     <div
                       class="
@@ -1293,6 +1325,10 @@ function labelClass(
 
 
 
+                  <!-- =====================================
+                       EXPANDED CONTENT
+                       ===================================== -->
+
                   <div
                     class="
                       border-t
@@ -1339,6 +1375,8 @@ function labelClass(
                         }
 
 
+
+                        <!-- PARTNERS / SPONSORS -->
 
                         {
                           (
@@ -1420,6 +1458,8 @@ function labelClass(
                         }
 
 
+
+                        <!-- SPEAKERS -->
 
                         {
                           event.speakers?.length > 0 && (
@@ -1514,7 +1554,7 @@ function labelClass(
                           lg:border-l
                           lg:border-brand-border
                           lg:pl-8
-                      "
+                        "
                       >
 
                         <a
