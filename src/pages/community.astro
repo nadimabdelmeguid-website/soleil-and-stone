@@ -21,6 +21,13 @@ const metrics =
   );
 
 
+/*
+ * Memberships are intentionally summed as
+ * community memberships rather than unique people.
+ *
+ * Someone may belong to both communities.
+ */
+
 const communityMemberships =
   communities.reduce(
     (
@@ -195,6 +202,11 @@ const communityMemberships =
       </div>
 
 
+
+      <!-- =================================================
+           METRIC GRID
+           ================================================= -->
+
       <div
         class="
           grid
@@ -207,42 +219,7 @@ const communityMemberships =
         "
       >
 
-        <!-- PROFESSIONAL EVENTS -->
-
-        <div
-          class="
-            bg-white
-            p-6
-          "
-        >
-
-          <div
-            class="
-              font-serif
-              text-3xl
-              text-brand-charcoal
-              mb-2
-            "
-          >
-            {metrics.total}+
-          </div>
-
-
-          <div
-            class="
-              text-[10px]
-              uppercase
-              tracking-[0.15em]
-              text-brand-slate
-            "
-          >
-            Professional Events
-          </div>
-
-        </div>
-
-
-        <!-- HOSTED / CO-ORGANIZED -->
+        <!-- EVENTS LED -->
 
         <div
           class="
@@ -275,6 +252,151 @@ const communityMemberships =
           </div>
 
         </div>
+
+
+
+        <!-- REGISTRATIONS -->
+
+        <div
+          class="
+            bg-white
+            p-6
+          "
+        >
+
+          <div
+            class="
+              font-serif
+              text-3xl
+              text-brand-gold
+              mb-2
+            "
+          >
+            {metrics.registrationsLed}+
+          </div>
+
+
+          <div
+            class="
+              text-[10px]
+              uppercase
+              tracking-[0.15em]
+              text-brand-slate
+            "
+          >
+            Registrations Across Events Led
+          </div>
+
+        </div>
+
+
+
+        <!-- SPEAKERS -->
+
+        <div
+          class="
+            bg-white
+            p-6
+          "
+        >
+
+          <div
+            class="
+              font-serif
+              text-3xl
+              text-brand-gold
+              mb-2
+            "
+          >
+            {metrics.speakers}
+          </div>
+
+
+          <div
+            class="
+              text-[10px]
+              uppercase
+              tracking-[0.15em]
+              text-brand-slate
+            "
+          >
+            Industry Speakers
+          </div>
+
+        </div>
+
+
+
+        <!-- ORGANIZATIONS -->
+
+        <div
+          class="
+            bg-white
+            p-6
+          "
+        >
+
+          <div
+            class="
+              font-serif
+              text-3xl
+              text-brand-gold
+              mb-2
+            "
+          >
+            {metrics.organizationsEngaged}
+          </div>
+
+
+          <div
+            class="
+              text-[10px]
+              uppercase
+              tracking-[0.15em]
+              text-brand-slate
+            "
+          >
+            Industry Organizations Engaged
+          </div>
+
+        </div>
+
+
+
+        <!-- COMMUNITY -->
+
+        <div
+          class="
+            bg-white
+            p-6
+          "
+        >
+
+          <div
+            class="
+              font-serif
+              text-3xl
+              text-brand-charcoal
+              mb-2
+            "
+          >
+            {communityMemberships}+
+          </div>
+
+
+          <div
+            class="
+              text-[10px]
+              uppercase
+              tracking-[0.15em]
+              text-brand-slate
+            "
+          >
+            Community Memberships
+          </div>
+
+        </div>
+
 
 
         <!-- EXHIBITED -->
@@ -312,6 +434,43 @@ const communityMemberships =
         </div>
 
 
+
+        <!-- PROFESSIONAL EVENTS -->
+
+        <div
+          class="
+            bg-white
+            p-6
+          "
+        >
+
+          <div
+            class="
+              font-serif
+              text-3xl
+              text-brand-charcoal
+              mb-2
+            "
+          >
+            {metrics.total}+
+          </div>
+
+
+          <div
+            class="
+              text-[10px]
+              uppercase
+              tracking-[0.15em]
+              text-brand-slate
+            "
+          >
+            Professional Events
+          </div>
+
+        </div>
+
+
+
         <!-- ATTENDED -->
 
         <div
@@ -346,148 +505,13 @@ const communityMemberships =
 
         </div>
 
-
-        <!-- COMMUNITY MEMBERSHIPS -->
-
-        <div
-          class="
-            bg-white
-            p-6
-          "
-        >
-
-          <div
-            class="
-              font-serif
-              text-3xl
-              text-brand-gold
-              mb-2
-            "
-          >
-            {communityMemberships}+
-          </div>
-
-
-          <div
-            class="
-              text-[10px]
-              uppercase
-              tracking-[0.15em]
-              text-brand-slate
-            "
-          >
-            Community Memberships
-          </div>
-
-        </div>
-
-
-        <!-- REGISTRATIONS -->
-
-        <div
-          class="
-            bg-white
-            p-6
-          "
-        >
-
-          <div
-            class="
-              font-serif
-              text-3xl
-              text-brand-charcoal
-              mb-2
-            "
-          >
-            {metrics.registrationsLed}+
-          </div>
-
-
-          <div
-            class="
-              text-[10px]
-              uppercase
-              tracking-[0.15em]
-              text-brand-slate
-            "
-          >
-            Registrations Across Events Led
-          </div>
-
-        </div>
-
-
-        <!-- CITIES -->
-
-        <div
-          class="
-            bg-white
-            p-6
-          "
-        >
-
-          <div
-            class="
-              font-serif
-              text-3xl
-              text-brand-charcoal
-              mb-2
-            "
-          >
-            {metrics.cities}
-          </div>
-
-
-          <div
-            class="
-              text-[10px]
-              uppercase
-              tracking-[0.15em]
-              text-brand-slate
-            "
-          >
-            Cities Engaged
-          </div>
-
-        </div>
-
-
-        <!-- SINCE -->
-
-        <div
-          class="
-            bg-white
-            p-6
-          "
-        >
-
-          <div
-            class="
-              font-serif
-              text-3xl
-              text-brand-charcoal
-              mb-2
-            "
-          >
-            2025
-          </div>
-
-
-          <div
-            class="
-              text-[10px]
-              uppercase
-              tracking-[0.15em]
-              text-brand-slate
-            "
-          >
-            Track Record Since
-          </div>
-
-        </div>
-
       </div>
 
+
+
+      <!-- =================================================
+           EXPLANATORY NOTE
+           ================================================= -->
 
       <p
         class="
@@ -496,11 +520,15 @@ const communityMemberships =
           text-brand-slate
           font-light
           leading-relaxed
+          max-w-4xl
         "
       >
         Registration totals reflect documented registrations
-        across events hosted or co-organized. Community memberships
-        are shown separately and are not presented as unique individuals.
+        across completed events hosted or co-organized.
+        Industry organizations include documented sponsors and
+        organizations represented by invited speakers.
+        Community memberships are shown separately and are not
+        presented as unique individuals.
       </p>
 
     </div>
@@ -510,7 +538,7 @@ const communityMemberships =
 
 
   <!-- =====================================================
-       COMMUNITY SECTIONS
+       COMMUNITY PROGRAMS
        ===================================================== -->
 
   {
