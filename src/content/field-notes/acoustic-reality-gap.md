@@ -1,5 +1,5 @@
 ---
-title: "The Acoustic Reality Gap: Integrating Speakers and Microphones into Hardware Products"
+title: "The Acoustic Reality Gap"
 description: "Why acoustic integration in physical hardware is fundamentally a mechanical and architectural challenge—and how to bridge the gap between ideal component datasheets and functional products."
 published: 2026-09-14
 category: "Hardware & Manufacturing"
