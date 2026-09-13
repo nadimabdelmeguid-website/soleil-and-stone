@@ -1,0 +1,183 @@
+---
+import AuthorCard
+  from "../components/AuthorCard.astro";
+
+import {
+  readingTime
+} from "../utils/readingTime";
+
+
+const {
+  post
+} = Astro.props;
+
+
+const date =
+  post.data.published
+    .toLocaleDateString(
+      "en-US",
+      {
+        month: "short",
+        day: "numeric",
+        year: "numeric"
+      }
+    )
+    .toUpperCase();
+
+
+const minutes =
+  readingTime(
+    post.body ?? ""
+  );
+---
+
+<article>
+
+  <section
+    class="
+      max-w-4xl
+      w-full
+      mx-auto
+      px-6
+      py-16
+      border-b
+      border-brand-border
+    "
+  >
+
+    <div
+      class="
+        flex
+        flex-wrap
+        items-center
+        gap-3
+        text-xs
+        text-brand-slate
+        mb-4
+      "
+    >
+
+      <span
+        class="
+          font-mono
+          text-brand-gold
+        "
+      >
+        {date}
+      </span>
+
+      <span>•</span>
+
+      <span
+        class="
+          uppercase
+          tracking-widest
+          font-semibold
+        "
+      >
+        {post.data.category}
+      </span>
+
+      <span>•</span>
+
+      <span>
+        {minutes} min read
+      </span>
+
+    </div>
+
+
+    <h1
+      class="
+        font-serif
+        text-3xl
+        sm:text-4xl
+        lg:text-5xl
+        text-brand-charcoal
+        leading-tight
+        mb-6
+      "
+    >
+      {post.data.title}
+    </h1>
+
+
+    <p
+      class="
+        text-lg
+        text-brand-slate
+        font-light
+        leading-relaxed
+      "
+    >
+      {post.data.description}
+    </p>
+
+  </section>
+
+
+  <div
+    class="
+      field-note-body
+      max-w-3xl
+      w-full
+      mx-auto
+      px-6
+      py-16
+    "
+  >
+
+    <slot />
+
+
+    <AuthorCard />
+
+  </div>
+
+
+  <section
+    class="
+      max-w-3xl
+      w-full
+      mx-auto
+      px-6
+      py-12
+      border-t
+      border-brand-border
+      flex
+      justify-between
+      items-center
+      gap-4
+      text-xs
+      uppercase
+      tracking-widest
+    "
+  >
+
+    <a
+      href="/field-notes/"
+      class="
+        text-brand-slate
+        hover:text-brand-gold
+      "
+    >
+      ← Back to Field Notes
+    </a>
+
+
+    <a
+      href="/#contact"
+      class="
+        px-4
+        py-2
+        bg-brand-charcoal
+        text-white
+        hover:bg-brand-gold
+      "
+    >
+      Connect →
+    </a>
+
+  </section>
+
+</article>
