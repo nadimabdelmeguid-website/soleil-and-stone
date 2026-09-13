@@ -1,7 +1,47 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
 import CommunityCard from "../components/CommunityCard.astro";
-import { communities } from "../data/communities";
+
+import {
+  communities
+} from "../data/communities";
+
+import {
+  events
+} from "../data/events";
+
+import {
+  getProfessionalMetrics
+} from "../utils/eventMetrics";
+
+
+const metrics =
+  getProfessionalMetrics(
+    events
+  );
+
+
+/*
+ * Sum of community memberships.
+ *
+ * This is intentionally labeled memberships,
+ * not unique people, because someone may belong
+ * to both communities.
+ */
+
+const communityMemberships =
+  communities.reduce(
+    (
+      total,
+      community
+    ) =>
+      total +
+      (
+        community.members ??
+        0
+      ),
+    0
+  );
 ---
 
 <BaseLayout
@@ -10,7 +50,7 @@ import { communities } from "../data/communities";
 >
 
   <!-- =====================================================
-       COMMUNITY HERO
+       HERO
        ===================================================== -->
 
   <section
@@ -19,9 +59,8 @@ import { communities } from "../data/communities";
       w-full
       mx-auto
       px-6
-      py-16
-      border-b
-      border-brand-border
+      pt-16
+      pb-12
     "
   >
 
@@ -58,7 +97,8 @@ import { communities } from "../data/communities";
         mb-6
       "
     >
-      Leading Communities & Groups
+      Building Connections
+      That Compound
     </h1>
 
 
@@ -71,10 +111,407 @@ import { communities } from "../data/communities";
         max-w-4xl
       "
     >
-      Creating low-pressure, high-value spaces where founders,
-      engineers, builders and investors can meet, exchange ideas
-      and build lasting relationships across Southern California.
+      Building and participating in communities where
+      founders, engineers, investors and operators can
+      exchange knowledge, build relationships and move
+      technical ideas toward real-world execution.
     </p>
+
+  </section>
+
+
+
+  <!-- =====================================================
+       PROFESSIONAL TRACK RECORD
+       ===================================================== -->
+
+  <section
+    class="
+      bg-brand-cream
+      border-y
+      border-brand-border
+    "
+  >
+
+    <div
+      class="
+        max-w-6xl
+        w-full
+        mx-auto
+        px-6
+        py-12
+      "
+    >
+
+      <div
+        class="
+          flex
+          flex-col
+          lg:flex-row
+          lg:items-end
+          justify-between
+          gap-5
+          mb-8
+        "
+      >
+
+        <div>
+
+          <span
+            class="
+              text-[10px]
+              uppercase
+              tracking-[0.2em]
+              text-brand-gold
+              font-semibold
+            "
+          >
+            Professional Track Record
+          </span>
+
+
+          <h2
+            class="
+              font-serif
+              text-2xl
+              sm:text-3xl
+              text-brand-charcoal
+              mt-2
+            "
+          >
+            Activity Across The Ecosystem
+          </h2>
+
+        </div>
+
+
+        <p
+          class="
+            text-xs
+            text-brand-slate
+            font-light
+            max-w-md
+            lg:text-right
+            leading-relaxed
+          "
+        >
+          Based on documented professional activity
+          since 2025. Metrics update automatically as
+          completed events are added to the calendar.
+        </p>
+
+      </div>
+
+
+      <div
+        class="
+          grid
+          grid-cols-2
+          md:grid-cols-4
+          gap-px
+          bg-brand-border
+          border
+          border-brand-border
+        "
+      >
+
+        <!-- PROFESSIONAL EVENTS -->
+
+        <div
+          class="
+            bg-white
+            p-6
+          "
+        >
+
+          <div
+            class="
+              font-serif
+              text-3xl
+              text-brand-charcoal
+              mb-2
+            "
+          >
+            {metrics.total}+
+          </div>
+
+
+          <div
+            class="
+              text-[10px]
+              uppercase
+              tracking-[0.15em]
+              text-brand-slate
+            "
+          >
+            Professional Events
+          </div>
+
+        </div>
+
+
+        <!-- HOSTED / CO-ORGANIZED -->
+
+        <div
+          class="
+            bg-white
+            p-6
+          "
+        >
+
+          <div
+            class="
+              font-serif
+              text-3xl
+              text-brand-gold
+              mb-2
+            "
+          >
+            {metrics.led}
+          </div>
+
+
+          <div
+            class="
+              text-[10px]
+              uppercase
+              tracking-[0.15em]
+              text-brand-slate
+            "
+          >
+            Hosted / Co-Organized
+          </div>
+
+        </div>
+
+
+        <!-- EXHIBITED -->
+
+        <div
+          class="
+            bg-white
+            p-6
+          "
+        >
+
+          <div
+            class="
+              font-serif
+              text-3xl
+              text-brand-charcoal
+              mb-2
+            "
+          >
+            {metrics.exhibited}
+          </div>
+
+
+          <div
+            class="
+              text-[10px]
+              uppercase
+              tracking-[0.15em]
+              text-brand-slate
+            "
+          >
+            Trade Shows Exhibited
+          </div>
+
+        </div>
+
+
+        <!-- ATTENDED -->
+
+        <div
+          class="
+            bg-white
+            p-6
+          "
+        >
+
+          <div
+            class="
+              font-serif
+              text-3xl
+              text-brand-slate
+              mb-2
+            "
+          >
+            {metrics.attended}
+          </div>
+
+
+          <div
+            class="
+              text-[10px]
+              uppercase
+              tracking-[0.15em]
+              text-brand-slate
+            "
+          >
+            Events Attended
+          </div>
+
+        </div>
+
+
+        <!-- COMMUNITY MEMBERSHIPS -->
+
+        <div
+          class="
+            bg-white
+            p-6
+          "
+        >
+
+          <div
+            class="
+              font-serif
+              text-3xl
+              text-brand-gold
+              mb-2
+            "
+          >
+            {communityMemberships}+
+          </div>
+
+
+          <div
+            class="
+              text-[10px]
+              uppercase
+              tracking-[0.15em]
+              text-brand-slate
+            "
+          >
+            Community Memberships
+          </div>
+
+        </div>
+
+
+        <!-- REGISTRATIONS -->
+
+        <div
+          class="
+            bg-white
+            p-6
+          "
+        >
+
+          <div
+            class="
+              font-serif
+              text-3xl
+              text-brand-charcoal
+              mb-2
+            "
+          >
+            {metrics.registrations}+
+          </div>
+
+
+          <div
+            class="
+              text-[10px]
+              uppercase
+              tracking-[0.15em]
+              text-brand-slate
+            "
+          >
+            Documented Registrations
+          </div>
+
+        </div>
+
+
+        <!-- CITIES -->
+
+        <div
+          class="
+            bg-white
+            p-6
+          "
+        >
+
+          <div
+            class="
+              font-serif
+              text-3xl
+              text-brand-charcoal
+              mb-2
+            "
+          >
+            {metrics.cities}
+          </div>
+
+
+          <div
+            class="
+              text-[10px]
+              uppercase
+              tracking-[0.15em]
+              text-brand-slate
+            "
+          >
+            Cities Engaged
+          </div>
+
+        </div>
+
+
+        <!-- SINCE -->
+
+        <div
+          class="
+            bg-white
+            p-6
+          "
+        >
+
+          <div
+            class="
+              font-serif
+              text-3xl
+              text-brand-charcoal
+              mb-2
+            "
+          >
+            2025
+          </div>
+
+
+          <div
+            class="
+              text-[10px]
+              uppercase
+              tracking-[0.15em]
+              text-brand-slate
+            "
+          >
+            Track Record Since
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <p
+        class="
+          mt-5
+          text-[10px]
+          text-brand-slate
+          font-light
+          leading-relaxed
+        "
+      >
+        Registration totals include only events for which
+        a documented registration figure has been added.
+        Community memberships are not presented as unique individuals.
+      </p>
+
+    </div>
 
   </section>
 
@@ -97,7 +534,7 @@ import { communities } from "../data/communities";
 
 
   <!-- =====================================================
-       CLOSING CTA
+       CTA
        ===================================================== -->
 
   <section
