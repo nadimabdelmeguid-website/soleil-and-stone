@@ -1,87 +1,152 @@
 ---
-import {
-  site
-} from "../data/site";
+import { site } from "../data/site";
 ---
 
-<section
+<div
   class="
-    mt-16
-    p-6
-    sm:p-8
-    bg-brand-card
+    bg-white
     border
     border-brand-border
-    flex
-    flex-col
-    sm:flex-row
-    items-center
-    gap-6
+    p-6
+    sm:p-8
   "
 >
 
   <div
     class="
-      w-24
-      h-24
-      flex-shrink-0
+      flex
+      flex-col
+      sm:flex-row
+      items-start
+      sm:items-center
+      gap-6
     "
   >
+
+    <!-- PHOTO -->
 
     <img
       src={site.profileImage}
       alt={site.author.name}
       class="
-        w-full
-        h-full
+        w-20
+        h-20
+        rounded-full
         object-cover
-        grayscale
+        flex-shrink-0
       "
     />
 
-  </div>
 
+    <!-- COPY -->
 
-  <div>
-
-    <h3
+    <div
       class="
-        font-serif
-        text-xl
-        text-brand-charcoal
-        mb-1
+        flex-1
       "
     >
-      {site.author.name}
-    </h3>
+
+      <span
+        class="
+          text-[10px]
+          uppercase
+          tracking-[0.18em]
+          text-brand-gold
+          font-semibold
+        "
+      >
+        Written By
+      </span>
 
 
-    <span
+      <h3
+        class="
+          font-serif
+          text-xl
+          text-brand-charcoal
+          mt-1
+          mb-3
+        "
+      >
+        {site.author.name}
+      </h3>
+
+
+      <p
+        class="
+          text-sm
+          leading-relaxed
+          text-brand-slate
+          font-light
+          max-w-2xl
+        "
+      >
+        {site.author.bio}
+      </p>
+
+    </div>
+
+
+    <!-- LINKEDIN -->
+
+    <a
+      href={site.linkedin}
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label="View LinkedIn profile"
       class="
-        text-[10px]
-        font-semibold
-        text-brand-gold
-        uppercase
-        tracking-[0.2em]
-        block
-        mb-3
-      "
-    >
-      About the Author
-    </span>
-
-
-    <p
-      class="
-        text-xs
+        inline-flex
+        items-center
+        justify-center
+        w-10
+        h-10
+        border
+        border-brand-border
         text-brand-slate
-        font-light
-        leading-relaxed
+        hover:border-brand-gold
+        hover:text-brand-gold
+        transition-colors
+        flex-shrink-0
       "
     >
-      {site.author.bio}
-    </p>
+
+      <svg
+        viewBox="0 0 24 24"
+        class="
+          w-4
+          h-4
+        "
+        fill="currentColor"
+        aria-hidden="true"
+      >
+        <path
+          d="
+            M20.45 20.45h-3.56
+            v-5.57
+            c0-1.33-.03-3.04-1.85-3.04
+            -1.85 0-2.13 1.45-2.13 2.94
+            v5.67H9.35
+            V8.98h3.42
+            v1.57h.05
+            c.47-.9 1.64-1.85 3.37-1.85
+            3.6 0 4.26 2.37 4.26 5.45
+            v6.3z
+
+            M5.34 7.41
+            a2.07 2.07 0 1 1 0-4.14
+            2.07 2.07 0 0 1 0 4.14z
+
+            M7.12 20.45
+            H3.56
+            V8.98
+            h3.56
+            v11.47z
+          "
+        />
+      </svg>
+
+    </a>
 
   </div>
 
-</section>
+</div>
