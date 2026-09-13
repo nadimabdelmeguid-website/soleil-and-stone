@@ -1,0 +1,872 @@
+---
+import {
+  getCollection
+} from "astro:content";
+
+import BaseLayout from "../layouts/BaseLayout.astro";
+
+import {
+  events
+} from "../data/events";
+
+import {
+  isCompletedEvent,
+  getParticipationPriority
+} from "../utils/eventMetrics";
+
+
+const now =
+  new Date();
+
+
+const posts =
+  (
+    await getCollection(
+      "fieldNotes"
+    )
+  )
+    .filter(
+      (post) =>
+        !post.data.draft &&
+        post.data.published <= now
+    );
+
+
+const completedEvents =
+  events
+    .filter(
+      isCompletedEvent
+    )
+    .sort(
+      (a, b) =>
+        new Date(
+          `${b.startDate}T12:00:00`
+        ).getTime() -
+        new Date(
+          `${a.startDate}T12:00:00`
+        ).getTime() ||
+        getParticipationPriority(b) -
+        getParticipationPriority(a)
+    );
+
+
+const upcomingEvents =
+  events
+    .filter(
+      (event) =>
+        !isCompletedEvent(
+          event
+        )
+    )
+    .sort(
+      (a, b) =>
+        new Date(
+          `${a.startDate}T12:00:00`
+        ).getTime() -
+        new Date(
+          `${b.startDate}T12:00:00`
+        ).getTime()
+    );
+
+
+const years =
+  Array.from(
+    new Set(
+      completedEvents.map(
+        (event) =>
+          new Date(
+            `${event.startDate}T12:00:00`
+          ).getFullYear()
+      )
+    )
+  )
+    .sort(
+      (a, b) =>
+        b - a
+    );
+
+
+function eventNotes(
+  eventId: string
+) {
+
+  return posts.filter(
+    (post) =>
+      post.data.relatedEvents
+        ?.includes(
+          eventId
+        )
+  );
+
+}
+
+
+function formatDate(
+  event
+) {
+
+  const start =
+    new Date(
+      `${event.startDate}T12:00:00`
+    );
+
+
+  const end =
+    event.endDate
+      ? new Date(
+          `${event.endDate}T12:00:00`
+        )
+      : null;
+
+
+  if (
+    !end
+  ) {
+
+    return start.toLocaleDateString(
+      "en-US",
+      {
+        month:
+          "short",
+
+        day:
+          "numeric",
+
+        year:
+          "numeric"
+      }
+    );
+
+  }
+
+
+  if (
+    start.getMonth() ===
+      end.getMonth() &&
+    start.getFullYear() ===
+      end.getFullYear()
+  ) {
+
+    return `${start.toLocaleDateString(
+      "en-US",
+      {
+        month:
+          "short",
+
+        day:
+          "numeric"
+      }
+    )}–${end.getDate()}, ${end.getFullYear()}`;
+
+  }
+
+
+  return `${start.toLocaleDateString(
+    "en-US",
+    {
+      month:
+        "short",
+
+      day:
+        "numeric",
+
+      year:
+        "numeric"
+    }
+  )} – ${end.toLocaleDateString(
+    "en-US",
+    {
+      month:
+        "short",
+
+      day:
+        "numeric",
+
+      year:
+        "numeric"
+    }
+  )}`;
+
+}
+
+
+function labelFor(
+  event
+) {
+
+  if (
+    event.participation ===
+      "hosted"
+  ) {
+    return "Hosted";
+  }
+
+
+  if (
+    event.participation ===
+      "co-organized"
+  ) {
+    return "Co-Organized";
+  }
+
+
+  if (
+    event.participation ===
+      "exhibitor"
+  ) {
+    return "Exhibitor";
+  }
+
+
+  return "Attended";
+
+}
+
+
+function labelClass(
+  event
+) {
+
+  if (
+    event.participation ===
+      "hosted" ||
+    event.participation ===
+      "co-organized"
+  ) {
+
+    return "text-brand-gold";
+
+  }
+
+
+  if (
+    event.participation ===
+      "exhibitor"
+  ) {
+
+    return "text-brand-charcoal";
+
+  }
+
+
+  return "text-brand-slate";
+
+}
+---
+
+<BaseLayout
+  title="Industry Fieldwork | Soleil & Stone"
+  description="A record of trade shows, technical communities and ecosystem events shaping my view of how hardware reaches the market."
+>
+
+  <!-- =====================================================
+       HERO
+       ===================================================== -->
+
+  <section
+    class="
+      max-w-6xl
+      w-full
+      mx-auto
+      px-6
+      pt-16
+      pb-14
+    "
+  >
+
+    <span
+      class="
+        text-[10px]
+        uppercase
+        tracking-[0.2em]
+        text-brand-gold
+        font-semibold
+      "
+    >
+      Industry Fieldwork
+    </span>
+
+
+    <h1
+      class="
+        font-serif
+        text-4xl
+        sm:text-5xl
+        text-brand-charcoal
+        mt-2
+        mb-6
+      "
+    >
+      Learning From The Field
+    </h1>
+
+
+    <p
+      class="
+        text-base
+        text-brand-slate
+        font-light
+        leading-relaxed
+        max-w-3xl
+      "
+    >
+      Trade shows, technical communities, founder
+      gatherings, and industry programs shaping my view
+      of how hardware moves from engineering decisions
+      to commercialization and real-world adoption.
+    </p>
+
+  </section>
+
+
+
+  <!-- =====================================================
+       UPCOMING
+       ===================================================== -->
+
+  {
+    upcomingEvents.length > 0 && (
+      <section
+        class="
+          bg-brand-cream
+          border-y
+          border-brand-border
+        "
+      >
+
+        <div
+          class="
+            max-w-6xl
+            w-full
+            mx-auto
+            px-6
+            py-12
+          "
+        >
+
+          <span
+            class="
+              text-[10px]
+              uppercase
+              tracking-[0.18em]
+              text-brand-gold
+              font-semibold
+            "
+          >
+            Upcoming
+          </span>
+
+
+          <div
+            class="
+              grid
+              md:grid-cols-2
+              lg:grid-cols-3
+              gap-5
+              mt-6
+            "
+          >
+
+            {
+              upcomingEvents.map(
+                (event) => (
+                  <a
+                    href={event.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="
+                      block
+                      bg-white
+                      border
+                      border-brand-border
+                      p-6
+                      hover:border-brand-gold
+                      transition-colors
+                    "
+                  >
+
+                    <span
+                      class:list={[
+                        "text-[9px]",
+                        "uppercase",
+                        "tracking-[0.14em]",
+                        "font-semibold",
+                        labelClass(event)
+                      ]}
+                    >
+                      {labelFor(event)}
+                    </span>
+
+
+                    <h3
+                      class="
+                        font-serif
+                        text-lg
+                        text-brand-charcoal
+                        mt-2
+                      "
+                    >
+                      {event.title}
+                    </h3>
+
+
+                    <p
+                      class="
+                        text-xs
+                        text-brand-slate
+                        mt-3
+                      "
+                    >
+                      {formatDate(event)}
+
+                      {
+                        event.city
+                          ? ` · ${event.city}`
+                          : ""
+                      }
+                    </p>
+
+                  </a>
+                )
+              )
+            }
+
+          </div>
+
+        </div>
+
+      </section>
+    )
+  }
+
+
+
+  <!-- =====================================================
+       ARCHIVE
+       ===================================================== -->
+
+  <section
+    class="
+      max-w-6xl
+      w-full
+      mx-auto
+      px-6
+      py-16
+    "
+  >
+
+    {
+      years.map(
+        (year) => {
+
+          const yearEvents =
+            completedEvents.filter(
+              (event) =>
+                new Date(
+                  `${event.startDate}T12:00:00`
+                ).getFullYear() ===
+                year
+            );
+
+
+          return (
+            <div
+              class="
+                mb-16
+                last:mb-0
+              "
+            >
+
+              <div
+                class="
+                  flex
+                  items-center
+                  gap-5
+                  mb-7
+                "
+              >
+
+                <h2
+                  class="
+                    font-serif
+                    text-3xl
+                    text-brand-charcoal
+                  "
+                >
+                  {year}
+                </h2>
+
+
+                <div
+                  class="
+                    h-px
+                    flex-1
+                    bg-brand-border
+                  "
+                ></div>
+
+              </div>
+
+
+              <div
+                class="
+                  space-y-5
+                "
+              >
+
+                {
+                  yearEvents.map(
+                    (event) => {
+
+                      const relatedNotes =
+                        eventNotes(
+                          event.id
+                        );
+
+
+                      return (
+                        <article
+                          class="
+                            border
+                            border-brand-border
+                            p-6
+                            sm:p-7
+                          "
+                        >
+
+                          <div
+                            class="
+                              grid
+                              lg:grid-cols-12
+                              gap-6
+                            "
+                          >
+
+                            <div
+                              class="
+                                lg:col-span-3
+                              "
+                            >
+
+                              <span
+                                class:list={[
+                                  "text-[9px]",
+                                  "uppercase",
+                                  "tracking-[0.15em]",
+                                  "font-semibold",
+                                  labelClass(event)
+                                ]}
+                              >
+                                {labelFor(event)}
+                              </span>
+
+
+                              <p
+                                class="
+                                  text-xs
+                                  text-brand-slate
+                                  mt-2
+                                "
+                              >
+                                {formatDate(event)}
+                              </p>
+
+
+                              {
+                                event.city && (
+                                  <p
+                                    class="
+                                      text-xs
+                                      text-brand-slate
+                                      mt-1
+                                    "
+                                  >
+                                    {event.city}
+                                  </p>
+                                )
+                              }
+
+                            </div>
+
+
+                            <div
+                              class="
+                                lg:col-span-6
+                              "
+                            >
+
+                              <h3
+                                class="
+                                  font-serif
+                                  text-xl
+                                  sm:text-2xl
+                                  text-brand-charcoal
+                                  mb-3
+                                "
+                              >
+                                {event.title}
+                              </h3>
+
+
+                              {
+                                event.description && (
+                                  <p
+                                    class="
+                                      text-sm
+                                      text-brand-slate
+                                      leading-relaxed
+                                      font-light
+                                    "
+                                  >
+                                    {event.description}
+                                  </p>
+                                )
+                              }
+
+
+                              {
+                                event.registrations && (
+                                  <p
+                                    class="
+                                      text-xs
+                                      text-brand-gold
+                                      font-semibold
+                                      mt-4
+                                    "
+                                  >
+                                    {event.registrations}
+                                    +
+                                    {" "}
+                                    registrations
+                                  </p>
+                                )
+                              }
+
+
+                              {
+                                event.sponsors?.length > 0 && (
+                                  <p
+                                    class="
+                                      text-xs
+                                      text-brand-slate
+                                      mt-3
+                                    "
+                                  >
+                                    Sponsored by:
+                                    {" "}
+                                    <span
+                                      class="
+                                        text-brand-charcoal
+                                        font-semibold
+                                      "
+                                    >
+                                      {event.sponsors.join(", ")}
+                                    </span>
+                                  </p>
+                                )
+                              }
+
+
+                              {
+                                event.partners?.length > 0 && (
+                                  <p
+                                    class="
+                                      text-xs
+                                      text-brand-slate
+                                      mt-2
+                                    "
+                                  >
+                                    Event collaborators:
+                                    {" "}
+                                    <span
+                                      class="
+                                        text-brand-charcoal
+                                        font-semibold
+                                      "
+                                    >
+                                      {event.partners.join(", ")}
+                                    </span>
+                                  </p>
+                                )
+                              }
+
+
+                              {
+                                event.speakers?.length > 0 && (
+                                  <div
+                                    class="
+                                      mt-4
+                                    "
+                                  >
+
+                                    <p
+                                      class="
+                                        text-[9px]
+                                        uppercase
+                                        tracking-[0.14em]
+                                        text-brand-slate
+                                        mb-2
+                                      "
+                                    >
+                                      Speakers
+                                    </p>
+
+
+                                    <div
+                                      class="
+                                        space-y-1
+                                      "
+                                    >
+
+                                      {
+                                        event.speakers.map(
+                                          (speaker) => (
+                                            <p
+                                              class="
+                                                text-xs
+                                                text-brand-slate
+                                              "
+                                            >
+                                              <span
+                                                class="
+                                                  text-brand-charcoal
+                                                  font-semibold
+                                                "
+                                              >
+                                                {speaker.name}
+                                              </span>
+
+                                              {
+                                                speaker.title
+                                                  ? ` · ${speaker.title}`
+                                                  : ""
+                                              }
+
+                                              {" · "}
+
+                                              {speaker.company}
+                                            </p>
+                                          )
+                                        )
+                                      }
+
+                                    </div>
+
+                                  </div>
+                                )
+                              }
+
+                            </div>
+
+
+                            <div
+                              class="
+                                lg:col-span-3
+                              "
+                            >
+
+                              <a
+                                href={event.url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                class="
+                                  inline-flex
+                                  items-center
+                                  gap-2
+                                  text-[10px]
+                                  uppercase
+                                  tracking-[0.15em]
+                                  font-semibold
+                                  text-brand-charcoal
+                                  hover:text-brand-gold
+                                  transition-colors
+                                "
+                              >
+                                View Event
+
+                                <span>
+                                  ↗
+                                </span>
+                              </a>
+
+
+                              {
+                                relatedNotes.length > 0 && (
+                                  <div
+                                    class="
+                                      mt-6
+                                      pt-5
+                                      border-t
+                                      border-brand-border
+                                    "
+                                  >
+
+                                    <div
+                                      class="
+                                        text-[9px]
+                                        uppercase
+                                        tracking-[0.14em]
+                                        text-brand-gold
+                                        mb-3
+                                      "
+                                    >
+                                      Related Field Notes
+                                    </div>
+
+
+                                    <div
+                                      class="
+                                        space-y-3
+                                      "
+                                    >
+
+                                      {
+                                        relatedNotes.map(
+                                          (post) => (
+                                            <a
+                                              href={`/field-notes/${post.id}/`}
+                                              class="
+                                                block
+                                                text-xs
+                                                text-brand-charcoal
+                                                hover:text-brand-gold
+                                                transition-colors
+                                              "
+                                            >
+                                              {post.data.title}
+                                              {" "}
+                                              →
+                                            </a>
+                                          )
+                                        )
+                                      }
+
+                                    </div>
+
+                                  </div>
+                                )
+                              }
+
+                            </div>
+
+                          </div>
+
+                        </article>
+                      );
+
+                    }
+                  )
+                }
+
+              </div>
+
+            </div>
+          );
+
+        }
+      )
+    }
+
+  </section>
+
+</BaseLayout>
