@@ -43,7 +43,7 @@ const featuredNotes =
     )
     .slice(
       0,
-      3
+      2
     );
 ---
 
@@ -100,7 +100,7 @@ const featuredNotes =
           leading-[1.12]
           font-normal
           tracking-wide
-          mb-8
+          mb-7
         "
       >
         Global Perspective.
@@ -161,10 +161,7 @@ const featuredNotes =
           "
         >
           Explore Community
-
-          <span>
-            →
-          </span>
+          <span>→</span>
         </a>
 
 
@@ -184,10 +181,7 @@ const featuredNotes =
           "
         >
           More About Me
-
-          <span>
-            →
-          </span>
+          <span>→</span>
         </a>
 
       </div>
@@ -199,7 +193,7 @@ const featuredNotes =
 
 
   <!-- =====================================================
-       EVENTS / FIELDWORK
+       CALENDAR
        ===================================================== -->
 
   <HomeEvents />
@@ -278,10 +272,7 @@ const featuredNotes =
         "
       >
         All Field Notes
-
-        <span>
-          →
-        </span>
+        <span>→</span>
       </a>
 
     </div>
@@ -291,7 +282,6 @@ const featuredNotes =
       class="
         grid
         md:grid-cols-2
-        lg:grid-cols-3
         gap-5
       "
     >
@@ -392,7 +382,6 @@ const featuredNotes =
           </p>
 
         </div>
-
 
 
         <div
@@ -597,34 +586,28 @@ const featuredNotes =
             </div>
 
 
-            <div>
-
-              <button
-                type="submit"
-                class="
-                  inline-flex
-                  items-center
-                  gap-2
-                  px-6
-                  py-3
-                  bg-brand-charcoal
-                  text-white
-                  text-[11px]
-                  uppercase
-                  tracking-[0.18em]
-                  font-semibold
-                  hover:bg-brand-gold
-                  transition-colors
-                "
-              >
-                Send Message
-
-                <span>
-                  →
-                </span>
-              </button>
-
-            </div>
+            <button
+              type="submit"
+              class="
+                inline-flex
+                w-fit
+                items-center
+                gap-2
+                px-6
+                py-3
+                bg-brand-charcoal
+                text-white
+                text-[11px]
+                uppercase
+                tracking-[0.18em]
+                font-semibold
+                hover:bg-brand-gold
+                transition-colors
+              "
+            >
+              Send Message
+              <span>→</span>
+            </button>
 
           </form>
 
@@ -635,55 +618,5 @@ const featuredNotes =
     </div>
 
   </section>
-
-
-  <script is:inline>
-    (() => {
-
-      const params =
-        new URLSearchParams(
-          window.location.search
-        );
-
-
-      const type =
-        params.get(
-          "type"
-        );
-
-
-      const select =
-        document.getElementById(
-          "type"
-        );
-
-
-      if (
-        type &&
-        select
-      ) {
-
-        const option =
-          Array.from(
-            select.options
-          ).find(
-            (item) =>
-              item.value === type
-          );
-
-
-        if (
-          option
-        ) {
-
-          select.value =
-            type;
-
-        }
-
-      }
-
-    })();
-  </script>
 
 </BaseLayout>
