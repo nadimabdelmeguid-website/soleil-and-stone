@@ -79,7 +79,23 @@ const upcomingEvents =
 
 
 /* =========================================================
-   METRICS
+   DYNAMIC PROFESSIONAL METRICS
+
+   These are calculated automatically from events.ts.
+
+   led:
+   hosted + co-organized completed events
+
+   registrationsLed:
+   documented registrations from hosted /
+   co-organized completed events
+
+   speakers:
+   unique speakers across led events
+
+   organizationsEngaged:
+   unique sponsors, partners and speaker
+   companies across led events
    ========================================================= */
 
 const metrics =
@@ -289,7 +305,9 @@ function labelFor(
     event.participation ===
       "hosted"
   ) {
+
     return "Hosted";
+
   }
 
 
@@ -297,7 +315,9 @@ function labelFor(
     event.participation ===
       "co-organized"
   ) {
+
     return "Co-Organized";
+
   }
 
 
@@ -305,7 +325,9 @@ function labelFor(
     event.participation ===
       "exhibitor"
   ) {
+
     return "Exhibitor";
+
   }
 
 
@@ -420,7 +442,7 @@ function labelClass(
 
 
   <!-- =====================================================
-       FIELDWORK METRICS
+       DYNAMIC IMPACT METRICS
        ===================================================== -->
 
   <section
@@ -446,62 +468,22 @@ function labelClass(
           grid
           grid-cols-2
           lg:grid-cols-4
+          bg-white
           border
           border-brand-border
-          bg-white
         "
       >
 
-        <!-- PROFESSIONAL EVENTS -->
+        <!-- EVENTS LED -->
 
         <div
           class="
             p-5
             sm:p-6
-            border-b
             border-r
-            border-brand-border
-            lg:border-b-0
-          "
-        >
-
-          <div
-            class="
-              font-serif
-              text-3xl
-              sm:text-4xl
-              text-brand-charcoal
-            "
-          >
-            {metrics.total}
-          </div>
-
-
-          <div
-            class="
-              mt-2
-              text-[9px]
-              uppercase
-              tracking-[0.16em]
-              text-brand-slate
-            "
-          >
-            Professional Events
-          </div>
-
-        </div>
-
-
-        <!-- LED -->
-
-        <div
-          class="
-            p-5
-            sm:p-6
             border-b
             border-brand-border
             lg:border-b-0
-            lg:border-r
           "
         >
 
@@ -524,15 +506,59 @@ function labelClass(
               uppercase
               tracking-[0.16em]
               text-brand-slate
+              leading-relaxed
             "
           >
-            Hosted / Co-Organized
+            Events Led / Co-Organized
           </div>
 
         </div>
 
 
-        <!-- EXHIBITOR -->
+
+        <!-- REGISTRATIONS -->
+
+        <div
+          class="
+            p-5
+            sm:p-6
+            border-b
+            border-brand-border
+            lg:border-b-0
+            lg:border-r
+          "
+        >
+
+          <div
+            class="
+              font-serif
+              text-3xl
+              sm:text-4xl
+              text-brand-charcoal
+            "
+          >
+            {metrics.registrationsLed}+
+          </div>
+
+
+          <div
+            class="
+              mt-2
+              text-[9px]
+              uppercase
+              tracking-[0.16em]
+              text-brand-slate
+              leading-relaxed
+            "
+          >
+            Documented Registrations
+          </div>
+
+        </div>
+
+
+
+        <!-- SPEAKERS -->
 
         <div
           class="
@@ -551,7 +577,7 @@ function labelClass(
               text-brand-charcoal
             "
           >
-            {metrics.exhibited}
+            {metrics.speakers}
           </div>
 
 
@@ -562,15 +588,17 @@ function labelClass(
               uppercase
               tracking-[0.16em]
               text-brand-slate
+              leading-relaxed
             "
           >
-            Exhibitor Appearances
+            Industry Speakers
           </div>
 
         </div>
 
 
-        <!-- CITIES -->
+
+        <!-- ORGANIZATIONS -->
 
         <div
           class="
@@ -587,7 +615,7 @@ function labelClass(
               text-brand-charcoal
             "
           >
-            {metrics.cities}
+            {metrics.organizationsEngaged}
           </div>
 
 
@@ -598,9 +626,10 @@ function labelClass(
               uppercase
               tracking-[0.16em]
               text-brand-slate
+              leading-relaxed
             "
           >
-            Cities
+            Industry Organizations
           </div>
 
         </div>
@@ -637,8 +666,6 @@ function labelClass(
             py-14
           "
         >
-
-          <!-- HEADER -->
 
           <div
             class="
@@ -701,8 +728,6 @@ function labelClass(
           </div>
 
 
-
-          <!-- HORIZONTAL SCROLLER -->
 
           <div
             class="
@@ -914,8 +939,6 @@ function labelClass(
           "
         >
 
-          <!-- YEAR -->
-
           <div
             class="
               min-w-[160px]
@@ -979,8 +1002,6 @@ function labelClass(
           </div>
 
 
-
-          <!-- MONTH -->
 
           <div
             class="
@@ -1100,9 +1121,7 @@ function labelClass(
 
 
 
-      <!-- =================================================
-           EVENT ARCHIVE
-           ================================================= -->
+      <!-- EVENT ARCHIVE -->
 
       <div
         id="fieldwork-archive"
@@ -1151,10 +1170,6 @@ function labelClass(
                   data-month={String(eventMonth)}
                 >
 
-                  <!-- =====================================
-                       COLLAPSED SUMMARY
-                       ===================================== -->
-
                   <summary
                     class="
                       list-none
@@ -1170,8 +1185,6 @@ function labelClass(
                       sm:gap-6
                     "
                   >
-
-                    <!-- DATE / ROLE -->
 
                     <div
                       class="
@@ -1206,8 +1219,6 @@ function labelClass(
                     </div>
 
 
-
-                    <!-- TITLE -->
 
                     <div
                       class="
@@ -1248,8 +1259,6 @@ function labelClass(
                     </div>
 
 
-
-                    <!-- QUICK METADATA -->
 
                     <div
                       class="
@@ -1300,10 +1309,6 @@ function labelClass(
 
 
 
-                  <!-- =====================================
-                       EXPANDED CONTENT
-                       ===================================== -->
-
                   <div
                     class="
                       border-t
@@ -1350,8 +1355,6 @@ function labelClass(
                         }
 
 
-
-                        <!-- PARTNERS / SPONSORS -->
 
                         {
                           (
@@ -1433,8 +1436,6 @@ function labelClass(
                         }
 
 
-
-                        <!-- SPEAKERS -->
 
                         {
                           event.speakers?.length > 0 && (
@@ -1781,12 +1782,6 @@ function labelClass(
             );
 
 
-            /*
-             * Collapse events whenever
-             * filters change so the
-             * archive stays compact.
-             */
-
             if (
               event.open
             ) {
@@ -1817,7 +1812,7 @@ function labelClass(
           resultCount.textContent =
             `${visibleCount} ${
               visibleCount ===
-              1
+                1
                 ? "Event"
                 : "Events"
             }`;
