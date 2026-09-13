@@ -8,6 +8,10 @@ interface Props {
   title: string;
   description?: string;
 
+  /**
+   * Optional social preview image.
+   * Falls back to the Soleil & Stone default social card.
+   */
   image?: string;
 
   type?: "website" | "article";
@@ -65,7 +69,7 @@ const socialImage =
 <head>
 
   <!-- =====================================================
-       CORE
+       CORE SEO
        ===================================================== -->
 
   <meta
@@ -110,7 +114,7 @@ const socialImage =
 
   <!-- =====================================================
        OPEN GRAPH
-       LinkedIn / Facebook / Slack / iMessage / etc.
+       LinkedIn / Facebook / Slack / iMessage
        ===================================================== -->
 
   <meta
@@ -144,6 +148,26 @@ const socialImage =
   />
 
   <meta
+    property="og:image:secure_url"
+    content={socialImage}
+  />
+
+  <meta
+    property="og:image:type"
+    content="image/png"
+  />
+
+  <meta
+    property="og:image:width"
+    content="1200"
+  />
+
+  <meta
+    property="og:image:height"
+    content="630"
+  />
+
+  <meta
     property="og:image:alt"
     content="Soleil & Stone"
   />
@@ -163,7 +187,7 @@ const socialImage =
 
 
   <!-- =====================================================
-       X / TWITTER CARD
+       X / TWITTER
        ===================================================== -->
 
   <meta
@@ -184,6 +208,11 @@ const socialImage =
   <meta
     name="twitter:image"
     content={socialImage}
+  />
+
+  <meta
+    name="twitter:image:alt"
+    content="Soleil & Stone"
   />
 
 
@@ -294,9 +323,7 @@ const socialImage =
   <Header />
 
 
-  <main
-    class="flex-grow"
-  >
+  <main class="flex-grow">
     <slot />
   </main>
 
@@ -307,9 +334,7 @@ const socialImage =
   <!-- =====================================================
        CLOUDFLARE WEB ANALYTICS
 
-       Analytics is disabled when:
-
-       localStorage:
+       Disabled when:
        soleil_analytics_optout = "true"
 
        Also disabled automatically on localhost.
