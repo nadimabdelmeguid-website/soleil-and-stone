@@ -1,7 +1,7 @@
 ---
 title: "The Acoustic Reality Gap"
 description: "Why acoustic integration in physical hardware is fundamentally a mechanical and architectural challenge—and how to bridge the gap between ideal component datasheets and functional products."
-published: 2026-09-14
+published: 2026-09-25
 category: "Hardware & Manufacturing"
 categorySlug: "hardware"
 featured: true
