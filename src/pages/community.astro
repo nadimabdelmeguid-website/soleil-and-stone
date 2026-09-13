@@ -21,14 +21,6 @@ const metrics =
   );
 
 
-/*
- * Sum of community memberships.
- *
- * This is intentionally labeled memberships,
- * not unique people, because someone may belong
- * to both communities.
- */
-
 const communityMemberships =
   communities.reduce(
     (
@@ -407,7 +399,7 @@ const communityMemberships =
               mb-2
             "
           >
-            {metrics.registrations}+
+            {metrics.registrationsLed}+
           </div>
 
 
@@ -419,7 +411,7 @@ const communityMemberships =
               text-brand-slate
             "
           >
-            Documented Registrations
+            Registrations Across Events Led
           </div>
 
         </div>
@@ -506,9 +498,9 @@ const communityMemberships =
           leading-relaxed
         "
       >
-        Registration totals include only events for which
-        a documented registration figure has been added.
-        Community memberships are not presented as unique individuals.
+        Registration totals reflect documented registrations
+        across events hosted or co-organized. Community memberships
+        are shown separately and are not presented as unique individuals.
       </p>
 
     </div>
