@@ -640,96 +640,118 @@
       }, 1500);
     }
 
-    // Live scraping of the articles page using the correct /blogs/ folder path and all articles
-    const articleFiles = [
-      {
-        url: '/blogs/article-community-building.html',
-        categoryName: 'Ecosystem Building'
-      },
-      {
-        url: '/blogs/article-acoustic-reality-gap.html',
-        categoryName: 'Hardware Engineering'
-      },
-      {
-        url: '/blogs/article-grassroots-mixer.html',
-        categoryName: 'Ecosystem Building'
-      }
-    ];
-
+    // Live scraping of the articles page (/articles.html) to dynamically read the exact card contents without hardcoding
     async function loadFeaturedArticles() {
       const container = document.getElementById('featured-articles-grid');
       const parser = new DOMParser();
-      let articlesList = [];
 
-      // Get today's date at midnight for accurate scheduled publishing check
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
+      try {
+        const response = await fetch('/articles.html');
+        if (!response.ok) throw new Error('Failed to load articles page');
+        const htmlText = await response.text();
+        const doc = parser.parseFromString(htmlText, 'text/html');
 
-      for (const file of articleFiles) {
-        try {
-          const response = await fetch(file.url);
-          if (!response.ok) continue;
-          const htmlText = await response.text();
-          const doc = parser.parseFromString(htmlText, 'text/html');
+        // Scrape article cards directly from the articles page DOM
+        const articleCards = doc.querySelectorAll('main section.max-w-6xl article, main section.max-w-6xl .article-card');
+        
+        let articlesList = [];
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
 
-          const dateEl = doc.querySelector('section.border-b .font-mono') || doc.querySelector('.font-mono');
-          const dateStr = dateEl ? dateEl.textContent.trim() : '2026-09-11';
+        if (articleCards.length > 0) {
+          articleCards.forEach(card => {
+            const dateEl = card.querySelector('.font-mono');
+            const dateStr = dateEl ? dateEl.textContent.trim() : '2026-09-12';
+            
+            const categoryEl = card.querySelector('.uppercase.tracking-wider');
+            const categoryName = categoryEl ? categoryEl.textContent.trim() : 'Field Notes';
 
-          // Parse article date and check if it is in the future
-          const articleDate = new Date(dateStr + 'T00:00:00');
-          if (articleDate > today) {
-            continue; // Skip future-dated articles
-          }
+            const titleEl = card.querySelector('h2, h3');
+            const title = titleEl ? titleEl.textContent.trim() : 'Untitled Article';
 
-          const titleEl = doc.querySelector('section.border-b h1') || doc.querySelector('h1');
-          const title = titleEl ? titleEl.textContent.trim() : 'Untitled Article';
-          
-          const descEl = doc.querySelector('article.max-w-3xl > p.text-lg') || doc.querySelector('article p');
-          const description = descEl ? descEl.textContent.trim() : '';
+            const descEl = card.querySelector('p.text-brand-slate');
+            const description = descEl ? descEl.textContent.trim() : '';
 
-          articlesList.push({
-            url: file.url,
-            categoryName: file.categoryName,
-            title: title,
-            date: dateStr,
-            description: description
+            const linkEl = card.querySelector('a[href]');
+            const url = linkEl ? linkEl.getAttribute('href') : '/articles.html';
+
+            // Scheduled publishing filter check
+            const articleDate = new Date(dateStr + 'T00:00:00');
+            if (articleDate <= today) {
+              articlesList.push({ url, categoryName, title, date: dateStr, description });
+            }
           });
-        } catch (e) {
-          console.error(`Error loading featured article from ${file.url}:`, e);
         }
-      }
 
-      // Sort by date most recent to oldest
-      articlesList.sort((a, b) => new Date(b.date) - new Date(a.date));
+        // Fallback to fetching underlying files if the main grid isn't parsed with individual card elements directly
+        if (articlesList.length === 0) {
+          const articleFiles = [
+            { url: '/blogs/article-community-building.html', categoryName: 'Ecosystems & Community' },
+            { url: '/blogs/article-acoustic-reality-gap.html', categoryName: 'Hardware & Manufacturing' },
+            { url: '/blogs/article-grassroots-mixer.html', categoryName: 'Ecosystems & Community' }
+          ];
 
-      // Take only the latest 2 published articles
-      const latestTwo = articlesList.slice(0, 2);
+          for (const file of articleFiles) {
+            try {
+              const res = await fetch(file.url);
+              if (!res.ok) continue;
+              const text = await res.text();
+              const subDoc = parser.parseFromString(text, 'text/html');
+              const dEl = subDoc.querySelector('.font-mono');
+              const dateStr = dEl ? dEl.textContent.trim() : '2026-09-12';
+              const articleDate = new Date(dateStr + 'T00:00:00');
+              if (articleDate > today) continue;
 
-      if (latestTwo.length === 0) {
+              const tEl = subDoc.querySelector('h1');
+              const title = tEl ? tEl.textContent.trim() : 'Untitled Article';
+              const pEl = subDoc.querySelector('article p');
+              const description = pEl ? pEl.textContent.trim() : '';
+
+              articlesList.push({ url: file.url, categoryName: file.categoryName, title, date: dateStr, description });
+            } catch (err) {
+              console.error(err);
+            }
+          }
+        }
+
+        // Sort by most recent date and take the latest 2 cards
+        articlesList.sort((a, b) => new Date(b.date) - new Date(a.date));
+        const latestTwo = articlesList.slice(0, 2);
+
+        if (latestTwo.length === 0) {
+          container.innerHTML = `
+            <div class="col-span-2 text-center py-8 text-brand-slate text-sm font-light">
+              No featured articles available at the moment.
+            </div>
+          `;
+          return;
+        }
+
+        container.innerHTML = latestTwo.map(art => `
+          <article class="p-6 bg-brand-card border border-brand-border flex flex-col justify-between">
+            <div>
+              <div class="flex items-center gap-3 text-xs text-brand-slate mb-2">
+                <span class="font-mono text-brand-gold">${art.date}</span>
+                <span>•</span>
+                <span class="uppercase tracking-wider">${art.categoryName}</span>
+              </div>
+              <h3 class="font-serif text-xl font-normal text-brand-charcoal mb-2">${art.title}</h3>
+              <p class="text-brand-slate text-sm leading-relaxed font-light mb-4">
+                ${art.description}
+              </p>
+            </div>
+            <a href="${art.url}" class="text-xs font-semibold text-brand-gold uppercase tracking-widest hover:underline">READ ARTICLE →</a>
+          </article>
+        `).join('');
+
+      } catch (e) {
+        console.error('Error loading featured articles from articles page:', e);
         container.innerHTML = `
           <div class="col-span-2 text-center py-8 text-brand-slate text-sm font-light">
-            No featured articles available at the moment.
+            Unable to load featured articles at the moment.
           </div>
         `;
-        return;
       }
-
-      container.innerHTML = latestTwo.map(art => `
-        <article class="p-6 bg-brand-card border border-brand-border flex flex-col justify-between">
-          <div>
-            <div class="flex items-center gap-3 text-xs text-brand-slate mb-2">
-              <span class="font-mono text-brand-gold">${art.date}</span>
-              <span>•</span>
-              <span class="uppercase tracking-wider">${art.categoryName}</span>
-            </div>
-            <h3 class="font-serif text-xl font-normal text-brand-charcoal mb-2">${art.title}</h3>
-            <p class="text-brand-slate text-sm leading-relaxed font-light mb-4">
-              ${art.description}
-            </p>
-          </div>
-          <a href="${art.url}" class="text-xs font-medium text-brand-gold uppercase tracking-wider hover:underline">Read Full Article →</a>
-        </article>
-      `).join('');
     }
 
     // AJAX Form Submission Handler for Google Apps Script Web App Endpoint
