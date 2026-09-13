@@ -33,8 +33,7 @@ export interface SiteEvent {
   description?: string;
 
   /*
-   * Every public calendar event
-   * should have a supporting URL.
+   * Every public event should have a supporting URL.
    */
   url: string;
 
@@ -47,21 +46,24 @@ export interface SiteEvent {
   /*
    * Registration count.
    *
-   * For the metrics, registrations are
-   * counted only when the event was
-   * hosted or co-organized.
+   * These numbers are included in impact metrics only
+   * for events you hosted or co-organized.
    */
   registrations?: number;
 
   /*
-   * Organizations that formally sponsored
-   * an event you hosted/co-organized.
+   * Formal event sponsors.
    */
   sponsors?: string[];
 
   /*
-   * Speakers appearing at an event
-   * you hosted/co-organized.
+   * Organizations that collaborated on,
+   * co-hosted or formally supported an event.
+   */
+  partners?: string[];
+
+  /*
+   * Invited/programmed speakers.
    */
   speakers?: EventSpeaker[];
 }
@@ -1409,7 +1411,7 @@ export const events: SiteEvent[] = [
       "Las Vegas",
 
     description:
-      "Hosted during CES with Voler Systems, Seltech, Innovobot Labs, Sonical and Pisco, bringing together professionals across device design, medtech, wearables, robotics, IoT and embedded systems.",
+      "Hosted during CES as an industry networking event connecting professionals across device design, medtech, wearables, robotics, IoT and embedded systems.",
 
     url:
       "https://info.volersystems.com/voler-systems-networking-tour-2026-vegas?hs_preview=yXGGYDiG-201589438253",
@@ -1422,6 +1424,14 @@ export const events: SiteEvent[] = [
 
     registrations:
       203,
+
+    partners: [
+      "Voler Systems",
+      "Seltech",
+      "Innovobot Labs",
+      "Sonical",
+      "Pisco"
+    ],
 
     showOnHome:
       true
