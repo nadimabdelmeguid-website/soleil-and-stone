@@ -1,296 +1,128 @@
 ---
-import { getCollection } from "astro:content";
+import {
+  getCollection
+} from "astro:content";
+
 import BaseLayout from "../../layouts/BaseLayout.astro";
-import ArticleCard from "../../components/ArticleCard.astro";
 
-const now = new Date();
 
-const posts = (await getCollection("fieldNotes"))
-  .filter(
-    (post) =>
-      !post.data.draft &&
-      post.data.published <= now
+const notes =
+  (
+    await getCollection(
+      "field-notes"
+    )
   )
-  .sort(
-    (a, b) =>
-      b.data.published.getTime() -
-      a.data.published.getTime()
+    .filter(
+      (note) => {
+        const date =
+          new Date(
+            note.data.date
+          );
+
+        return date <=
+          new Date();
+      }
+    )
+    .sort(
+      (a, b) =>
+        new Date(
+          b.data.date
+        ).getTime() -
+        new Date(
+          a.data.date
+        ).getTime()
+    );
+
+
+const categories =
+  [
+    {
+      label:
+        "All Notes",
+      value:
+        "all"
+    },
+    {
+      label:
+        "Ecosystems & Community",
+      value:
+        "ecosystems"
+    },
+    {
+      label:
+        "Trade Shows",
+      value:
+        "tradeshows"
+    },
+    {
+      label:
+        "Hardware & Manufacturing",
+      value:
+        "hardware"
+    }
+  ];
+
+
+function formatDate(
+  value
+) {
+
+  return new Date(
+    value
+  ).toLocaleDateString(
+    "en-US",
+    {
+      month:
+        "long",
+      day:
+        "numeric",
+      year:
+        "numeric"
+    }
   );
 
-const filters = [
-  {
-    label: "All",
-    value: "all"
-  },
-  {
-    label: "Ecosystems & Community",
-    value: "ecosystem"
-  },
-  {
-    label: "Trade Shows",
-    value: "tradeshows"
-  },
-  {
-    label: "Hardware & Manufacturing",
-    value: "hardware"
-  }
-];
+}
+
+
+function getCategoryLabel(
+  category
+) {
+
+  const labels = {
+    ecosystems:
+      "Ecosystems & Community",
+
+    tradeshows:
+      "Trade Shows",
+
+    hardware:
+      "Hardware & Manufacturing"
+  };
+
+
+  return (
+    labels[
+      category
+    ] ??
+    category
+  );
+
+}
 ---
 
 <BaseLayout
   title="SOLEIL & STONE | Field Notes"
-  description="Field notes on community building, hardware, manufacturing, trade shows and the ecosystems where ideas become companies."
+  description="Notes and observations on hardware, commercialization, trade shows, community building and innovation ecosystems."
 >
 
   <!-- =====================================================
-       HERO
+       HERO — WHITE
        ===================================================== -->
 
   <section
     class="
-      max-w-6xl
-      w-full
-      mx-auto
-      px-6
-      py-16
+      bg-white
       border-b
-      border-brand-border
-    "
-  >
-
-    <span
-      class="
-        inline-block
-        px-3
-        py-1
-        bg-brand-gold/10
-        border
-        border-brand-gold/30
-        text-brand-gold
-        text-[10px]
-        uppercase
-        tracking-[0.2em]
-        font-semibold
-        mb-6
-      "
-    >
-      Field Notes
-    </span>
-
-
-    <h1
-      class="
-        font-serif
-        text-3xl
-        sm:text-4xl
-        lg:text-5xl
-        text-brand-charcoal
-        tracking-wide
-        leading-[1.2]
-        mb-6
-      "
-    >
-      Observations From The Field
-    </h1>
-
-
-    <p
-      class="
-        max-w-3xl
-        text-base
-        sm:text-lg
-        text-brand-slate
-        leading-relaxed
-        font-light
-      "
-    >
-      Notes on community building, hardware,
-      manufacturing, trade shows and the ecosystems
-      where ideas move from conversation to execution.
-    </p>
-
-  </section>
-
-
-  <!-- =====================================================
-       ARCHIVE
-       ===================================================== -->
-
-  <section
-    class="
-      max-w-6xl
-      w-full
-      mx-auto
-      px-6
-      py-16
-    "
-  >
-
-    <!-- FILTERS -->
-
-    <div
-      class="
-        flex
-        flex-wrap
-        items-center
-        gap-3
-        mb-12
-      "
-      aria-label="Filter field notes"
-    >
-
-      {
-        filters.map(
-          (filter, index) => (
-
-            <button
-              type="button"
-              data-filter={filter.value}
-              class:list={[
-                "field-note-filter",
-                "px-4 py-2",
-                "border",
-                "text-[11px]",
-                "uppercase",
-                "tracking-[0.16em]",
-                "transition-all",
-                "duration-200",
-
-                index === 0
-                  ? "active border-brand-charcoal bg-brand-charcoal text-white"
-                  : "border-brand-border text-brand-slate hover:border-brand-gold hover:text-brand-gold"
-              ]}
-            >
-              {filter.label}
-            </button>
-
-          )
-        )
-      }
-
-    </div>
-
-
-    <!-- ARTICLE COUNT -->
-
-    <div
-      class="
-        flex
-        items-center
-        justify-between
-        gap-4
-        pb-5
-        mb-8
-        border-b
-        border-brand-border
-      "
-    >
-
-      <h2
-        class="
-          font-serif
-          text-xl
-          sm:text-2xl
-          text-brand-charcoal
-        "
-      >
-        Latest Notes
-      </h2>
-
-
-      <span
-        id="article-count"
-        class="
-          text-xs
-          uppercase
-          tracking-[0.15em]
-          text-brand-slate
-        "
-      >
-        {posts.length}
-        {posts.length === 1 ? " Note" : " Notes"}
-      </span>
-
-    </div>
-
-
-    <!-- ARTICLE GRID -->
-
-    <div
-      id="field-notes-grid"
-      class="
-        grid
-        md:grid-cols-2
-        gap-7
-      "
-    >
-
-      {
-        posts.map(
-          (post) => (
-
-            <div
-              class="field-note-item"
-              data-category={post.data.categorySlug}
-            >
-              <ArticleCard post={post} />
-            </div>
-
-          )
-        )
-      }
-
-    </div>
-
-
-    <!-- EMPTY STATE -->
-
-    <div
-      id="field-notes-empty"
-      class="
-        hidden
-        py-16
-        text-center
-        border
-        border-brand-border
-        bg-white
-      "
-    >
-
-      <p
-        class="
-          font-serif
-          text-xl
-          text-brand-charcoal
-          mb-2
-        "
-      >
-        No field notes in this category yet.
-      </p>
-
-
-      <p
-        class="
-          text-sm
-          text-brand-slate
-          font-light
-        "
-      >
-        More notes are coming soon.
-      </p>
-
-    </div>
-
-  </section>
-
-
-  <!-- =====================================================
-       CLOSING CTA
-       ===================================================== -->
-
-  <section
-    class="
-      border-t
       border-brand-border
     "
   >
@@ -301,107 +133,625 @@ const filters = [
         w-full
         mx-auto
         px-6
-        py-20
-        text-center
+        pt-16
+        pb-14
       "
     >
 
       <span
         class="
-          text-xs
+          inline-block
+          px-3
+          py-1
+          bg-brand-gold/10
+          border
+          border-brand-gold/30
+          text-brand-gold
+          text-[10px]
           uppercase
           tracking-[0.2em]
-          text-brand-gold
           font-semibold
+          mb-6
         "
       >
-        Continue The Conversation
+        Notes From The Field
       </span>
 
 
-      <h2
+      <h1
         class="
           font-serif
-          text-3xl
-          sm:text-4xl
+          text-4xl
+          sm:text-5xl
+          lg:text-6xl
+          font-normal
+          tracking-wide
           text-brand-charcoal
-          mt-2
-          mb-5
+          leading-[1.12]
+          mb-6
         "
       >
-        Have a Perspective to Share?
-      </h2>
+        Field Notes
+      </h1>
 
 
       <p
         class="
-          max-w-2xl
-          mx-auto
-          text-sm
-          sm:text-base
-          leading-relaxed
+          text-base
+          sm:text-lg
           text-brand-slate
+          leading-relaxed
           font-light
-          mb-8
+          max-w-3xl
         "
       >
-        If you're working on something related to
-        hardware, startups, community building or
-        ecosystem development, I'd be interested
-        to hear what you're seeing from the field.
+        Observations from the field on hardware,
+        commercialization, innovation ecosystems,
+        trade shows and community building.
       </p>
-
-
-      <a
-        href="/?type=hello#contact"
-        class="
-          inline-flex
-          items-center
-          gap-2
-          px-6
-          py-3
-          bg-brand-charcoal
-          text-white
-          text-xs
-          uppercase
-          tracking-[0.2em]
-          hover:bg-brand-gold
-          transition-colors
-        "
-      >
-        Start a Conversation
-        <span>→</span>
-      </a>
 
     </div>
 
   </section>
 
 
+
   <!-- =====================================================
-       FILTER LOGIC
+       INTRO + FILTERS — CREAM
        ===================================================== -->
 
-  <script is:inline>
+  <section
+    class="
+      bg-brand-cream
+      border-b
+      border-brand-border
+    "
+  >
 
-    const filterButtons =
+    <div
+      class="
+        max-w-6xl
+        w-full
+        mx-auto
+        px-6
+        py-12
+      "
+    >
+
+      <div
+        class="
+          grid
+          lg:grid-cols-12
+          gap-8
+          items-end
+        "
+      >
+
+        <!-- INTRO -->
+
+        <div
+          class="
+            lg:col-span-7
+          "
+        >
+
+          <span
+            class="
+              text-[9px]
+              uppercase
+              tracking-[0.2em]
+              text-brand-gold
+              font-semibold
+            "
+          >
+            Articles & Field Notes
+          </span>
+
+
+          <h2
+            class="
+              font-serif
+              text-3xl
+              sm:text-4xl
+              text-brand-charcoal
+              mt-2
+              mb-4
+            "
+          >
+            Ideas, observations,
+            and lessons from the field.
+          </h2>
+
+
+          <p
+            class="
+              text-sm
+              text-brand-slate
+              leading-relaxed
+              font-light
+              max-w-2xl
+            "
+          >
+            Notes on building communities,
+            attending industry events,
+            working across hardware ecosystems,
+            and understanding how technical
+            products move toward real-world adoption.
+          </p>
+
+        </div>
+
+
+
+        <!-- FILTER LABEL -->
+
+        <div
+          class="
+            lg:col-span-5
+            lg:text-right
+          "
+        >
+
+          <div
+            class="
+              text-[9px]
+              uppercase
+              tracking-[0.18em]
+              text-brand-slate
+              mb-3
+            "
+          >
+            Browse By Topic
+          </div>
+
+        </div>
+
+      </div>
+
+
+
+      <!-- FILTERS -->
+
+      <div
+        class="
+          flex
+          flex-wrap
+          gap-2
+          mt-8
+        "
+      >
+
+        {
+          categories.map(
+            (
+              category,
+              index
+            ) => (
+
+              <button
+                type="button"
+                data-filter={
+                  category.value
+                }
+                class:list={[
+                  "field-filter",
+                  "inline-flex",
+                  "items-center",
+                  "px-4",
+                  "py-2.5",
+                  "border",
+                  "text-[9px]",
+                  "uppercase",
+                  "tracking-[0.15em]",
+                  "font-semibold",
+                  "transition-colors",
+
+                  index === 0
+                    ? "is-active bg-brand-charcoal text-white border-brand-charcoal"
+                    : "bg-white text-brand-slate border-brand-border hover:border-brand-gold hover:text-brand-gold"
+                ]}
+              >
+                {category.label}
+              </button>
+
+            )
+          )
+        }
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+
+  <!-- =====================================================
+       NOTES LISTING — WHITE
+       ===================================================== -->
+
+  <section
+    class="
+      bg-white
+    "
+  >
+
+    <div
+      class="
+        max-w-6xl
+        w-full
+        mx-auto
+        px-6
+        py-16
+      "
+    >
+
+      <!-- SECTION HEADER -->
+
+      <div
+        class="
+          flex
+          flex-col
+          sm:flex-row
+          sm:items-end
+          justify-between
+          gap-4
+          mb-8
+        "
+      >
+
+        <div>
+
+          <span
+            class="
+              text-[9px]
+              uppercase
+              tracking-[0.2em]
+              text-brand-gold
+              font-semibold
+            "
+          >
+            Published Notes
+          </span>
+
+
+          <h2
+            class="
+              font-serif
+              text-3xl
+              text-brand-charcoal
+              mt-2
+            "
+          >
+            Explore The Notes
+          </h2>
+
+        </div>
+
+
+        <div
+          class="
+            text-[10px]
+            uppercase
+            tracking-[0.14em]
+            text-brand-slate
+          "
+        >
+          <span
+            id="visible-note-count"
+          >
+            {notes.length}
+          </span>
+
+          {" "}
+          published
+        </div>
+
+      </div>
+
+
+
+      <!-- =================================================
+           ARTICLE GRID
+           ================================================= -->
+
+      <div
+        id="field-notes-grid"
+        class="
+          grid
+          md:grid-cols-2
+          gap-5
+        "
+      >
+
+        {
+          notes.map(
+            (
+              note,
+              index
+            ) => (
+
+              <article
+                data-note-card
+                data-category={
+                  note.data.category
+                }
+                class="
+                  group
+                  border
+                  border-brand-border
+                  bg-white
+                  min-h-[285px]
+                  flex
+                  flex-col
+                  transition-all
+                  hover:border-brand-gold
+                  hover:bg-brand-cream
+                "
+              >
+
+                <a
+                  href={`/field-notes/${note.id.replace(".md", "")}/`}
+                  class="
+                    flex
+                    flex-col
+                    h-full
+                    p-6
+                    sm:p-7
+                  "
+                >
+
+                  <!-- TOP META -->
+
+                  <div
+                    class="
+                      flex
+                      items-start
+                      justify-between
+                      gap-4
+                      mb-7
+                    "
+                  >
+
+                    <div>
+
+                      <span
+                        class="
+                          inline-flex
+                          px-2.5
+                          py-1
+                          bg-brand-gold/10
+                          text-[8px]
+                          uppercase
+                          tracking-[0.15em]
+                          text-brand-gold
+                          font-semibold
+                        "
+                      >
+                        {
+                          getCategoryLabel(
+                            note.data.category
+                          )
+                        }
+                      </span>
+
+
+                      <div
+                        class="
+                          text-[9px]
+                          uppercase
+                          tracking-[0.14em]
+                          text-brand-slate
+                          mt-3
+                        "
+                      >
+                        {
+                          formatDate(
+                            note.data.date
+                          )
+                        }
+                      </div>
+
+                    </div>
+
+
+
+                    <!-- EDITORIAL NUMBER -->
+
+                    <span
+                      class="
+                        font-serif
+                        text-2xl
+                        text-brand-border
+                        group-hover:text-brand-gold
+                        transition-colors
+                      "
+                    >
+                      {
+                        String(
+                          index + 1
+                        ).padStart(
+                          2,
+                          "0"
+                        )
+                      }
+                    </span>
+
+                  </div>
+
+
+
+                  <!-- TITLE -->
+
+                  <h3
+                    class="
+                      font-serif
+                      text-2xl
+                      sm:text-[1.7rem]
+                      text-brand-charcoal
+                      leading-snug
+                      group-hover:text-brand-gold
+                      transition-colors
+                    "
+                  >
+                    {note.data.title}
+                  </h3>
+
+
+
+                  <!-- DESCRIPTION -->
+
+                  {
+                    note.data.description && (
+
+                      <p
+                        class="
+                          text-xs
+                          sm:text-sm
+                          text-brand-slate
+                          leading-relaxed
+                          font-light
+                          mt-4
+                          max-w-xl
+                        "
+                      >
+                        {
+                          note.data.description
+                        }
+                      </p>
+
+                    )
+                  }
+
+
+
+                  <!-- BOTTOM -->
+
+                  <div
+                    class="
+                      mt-auto
+                      pt-7
+                    "
+                  >
+
+                    <div
+                      class="
+                        border-t
+                        border-brand-border
+                        pt-4
+                        flex
+                        items-center
+                        justify-between
+                        gap-4
+                      "
+                    >
+
+                      <span
+                        class="
+                          text-[9px]
+                          uppercase
+                          tracking-[0.16em]
+                          text-brand-charcoal
+                          font-semibold
+                          group-hover:text-brand-gold
+                          transition-colors
+                        "
+                      >
+                        Read Field Note
+                      </span>
+
+
+                      <span
+                        class="
+                          text-brand-slate
+                          group-hover:text-brand-gold
+                          group-hover:translate-x-1
+                          transition-all
+                        "
+                      >
+                        →
+                      </span>
+
+                    </div>
+
+                  </div>
+
+                </a>
+
+              </article>
+
+            )
+          )
+        }
+
+      </div>
+
+
+
+      <!-- EMPTY STATE -->
+
+      <div
+        id="field-notes-empty"
+        class="
+          hidden
+          border
+          border-brand-border
+          bg-brand-cream
+          px-6
+          py-12
+          text-center
+        "
+      >
+
+        <p
+          class="
+            text-sm
+            text-brand-slate
+            font-light
+          "
+        >
+          No Field Notes are published
+          in this category yet.
+        </p>
+
+      </div>
+
+    </div>
+
+  </section>
+
+</BaseLayout>
+
+
+
+<!-- =====================================================
+     FILTER SCRIPT
+     ===================================================== -->
+
+<script is:inline>
+  (() => {
+
+    const buttons =
       Array.from(
         document.querySelectorAll(
-          ".field-note-filter"
+          ".field-filter"
         )
       );
 
-    const items =
+
+    const cards =
       Array.from(
         document.querySelectorAll(
-          ".field-note-item"
+          "[data-note-card]"
         )
       );
 
-    const countElement =
+
+    const count =
       document.getElementById(
-        "article-count"
+        "visible-note-count"
       );
+
 
     const emptyState =
       document.getElementById(
@@ -409,124 +759,73 @@ const filters = [
       );
 
 
-    const updateCount = (
-      count
-    ) => {
+    const setActiveButton =
+      (activeButton) => {
 
-      if (!countElement) return;
+        buttons.forEach(
+          (button) => {
 
-      countElement.textContent =
-        `${count} ${
-          count === 1
-            ? "Note"
-            : "Notes"
-        }`;
-
-    };
+            const isActive =
+              button ===
+              activeButton;
 
 
-    const setActiveButton = (
-      activeButton
-    ) => {
-
-      filterButtons.forEach(
-        (button) => {
-
-          button.classList.remove(
-            "active",
-            "border-brand-charcoal",
-            "bg-brand-charcoal",
-            "text-white"
-          );
+            button.classList.toggle(
+              "is-active",
+              isActive
+            );
 
 
-          button.classList.add(
-            "border-brand-border",
-            "text-brand-slate"
-          );
-
-        }
-      );
+            button.classList.toggle(
+              "bg-brand-charcoal",
+              isActive
+            );
 
 
-      activeButton.classList.remove(
-        "border-brand-border",
-        "text-brand-slate"
-      );
+            button.classList.toggle(
+              "text-white",
+              isActive
+            );
 
 
-      activeButton.classList.add(
-        "active",
-        "border-brand-charcoal",
-        "bg-brand-charcoal",
-        "text-white"
-      );
-
-    };
+            button.classList.toggle(
+              "border-brand-charcoal",
+              isActive
+            );
 
 
-    const filterNotes = (
-      category
-    ) => {
-
-      let visibleCount = 0;
-
-
-      items.forEach(
-        (item) => {
-
-          const itemCategory =
-            item.dataset.category;
+            button.classList.toggle(
+              "bg-white",
+              !isActive
+            );
 
 
-          const visible =
-            category === "all" ||
-            itemCategory === category;
+            button.classList.toggle(
+              "text-brand-slate",
+              !isActive
+            );
 
 
-          item.classList.toggle(
-            "hidden",
-            !visible
-          );
+            button.classList.toggle(
+              "border-brand-border",
+              !isActive
+            );
 
-
-          if (visible) {
-            visibleCount++;
           }
-
-        }
-      );
-
-
-      updateCount(
-        visibleCount
-      );
-
-
-      if (emptyState) {
-
-        emptyState.classList.toggle(
-          "hidden",
-          visibleCount !== 0
         );
 
-      }
-
-    };
+      };
 
 
-    filterButtons.forEach(
+    buttons.forEach(
       (button) => {
 
         button.addEventListener(
           "click",
           () => {
 
-            const category =
+            const filter =
               button.dataset.filter;
-
-
-            if (!category) return;
 
 
             setActiveButton(
@@ -534,9 +833,59 @@ const filters = [
             );
 
 
-            filterNotes(
-              category
+            let visible =
+              0;
+
+
+            cards.forEach(
+              (card) => {
+
+                const category =
+                  card.dataset.category;
+
+
+                const shouldShow =
+                  filter ===
+                    "all" ||
+                  category ===
+                    filter;
+
+
+                card.classList.toggle(
+                  "hidden",
+                  !shouldShow
+                );
+
+
+                if (
+                  shouldShow
+                ) {
+                  visible +=
+                    1;
+                }
+
+              }
             );
+
+
+            if (
+              count
+            ) {
+              count.textContent =
+                String(
+                  visible
+                );
+            }
+
+
+            if (
+              emptyState
+            ) {
+              emptyState.classList.toggle(
+                "hidden",
+                visible !== 0
+              );
+            }
 
           }
         );
@@ -544,6 +893,5 @@ const filters = [
       }
     );
 
-  </script>
-
-</BaseLayout>
+  })();
+</script>
