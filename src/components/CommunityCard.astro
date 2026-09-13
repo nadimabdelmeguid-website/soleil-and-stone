@@ -1,29 +1,90 @@
 ---
-import { events } from "../data/events";
-import { completedHostedEventCount } from "../utils/events";
+import {
+  events
+} from "../data/events";
+
+import {
+  isCompletedEvent
+} from "../utils/eventMetrics";
+
 
 const {
   community
 } = Astro.props;
 
-const eventCount =
-  completedHostedEventCount(
-    events,
-    community.id,
-    2026
+
+const communityEvents =
+  events
+    .filter(
+      (event) =>
+        event.communityId ===
+          community.id &&
+        isCompletedEvent(
+          event
+        ) &&
+        (
+          event.participation ===
+            "hosted" ||
+          event.participation ===
+            "co-organized"
+        )
+    )
+    .sort(
+      (a, b) =>
+        new Date(
+          `${b.startDate}T12:00:00`
+        ).getTime() -
+        new Date(
+          `${a.startDate}T12:00:00`
+        ).getTime()
+    );
+
+
+const recentProgramming =
+  communityEvents.slice(
+    0,
+    3
   );
 
-const hasLinkedInMetric =
-  community.linkedinFollowers !== undefined &&
-  community.linkedinFollowers !== null;
 
-const metricColumns =
-  hasLinkedInMetric
-    ? "sm:grid-cols-3"
-    : "sm:grid-cols-2";
+const registrations =
+  communityEvents.reduce(
+    (
+      total,
+      event
+    ) =>
+      total +
+      (
+        event.registrations ??
+        0
+      ),
+    0
+  );
+
+
+const speakers =
+  communityEvents.flatMap(
+    (event) =>
+      event.speakers ??
+      []
+  );
+
+
+const sponsors =
+  Array.from(
+    new Set(
+      communityEvents
+        .flatMap(
+          (event) =>
+            event.sponsors ??
+            []
+        )
+    )
+  );
 ---
 
 <section
+  id={community.id}
   class="
     max-w-6xl
     w-full
@@ -40,41 +101,37 @@ const metricColumns =
       grid
       lg:grid-cols-12
       gap-10
-      xl:gap-14
       items-start
     "
   >
 
     <!-- =================================================
-         LEFT COLUMN
+         COMMUNITY OVERVIEW
          ================================================= -->
 
     <div
       class="
-        lg:col-span-5
+        lg:col-span-6
       "
     >
 
       <span
         class="
-          text-xs
+          text-[10px]
           uppercase
-          tracking-[0.2em]
+          tracking-[0.18em]
           text-brand-gold
           font-semibold
         "
       >
-        {community.roleLabel}
+        {community.role}
       </span>
 
 
       <h2
         class="
           font-serif
-          text-2xl
-          sm:text-3xl
-          lg:text-[2rem]
-          leading-snug
+          text-3xl
           text-brand-charcoal
           mt-2
           mb-5
@@ -84,18 +141,22 @@ const metricColumns =
       </h2>
 
 
-      <p
-        class="
-          text-brand-slate
-          text-sm
-          sm:text-base
-          leading-relaxed
-          font-light
-          mb-7
-        "
-      >
-        {community.description}
-      </p>
+      {
+        community.description && (
+          <p
+            class="
+              text-sm
+              sm:text-base
+              text-brand-slate
+              leading-relaxed
+              font-light
+              mb-7
+            "
+          >
+            {community.description}
+          </p>
+        )
+      }
 
 
       <div
@@ -106,88 +167,64 @@ const metricColumns =
         "
       >
 
-        <!-- PRIMARY -->
-
         <a
           href={community.primaryUrl}
           target="_blank"
           rel="noopener noreferrer"
           class="
-            px-5
-            py-2.5
-            bg-brand-charcoal
-            text-white
-            text-xs
-            uppercase
-            tracking-widest
-            hover:bg-brand-gold
-            transition-colors
             inline-flex
             items-center
             gap-2
+            px-5
+            py-3
+            bg-brand-charcoal
+            text-white
+            text-[10px]
+            uppercase
+            tracking-[0.16em]
+            font-semibold
+            hover:bg-brand-gold
+            transition-colors
           "
         >
           {community.primaryLabel}
-          <span>↗</span>
+
+          <span>
+            ↗
+          </span>
         </a>
 
 
-        <!-- LINKEDIN -->
-
         {
-          community.linkedinUrl && (
+          community.secondaryUrl && (
             <a
-              href={community.linkedinUrl}
-              target="_blank"
-              rel="noopener noreferrer"
+              href={community.secondaryUrl}
               class="
-                px-5
-                py-2.5
-                border
-                border-brand-border
-                text-brand-slate
-                text-xs
-                uppercase
-                tracking-widest
-                hover:border-brand-gold
-                hover:text-brand-gold
-                transition-colors
                 inline-flex
                 items-center
                 gap-2
+                px-5
+                py-3
+                border
+                border-brand-border
+                text-brand-charcoal
+                text-[10px]
+                uppercase
+                tracking-[0.16em]
+                font-semibold
+                hover:border-brand-gold
+                hover:text-brand-gold
+                transition-colors
               "
             >
-              Follow on LinkedIn
-              <span>↗</span>
+              {community.secondaryLabel}
+
+              <span>
+                →
+              </span>
             </a>
           )
         }
-
-
-        <!-- SECONDARY -->
-
-        <a
-          href={community.secondaryUrl}
-          class="
-            px-5
-            py-2.5
-            border
-            border-brand-charcoal
-            text-brand-charcoal
-            text-xs
-            uppercase
-            tracking-widest
-            hover:border-brand-gold
-            hover:text-brand-gold
-            transition-colors
-            inline-flex
-            items-center
-            gap-2
-          "
-        >
-          {community.secondaryLabel}
-          <span>→</span>
-        </a>
 
       </div>
 
@@ -196,260 +233,372 @@ const metricColumns =
 
 
     <!-- =================================================
-         RIGHT COLUMN
+         COMMUNITY IMPACT
          ================================================= -->
 
     <div
       class="
-        lg:col-span-7
-        bg-brand-card
+        lg:col-span-6
+        bg-brand-cream
         border
         border-brand-border
-        shadow-sm
-        p-6
-        sm:p-8
+        p-7
       "
     >
 
-      <!-- PILLARS -->
-
-      <h3
+      <span
         class="
-          font-serif
-          text-lg
-          sm:text-xl
-          text-brand-charcoal
-          mb-4
-          pb-3
-          border-b
-          border-brand-border
+          text-[10px]
+          uppercase
+          tracking-[0.18em]
+          text-brand-gold
+          font-semibold
         "
       >
-        {community.pillarsTitle}
-      </h3>
-
-
-      <ul
-        class="
-          space-y-5
-          text-sm
-          text-brand-slate
-          font-light
-        "
-      >
-
-        {
-          community.pillars.map(
-            (pillar) => (
-              <li
-                class="
-                  flex
-                  items-start
-                  gap-3
-                "
-              >
-
-                <span
-                  class="
-                    text-brand-gold
-                    font-bold
-                    mt-[1px]
-                  "
-                >
-                  •
-                </span>
-
-
-                <p
-                  class="
-                    leading-relaxed
-                  "
-                >
-
-                  <strong
-                    class="
-                      font-medium
-                      text-brand-charcoal
-                    "
-                  >
-                    {pillar.title}:
-                  </strong>
-
-                  {" "}
-
-                  {pillar.text}
-
-                </p>
-
-              </li>
-            )
-          )
-        }
-
-      </ul>
-
+        Community Activity
+      </span>
 
 
       <!-- METRICS -->
 
       <div
         class="
-          mt-8
-          pt-6
-          border-t
+          grid
+          grid-cols-2
+          sm:grid-cols-3
+          gap-6
+          mt-6
+          pb-7
+          border-b
           border-brand-border
         "
       >
 
-        <h4
-          class="
-            text-xs
-            uppercase
-            tracking-widest
-            font-semibold
-            text-brand-charcoal
-            mb-4
-          "
-        >
-          Community Metrics
-        </h4>
-
-
-        <div
-          class:list={[
-            "grid grid-cols-1 gap-4",
-            metricColumns
-          ]}
-        >
-
-          <!-- MEMBERS -->
+        <div>
 
           <div
             class="
-              p-5
-              bg-brand-cream
-              border
-              border-brand-border
-              text-center
+              font-serif
+              text-2xl
+              text-brand-charcoal
             "
           >
-
-            <div
-              class="
-                font-serif
-                text-2xl
-                sm:text-3xl
-                text-brand-gold
-                font-semibold
-              "
-            >
-              {community.members}
-              {community.membersSuffix || ""}
-            </div>
-
-
-            <div
-              class="
-                text-[11px]
-                text-brand-slate
-                uppercase
-                tracking-wider
-                mt-2
-              "
-            >
-              {community.membersLabel}
-            </div>
-
+            {community.members}+
           </div>
 
 
-          <!-- LINKEDIN FOLLOWERS -->
+          <div
+            class="
+              text-[9px]
+              uppercase
+              tracking-[0.14em]
+              text-brand-slate
+              mt-1
+            "
+          >
+            Members
+          </div>
 
-          {
-            hasLinkedInMetric && (
-              <div
-                class="
-                  p-5
-                  bg-brand-cream
-                  border
-                  border-brand-border
-                  text-center
-                "
-              >
-
-                <div
-                  class="
-                    font-serif
-                    text-2xl
-                    sm:text-3xl
-                    text-brand-gold
-                    font-semibold
-                  "
-                >
-                  {community.linkedinFollowers}
-                  {community.linkedinFollowersSuffix || ""}
-                </div>
+        </div>
 
 
-                <div
-                  class="
-                    text-[11px]
-                    text-brand-slate
-                    uppercase
-                    tracking-wider
-                    mt-2
-                  "
-                >
-                  {community.linkedinFollowersLabel}
-                </div>
-
-              </div>
-            )
-          }
-
-
-          <!-- EVENT COUNT -->
+        <div>
 
           <div
             class="
-              p-5
-              bg-brand-cream
-              border
-              border-brand-border
-              text-center
+              font-serif
+              text-2xl
+              text-brand-charcoal
             "
           >
-
-            <div
-              class="
-                font-serif
-                text-2xl
-                sm:text-3xl
-                text-brand-charcoal
-                font-semibold
-              "
-            >
-              {eventCount}
-            </div>
+            {communityEvents.length}
+          </div>
 
 
-            <div
-              class="
-                text-[11px]
-                text-brand-slate
-                uppercase
-                tracking-wider
-                mt-2
-              "
-            >
-              Events Hosted in 2026
-            </div>
+          <div
+            class="
+              text-[9px]
+              uppercase
+              tracking-[0.14em]
+              text-brand-slate
+              mt-1
+            "
+          >
+            Events Led
+          </div>
 
+        </div>
+
+
+        <div>
+
+          <div
+            class="
+              font-serif
+              text-2xl
+              text-brand-gold
+            "
+          >
+            {registrations > 0
+              ? `${registrations}+`
+              : "—"}
+          </div>
+
+
+          <div
+            class="
+              text-[9px]
+              uppercase
+              tracking-[0.14em]
+              text-brand-slate
+              mt-1
+            "
+          >
+            Registrations
           </div>
 
         </div>
 
       </div>
+
+
+
+      <!-- PILLARS -->
+
+      {
+        community.pillars?.length > 0 && (
+          <div
+            class="
+              py-7
+              border-b
+              border-brand-border
+            "
+          >
+
+            <div
+              class="
+                text-[9px]
+                uppercase
+                tracking-[0.16em]
+                text-brand-slate
+                mb-4
+              "
+            >
+              Focus
+            </div>
+
+
+            <div
+              class="
+                flex
+                flex-wrap
+                gap-2
+              "
+            >
+
+              {
+                community.pillars.map(
+                  (pillar) => (
+                    <span
+                      class="
+                        px-3
+                        py-2
+                        bg-white
+                        border
+                        border-brand-border
+                        text-[10px]
+                        text-brand-slate
+                      "
+                    >
+                      {pillar}
+                    </span>
+                  )
+                )
+              }
+
+            </div>
+
+          </div>
+        )
+      }
+
+
+
+      <!-- RECENT PROGRAMMING -->
+
+      {
+        recentProgramming.length > 0 && (
+          <div
+            class="
+              pt-7
+            "
+          >
+
+            <div
+              class="
+                text-[9px]
+                uppercase
+                tracking-[0.16em]
+                text-brand-slate
+                mb-5
+              "
+            >
+              Recent Programming
+            </div>
+
+
+            <div
+              class="
+                space-y-5
+              "
+            >
+
+              {
+                recentProgramming.map(
+                  (event) => (
+                    <div>
+
+                      <div
+                        class="
+                          flex
+                          flex-wrap
+                          items-center
+                          gap-2
+                          mb-1
+                        "
+                      >
+
+                        <a
+                          href={event.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          class="
+                            text-sm
+                            font-semibold
+                            text-brand-charcoal
+                            hover:text-brand-gold
+                            transition-colors
+                          "
+                        >
+                          {event.title}
+                        </a>
+
+
+                        {
+                          event.registrations && (
+                            <span
+                              class="
+                                text-[9px]
+                                uppercase
+                                tracking-[0.12em]
+                                text-brand-gold
+                              "
+                            >
+                              {event.registrations}
+                              {" "}
+                              registrations
+                            </span>
+                          )
+                        }
+
+                      </div>
+
+
+                      {
+                        event.sponsors?.length > 0 && (
+                          <p
+                            class="
+                              text-xs
+                              text-brand-slate
+                              font-light
+                              mt-2
+                            "
+                          >
+                            <span
+                              class="
+                                font-semibold
+                                text-brand-charcoal
+                              "
+                            >
+                              Sponsored by:
+                            </span>
+
+                            {" "}
+
+                            {event.sponsors.join(", ")}
+                          </p>
+                        )
+                      }
+
+
+                      {
+                        event.speakers?.length > 0 && (
+                          <p
+                            class="
+                              text-xs
+                              text-brand-slate
+                              font-light
+                              mt-1
+                              leading-relaxed
+                            "
+                          >
+                            <span
+                              class="
+                                font-semibold
+                                text-brand-charcoal
+                              "
+                            >
+                              Speakers:
+                            </span>
+
+                            {" "}
+
+                            {
+                              event.speakers
+                                .map(
+                                  (speaker) =>
+                                    `${speaker.name} — ${speaker.company}`
+                                )
+                                .join(" · ")
+                            }
+                          </p>
+                        )
+                      }
+
+                    </div>
+                  )
+                )
+              }
+
+            </div>
+
+          </div>
+        )
+      }
+
+
+      {
+        speakers.length > 0 && (
+          <p
+            class="
+              text-[10px]
+              text-brand-slate
+              font-light
+              mt-6
+              pt-5
+              border-t
+              border-brand-border
+            "
+          >
+            {speakers.length} documented industry speakers
+            {
+              sponsors.length > 0
+                ? ` · ${sponsors.length} documented event sponsors`
+                : ""
+            }
+          </p>
+        )
+      }
 
     </div>
 
