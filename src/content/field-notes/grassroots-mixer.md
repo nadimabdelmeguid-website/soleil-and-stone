@@ -1,5 +1,5 @@
 ---
-title: "The Anatomy of a Grassroots Mixer: Moving Past Transactional Networking"
+title: "Beyond Transactional Networking"
 description: "Why the best founder communities are rarely built around polished pitches—and how low-pressure, high-trust gatherings can create the conditions for real friendships, collaborations, and even co-founder relationships."
 published: 2026-09-12
 category: "Ecosystems & Community"
