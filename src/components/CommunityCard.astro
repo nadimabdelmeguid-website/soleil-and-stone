@@ -13,6 +13,10 @@ const {
 } = Astro.props;
 
 
+/*
+ * Completed events led through this community.
+ */
+
 const communityEvents =
   events
     .filter(
@@ -38,13 +42,6 @@ const communityEvents =
           `${a.startDate}T12:00:00`
         ).getTime()
     );
-
-
-const recentProgramming =
-  communityEvents.slice(
-    0,
-    3
-  );
 
 
 const registrations =
@@ -73,14 +70,62 @@ const speakers =
 const sponsors =
   Array.from(
     new Set(
-      communityEvents
-        .flatMap(
-          (event) =>
-            event.sponsors ??
-            []
-        )
+      communityEvents.flatMap(
+        (event) =>
+          event.sponsors ??
+          []
+      )
     )
   );
+
+
+function formatMonth(
+  date: string
+) {
+
+  return new Date(
+    `${date}T12:00:00`
+  ).toLocaleDateString(
+    "en-US",
+    {
+      month:
+        "long",
+
+      year:
+        "numeric"
+    }
+  );
+
+}
+
+
+/*
+ * Shorter Hardware Meetup title for
+ * the programming cards.
+ */
+
+function hardwareTopic(
+  title: string
+) {
+
+  if (
+    title.includes(
+      "|"
+    )
+  ) {
+
+    return title
+      .split("|")
+      .slice(1)
+      .join("|")
+      .trim();
+
+  }
+
+
+  return title;
+
+}
 ---
 
 <section
@@ -96,6 +141,10 @@ const sponsors =
   "
 >
 
+  <!-- =====================================================
+       TOP
+       ===================================================== -->
+
   <div
     class="
       grid
@@ -106,12 +155,12 @@ const sponsors =
   >
 
     <!-- =================================================
-         COMMUNITY OVERVIEW
+         COMMUNITY INTRO
          ================================================= -->
 
     <div
       class="
-        lg:col-span-6
+        lg:col-span-5
       "
     >
 
@@ -132,6 +181,7 @@ const sponsors =
         class="
           font-serif
           text-3xl
+          sm:text-4xl
           text-brand-charcoal
           mt-2
           mb-5
@@ -141,23 +191,22 @@ const sponsors =
       </h2>
 
 
-      {
-        community.description && (
-          <p
-            class="
-              text-sm
-              sm:text-base
-              text-brand-slate
-              leading-relaxed
-              font-light
-              mb-7
-            "
-          >
-            {community.description}
-          </p>
-        )
-      }
+      <p
+        class="
+          text-sm
+          sm:text-base
+          text-brand-slate
+          leading-relaxed
+          font-light
+          mb-7
+        "
+      >
+        {community.description}
+      </p>
 
+
+
+      <!-- BUTTONS -->
 
       <div
         class="
@@ -233,31 +282,18 @@ const sponsors =
 
 
     <!-- =================================================
-         COMMUNITY IMPACT
+         FOCUS + METRICS
          ================================================= -->
 
     <div
       class="
-        lg:col-span-6
+        lg:col-span-7
         bg-brand-cream
         border
         border-brand-border
         p-7
       "
     >
-
-      <span
-        class="
-          text-[10px]
-          uppercase
-          tracking-[0.18em]
-          text-brand-gold
-          font-semibold
-        "
-      >
-        Community Activity
-      </span>
-
 
       <!-- METRICS -->
 
@@ -267,7 +303,6 @@ const sponsors =
           grid-cols-2
           sm:grid-cols-3
           gap-6
-          mt-6
           pb-7
           border-b
           border-brand-border
@@ -339,9 +374,11 @@ const sponsors =
               text-brand-gold
             "
           >
-            {registrations > 0
-              ? `${registrations}+`
-              : "—"}
+            {
+              registrations > 0
+                ? `${registrations}+`
+                : "—"
+            }
           </div>
 
 
@@ -363,245 +400,562 @@ const sponsors =
 
 
 
-      <!-- PILLARS -->
+      <!-- FOCUS -->
 
-      {
-        community.pillars?.length > 0 && (
-          <div
-            class="
-              py-7
-              border-b
-              border-brand-border
-            "
-          >
+      <div
+        class="
+          pt-7
+        "
+      >
 
-            <div
+        <div
+          class="
+            text-[9px]
+            uppercase
+            tracking-[0.18em]
+            text-brand-gold
+            font-semibold
+            mb-4
+          "
+        >
+          Focus
+        </div>
+
+
+        <div
+          class="
+            grid
+            sm:grid-cols-2
+            gap-x-6
+            gap-y-3
+          "
+        >
+
+          {
+            community.focus.map(
+              (item) => (
+                <div
+                  class="
+                    flex
+                    items-start
+                    gap-3
+                    text-xs
+                    text-brand-slate
+                    leading-relaxed
+                  "
+                >
+
+                  <span
+                    class="
+                      text-brand-gold
+                      mt-[2px]
+                    "
+                  >
+                    —
+                  </span>
+
+                  <span>
+                    {item}
+                  </span>
+
+                </div>
+              )
+            )
+          }
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+
+  <!-- =====================================================
+       PROGRAMMING
+       ===================================================== -->
+
+  {
+    communityEvents.length > 0 && (
+
+      <div
+        class="
+          mt-10
+        "
+      >
+
+        <div
+          class="
+            flex
+            flex-col
+            sm:flex-row
+            sm:items-end
+            justify-between
+            gap-3
+            mb-6
+          "
+        >
+
+          <div>
+
+            <span
               class="
                 text-[9px]
                 uppercase
-                tracking-[0.16em]
-                text-brand-slate
-                mb-4
+                tracking-[0.18em]
+                text-brand-gold
+                font-semibold
               "
             >
-              Focus
-            </div>
+              Track Record
+            </span>
 
+
+            <h3
+              class="
+                font-serif
+                text-2xl
+                text-brand-charcoal
+                mt-1
+              "
+            >
+              {
+                community.id ===
+                  "startup-mixer"
+                  ? "Mixer History"
+                  : "Recent Programming"
+              }
+            </h3>
+
+          </div>
+
+
+          {
+            community.id ===
+              "hardware-meetup" && (
+              <p
+                class="
+                  text-xs
+                  text-brand-slate
+                  font-light
+                "
+              >
+                Technical sessions with founders,
+                engineers and industry practitioners.
+              </p>
+            )
+          }
+
+        </div>
+
+
+
+        <!-- =================================================
+             STARTUP MIXER HISTORY
+             ================================================= -->
+
+        {
+          community.id ===
+            "startup-mixer" && (
 
             <div
               class="
-                flex
-                flex-wrap
-                gap-2
+                grid
+                sm:grid-cols-2
+                lg:grid-cols-3
+                gap-px
+                bg-brand-border
+                border
+                border-brand-border
               "
             >
 
               {
-                community.pillars.map(
-                  (pillar) => (
-                    <span
+                communityEvents.map(
+                  (event) => (
+
+                    <a
+                      href={event.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
                       class="
-                        px-3
-                        py-2
+                        group
                         bg-white
-                        border
-                        border-brand-border
-                        text-[10px]
-                        text-brand-slate
+                        p-5
+                        hover:bg-brand-cream
+                        transition-colors
                       "
                     >
-                      {pillar}
-                    </span>
+
+                      <div
+                        class="
+                          flex
+                          items-start
+                          justify-between
+                          gap-4
+                        "
+                      >
+
+                        <div>
+
+                          <div
+                            class="
+                              font-serif
+                              text-lg
+                              text-brand-charcoal
+                              group-hover:text-brand-gold
+                              transition-colors
+                            "
+                          >
+                            {formatMonth(
+                              event.startDate
+                            )}
+                          </div>
+
+
+                          <div
+                            class="
+                              text-[10px]
+                              uppercase
+                              tracking-[0.13em]
+                              text-brand-slate
+                              mt-1
+                            "
+                          >
+                            San Diego County Startup Mixer
+                          </div>
+
+                        </div>
+
+
+                        <span
+                          class="
+                            text-brand-slate
+                            text-xs
+                          "
+                        >
+                          ↗
+                        </span>
+
+                      </div>
+
+
+                      {
+                        typeof event.registrations ===
+                          "number" && (
+
+                          <div
+                            class="
+                              mt-5
+                              pt-4
+                              border-t
+                              border-brand-border
+                            "
+                          >
+
+                            <span
+                              class="
+                                font-serif
+                                text-xl
+                                text-brand-gold
+                              "
+                            >
+                              {event.registrations}
+                            </span>
+
+
+                            <span
+                              class="
+                                text-[9px]
+                                uppercase
+                                tracking-[0.13em]
+                                text-brand-slate
+                                ml-2
+                              "
+                            >
+                              registrations
+                            </span>
+
+                          </div>
+
+                        )
+                      }
+
+                    </a>
+
                   )
                 )
               }
 
             </div>
 
-          </div>
-        )
-      }
+          )
+        }
 
 
 
-      <!-- RECENT PROGRAMMING -->
+        <!-- =================================================
+             HARDWARE PROGRAMMING
+             ================================================= -->
 
-      {
-        recentProgramming.length > 0 && (
-          <div
-            class="
-              pt-7
-            "
-          >
+        {
+          community.id ===
+            "hardware-meetup" && (
 
             <div
               class="
-                text-[9px]
-                uppercase
-                tracking-[0.16em]
-                text-brand-slate
-                mb-5
-              "
-            >
-              Recent Programming
-            </div>
-
-
-            <div
-              class="
-                space-y-5
+                grid
+                lg:grid-cols-3
+                gap-5
               "
             >
 
               {
-                recentProgramming.map(
+                communityEvents.map(
                   (event) => (
-                    <div>
+
+                    <article
+                      class="
+                        bg-white
+                        border
+                        border-brand-border
+                        p-6
+                      "
+                    >
+
+                      <!-- MONTH -->
 
                       <div
                         class="
                           flex
-                          flex-wrap
                           items-center
-                          gap-2
-                          mb-1
+                          justify-between
+                          gap-3
+                          mb-4
                         "
                       >
 
-                        <a
-                          href={event.url}
-                          target="_blank"
-                          rel="noopener noreferrer"
+                        <span
                           class="
-                            text-sm
+                            text-[9px]
+                            uppercase
+                            tracking-[0.15em]
+                            text-brand-gold
                             font-semibold
-                            text-brand-charcoal
-                            hover:text-brand-gold
-                            transition-colors
                           "
                         >
-                          {event.title}
-                        </a>
+                          {formatMonth(
+                            event.startDate
+                          )}
+                        </span>
 
 
                         {
-                          event.registrations && (
+                          typeof event.registrations ===
+                            "number" && (
+
                             <span
                               class="
                                 text-[9px]
                                 uppercase
                                 tracking-[0.12em]
-                                text-brand-gold
+                                text-brand-slate
                               "
                             >
                               {event.registrations}
                               {" "}
                               registrations
                             </span>
+
                           )
                         }
 
                       </div>
 
 
+
+                      <!-- TOPIC -->
+
+                      <h4
+                        class="
+                          font-serif
+                          text-xl
+                          text-brand-charcoal
+                          leading-snug
+                          min-h-[52px]
+                        "
+                      >
+                        {hardwareTopic(
+                          event.title
+                        )}
+                      </h4>
+
+
+
+                      <!-- SPONSOR -->
+
                       {
                         event.sponsors?.length > 0 && (
-                          <p
+
+                          <div
                             class="
-                              text-xs
-                              text-brand-slate
-                              font-light
-                              mt-2
+                              mt-5
+                              pt-4
+                              border-t
+                              border-brand-border
                             "
                           >
-                            <span
+
+                            <div
                               class="
+                                text-[8px]
+                                uppercase
+                                tracking-[0.15em]
+                                text-brand-slate
+                                mb-1
+                              "
+                            >
+                              Event Sponsor
+                            </div>
+
+
+                            <div
+                              class="
+                                text-xs
                                 font-semibold
                                 text-brand-charcoal
                               "
                             >
-                              Sponsored by:
-                            </span>
+                              {event.sponsors.join(
+                                ", "
+                              )}
+                            </div>
 
-                            {" "}
+                          </div>
 
-                            {event.sponsors.join(", ")}
-                          </p>
                         )
                       }
 
+
+
+                      <!-- SPEAKERS -->
 
                       {
                         event.speakers?.length > 0 && (
-                          <p
+
+                          <div
                             class="
-                              text-xs
-                              text-brand-slate
-                              font-light
-                              mt-1
-                              leading-relaxed
+                              mt-5
                             "
                           >
-                            <span
+
+                            <div
                               class="
-                                font-semibold
-                                text-brand-charcoal
+                                text-[8px]
+                                uppercase
+                                tracking-[0.15em]
+                                text-brand-slate
+                                mb-3
                               "
                             >
-                              Speakers:
-                            </span>
+                              Speakers
+                            </div>
 
-                            {" "}
 
-                            {
-                              event.speakers
-                                .map(
-                                  (speaker) =>
-                                    `${speaker.name} — ${speaker.company}`
+                            <div
+                              class="
+                                space-y-3
+                              "
+                            >
+
+                              {
+                                event.speakers.map(
+                                  (speaker) => (
+
+                                    <div>
+
+                                      <div
+                                        class="
+                                          text-xs
+                                          font-semibold
+                                          text-brand-charcoal
+                                        "
+                                      >
+                                        {speaker.name}
+                                      </div>
+
+
+                                      <div
+                                        class="
+                                          text-[10px]
+                                          text-brand-slate
+                                          mt-0.5
+                                        "
+                                      >
+                                        {speaker.company}
+
+                                        {
+                                          speaker.title
+                                            ? ` · ${speaker.title}`
+                                            : ""
+                                        }
+                                      </div>
+
+                                    </div>
+
+                                  )
                                 )
-                                .join(" · ")
-                            }
-                          </p>
+                              }
+
+                            </div>
+
+                          </div>
+
                         )
                       }
 
-                    </div>
+
+
+                      <!-- LINK -->
+
+                      <a
+                        href={event.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="
+                          inline-flex
+                          items-center
+                          gap-2
+                          mt-6
+                          text-[9px]
+                          uppercase
+                          tracking-[0.15em]
+                          text-brand-charcoal
+                          font-semibold
+                          hover:text-brand-gold
+                          transition-colors
+                        "
+                      >
+                        View Event
+                        <span>↗</span>
+                      </a>
+
+                    </article>
+
                   )
                 )
               }
 
             </div>
 
-          </div>
-        )
-      }
+          )
+        }
 
+      </div>
 
-      {
-        speakers.length > 0 && (
-          <p
-            class="
-              text-[10px]
-              text-brand-slate
-              font-light
-              mt-6
-              pt-5
-              border-t
-              border-brand-border
-            "
-          >
-            {speakers.length} documented industry speakers
-            {
-              sponsors.length > 0
-                ? ` · ${sponsors.length} documented event sponsors`
-                : ""
-            }
-          </p>
-        )
-      }
-
-    </div>
-
-  </div>
+    )
+  }
 
 </section>
