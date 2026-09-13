@@ -1,68 +1,113 @@
 ---
-import { getCollection, render } from "astro:content";
+import {
+  getCollection,
+  render
+} from "astro:content";
+
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import FieldNoteLayout from "../../layouts/FieldNoteLayout.astro";
 
+
 export async function getStaticPaths() {
-  const now = new Date();
 
-  const posts = (await getCollection("fieldNotes"))
-    .filter(
-      (post) =>
-        !post.data.draft &&
-        post.data.published <= now
+  const now =
+    new Date();
+
+
+  const posts =
+    (
+      await getCollection(
+        "fieldNotes"
+      )
     )
-    .sort(
-      (a, b) =>
-        b.data.published.getTime() -
-        a.data.published.getTime()
-    );
-
-  return posts.map((post) => {
-    const otherPosts =
-      posts.filter(
-        (candidate) =>
-          candidate.id !== post.id
+      .filter(
+        (post) =>
+          !post.data.draft &&
+          post.data.published <= now
+      )
+      .sort(
+        (a, b) =>
+          b.data.published.getTime() -
+          a.data.published.getTime()
       );
 
-    const sameCategory =
-      otherPosts.filter(
-        (candidate) =>
-          candidate.data.categorySlug ===
-          post.data.categorySlug
-      );
 
-    const recommendedPost =
-      sameCategory[0] ??
-      otherPosts[0] ??
-      null;
+  return posts.map(
+    (post) => {
 
-    return {
-      params: {
-        slug: post.id
-      },
+      const otherPosts =
+        posts.filter(
+          (candidate) =>
+            candidate.id !== post.id
+        );
 
-      props: {
-        post,
-        recommendedPost
-      }
-    };
-  });
+
+      const sameCategory =
+        otherPosts.filter(
+          (candidate) =>
+            candidate.data.categorySlug ===
+            post.data.categorySlug
+        );
+
+
+      const recommendedPost =
+        sameCategory[0] ??
+        otherPosts[0] ??
+        null;
+
+
+      return {
+
+        params: {
+          slug: post.id
+        },
+
+        props: {
+          post,
+          recommendedPost
+        }
+
+      };
+
+    }
+  );
+
 }
+
 
 const {
   post,
   recommendedPost
 } = Astro.props;
 
+
 const {
   Content
 } = await render(post);
+
+
+/* =====================================================
+   ARTICLE SEO
+   ===================================================== */
+
+const seoTitle =
+  `${post.data.title} | Soleil & Stone`;
+
+
+const publishedTime =
+  post.data.published.toISOString();
+
+
+const canonicalURL =
+  `/field-notes/${post.id}/`;
 ---
 
 <BaseLayout
-  title={`${post.data.title} | SOLEIL & STONE`}
+  title={seoTitle}
   description={post.data.description}
+  type="article"
+  publishedTime={publishedTime}
+  canonicalURL={canonicalURL}
 >
 
   <FieldNoteLayout
