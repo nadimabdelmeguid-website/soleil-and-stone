@@ -49,58 +49,18 @@ export function getEventParticipation(
   event: SiteEvent
 ): EventParticipation {
 
-  if (
-    event.participation
-  ) {
-
-    return event.participation;
-
-  }
-
-
-  const label =
-    (
-      event.typeLabel ??
-      ""
-    ).toLowerCase();
-
-
-  if (
-    label.includes(
-      "exhibitor"
-    )
-  ) {
-
-    return "exhibitor";
-
-  }
-
-
-  if (
-    label.includes(
-      "co-organized"
-    )
-  ) {
-
-    return "co-organized";
-
-  }
-
-
-  if (
-    event.role ===
-    "hosted"
-  ) {
-
-    return "hosted";
-
-  }
-
-
-  return "attending";
+  return event.participation;
 
 }
 
+
+/*
+ * Calendar display priority:
+ *
+ * 3 = hosted / co-organized
+ * 2 = exhibitor
+ * 1 = attending
+ */
 
 export function getParticipationPriority(
   event: SiteEvent
@@ -139,6 +99,11 @@ export function getParticipationPriority(
 export function getProfessionalMetrics(
   events: SiteEvent[]
 ) {
+
+  /*
+   * Community metrics intentionally count
+   * completed events only.
+   */
 
   const completed =
     events.filter(
@@ -183,8 +148,7 @@ export function getProfessionalMetrics(
 
 
   /*
-   * Only events you led:
-   * hosted + co-organized.
+   * Events where you had a leadership role.
    */
 
   const ledEvents =
@@ -207,7 +171,8 @@ export function getProfessionalMetrics(
 
 
   /*
-   * Total registrations across events led.
+   * Total registrations across
+   * hosted / co-organized events.
    */
 
   const registrationsLed =
@@ -226,24 +191,75 @@ export function getProfessionalMetrics(
 
 
   /*
-   * Number of led events for which
-   * registration data is available.
+   * All documented speakers attached
+   * to completed events you led.
    */
 
-  const ledEventsWithRegistrationData =
-    ledEvents.filter(
+  const speakers =
+    ledEvents.flatMap(
       (event) =>
-        typeof event.registrations ===
-        "number"
-    ).length;
+        event.speakers ??
+        []
+    );
 
+
+  /*
+   * Unique organizations that directly
+   * participated in events you led.
+   *
+   * Includes:
+   * - event sponsors
+   * - organizations represented by speakers
+   *
+   * Duplicate company names are removed.
+   */
+
+  const organizationNames =
+    ledEvents.flatMap(
+      (event) => [
+
+        ...(
+          event.sponsors ??
+          []
+        ),
+
+        ...(
+          event.speakers ??
+          []
+        ).map(
+          (speaker) =>
+            speaker.company
+        )
+
+      ]
+    );
+
+
+  const uniqueOrganizations =
+    new Set(
+      organizationNames
+        .map(
+          (organization) =>
+            organization
+              .trim()
+              .toLowerCase()
+        )
+        .filter(Boolean)
+    );
+
+
+  /*
+   * Geographic professional footprint.
+   */
 
   const cities =
     new Set(
       completed
         .map(
           (event) =>
-            event.city?.trim()
+            event.city
+              ?.trim()
+              .toLowerCase()
         )
         .filter(
           (
@@ -277,7 +293,11 @@ export function getProfessionalMetrics(
 
     registrationsLed,
 
-    ledEventsWithRegistrationData,
+    speakers:
+      speakers.length,
+
+    organizationsEngaged:
+      uniqueOrganizations.size,
 
     cities:
       cities.size
