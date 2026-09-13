@@ -1,11 +1,15 @@
 export const site = {
-  name: "SOLEIL & STONE",
+  name:
+    "SOLEIL & STONE",
 
-  url: "https://soleilandstone.co",
+  url:
+    "https://soleilandstone.co",
 
-  location: "San Diego, CA",
+  location:
+    "San Diego, CA",
 
-  profileImage: "/profile.png",
+  profileImage:
+    "/profile.png",
 
   linkedin:
     "https://www.linkedin.com/in/nadim-abdel-meguid-aa5229108/",
@@ -15,19 +19,30 @@ export const site = {
 
   navigation: [
     {
-      label: "Community",
-      href: "/community/"
+      label:
+        "Community",
+
+      href:
+        "/community/"
     },
+
     {
-      label: "Field Notes",
-      href: "/field-notes/"
+      label:
+        "Field Notes",
+
+      href:
+        "/field-notes/"
     }
   ],
 
   author: {
-    name: "Nadim Abdel Meguid",
+    name:
+      "Nadim Abdel Meguid",
+
+    tagline:
+      "Hardware. Commercialization. Innovation Ecosystems.",
 
     bio:
-      "Based in San Diego, Nadim builds founder and hardware communities while writing about entrepreneurship, technology, and the ecosystems where ideas become companies."
+      "Raised in Cairo, trained as an Industrial Engineer in France, and shaped by the Bay Area technology ecosystem. Now based in San Diego, Nadim works at the intersection of hardware, commercialization, and community—connecting engineers, founders, manufacturers, investors, and operators to help technical ideas move toward real-world adoption."
   }
 };
