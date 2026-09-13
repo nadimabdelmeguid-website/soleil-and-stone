@@ -25,7 +25,7 @@ const year =
       w-full
       mx-auto
       px-6
-      py-10
+      py-9
     "
   >
 
@@ -38,7 +38,9 @@ const year =
       "
     >
 
-      <!-- BRAND -->
+      <!-- =================================================
+           BRAND
+           ================================================= -->
 
       <div
         class="
@@ -48,16 +50,16 @@ const year =
 
         <Logo
           variant="wordmark"
-          width="190"
+          width="145"
         />
 
 
         <p
           class="
-            text-xs
+            text-[11px]
             text-brand-slate
             font-light
-            mt-4
+            mt-3
           "
         >
           {site.location}
@@ -66,12 +68,12 @@ const year =
 
         <p
           class="
-            text-xs
+            text-[11px]
             text-brand-slate
             font-light
             leading-relaxed
-            max-w-sm
-            mt-3
+            max-w-xs
+            mt-2
           "
         >
           Hardware, commercialization,
@@ -83,11 +85,13 @@ const year =
 
 
 
-      <!-- SITE -->
+      <!-- =================================================
+           EXPLORE
+           ================================================= -->
 
       <div
         class="
-          md:col-span-3
+          md:col-span-4
         "
       >
 
@@ -107,11 +111,15 @@ const year =
 
         <div
           class="
-            flex
-            flex-col
-            gap-3
+            grid
+            grid-cols-2
+            gap-x-8
+            gap-y-3
+            max-w-sm
           "
         >
+
+          <!-- COLUMN 1 / ROW 1 -->
 
           <a
             href="/community/"
@@ -126,18 +134,7 @@ const year =
           </a>
 
 
-          <a
-            href="/field-notes/"
-            class="
-              text-xs
-              text-brand-slate
-              hover:text-brand-gold
-              transition-colors
-            "
-          >
-            Field Notes
-          </a>
-
+          <!-- COLUMN 2 / ROW 1 -->
 
           <a
             href="/about/"
@@ -151,6 +148,23 @@ const year =
             About
           </a>
 
+
+          <!-- COLUMN 1 / ROW 2 -->
+
+          <a
+            href="/field-notes/"
+            class="
+              text-xs
+              text-brand-slate
+              hover:text-brand-gold
+              transition-colors
+            "
+          >
+            Field Notes
+          </a>
+
+
+          <!-- COLUMN 2 / ROW 2 -->
 
           <a
             href="/fieldwork/"
@@ -170,11 +184,13 @@ const year =
 
 
 
-      <!-- CONNECT -->
+      <!-- =================================================
+           CONNECT
+           ================================================= -->
 
       <div
         class="
-          md:col-span-4
+          md:col-span-3
           md:text-right
         "
       >
@@ -200,6 +216,8 @@ const year =
             gap-3
           "
         >
+
+          <!-- LINKEDIN -->
 
           <a
             href={site.linkedin}
@@ -235,6 +253,8 @@ const year =
 
           </a>
 
+
+          <!-- EMAIL -->
 
           <a
             href={site.email}
@@ -286,10 +306,14 @@ const year =
 
 
 
+    <!-- =================================================
+         BOTTOM
+         ================================================= -->
+
     <div
       class="
-        mt-10
-        pt-6
+        mt-8
+        pt-5
         border-t
         border-brand-border
         text-[10px]
