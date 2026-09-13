@@ -10,6 +10,12 @@ export type EventParticipation =
   | "attending";
 
 
+/*
+ * -------------------------------------------------------
+ * DATE HELPERS
+ * -------------------------------------------------------
+ */
+
 export function parseMetricDate(
   value: string
 ) {
@@ -40,10 +46,17 @@ export function isCompletedEvent(
   );
 
 
-  return end < new Date();
+  return end <
+    new Date();
 
 }
 
+
+/*
+ * -------------------------------------------------------
+ * PARTICIPATION
+ * -------------------------------------------------------
+ */
 
 export function getEventParticipation(
   event: SiteEvent
@@ -55,11 +68,15 @@ export function getEventParticipation(
 
 
 /*
- * Calendar display priority:
+ * Calendar viewing priority:
  *
  * 3 = hosted / co-organized
  * 2 = exhibitor
  * 1 = attending
+ *
+ * If multiple events fall on the same date,
+ * the strongest level of involvement controls
+ * the calendar color / primary event.
  */
 
 export function getParticipationPriority(
@@ -96,13 +113,22 @@ export function getParticipationPriority(
 }
 
 
+/*
+ * -------------------------------------------------------
+ * PROFESSIONAL METRICS
+ * -------------------------------------------------------
+ */
+
 export function getProfessionalMetrics(
   events: SiteEvent[]
 ) {
 
   /*
-   * Community metrics intentionally count
-   * completed events only.
+   * Metrics intentionally count only completed events.
+   *
+   * Upcoming events remain visible on the calendar
+   * and fieldwork archive but do not inflate the
+   * professional track-record metrics.
    */
 
   const completed =
@@ -110,6 +136,12 @@ export function getProfessionalMetrics(
       isCompletedEvent
     );
 
+
+  /*
+   * -----------------------------------------------------
+   * PARTICIPATION COUNTS
+   * -----------------------------------------------------
+   */
 
   const hosted =
     completed.filter(
@@ -148,7 +180,8 @@ export function getProfessionalMetrics(
 
 
   /*
-   * Events where you had a leadership role.
+   * Events where you had an organizing /
+   * leadership role.
    */
 
   const ledEvents =
@@ -171,8 +204,18 @@ export function getProfessionalMetrics(
 
 
   /*
-   * Total registrations across
-   * hosted / co-organized events.
+   * -----------------------------------------------------
+   * REGISTRATIONS
+   * -----------------------------------------------------
+   *
+   * Includes registrations only from completed
+   * events you hosted or co-organized.
+   *
+   * Current documented examples include:
+   *
+   * - Startup Mixers
+   * - Hardware Meetups
+   * - Voler CES networking event
    */
 
   const registrationsLed =
@@ -191,8 +234,25 @@ export function getProfessionalMetrics(
 
 
   /*
-   * All documented speakers attached
-   * to completed events you led.
+   * Number of led events for which we have
+   * documented registration data.
+   */
+
+  const ledEventsWithRegistrationData =
+    ledEvents.filter(
+      (event) =>
+        typeof event.registrations ===
+        "number"
+    ).length;
+
+
+  /*
+   * -----------------------------------------------------
+   * SPEAKERS
+   * -----------------------------------------------------
+   *
+   * Counts documented individual speakers
+   * across events you led.
    */
 
   const speakers =
@@ -204,14 +264,66 @@ export function getProfessionalMetrics(
 
 
   /*
-   * Unique organizations that directly
-   * participated in events you led.
+   * Unique people rather than total appearances.
    *
-   * Includes:
+   * This prevents the metric from becoming inflated
+   * if the same speaker returns for another event.
+   */
+
+  const uniqueSpeakers =
+    new Map<
+      string,
+      {
+        name: string;
+        title?: string;
+        company: string;
+      }
+    >();
+
+
+  speakers.forEach(
+    (speaker) => {
+
+      const key =
+        speaker.name
+          .trim()
+          .toLowerCase();
+
+
+      if (
+        !uniqueSpeakers.has(
+          key
+        )
+      ) {
+
+        uniqueSpeakers.set(
+          key,
+          speaker
+        );
+
+      }
+
+    }
+  );
+
+
+  /*
+   * -----------------------------------------------------
+   * ORGANIZATIONS ENGAGED
+   * -----------------------------------------------------
+   *
+   * Only organizations with direct participation
+   * in events you hosted / co-organized count.
+   *
+   * Included:
    * - event sponsors
+   * - event partners / collaborators
    * - organizations represented by speakers
    *
-   * Duplicate company names are removed.
+   * NOT included:
+   * - companies you merely met
+   * - companies whose booth you visited
+   * - trade-show exhibitors you encountered
    */
 
   const organizationNames =
@@ -220,6 +332,11 @@ export function getProfessionalMetrics(
 
         ...(
           event.sponsors ??
+          []
+        ),
+
+        ...(
+          event.partners ??
           []
         ),
 
@@ -235,12 +352,71 @@ export function getProfessionalMetrics(
     );
 
 
+  /*
+   * Normalize names for deduplication.
+   *
+   * Example:
+   * "SEACOMP" appearing as both sponsor
+   * and speaker organization counts once.
+   */
+
   const uniqueOrganizations =
+    new Map<
+      string,
+      string
+    >();
+
+
+  organizationNames
+    .filter(Boolean)
+    .forEach(
+      (organization) => {
+
+        const clean =
+          organization.trim();
+
+
+        const key =
+          clean.toLowerCase();
+
+
+        if (
+          !uniqueOrganizations.has(
+            key
+          )
+        ) {
+
+          uniqueOrganizations.set(
+            key,
+            clean
+          );
+
+        }
+
+      }
+    );
+
+
+  /*
+   * -----------------------------------------------------
+   * SPONSORS
+   * -----------------------------------------------------
+   */
+
+  const sponsorNames =
+    ledEvents.flatMap(
+      (event) =>
+        event.sponsors ??
+        []
+    );
+
+
+  const uniqueSponsors =
     new Set(
-      organizationNames
+      sponsorNames
         .map(
-          (organization) =>
-            organization
+          (sponsor) =>
+            sponsor
               .trim()
               .toLowerCase()
         )
@@ -249,7 +425,36 @@ export function getProfessionalMetrics(
 
 
   /*
-   * Geographic professional footprint.
+   * -----------------------------------------------------
+   * PARTNERS / COLLABORATORS
+   * -----------------------------------------------------
+   */
+
+  const partnerNames =
+    ledEvents.flatMap(
+      (event) =>
+        event.partners ??
+        []
+    );
+
+
+  const uniquePartners =
+    new Set(
+      partnerNames
+        .map(
+          (partner) =>
+            partner
+              .trim()
+              .toLowerCase()
+        )
+        .filter(Boolean)
+    );
+
+
+  /*
+   * -----------------------------------------------------
+   * GEOGRAPHIC FOOTPRINT
+   * -----------------------------------------------------
    */
 
   const cities =
@@ -270,11 +475,41 @@ export function getProfessionalMetrics(
     );
 
 
+  /*
+   * -----------------------------------------------------
+   * YEARS ACTIVE
+   * -----------------------------------------------------
+   */
+
+  const years =
+    new Set(
+      completed.map(
+        (event) =>
+          parseMetricDate(
+            event.startDate
+          ).getFullYear()
+      )
+    );
+
+
+  /*
+   * -----------------------------------------------------
+   * RETURN
+   * -----------------------------------------------------
+   */
+
   return {
 
+    /*
+     * Total completed professional events.
+     */
     total:
       completed.length,
 
+
+    /*
+     * Leadership.
+     */
     hosted:
       hosted.length,
 
@@ -285,22 +520,49 @@ export function getProfessionalMetrics(
       hosted.length +
       coOrganized.length,
 
+
+    /*
+     * Industry participation.
+     */
     exhibited:
       exhibited.length,
 
     attended:
       attended.length,
 
+
+    /*
+     * Measurable community reach.
+     */
     registrationsLed,
 
+    ledEventsWithRegistrationData,
+
+
+    /*
+     * External participation.
+     */
     speakers:
-      speakers.length,
+      uniqueSpeakers.size,
 
     organizationsEngaged:
       uniqueOrganizations.size,
 
+    sponsors:
+      uniqueSponsors.size,
+
+    partners:
+      uniquePartners.size,
+
+
+    /*
+     * Geographic / longitudinal activity.
+     */
     cities:
-      cities.size
+      cities.size,
+
+    yearsActive:
+      years.size
 
   };
 
