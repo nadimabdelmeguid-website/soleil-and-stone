@@ -1,9 +1,10 @@
 ---
 import { readingTime } from "../utils/readingTime";
 
-const {
-  post
-} = Astro.props;
+const { post } = Astro.props;
+
+const readTime =
+  readingTime(post.body ?? "");
 
 const publishedDate =
   post.data.published.toLocaleDateString(
@@ -14,188 +15,123 @@ const publishedDate =
       year: "numeric"
     }
   );
-
-const minutes =
-  readingTime(
-    post.body ?? ""
-  );
-
-const href =
-  `/field-notes/${post.id}/`;
 ---
 
 <article
   class="
-    group
-    h-full
     bg-white
     border
     border-brand-border
-    overflow-hidden
-    transition-all
-    duration-300
-    hover:-translate-y-1
-    hover:shadow-[0_12px_30px_rgba(34,37,42,0.08)]
-    hover:border-brand-gold/50
+    p-7
+    sm:p-8
+    h-full
+    flex
+    flex-col
   "
 >
 
-  <a
-    href={href}
+  <div
     class="
       flex
-      flex-col
-      h-full
-      p-7
-      sm:p-8
+      flex-wrap
+      items-center
+      gap-2
+      text-[10px]
+      uppercase
+      tracking-[0.15em]
+      mb-5
     "
   >
 
-    <!-- TOP META -->
-
-    <div
+    <span
       class="
-        flex
-        flex-wrap
-        items-center
-        gap-x-3
-        gap-y-2
-        mb-6
-        text-[10px]
-        uppercase
-        tracking-[0.16em]
-        font-medium
+        text-brand-gold
+        font-semibold
       "
     >
+      {post.data.category}
+    </span>
 
-      <span
-        class="
-          text-brand-gold
-        "
-      >
-        {post.data.category}
-      </span>
-
-
-      <span
-        class="
-          text-brand-border
-        "
-      >
-        •
-      </span>
-
-
-      <span
-        class="
-          text-brand-slate
-        "
-      >
-        {publishedDate}
-      </span>
-
-
-      <span
-        class="
-          text-brand-border
-        "
-      >
-        •
-      </span>
-
-
-      <span
-        class="
-          text-brand-slate
-        "
-      >
-        {minutes} min read
-      </span>
-
-    </div>
-
-
-    <!-- TITLE -->
-
-    <h3
+    <span
       class="
-        font-serif
-        text-2xl
-        sm:text-[1.7rem]
-        leading-[1.35]
-        text-brand-charcoal
-        mb-5
-        transition-colors
-        duration-300
-        group-hover:text-brand-gold
+        text-brand-border
       "
     >
-      {post.data.title}
-    </h3>
+      •
+    </span>
 
-
-    <!-- DESCRIPTION -->
-
-    <p
+    <span
       class="
-        text-sm
-        sm:text-[15px]
         text-brand-slate
-        leading-7
-        font-light
-        mb-8
       "
     >
-      {post.data.description}
-    </p>
+      {publishedDate}
+    </span>
 
-
-    <!-- READ MORE -->
-
-    <div
+    <span
       class="
-        mt-auto
-        pt-5
-        border-t
-        border-brand-border
-        flex
-        items-center
-        justify-between
-        gap-4
+        text-brand-border
       "
     >
+      •
+    </span>
 
-      <span
-        class="
-          text-[11px]
-          uppercase
-          tracking-[0.18em]
-          font-semibold
-          text-brand-charcoal
-          transition-colors
-          duration-300
-          group-hover:text-brand-gold
-        "
-      >
-        Read Field Note
-      </span>
+    <span
+      class="
+        text-brand-slate
+      "
+    >
+      {readTime} min read
+    </span>
+
+  </div>
 
 
-      <span
-        class="
-          text-lg
-          text-brand-gold
-          transition-transform
-          duration-300
-          group-hover:translate-x-1
-        "
-        aria-hidden="true"
-      >
-        →
-      </span>
+  <h3
+    class="
+      font-serif
+      text-xl
+      sm:text-2xl
+      text-brand-charcoal
+      leading-snug
+      mb-4
+    "
+  >
+    {post.data.title}
+  </h3>
 
-    </div>
 
+  <p
+    class="
+      text-sm
+      text-brand-slate
+      leading-relaxed
+      font-light
+      mb-7
+    "
+  >
+    {post.data.description}
+  </p>
+
+
+  <a
+    href={`/field-notes/${post.id}/`}
+    class="
+      mt-auto
+      inline-flex
+      items-center
+      gap-2
+      text-xs
+      uppercase
+      tracking-widest
+      font-semibold
+      text-brand-charcoal
+      hover:text-brand-gold
+      transition-colors
+    "
+  >
+    Read Field Note
+    <span>→</span>
   </a>
 
 </article>
