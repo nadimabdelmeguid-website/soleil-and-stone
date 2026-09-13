@@ -38,8 +38,8 @@ export interface SiteEvent {
   showOnHome?: boolean;
 
   /**
-   * Add only when you have a registration
-   * number you can substantiate.
+   * Registration count for events you hosted/co-organized.
+   * Add only when you have a supported number.
    */
   registrations?: number;
 }
@@ -52,29 +52,21 @@ export const events: SiteEvent[] = [
   // =====================================================
 
   {
-    id:
-      "ces-2027",
+    id: "ces-2027",
 
-    title:
-      "CES 2027",
+    title: "CES 2027",
 
-    role:
-      "attending",
+    role: "attending",
 
-    participation:
-      "exhibitor",
+    participation: "exhibitor",
 
-    startDate:
-      "2027-01-06",
+    startDate: "2027-01-06",
 
-    endDate:
-      "2027-01-09",
+    endDate: "2027-01-09",
 
-    venue:
-      "Las Vegas Convention Center",
+    venue: "Las Vegas Convention Center",
 
-    city:
-      "Las Vegas",
+    city: "Las Vegas",
 
     description:
       "Exhibiting at CES with a focus on consumer electronics, embedded technologies, acoustics, sensing and hardware commercialization.",
@@ -98,8 +90,7 @@ export const events: SiteEvent[] = [
   // =====================================================
 
   {
-    id:
-      "aems-2026",
+    id: "aems-2026",
 
     title:
       "Anaheim Electronics & Manufacturing Show 2026",
@@ -661,6 +652,9 @@ export const events: SiteEvent[] = [
     typeLabel:
       "Co-Organized Hardware Event",
 
+    registrations:
+      87,
+
     showOnHome:
       true
   },
@@ -788,6 +782,9 @@ export const events: SiteEvent[] = [
 
     typeLabel:
       "Co-Organized Hardware Event",
+
+    registrations:
+      57,
 
     showOnHome:
       true
@@ -988,6 +985,9 @@ export const events: SiteEvent[] = [
 
     typeLabel:
       "Co-Organized Hardware Event",
+
+    registrations:
+      44,
 
     showOnHome:
       true
@@ -1255,7 +1255,7 @@ export const events: SiteEvent[] = [
       "Hosted Industry Event",
 
     registrations:
-      200,
+      203,
 
     showOnHome:
       true
