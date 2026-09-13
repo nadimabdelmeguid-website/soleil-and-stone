@@ -6,39 +6,131 @@ import {
 import BaseLayout from "../../layouts/BaseLayout.astro";
 
 
+/* =========================================================
+   LOAD FIELD NOTES
+   ========================================================= */
+
 const allNotes =
   await getCollection(
     "field-notes"
   );
 
 
+/* =========================================================
+   HELPERS
+   ========================================================= */
+
 function getNoteDate(
   note
 ) {
-  return new Date(
+
+  const value =
+    note.data.published ??
     note.data.date ??
     note.data.publishDate ??
-    note.data.publishedAt
-  );
+    note.data.publishedAt;
+
+
+  if (!value) {
+    return null;
+  }
+
+
+  const date =
+    value instanceof Date
+      ? value
+      : new Date(
+          `${value}T12:00:00`
+        );
+
+
+  return Number.isNaN(
+    date.getTime()
+  )
+    ? null
+    : date;
+
+}
+
+
+function normalizeCategory(
+  value
+) {
+
+  const category =
+    String(
+      value ?? ""
+    )
+      .trim()
+      .toLowerCase();
+
+
+  if (
+    category === "ecosystem" ||
+    category === "ecosystems" ||
+    category === "ecosystems & community" ||
+    category === "ecosystem & community"
+  ) {
+    return "ecosystem";
+  }
+
+
+  if (
+    category === "tradeshows" ||
+    category === "trade shows" ||
+    category === "trade-show" ||
+    category === "trade-shows"
+  ) {
+    return "tradeshows";
+  }
+
+
+  if (
+    category === "hardware" ||
+    category === "hardware & manufacturing" ||
+    category === "hardware and manufacturing"
+  ) {
+    return "hardware";
+  }
+
+
+  return category || "ecosystem";
+
 }
 
 
 function getCategory(
   note
 ) {
-  return (
+
+  return normalizeCategory(
+    note.data.categorySlug ??
     note.data.category ??
-    "ecosystems"
+    note.data.categoryName
   );
+
 }
 
 
 function getCategoryLabel(
-  category
+  note
 ) {
 
+  if (
+    note.data.categoryName
+  ) {
+    return note.data.categoryName;
+  }
+
+
+  const category =
+    getCategory(
+      note
+    );
+
+
   const labels = {
-    ecosystems:
+    ecosystem:
       "Ecosystems & Community",
 
     tradeshows:
@@ -51,19 +143,22 @@ function getCategoryLabel(
 
   return (
     labels[category] ??
-    category
+    "Field Notes"
   );
 
 }
 
 
 function formatDate(
-  value
+  date
 ) {
 
-  return new Date(
-    value
-  ).toLocaleDateString(
+  if (!date) {
+    return "";
+  }
+
+
+  return date.toLocaleDateString(
     "en-US",
     {
       month:
@@ -80,6 +175,78 @@ function formatDate(
 }
 
 
+function getDescription(
+  note
+) {
+
+  return (
+    note.data.description ??
+    note.data.excerpt ??
+    ""
+  );
+
+}
+
+
+function getReadMinutes(
+  note
+) {
+
+  return (
+    note.data.readMinutes ??
+    note.data.readingTime ??
+    null
+  );
+
+}
+
+
+function getSlug(
+  note
+) {
+
+  return note.id
+    .replace(
+      /\.md$/,
+      ""
+    )
+    .replace(
+      /\.mdx$/,
+      ""
+    );
+
+}
+
+
+function getNoteUrl(
+  note
+) {
+
+  /*
+   * If an explicit URL exists in the metadata,
+   * use it.
+   *
+   * Otherwise use the Astro dynamic route.
+   */
+
+  if (
+    note.data.url
+  ) {
+    return note.data.url;
+  }
+
+
+  return `/field-notes/${getSlug(
+    note
+  )}/`;
+
+}
+
+
+/* =========================================================
+   PUBLISHED NOTES
+   ========================================================= */
+
 const now =
   new Date();
 
@@ -88,27 +255,78 @@ const notes =
   allNotes
     .filter(
       (note) => {
+
+        /*
+         * Respect draft metadata if present.
+         */
+
+        if (
+          note.data.draft === true
+        ) {
+          return false;
+        }
+
+
         const date =
           getNoteDate(
             note
           );
 
+
+        /*
+         * Don't silently remove an article just because
+         * its date field is missing.
+         */
+
+        if (!date) {
+          return true;
+        }
+
+
         return (
-          !Number.isNaN(
-            date.getTime()
-          ) &&
           date <= now
         );
+
       }
     )
     .sort(
-      (a, b) =>
-        getNoteDate(
-          b
-        ).getTime() -
-        getNoteDate(
-          a
-        ).getTime()
+      (a, b) => {
+
+        const dateA =
+          getNoteDate(
+            a
+          );
+
+        const dateB =
+          getNoteDate(
+            b
+          );
+
+
+        if (
+          !dateA &&
+          !dateB
+        ) {
+          return 0;
+        }
+
+
+        if (!dateA) {
+          return 1;
+        }
+
+
+        if (!dateB) {
+          return -1;
+        }
+
+
+        return (
+          dateB.getTime() -
+          dateA.getTime()
+        );
+
+      }
     );
 
 
@@ -120,13 +338,15 @@ const categories = [
     value:
       "all"
   },
+
   {
     label:
       "Ecosystems & Community",
 
     value:
-      "ecosystems"
+      "ecosystem"
   },
+
   {
     label:
       "Trade Shows",
@@ -134,6 +354,7 @@ const categories = [
     value:
       "tradeshows"
   },
+
   {
     label:
       "Hardware & Manufacturing",
@@ -150,7 +371,7 @@ const categories = [
 >
 
   <!-- =====================================================
-       HERO
+       HERO — WHITE
        ===================================================== -->
 
   <section
@@ -171,6 +392,8 @@ const categories = [
         pb-14
       "
     >
+
+      <!-- BRAND LABEL -->
 
       <span
         class="
@@ -231,7 +454,7 @@ const categories = [
 
 
   <!-- =====================================================
-       FILTER BAR
+       FILTER AREA — CREAM
        ===================================================== -->
 
   <section
@@ -252,98 +475,82 @@ const categories = [
       "
     >
 
+      <span
+        class="
+          text-[9px]
+          uppercase
+          tracking-[0.2em]
+          text-brand-gold
+          font-semibold
+        "
+      >
+        Articles & Field Notes
+      </span>
+
+
+      <p
+        class="
+          text-sm
+          text-brand-slate
+          leading-relaxed
+          font-light
+          max-w-3xl
+          mt-2
+        "
+      >
+        Notes on communities, industry events,
+        hardware ecosystems and technical commercialization.
+      </p>
+
+
+
+      <!-- FILTER BUTTONS -->
+
       <div
         class="
           flex
-          flex-col
-          gap-5
+          flex-wrap
+          gap-2
+          mt-5
         "
       >
 
-        <!-- INTRO -->
+        {
+          categories.map(
+            (
+              category,
+              index
+            ) => (
 
-        <div>
+              <button
+                type="button"
+                data-filter={
+                  category.value
+                }
+                class:list={[
+                  "field-filter",
+                  "inline-flex",
+                  "items-center",
+                  "px-4",
+                  "py-2.5",
+                  "border",
+                  "text-[9px]",
+                  "uppercase",
+                  "tracking-[0.15em]",
+                  "font-semibold",
+                  "transition-colors",
 
-          <span
-            class="
-              text-[9px]
-              uppercase
-              tracking-[0.2em]
-              text-brand-gold
-              font-semibold
-            "
-          >
-            Articles & Field Notes
-          </span>
+                  index === 0
+                    ? "bg-brand-charcoal text-white border-brand-charcoal"
+                    : "bg-white text-brand-slate border-brand-border hover:border-brand-gold hover:text-brand-gold"
+                ]}
+              >
+                {category.label}
+              </button>
 
-
-          <p
-            class="
-              text-sm
-              text-brand-slate
-              leading-relaxed
-              font-light
-              max-w-3xl
-              mt-2
-            "
-          >
-            Notes on communities, industry events,
-            hardware ecosystems and technical
-            commercialization.
-          </p>
-
-        </div>
-
-
-
-        <!-- FILTERS -->
-
-        <div
-          class="
-            flex
-            flex-wrap
-            gap-2
-          "
-        >
-
-          {
-            categories.map(
-              (
-                category,
-                index
-              ) => (
-
-                <button
-                  type="button"
-                  data-filter={
-                    category.value
-                  }
-                  class:list={[
-                    "field-filter",
-                    "inline-flex",
-                    "items-center",
-                    "px-4",
-                    "py-2.5",
-                    "border",
-                    "text-[9px]",
-                    "uppercase",
-                    "tracking-[0.15em]",
-                    "font-semibold",
-                    "transition-colors",
-
-                    index === 0
-                      ? "is-active bg-brand-charcoal text-white border-brand-charcoal"
-                      : "bg-white text-brand-slate border-brand-border hover:border-brand-gold hover:text-brand-gold"
-                  ]}
-                >
-                  {category.label}
-                </button>
-
-              )
             )
-          }
-
-        </div>
+          )
+        }
 
       </div>
 
@@ -354,7 +561,7 @@ const categories = [
 
 
   <!-- =====================================================
-       NOTES
+       PUBLISHED NOTES — WHITE
        ===================================================== -->
 
   <section
@@ -373,7 +580,7 @@ const categories = [
       "
     >
 
-      <!-- HEADER -->
+      <!-- SECTION HEADING -->
 
       <div
         class="
@@ -422,6 +629,7 @@ const categories = [
             text-brand-slate
           "
         >
+
           <span
             id="visible-note-count"
           >
@@ -429,7 +637,15 @@ const categories = [
           </span>
 
           {" "}
-          notes
+
+          <span
+            id="visible-note-label"
+          >
+            {notes.length === 1
+              ? "note"
+              : "notes"}
+          </span>
+
         </div>
 
       </div>
@@ -440,240 +656,362 @@ const categories = [
            NOTES GRID
            ================================================= -->
 
-      <div
-        id="field-notes-grid"
-        class="
-          grid
-          md:grid-cols-2
-          gap-5
-        "
-      >
+      {
+        notes.length > 0 && (
 
-        {
-          notes.map(
-            (
-              note,
-              index
-            ) => (
+          <div
+            id="field-notes-grid"
+            class="
+              grid
+              md:grid-cols-2
+              gap-5
+            "
+          >
 
-              <article
-                data-note-card
-                data-category={
-                  getCategory(
-                    note
-                  )
-                }
-                class="
-                  group
-                  border
-                  border-brand-border
-                  bg-white
-                  min-h-[250px]
-                  flex
-                  flex-col
-                  transition-colors
-                  hover:border-brand-gold
-                  hover:bg-brand-cream
-                "
-              >
+            {
+              notes.map(
+                (
+                  note,
+                  index
+                ) => {
 
-                <a
-                  href={`/field-notes/${note.id.replace(".md", "")}/`}
-                  class="
-                    flex
-                    flex-col
-                    h-full
-                    p-6
-                  "
-                >
-
-                  <!-- META -->
-
-                  <div
-                    class="
-                      flex
-                      items-start
-                      justify-between
-                      gap-4
-                      mb-6
-                    "
-                  >
-
-                    <div>
-
-                      <span
-                        class="
-                          inline-flex
-                          px-2.5
-                          py-1
-                          bg-brand-gold/10
-                          text-[8px]
-                          uppercase
-                          tracking-[0.15em]
-                          text-brand-gold
-                          font-semibold
-                        "
-                      >
-                        {
-                          getCategoryLabel(
-                            getCategory(
-                              note
-                            )
-                          )
-                        }
-                      </span>
+                  const noteDate =
+                    getNoteDate(
+                      note
+                    );
 
 
-                      <div
-                        class="
-                          text-[9px]
-                          uppercase
-                          tracking-[0.14em]
-                          text-brand-slate
-                          mt-3
-                        "
-                      >
-                        {
-                          formatDate(
-                            getNoteDate(
-                              note
-                            )
-                          )
-                        }
-                      </div>
-
-                    </div>
+                  const noteUrl =
+                    getNoteUrl(
+                      note
+                    );
 
 
-                    <span
-                      class="
-                        font-serif
-                        text-xl
-                        text-brand-border
-                        group-hover:text-brand-gold
-                        transition-colors
-                      "
-                    >
-                      {
-                        String(
-                          index + 1
-                        ).padStart(
-                          2,
-                          "0"
+                  const readMinutes =
+                    getReadMinutes(
+                      note
+                    );
+
+
+                  return (
+
+                    <article
+                      data-note-card
+                      data-category={
+                        getCategory(
+                          note
                         )
                       }
-                    </span>
-
-                  </div>
-
-
-
-                  <!-- TITLE -->
-
-                  <h3
-                    class="
-                      font-serif
-                      text-2xl
-                      text-brand-charcoal
-                      leading-snug
-                      group-hover:text-brand-gold
-                      transition-colors
-                    "
-                  >
-                    {note.data.title}
-                  </h3>
-
-
-
-                  <!-- DESCRIPTION -->
-
-                  {
-                    note.data.description && (
-
-                      <p
-                        class="
-                          text-xs
-                          sm:text-sm
-                          text-brand-slate
-                          leading-relaxed
-                          font-light
-                          mt-4
-                          max-w-xl
-                        "
-                      >
-                        {
-                          note.data.description
-                        }
-                      </p>
-
-                    )
-                  }
-
-
-
-                  <!-- FOOTER -->
-
-                  <div
-                    class="
-                      mt-auto
-                      pt-6
-                    "
-                  >
-
-                    <div
                       class="
-                        border-t
+                        group
+                        border
                         border-brand-border
-                        pt-4
+                        bg-white
                         flex
-                        items-center
-                        justify-between
+                        flex-col
+                        min-h-[260px]
+                        transition-all
+                        duration-200
+                        hover:border-brand-gold
+                        hover:bg-brand-cream
                       "
                     >
 
-                      <span
+                      <!--
+                        Entire card is clickable.
+                      -->
+
+                      <a
+                        href={noteUrl}
                         class="
-                          text-[9px]
-                          uppercase
-                          tracking-[0.16em]
-                          text-brand-charcoal
-                          font-semibold
-                          group-hover:text-brand-gold
-                          transition-colors
+                          flex
+                          flex-col
+                          h-full
+                          p-6
+                          sm:p-7
                         "
+                        aria-label={`Read ${note.data.title}`}
                       >
-                        Read Note
-                      </span>
+
+                        <!-- TOP META -->
+
+                        <div
+                          class="
+                            flex
+                            items-start
+                            justify-between
+                            gap-5
+                            mb-6
+                          "
+                        >
+
+                          <div>
+
+                            <!-- CATEGORY -->
+
+                            <span
+                              class="
+                                inline-flex
+                                px-2.5
+                                py-1
+                                bg-brand-gold/10
+                                text-[8px]
+                                uppercase
+                                tracking-[0.15em]
+                                text-brand-gold
+                                font-semibold
+                              "
+                            >
+                              {
+                                getCategoryLabel(
+                                  note
+                                )
+                              }
+                            </span>
 
 
-                      <span
-                        class="
-                          text-brand-slate
-                          group-hover:text-brand-gold
-                          group-hover:translate-x-1
-                          transition-all
-                        "
-                      >
-                        →
-                      </span>
+                            <!-- DATE -->
 
-                    </div>
+                            {
+                              noteDate && (
 
-                  </div>
+                                <div
+                                  class="
+                                    text-[9px]
+                                    uppercase
+                                    tracking-[0.14em]
+                                    text-brand-slate
+                                    mt-3
+                                  "
+                                >
+                                  {
+                                    formatDate(
+                                      noteDate
+                                    )
+                                  }
+                                </div>
 
-                </a>
+                              )
+                            }
 
-              </article>
-
-            )
-          )
-        }
-
-      </div>
+                          </div>
 
 
 
-      <!-- EMPTY STATE -->
+                          <!-- EDITORIAL NUMBER -->
+
+                          <span
+                            class="
+                              font-serif
+                              text-xl
+                              text-brand-border
+                              group-hover:text-brand-gold
+                              transition-colors
+                            "
+                          >
+                            {
+                              String(
+                                index + 1
+                              ).padStart(
+                                2,
+                                "0"
+                              )
+                            }
+                          </span>
+
+                        </div>
+
+
+
+                        <!-- TITLE -->
+
+                        <h3
+                          class="
+                            font-serif
+                            text-2xl
+                            text-brand-charcoal
+                            leading-snug
+                            group-hover:text-brand-gold
+                            transition-colors
+                          "
+                        >
+                          {note.data.title}
+                        </h3>
+
+
+
+                        <!-- DESCRIPTION -->
+
+                        {
+                          getDescription(
+                            note
+                          ) && (
+
+                            <p
+                              class="
+                                text-xs
+                                sm:text-sm
+                                text-brand-slate
+                                leading-relaxed
+                                font-light
+                                mt-4
+                                max-w-xl
+                              "
+                            >
+                              {
+                                getDescription(
+                                  note
+                                )
+                              }
+                            </p>
+
+                          )
+                        }
+
+
+
+                        <!-- CARD FOOTER -->
+
+                        <div
+                          class="
+                            mt-auto
+                            pt-6
+                          "
+                        >
+
+                          <div
+                            class="
+                              border-t
+                              border-brand-border
+                              pt-4
+                              flex
+                              items-center
+                              justify-between
+                              gap-5
+                            "
+                          >
+
+                            <div
+                              class="
+                                flex
+                                items-center
+                                gap-3
+                              "
+                            >
+
+                              <span
+                                class="
+                                  text-[9px]
+                                  uppercase
+                                  tracking-[0.16em]
+                                  text-brand-charcoal
+                                  font-semibold
+                                  group-hover:text-brand-gold
+                                  transition-colors
+                                "
+                              >
+                                Read Field Note
+                              </span>
+
+
+                              {
+                                readMinutes && (
+
+                                  <>
+                                    <span
+                                      class="
+                                        text-brand-border
+                                      "
+                                    >
+                                      •
+                                    </span>
+
+
+                                    <span
+                                      class="
+                                        text-[9px]
+                                        text-brand-slate
+                                      "
+                                    >
+                                      {readMinutes} min read
+                                    </span>
+                                  </>
+
+                                )
+                              }
+
+                            </div>
+
+
+                            <span
+                              class="
+                                text-brand-slate
+                                group-hover:text-brand-gold
+                                group-hover:translate-x-1
+                                transition-all
+                              "
+                            >
+                              →
+                            </span>
+
+                          </div>
+
+                        </div>
+
+                      </a>
+
+                    </article>
+
+                  );
+
+                }
+              )
+            }
+
+          </div>
+
+        )
+      }
+
+
+
+      <!-- =================================================
+           NO PUBLISHED ARTICLES
+           ================================================= -->
+
+      {
+        notes.length === 0 && (
+
+          <div
+            id="no-notes-initial"
+            class="
+              border
+              border-brand-border
+              bg-brand-cream
+              px-6
+              py-10
+              text-center
+            "
+          >
+
+            <p
+              class="
+                text-sm
+                text-brand-slate
+                font-light
+              "
+            >
+              No Field Notes are currently published.
+            </p>
+
+          </div>
+
+        )
+      }
+
+
+
+      <!-- FILTER EMPTY STATE -->
 
       <div
         id="field-notes-empty"
@@ -738,62 +1076,68 @@ const categories = [
       );
 
 
+    const label =
+      document.getElementById(
+        "visible-note-label"
+      );
+
+
     const emptyState =
       document.getElementById(
         "field-notes-empty"
       );
 
 
-    const setActiveButton =
-      (activeButton) => {
+    function updateActiveButton(
+      activeButton
+    ) {
 
-        buttons.forEach(
-          (button) => {
+      buttons.forEach(
+        (button) => {
 
-            const isActive =
-              button ===
-              activeButton;
-
-
-            button.classList.toggle(
-              "bg-brand-charcoal",
-              isActive
-            );
+          const isActive =
+            button === activeButton;
 
 
-            button.classList.toggle(
-              "text-white",
-              isActive
-            );
+          button.classList.toggle(
+            "bg-brand-charcoal",
+            isActive
+          );
 
 
-            button.classList.toggle(
-              "border-brand-charcoal",
-              isActive
-            );
+          button.classList.toggle(
+            "text-white",
+            isActive
+          );
 
 
-            button.classList.toggle(
-              "bg-white",
-              !isActive
-            );
+          button.classList.toggle(
+            "border-brand-charcoal",
+            isActive
+          );
 
 
-            button.classList.toggle(
-              "text-brand-slate",
-              !isActive
-            );
+          button.classList.toggle(
+            "bg-white",
+            !isActive
+          );
 
 
-            button.classList.toggle(
-              "border-brand-border",
-              !isActive
-            );
+          button.classList.toggle(
+            "text-brand-slate",
+            !isActive
+          );
 
-          }
-        );
 
-      };
+          button.classList.toggle(
+            "border-brand-border",
+            !isActive
+          );
+
+        }
+      );
+
+    }
 
 
     buttons.forEach(
@@ -807,7 +1151,7 @@ const categories = [
               button.dataset.filter;
 
 
-            setActiveButton(
+            updateActiveButton(
               button
             );
 
@@ -824,10 +1168,8 @@ const categories = [
 
 
                 const shouldShow =
-                  filter ===
-                    "all" ||
-                  category ===
-                    filter;
+                  filter === "all" ||
+                  category === filter;
 
 
                 card.classList.toggle(
@@ -846,9 +1188,7 @@ const categories = [
             );
 
 
-            if (
-              count
-            ) {
+            if (count) {
               count.textContent =
                 String(
                   visible
@@ -856,13 +1196,23 @@ const categories = [
             }
 
 
-            if (
-              emptyState
-            ) {
+            if (label) {
+
+              label.textContent =
+                visible === 1
+                  ? "note"
+                  : "notes";
+
+            }
+
+
+            if (emptyState) {
+
               emptyState.classList.toggle(
                 "hidden",
                 visible !== 0
               );
+
             }
 
           }
