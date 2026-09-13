@@ -1,6 +1,6 @@
 ---
 import { events } from "../data/events";
-import { parseDate, isPastEvent } from "../utils/events";
+import { parseDate } from "../utils/events";
 
 const visibleEvents = events
   .filter((event) => event.showOnHome)
@@ -10,24 +10,14 @@ const visibleEvents = events
       parseDate(b.startDate).getTime()
   );
 
-const upcomingEvents =
-  visibleEvents.filter((event) => !isPastEvent(event));
-
-const pastEvents =
-  visibleEvents
-    .filter((event) => isPastEvent(event))
-    .reverse();
-
-const firstUpcoming =
-  upcomingEvents[0];
-
-const secondUpcoming =
-  upcomingEvents[1];
-
-function formatDate(startDate: string, endDate?: string) {
+function formatDate(
+  startDate: string,
+  endDate?: string
+) {
   const start = parseDate(startDate);
+  const end = parseDate(endDate || startDate);
 
-  if (!endDate || endDate === startDate) {
+  if (startDate === (endDate || startDate)) {
     return start.toLocaleDateString(
       "en-US",
       {
@@ -38,12 +28,11 @@ function formatDate(startDate: string, endDate?: string) {
     );
   }
 
-  const end = parseDate(endDate);
+  const sameMonth =
+    start.getFullYear() === end.getFullYear() &&
+    start.getMonth() === end.getMonth();
 
-  if (
-    start.getMonth() === end.getMonth() &&
-    start.getFullYear() === end.getFullYear()
-  ) {
+  if (sameMonth) {
     return `${start.toLocaleDateString(
       "en-US",
       {
@@ -82,6 +71,8 @@ function formatDate(startDate: string, endDate?: string) {
     border-brand-border
   "
 >
+
+  <!-- SECTION HEADER -->
 
   <div
     class="
@@ -123,7 +114,6 @@ function formatDate(startDate: string, endDate?: string) {
 
     </div>
 
-
     <p
       class="
         text-brand-slate
@@ -140,6 +130,8 @@ function formatDate(startDate: string, endDate?: string) {
   </div>
 
 
+  <!-- CALENDAR + MONTH EVENTS -->
+
   <div
     class="
       grid
@@ -149,7 +141,7 @@ function formatDate(startDate: string, endDate?: string) {
     "
   >
 
-    <!-- CALENDAR -->
+    <!-- LEFT: CALENDAR -->
 
     <div
       class="
@@ -159,99 +151,115 @@ function formatDate(startDate: string, endDate?: string) {
         border
         border-brand-border
         shadow-sm
+        flex
+        flex-col
+        justify-between
       "
     >
 
-      <div
-        class="
-          flex
-          items-center
-          justify-between
-          border-b
-          border-brand-border
-          pb-4
-          mb-4
-        "
-      >
+      <div>
 
-        <button
-          id="calendar-prev"
+        <div
           class="
-            px-2
-            py-1
-            border
+            flex
+            items-center
+            justify-between
+            border-b
             border-brand-border
-            text-brand-slate
-            hover:text-brand-gold
+            pb-4
+            mb-4
           "
         >
-          ←
-        </button>
 
+          <button
+            id="calendar-prev"
+            type="button"
+            class="
+              text-brand-slate
+              hover:text-brand-gold
+              transition-colors
+              font-bold
+              px-2
+              py-1
+              border
+              border-brand-border
+              text-xs
+            "
+            aria-label="Previous month"
+          >
+            ←
+          </button>
 
-        <span
-          id="calendar-title"
+          <span
+            id="calendar-title"
+            class="
+              font-serif
+              text-lg
+              font-normal
+              text-brand-charcoal
+            "
+          ></span>
+
+          <button
+            id="calendar-next"
+            type="button"
+            class="
+              text-brand-slate
+              hover:text-brand-gold
+              transition-colors
+              font-bold
+              px-2
+              py-1
+              border
+              border-brand-border
+              text-xs
+            "
+            aria-label="Next month"
+          >
+            →
+          </button>
+
+        </div>
+
+        <div
           class="
-            font-serif
-            text-lg
-            text-brand-charcoal
-          "
-        ></span>
-
-
-        <button
-          id="calendar-next"
-          class="
-            px-2
-            py-1
-            border
-            border-brand-border
+            grid
+            grid-cols-7
+            gap-1
+            text-center
+            text-[10px]
+            font-semibold
             text-brand-slate
-            hover:text-brand-gold
+            uppercase
+            tracking-wider
+            mb-2
           "
         >
-          →
-        </button>
+          <div>S</div>
+          <div>M</div>
+          <div>T</div>
+          <div>W</div>
+          <div>T</div>
+          <div>F</div>
+          <div>S</div>
+        </div>
+
+        <div
+          id="calendar-grid"
+          class="
+            grid
+            grid-cols-7
+            gap-1
+            text-center
+            text-xs
+            text-brand-slate
+          "
+        ></div>
 
       </div>
 
 
-      <div
-        class="
-          grid
-          grid-cols-7
-          gap-1
-          text-center
-          text-[10px]
-          font-semibold
-          text-brand-slate
-          uppercase
-          tracking-wider
-          mb-2
-        "
-      >
-        <div>S</div>
-        <div>M</div>
-        <div>T</div>
-        <div>W</div>
-        <div>T</div>
-        <div>F</div>
-        <div>S</div>
-      </div>
-
-
-      <div
-        id="calendar-grid"
-        class="
-          grid
-          grid-cols-7
-          gap-1
-          text-center
-          text-xs
-          text-brand-slate
-        "
-      ></div>
-
+      <!-- MONTH SUMMARY -->
 
       <div
         class="
@@ -272,58 +280,22 @@ function formatDate(startDate: string, endDate?: string) {
             mb-3
           "
         >
-          Latest Past Events:
+          This Month
         </div>
-
 
         <div
+          id="month-summary"
           class="
-            flex
-            flex-col
-            gap-2
+            text-[11px]
+            text-brand-slate
+            leading-relaxed
           "
-        >
-
-          {
-            pastEvents.slice(0, 2).map((event) => (
-              <div
-                class="
-                  flex
-                  justify-between
-                  gap-3
-                  text-[11px]
-                  text-brand-slate
-                "
-              >
-
-                <span>
-                  • {event.title}
-                </span>
-
-                {
-                  event.url && (
-                    <a
-                      href={event.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      class="
-                        text-brand-gold
-                        whitespace-nowrap
-                      "
-                    >
-                      VIEW →
-                    </a>
-                  )
-                }
-
-              </div>
-            ))
-          }
-
-        </div>
+        ></div>
 
       </div>
 
+
+      <!-- Legend -->
 
       <div
         class="
@@ -332,6 +304,7 @@ function formatDate(startDate: string, endDate?: string) {
           border-t
           border-brand-border
           flex
+          items-center
           justify-between
           text-[11px]
           text-brand-slate
@@ -339,7 +312,6 @@ function formatDate(startDate: string, endDate?: string) {
       >
 
         <div class="flex items-center gap-2">
-
           <span
             class="
               w-2.5
@@ -348,14 +320,10 @@ function formatDate(startDate: string, endDate?: string) {
               inline-block
             "
           ></span>
-
           Hosted Event
-
         </div>
 
-
         <div class="flex items-center gap-2">
-
           <span
             class="
               w-2.5
@@ -364,9 +332,7 @@ function formatDate(startDate: string, endDate?: string) {
               inline-block
             "
           ></span>
-
           Attending Event
-
         </div>
 
       </div>
@@ -374,193 +340,24 @@ function formatDate(startDate: string, endDate?: string) {
     </div>
 
 
-    <!-- UPCOMING EVENTS -->
+    <!-- RIGHT: EVENTS FOR SELECTED MONTH ONLY -->
 
     <div
+      id="event-container"
       class="
         lg:col-span-7
+        max-h-[540px]
+        overflow-y-auto
+        pr-2
         space-y-6
+        custom-scrollbar
       "
-    >
-
-      {
-        [firstUpcoming, secondUpcoming]
-          .filter(Boolean)
-          .map((event) => (
-
-            <article
-              class="
-                p-6
-                sm:p-8
-                bg-brand-card
-                border
-                border-brand-border
-                shadow-sm
-              "
-            >
-
-              <div
-                class="
-                  flex
-                  items-center
-                  justify-between
-                  gap-4
-                  mb-4
-                "
-              >
-
-                <span
-                  class:list={[
-                    "text-[10px] uppercase tracking-[0.2em] font-semibold",
-
-                    event.role === "hosted"
-                      ? "text-brand-gold"
-                      : "text-brand-slate"
-                  ]}
-                >
-                  {
-                    event.typeLabel ||
-                    (
-                      event.role === "hosted"
-                        ? "Hosted Community Event"
-                        : "Attending Event"
-                    )
-                  }
-                </span>
-
-
-                <span
-                  class="
-                    text-[10px]
-                    font-mono
-                    border
-                    border-brand-border
-                    px-2
-                    py-1
-                    text-brand-slate
-                  "
-                >
-                  {
-                    formatDate(
-                      event.startDate,
-                      event.endDate
-                    )
-                  }
-                </span>
-
-              </div>
-
-
-              <h3
-                class="
-                  font-serif
-                  text-xl
-                  sm:text-2xl
-                  text-brand-charcoal
-                  mb-3
-                "
-              >
-                {event.title}
-              </h3>
-
-
-              {
-                event.description && (
-
-                  <p
-                    class="
-                      text-brand-slate
-                      text-sm
-                      leading-relaxed
-                      font-light
-                      mb-5
-                    "
-                  >
-                    {event.description}
-                  </p>
-
-                )
-              }
-
-
-              <div
-                class="
-                  pt-4
-                  border-t
-                  border-brand-border
-                  flex
-                  flex-col
-                  sm:flex-row
-                  sm:items-center
-                  justify-between
-                  gap-4
-                "
-              >
-
-                <div
-                  class="
-                    text-xs
-                    text-brand-slate
-                  "
-                >
-
-                  {
-                    event.venue && (
-                      <div
-                        class="
-                          font-medium
-                          text-brand-charcoal
-                        "
-                      >
-                        {event.venue}
-                      </div>
-                    )
-                  }
-
-
-                  {
-                    event.city && (
-                      <div>
-                        {event.city}
-                      </div>
-                    )
-                  }
-
-                </div>
-
-
-                {
-                  event.url && (
-
-                    <a
-                      href={event.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      class:list={[
-                        "px-5 py-2.5 text-xs uppercase tracking-widest transition-colors",
-
-                        event.role === "hosted"
-                          ? "bg-brand-charcoal text-white hover:bg-brand-gold"
-                          : "border border-brand-border text-brand-charcoal hover:border-brand-gold"
-                      ]}
-                    >
-                      {event.buttonLabel || "Event Information"} ↗
-                    </a>
-
-                  )
-                }
-
-              </div>
-
-            </article>
-
-          ))
-      }
-
-    </div>
+    ></div>
 
   </div>
 
+
+  <!-- PARTNERSHIP CTA -->
 
   <div
     class="
@@ -600,9 +397,8 @@ function formatDate(startDate: string, endDate?: string) {
 
     </p>
 
-
     <a
-      href="/#contact"
+      href="/?type=partnership#contact"
       class="
         text-xs
         uppercase
@@ -624,100 +420,265 @@ function formatDate(startDate: string, endDate?: string) {
 <script
   is:inline
   define:vars={{
-    calendarEvents:
-      visibleEvents.map((event) => ({
+    calendarEvents: visibleEvents.map(
+      (event) => ({
         id: event.id,
         title: event.title,
         role: event.role,
+        typeLabel: event.typeLabel || null,
         startDate: event.startDate,
-        endDate: event.endDate || event.startDate
-      }))
+        endDate: event.endDate || event.startDate,
+        venue: event.venue || null,
+        city: event.city || null,
+        description: event.description || null,
+        url: event.url || null,
+        buttonLabel: event.buttonLabel || null
+      })
+    )
   }}
 >
 
-  const parseDate = (value) =>
+  const parseEventDate = (value) =>
     new Date(`${value}T12:00:00`);
 
 
-  const today =
-    new Date();
+  const today = new Date();
 
 
-  const nextEvent =
-    calendarEvents.find(
-      event =>
-        parseDate(
-          event.endDate
-        ) >= today
-    );
+  function formatEventDate(
+    startDate,
+    endDate
+  ) {
+    const start =
+      parseEventDate(startDate);
+
+    const end =
+      parseEventDate(
+        endDate || startDate
+      );
+
+    if (
+      startDate ===
+      (endDate || startDate)
+    ) {
+      return start.toLocaleDateString(
+        "en-US",
+        {
+          month: "short",
+          day: "numeric",
+          year: "numeric"
+        }
+      );
+    }
+
+    const sameMonth =
+      start.getFullYear() ===
+        end.getFullYear() &&
+      start.getMonth() ===
+        end.getMonth();
+
+    if (sameMonth) {
+      return `${start.toLocaleDateString(
+        "en-US",
+        {
+          month: "short",
+          day: "numeric"
+        }
+      )} – ${end.getDate()}, ${end.getFullYear()}`;
+    }
+
+    return `${start.toLocaleDateString(
+      "en-US",
+      {
+        month: "short",
+        day: "numeric"
+      }
+    )} – ${end.toLocaleDateString(
+      "en-US",
+      {
+        month: "short",
+        day: "numeric",
+        year: "numeric"
+      }
+    )}`;
+  }
 
 
-  const baseDate =
-    nextEvent
-      ? parseDate(nextEvent.startDate)
-      : today;
+  function getInitialCalendarDate() {
 
+    const hasCurrentMonthEvent =
+      calendarEvents.some(
+        (event) =>
+          eventTouchesMonth(
+            event,
+            today.getFullYear(),
+            today.getMonth()
+          )
+      );
 
-  let calendarCursor =
-    new Date(
-      baseDate.getFullYear(),
-      baseDate.getMonth(),
-      1
-    );
+    if (hasCurrentMonthEvent) {
+      return new Date(
+        today.getFullYear(),
+        today.getMonth(),
+        1
+      );
+    }
 
+    const nextEvent =
+      calendarEvents.find(
+        (event) =>
+          parseEventDate(
+            event.endDate
+          ) >= today
+      );
 
-  const title =
-    document.getElementById(
-      "calendar-title"
-    );
-
-
-  const grid =
-    document.getElementById(
-      "calendar-grid"
-    );
-
-
-  function eventForDate(date) {
-
-    const time =
-      date.getTime();
-
-
-    return calendarEvents.find(
-      event => {
-
-        const start =
-          parseDate(
-            event.startDate
-          );
-
-
-        start.setHours(
-          0,
-          0,
-          0,
-          0
+    if (nextEvent) {
+      const date =
+        parseEventDate(
+          nextEvent.startDate
         );
 
+      return new Date(
+        date.getFullYear(),
+        date.getMonth(),
+        1
+      );
+    }
 
-        const end =
-          parseDate(
-            event.endDate
+    return new Date(
+      today.getFullYear(),
+      today.getMonth(),
+      1
+    );
+  }
+
+
+  function eventTouchesMonth(
+    event,
+    year,
+    month
+  ) {
+
+    const monthStart =
+      new Date(
+        year,
+        month,
+        1,
+        0,
+        0,
+        0,
+        0
+      );
+
+    const monthEnd =
+      new Date(
+        year,
+        month + 1,
+        0,
+        23,
+        59,
+        59,
+        999
+      );
+
+    const eventStart =
+      parseEventDate(
+        event.startDate
+      );
+
+    eventStart.setHours(
+      0,
+      0,
+      0,
+      0
+    );
+
+    const eventEnd =
+      parseEventDate(
+        event.endDate
+      );
+
+    eventEnd.setHours(
+      23,
+      59,
+      59,
+      999
+    );
+
+    return (
+      eventStart <= monthEnd &&
+      eventEnd >= monthStart
+    );
+  }
+
+
+  function eventsForMonth(
+    year,
+    month
+  ) {
+
+    const events =
+      calendarEvents.filter(
+        (event) =>
+          eventTouchesMonth(
+            event,
+            year,
+            month
+          )
+      );
+
+    /*
+     * Upcoming/current first.
+     * Past events from selected month last.
+     */
+    return events.sort(
+      (a, b) => {
+
+        const aEnd =
+          parseEventDate(
+            a.endDate
           );
 
-
-        end.setHours(
+        aEnd.setHours(
           23,
           59,
           59,
           999
         );
 
+        const bEnd =
+          parseEventDate(
+            b.endDate
+          );
+
+        bEnd.setHours(
+          23,
+          59,
+          59,
+          999
+        );
+
+        const aPast =
+          aEnd < today;
+
+        const bPast =
+          bEnd < today;
+
+
+        if (
+          aPast !== bPast
+        ) {
+          return aPast ? 1 : -1;
+        }
+
 
         return (
-          time >= start.getTime() &&
-          time <= end.getTime()
+          parseEventDate(
+            a.startDate
+          ) -
+          parseEventDate(
+            b.startDate
+          )
         );
 
       }
@@ -726,17 +687,106 @@ function formatDate(startDate: string, endDate?: string) {
   }
 
 
+  function eventForDate(date) {
+
+    const time =
+      date.getTime();
+
+    return calendarEvents.find(
+      (event) => {
+
+        const start =
+          parseEventDate(
+            event.startDate
+          );
+
+        start.setHours(
+          0,
+          0,
+          0,
+          0
+        );
+
+        const end =
+          parseEventDate(
+            event.endDate
+          );
+
+        end.setHours(
+          23,
+          59,
+          59,
+          999
+        );
+
+        return (
+          time >=
+            start.getTime() &&
+          time <=
+            end.getTime()
+        );
+
+      }
+    );
+
+  }
+
+
+  function isPastEvent(
+    event
+  ) {
+
+    const end =
+      parseEventDate(
+        event.endDate
+      );
+
+    end.setHours(
+      23,
+      59,
+      59,
+      999
+    );
+
+    return end < today;
+  }
+
+
+  let calendarCursor =
+    getInitialCalendarDate();
+
+
+  const calendarTitle =
+    document.getElementById(
+      "calendar-title"
+    );
+
+  const calendarGrid =
+    document.getElementById(
+      "calendar-grid"
+    );
+
+  const eventContainer =
+    document.getElementById(
+      "event-container"
+    );
+
+  const monthSummary =
+    document.getElementById(
+      "month-summary"
+    );
+
+
   function renderCalendar() {
 
     const year =
       calendarCursor.getFullYear();
 
-
     const month =
       calendarCursor.getMonth();
 
 
-    title.textContent =
+    calendarTitle.textContent =
       calendarCursor
         .toLocaleDateString(
           "en-US",
@@ -747,7 +797,7 @@ function formatDate(startDate: string, endDate?: string) {
         );
 
 
-    const first =
+    const firstDay =
       new Date(
         year,
         month,
@@ -755,11 +805,11 @@ function formatDate(startDate: string, endDate?: string) {
       );
 
 
-    const start =
+    const gridStart =
       new Date(
         year,
         month,
-        1 - first.getDay()
+        1 - firstDay.getDay()
       );
 
 
@@ -773,13 +823,13 @@ function formatDate(startDate: string, endDate?: string) {
     ) {
 
       const day =
-        new Date(start);
-
+        new Date(
+          gridStart
+        );
 
       day.setDate(
-        start.getDate() + i
+        gridStart.getDate() + i
       );
-
 
       day.setHours(
         12,
@@ -792,9 +842,9 @@ function formatDate(startDate: string, endDate?: string) {
       const event =
         eventForDate(day);
 
-
-      const inMonth =
-        day.getMonth() === month;
+      const inCurrentMonth =
+        day.getMonth() ===
+        month;
 
 
       let classes = `
@@ -802,43 +852,424 @@ function formatDate(startDate: string, endDate?: string) {
         flex
         items-center
         justify-center
+        transition-all
       `;
 
 
-      if (!inMonth) {
+      if (!inCurrentMonth) {
         classes +=
           " opacity-30";
       }
 
 
-      if (event) {
+      if (
+        event &&
+        inCurrentMonth
+      ) {
+
+        classes +=
+          " cursor-pointer font-semibold text-white";
 
         classes +=
           event.role === "hosted"
-
-            ? " bg-[#C5A059] text-white font-semibold"
-
-            : " bg-[#4A505A] text-white font-semibold";
+            ? " bg-[#C5A059]"
+            : " bg-[#4A505A]";
 
       }
 
 
-      html += `
+      if (
+        event &&
+        inCurrentMonth
+      ) {
 
-        <div
-          class="${classes}"
-          title="${event?.title || ""}"
-        >
-          ${day.getDate()}
-        </div>
+        html += `
 
-      `;
+          <button
+            type="button"
+            data-calendar-event="${event.id}"
+            class="${classes}"
+            title="${event.title}"
+          >
+            ${day.getDate()}
+          </button>
+
+        `;
+
+      } else {
+
+        html += `
+
+          <div
+            class="${classes}"
+          >
+            ${day.getDate()}
+          </div>
+
+        `;
+
+      }
 
     }
 
 
-    grid.innerHTML =
+    calendarGrid.innerHTML =
       html;
+
+  }
+
+
+  function renderMonthEvents() {
+
+    const year =
+      calendarCursor.getFullYear();
+
+    const month =
+      calendarCursor.getMonth();
+
+    const monthEvents =
+      eventsForMonth(
+        year,
+        month
+      );
+
+
+    if (!monthEvents.length) {
+
+      eventContainer.innerHTML = `
+
+        <div
+          class="
+            p-8
+            bg-brand-card
+            border
+            border-brand-border
+            text-brand-slate
+            text-sm
+            font-light
+          "
+        >
+          No events listed for
+          ${calendarCursor.toLocaleDateString(
+            "en-US",
+            {
+              month: "long",
+              year: "numeric"
+            }
+          )}.
+        </div>
+
+      `;
+
+      monthSummary.textContent =
+        "No events this month.";
+
+      return;
+
+    }
+
+
+    const upcomingCount =
+      monthEvents.filter(
+        (event) =>
+          !isPastEvent(event)
+      ).length;
+
+    const pastCount =
+      monthEvents.filter(
+        (event) =>
+          isPastEvent(event)
+      ).length;
+
+
+    const summaryParts = [];
+
+    if (upcomingCount) {
+      summaryParts.push(
+        `${upcomingCount} upcoming`
+      );
+    }
+
+    if (pastCount) {
+      summaryParts.push(
+        `${pastCount} past`
+      );
+    }
+
+    monthSummary.textContent =
+      summaryParts.join(" · ");
+
+
+    eventContainer.innerHTML =
+      monthEvents
+        .map(
+          (event) => {
+
+            const past =
+              isPastEvent(event);
+
+            const typeLabel =
+              past
+                ? "Past Event"
+                : (
+                    event.typeLabel ||
+                    (
+                      event.role ===
+                      "hosted"
+                        ? "Hosted Community Event"
+                        : "Attending Event"
+                    )
+                  );
+
+            const accentClass =
+              event.role === "hosted"
+                ? "text-brand-gold"
+                : "text-brand-slate";
+
+            const buttonClass =
+              event.role === "hosted"
+                ? "bg-brand-charcoal text-white hover:bg-brand-gold"
+                : "border border-brand-border text-brand-charcoal hover:border-brand-gold";
+
+            return `
+
+              <article
+                id="event-${event.id}"
+                class="
+                  event-card
+                  p-6
+                  sm:p-8
+                  bg-brand-card
+                  border
+                  border-brand-border
+                  shadow-sm
+                  transition-all
+                  duration-300
+                  ${past ? "opacity-90" : ""}
+                "
+              >
+
+                <div
+                  class="
+                    flex
+                    items-center
+                    justify-between
+                    gap-4
+                    mb-4
+                  "
+                >
+
+                  <span
+                    class="
+                      text-[10px]
+                      uppercase
+                      tracking-[0.2em]
+                      font-semibold
+                      ${accentClass}
+                    "
+                  >
+                    ${typeLabel}
+                  </span>
+
+
+                  <span
+                    class="
+                      text-[10px]
+                      font-mono
+                      border
+                      border-brand-border
+                      px-2
+                      py-1
+                      text-brand-slate
+                      whitespace-nowrap
+                    "
+                  >
+                    ${formatEventDate(
+                      event.startDate,
+                      event.endDate
+                    )}
+                  </span>
+
+                </div>
+
+
+                <h3
+                  class="
+                    font-serif
+                    text-xl
+                    sm:text-2xl
+                    text-brand-charcoal
+                    mb-3
+                  "
+                >
+                  ${event.title}
+                </h3>
+
+
+                ${
+                  event.description
+                    ? `
+                      <p
+                        class="
+                          text-brand-slate
+                          text-sm
+                          leading-relaxed
+                          font-light
+                          mb-5
+                        "
+                      >
+                        ${event.description}
+                      </p>
+                    `
+                    : ""
+                }
+
+
+                <div
+                  class="
+                    pt-4
+                    border-t
+                    border-brand-border
+                    flex
+                    flex-col
+                    sm:flex-row
+                    sm:items-center
+                    justify-between
+                    gap-4
+                  "
+                >
+
+                  <div
+                    class="
+                      text-xs
+                      text-brand-slate
+                    "
+                  >
+
+                    ${
+                      event.venue
+                        ? `
+                          <div
+                            class="
+                              font-medium
+                              text-brand-charcoal
+                            "
+                          >
+                            ${event.venue}
+                          </div>
+                        `
+                        : ""
+                    }
+
+                    ${
+                      event.city
+                        ? `
+                          <div>
+                            ${event.city}
+                          </div>
+                        `
+                        : ""
+                    }
+
+                  </div>
+
+
+                  ${
+                    event.url
+                      ? `
+                        <a
+                          href="${event.url}"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          class="
+                            px-5
+                            py-2.5
+                            text-xs
+                            uppercase
+                            tracking-widest
+                            transition-colors
+                            text-center
+                            ${buttonClass}
+                          "
+                        >
+                          ${event.buttonLabel ||
+                          "Event Information"}
+                          ↗
+                        </a>
+                      `
+                      : ""
+                  }
+
+                </div>
+
+              </article>
+
+            `;
+
+          }
+        )
+        .join("");
+
+
+    eventContainer.scrollTop = 0;
+
+  }
+
+
+  function renderAll() {
+
+    renderCalendar();
+
+    renderMonthEvents();
+
+  }
+
+
+  function scrollToEvent(
+    eventId
+  ) {
+
+    const card =
+      document.getElementById(
+        `event-${eventId}`
+      );
+
+    if (!card) {
+      return;
+    }
+
+
+    const cardTop =
+      card.offsetTop -
+      eventContainer.offsetTop;
+
+
+    eventContainer.scrollTo({
+      top:
+        cardTop - 8,
+
+      behavior:
+        "smooth"
+    });
+
+
+    card.classList.add(
+      "ring-2",
+      "ring-brand-gold"
+    );
+
+
+    window.setTimeout(
+      () => {
+
+        card.classList.remove(
+          "ring-2",
+          "ring-brand-gold"
+        );
+
+      },
+      1600
+    );
 
   }
 
@@ -847,7 +1278,7 @@ function formatDate(startDate: string, endDate?: string) {
     .getElementById(
       "calendar-prev"
     )
-    .addEventListener(
+    ?.addEventListener(
       "click",
       () => {
 
@@ -858,8 +1289,7 @@ function formatDate(startDate: string, endDate?: string) {
             1
           );
 
-
-        renderCalendar();
+        renderAll();
 
       }
     );
@@ -869,7 +1299,7 @@ function formatDate(startDate: string, endDate?: string) {
     .getElementById(
       "calendar-next"
     )
-    .addEventListener(
+    ?.addEventListener(
       "click",
       () => {
 
@@ -880,13 +1310,34 @@ function formatDate(startDate: string, endDate?: string) {
             1
           );
 
-
-        renderCalendar();
+        renderAll();
 
       }
     );
 
 
-  renderCalendar();
+  calendarGrid
+    ?.addEventListener(
+      "click",
+      (event) => {
+
+        const button =
+          event.target.closest(
+            "[data-calendar-event]"
+          );
+
+        if (!button) {
+          return;
+        }
+
+        scrollToEvent(
+          button.dataset.calendarEvent
+        );
+
+      }
+    );
+
+
+  renderAll();
 
 </script>
