@@ -1,0 +1,87 @@
+---
+import {
+  site
+} from "../data/site";
+---
+
+<section
+  class="
+    mt-16
+    p-6
+    sm:p-8
+    bg-brand-card
+    border
+    border-brand-border
+    flex
+    flex-col
+    sm:flex-row
+    items-center
+    gap-6
+  "
+>
+
+  <div
+    class="
+      w-24
+      h-24
+      flex-shrink-0
+    "
+  >
+
+    <img
+      src={site.profileImage}
+      alt={site.author.name}
+      class="
+        w-full
+        h-full
+        object-cover
+        grayscale
+      "
+    />
+
+  </div>
+
+
+  <div>
+
+    <h3
+      class="
+        font-serif
+        text-xl
+        text-brand-charcoal
+        mb-1
+      "
+    >
+      {site.author.name}
+    </h3>
+
+
+    <span
+      class="
+        text-[10px]
+        font-semibold
+        text-brand-gold
+        uppercase
+        tracking-[0.2em]
+        block
+        mb-3
+      "
+    >
+      About the Author
+    </span>
+
+
+    <p
+      class="
+        text-xs
+        text-brand-slate
+        font-light
+        leading-relaxed
+      "
+    >
+      {site.author.bio}
+    </p>
+
+  </div>
+
+</section>
