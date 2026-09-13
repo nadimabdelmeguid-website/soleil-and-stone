@@ -99,11 +99,6 @@ function formatMonth(
 }
 
 
-/*
- * Shorter Hardware Meetup title for
- * the programming cards.
- */
-
 function hardwareTopic(
   title: string
 ) {
@@ -142,7 +137,7 @@ function hardwareTopic(
 >
 
   <!-- =====================================================
-       TOP
+       INTRO + COMMUNITY SNAPSHOT
        ===================================================== -->
 
   <div
@@ -203,7 +198,6 @@ function hardwareTopic(
       >
         {community.description}
       </p>
-
 
 
       <!-- BUTTONS -->
@@ -282,7 +276,7 @@ function hardwareTopic(
 
 
     <!-- =================================================
-         FOCUS + METRICS
+         SNAPSHOT
          ================================================= -->
 
     <div
@@ -291,34 +285,82 @@ function hardwareTopic(
         bg-brand-cream
         border
         border-brand-border
-        p-7
+        p-6
+        sm:p-7
       "
     >
 
-      <!-- METRICS -->
+      <!-- SNAPSHOT LABEL -->
+
+      <div
+        class="
+          text-[9px]
+          uppercase
+          tracking-[0.18em]
+          text-brand-gold
+          font-semibold
+          mb-5
+        "
+      >
+        Community Snapshot
+      </div>
+
+
+
+      <!-- =================================================
+           METRIC CARDS
+           ================================================= -->
 
       <div
         class="
           grid
-          grid-cols-2
+          grid-cols-1
           sm:grid-cols-3
-          gap-6
-          pb-7
-          border-b
-          border-brand-border
+          gap-3
         "
       >
 
-        <div>
+        <!-- MEMBERS -->
+
+        <div
+          class="
+            bg-white
+            border
+            border-brand-border
+            px-5
+            py-5
+          "
+        >
 
           <div
             class="
-              font-serif
-              text-2xl
-              text-brand-charcoal
+              flex
+              items-baseline
+              gap-1
             "
           >
-            {community.members}+
+
+            <span
+              class="
+                font-serif
+                text-3xl
+                text-brand-charcoal
+              "
+            >
+              {community.members}
+            </span>
+
+
+            <span
+              class="
+                font-serif
+                text-lg
+                text-brand-gold
+              "
+            >
+              +
+            </span>
+
           </div>
 
 
@@ -326,23 +368,34 @@ function hardwareTopic(
             class="
               text-[9px]
               uppercase
-              tracking-[0.14em]
+              tracking-[0.15em]
               text-brand-slate
-              mt-1
+              mt-2
             "
           >
-            Members
+            Community Members
           </div>
 
         </div>
 
 
-        <div>
+
+        <!-- EVENTS -->
+
+        <div
+          class="
+            bg-white
+            border
+            border-brand-border
+            px-5
+            py-5
+          "
+        >
 
           <div
             class="
               font-serif
-              text-2xl
+              text-3xl
               text-brand-charcoal
             "
           >
@@ -354,9 +407,9 @@ function hardwareTopic(
             class="
               text-[9px]
               uppercase
-              tracking-[0.14em]
+              tracking-[0.15em]
               text-brand-slate
-              mt-1
+              mt-2
             "
           >
             Events Led
@@ -365,20 +418,56 @@ function hardwareTopic(
         </div>
 
 
-        <div>
+
+        <!-- REGISTRATIONS -->
+
+        <div
+          class="
+            bg-white
+            border
+            border-brand-gold/40
+            px-5
+            py-5
+          "
+        >
 
           <div
             class="
-              font-serif
-              text-2xl
-              text-brand-gold
+              flex
+              items-baseline
+              gap-1
             "
           >
+
+            <span
+              class="
+                font-serif
+                text-3xl
+                text-brand-gold
+              "
+            >
+              {
+                registrations > 0
+                  ? registrations
+                  : "—"
+              }
+            </span>
+
+
             {
-              registrations > 0
-                ? `${registrations}+`
-                : "—"
+              registrations > 0 && (
+                <span
+                  class="
+                    font-serif
+                    text-lg
+                    text-brand-gold
+                  "
+                >
+                  +
+                </span>
+              )
             }
+
           </div>
 
 
@@ -386,9 +475,9 @@ function hardwareTopic(
             class="
               text-[9px]
               uppercase
-              tracking-[0.14em]
+              tracking-[0.15em]
               text-brand-slate
-              mt-1
+              mt-2
             "
           >
             Registrations
@@ -400,11 +489,79 @@ function hardwareTopic(
 
 
 
-      <!-- FOCUS -->
+      <!-- =================================================
+           SECONDARY HARDWARE METRICS
+           ================================================= -->
+
+      {
+        community.id ===
+          "hardware-meetup" && (
+
+          <div
+            class="
+              flex
+              flex-wrap
+              gap-x-6
+              gap-y-2
+              mt-4
+              text-[10px]
+              text-brand-slate
+            "
+          >
+
+            <span>
+              <strong
+                class="
+                  text-brand-charcoal
+                "
+              >
+                {speakers.length}
+              </strong>
+
+              {" "}
+              documented speakers
+            </span>
+
+
+            <span
+              class="
+                text-brand-border
+              "
+            >
+              •
+            </span>
+
+
+            <span>
+              <strong
+                class="
+                  text-brand-charcoal
+                "
+              >
+                {sponsors.length}
+              </strong>
+
+              {" "}
+              event sponsors
+            </span>
+
+          </div>
+
+        )
+      }
+
+
+
+      <!-- =================================================
+           FOCUS
+           ================================================= -->
 
       <div
         class="
-          pt-7
+          mt-7
+          pt-6
+          border-t
+          border-brand-border
         "
       >
 
@@ -426,7 +583,7 @@ function hardwareTopic(
           class="
             grid
             sm:grid-cols-2
-            gap-x-6
+            gap-x-8
             gap-y-3
           "
         >
@@ -448,11 +605,12 @@ function hardwareTopic(
                   <span
                     class="
                       text-brand-gold
-                      mt-[2px]
+                      mt-[1px]
                     "
                   >
                     —
                   </span>
+
 
                   <span>
                     {item}
@@ -474,7 +632,7 @@ function hardwareTopic(
 
 
   <!-- =====================================================
-       PROGRAMMING
+       PROGRAMMING HISTORY
        ===================================================== -->
 
   {
@@ -482,7 +640,7 @@ function hardwareTopic(
 
       <div
         class="
-          mt-10
+          mt-12
         "
       >
 
@@ -540,10 +698,12 @@ function hardwareTopic(
                   text-xs
                   text-brand-slate
                   font-light
+                  max-w-md
+                  sm:text-right
                 "
               >
-                Technical sessions with founders,
-                engineers and industry practitioners.
+                Technical conversations with founders,
+                engineers, designers and industry practitioners.
               </p>
             )
           }
@@ -553,7 +713,7 @@ function hardwareTopic(
 
 
         <!-- =================================================
-             STARTUP MIXER HISTORY
+             STARTUP MIXER
              ================================================= -->
 
         {
@@ -565,10 +725,7 @@ function hardwareTopic(
                 grid
                 sm:grid-cols-2
                 lg:grid-cols-3
-                gap-px
-                bg-brand-border
-                border
-                border-brand-border
+                gap-4
               "
             >
 
@@ -583,8 +740,10 @@ function hardwareTopic(
                       class="
                         group
                         bg-white
+                        border
+                        border-brand-border
                         p-5
-                        hover:bg-brand-cream
+                        hover:border-brand-gold
                         transition-colors
                       "
                     >
@@ -602,11 +761,12 @@ function hardwareTopic(
 
                           <div
                             class="
-                              font-serif
-                              text-lg
-                              text-brand-charcoal
-                              group-hover:text-brand-gold
-                              transition-colors
+                              text-[9px]
+                              uppercase
+                              tracking-[0.16em]
+                              text-brand-gold
+                              font-semibold
+                              mb-2
                             "
                           >
                             {formatMonth(
@@ -617,14 +777,16 @@ function hardwareTopic(
 
                           <div
                             class="
-                              text-[10px]
-                              uppercase
-                              tracking-[0.13em]
-                              text-brand-slate
-                              mt-1
+                              font-serif
+                              text-lg
+                              text-brand-charcoal
+                              group-hover:text-brand-gold
+                              transition-colors
                             "
                           >
-                            San Diego County Startup Mixer
+                            San Diego County
+                            <br />
+                            Startup Mixer
                           </div>
 
                         </div>
@@ -697,7 +859,7 @@ function hardwareTopic(
 
 
         <!-- =================================================
-             HARDWARE PROGRAMMING
+             HARDWARE MEETUP
              ================================================= -->
 
         {
@@ -722,10 +884,12 @@ function hardwareTopic(
                         border
                         border-brand-border
                         p-6
+                        flex
+                        flex-col
                       "
                     >
 
-                      <!-- MONTH -->
+                      <!-- HEADER -->
 
                       <div
                         class="
@@ -776,7 +940,7 @@ function hardwareTopic(
 
 
 
-                      <!-- TOPIC -->
+                      <!-- TITLE -->
 
                       <h4
                         class="
@@ -784,7 +948,6 @@ function hardwareTopic(
                           text-xl
                           text-brand-charcoal
                           leading-snug
-                          min-h-[52px]
                         "
                       >
                         {hardwareTopic(
@@ -817,7 +980,7 @@ function hardwareTopic(
                                 mb-1
                               "
                             >
-                              Event Sponsor
+                              Sponsor
                             </div>
 
 
@@ -892,6 +1055,7 @@ function hardwareTopic(
                                           text-[10px]
                                           text-brand-slate
                                           mt-0.5
+                                          leading-relaxed
                                         "
                                       >
                                         {speaker.company}
@@ -920,27 +1084,35 @@ function hardwareTopic(
 
                       <!-- LINK -->
 
-                      <a
-                        href={event.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
+                      <div
                         class="
-                          inline-flex
-                          items-center
-                          gap-2
-                          mt-6
-                          text-[9px]
-                          uppercase
-                          tracking-[0.15em]
-                          text-brand-charcoal
-                          font-semibold
-                          hover:text-brand-gold
-                          transition-colors
+                          mt-auto
+                          pt-6
                         "
                       >
-                        View Event
-                        <span>↗</span>
-                      </a>
+
+                        <a
+                          href={event.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          class="
+                            inline-flex
+                            items-center
+                            gap-2
+                            text-[9px]
+                            uppercase
+                            tracking-[0.15em]
+                            text-brand-charcoal
+                            font-semibold
+                            hover:text-brand-gold
+                            transition-colors
+                          "
+                        >
+                          View Event
+                          <span>↗</span>
+                        </a>
+
+                      </div>
 
                     </article>
 
