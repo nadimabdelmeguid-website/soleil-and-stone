@@ -61,8 +61,8 @@
     </a>
 
     <nav class="flex items-center gap-6 text-xs uppercase tracking-widest font-medium text-brand-slate">
-      <a href="/groups.html" class="hover:text-brand-gold transition-colors">Community Groups</a>
-      <a href="/articles.html" class="text-brand-gold transition-colors font-semibold">Articles</a>
+      <a href="/groups.html" class="hover:text-brand-gold transition-colors">Community</a>
+      <a href="/articles.html" class="text-brand-gold transition-colors font-semibold">Field Notes</a>
       <a href="/#contact" class="px-4 py-2 border border-brand-charcoal hover:border-brand-gold hover:bg-brand-gold hover:text-white transition-all text-[11px]">Connect</a>
     </nav>
   </header>
@@ -72,28 +72,28 @@
     <!-- Hero Section -->
     <section class="max-w-6xl w-full mx-auto px-6 py-16 border-b border-brand-border">
       <span class="inline-block px-3 py-1 bg-brand-gold/10 border border-brand-gold/30 text-brand-gold text-[10px] uppercase tracking-[0.2em] font-semibold mb-4">
-        Insights & Perspectives
+        FIELD NOTES & PERSPECTIVES
       </span>
       <h1 class="font-serif text-3xl sm:text-4xl lg:text-5xl font-normal tracking-wide text-brand-charcoal leading-[1.2] mb-6">
         Articles & Field Notes
       </h1>
       <p class="text-base text-brand-slate leading-relaxed font-light max-w-3xl mb-8">
-        Reflections on ecosystem building, physical product hardware scaling, international professional integration, and trade show observations across the West Coast tech community.
+        Field notes on entrepreneurship, hardware, community building, trade shows, and the people and ideas shaping the West Coast innovation ecosystem.
       </p>
 
       <!-- Category Filter Pills -->
       <div id="filter-container" class="flex flex-wrap gap-3">
         <button onclick="filterArticles('all')" class="filter-btn px-4 py-2 text-xs uppercase tracking-wider font-semibold bg-brand-charcoal text-white transition-all">
-          All Topics
+          ALL NOTES
         </button>
         <button onclick="filterArticles('ecosystem')" class="filter-btn px-4 py-2 text-xs uppercase tracking-wider font-semibold bg-brand-card text-brand-slate border border-brand-border hover:border-brand-gold transition-all">
-          Ecosystem Building
+          ECOSYSTEMS & COMMUNITY
         </button>
         <button onclick="filterArticles('tradeshows')" class="filter-btn px-4 py-2 text-xs uppercase tracking-wider font-semibold bg-brand-card text-brand-slate border border-brand-border hover:border-brand-gold transition-all">
-          Tradeshows
+          TRADE SHOWS
         </button>
         <button onclick="filterArticles('hardware')" class="filter-btn px-4 py-2 text-xs uppercase tracking-wider font-semibold bg-brand-card text-brand-slate border border-brand-border hover:border-brand-gold transition-all">
-          Hardware Engineering
+          HARDWARE & MANUFACTURING
         </button>
       </div>
     </section>
@@ -145,17 +145,17 @@
       {
         url: '/blogs/article-community-building.html',
         categorySlug: 'ecosystem',
-        categoryName: 'Ecosystem Building'
+        categoryName: 'Ecosystems & Community'
       },
       {
         url: '/blogs/article-acoustic-reality-gap.html',
         categorySlug: 'hardware',
-        categoryName: 'Hardware Engineering'
+        categoryName: 'Hardware & Manufacturing'
       },
       {
         url: '/blogs/article-grassroots-mixer.html',
         categorySlug: 'ecosystem',
-        categoryName: 'Ecosystem Building'
+        categoryName: 'Ecosystems & Community'
       }
     ];
 
@@ -249,7 +249,7 @@
           </div>
           <div class="pt-4 border-t border-brand-border flex items-center justify-between">
             <span class="text-xs text-brand-slate">${art.readTime}</span>
-            <a href="${art.url}" class="text-xs font-semibold text-brand-gold uppercase tracking-widest hover:underline">Read Full Article →</a>
+            <a href="${art.url}" class="text-xs font-semibold text-brand-gold uppercase tracking-widest hover:underline">READ ARTICLE →</a>
           </div>
         </article>
       `).join('');
