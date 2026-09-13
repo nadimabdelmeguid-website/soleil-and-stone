@@ -1,151 +1,201 @@
 ---
-import {
-  readingTime
-} from "../utils/readingTime";
-
+import { readingTime } from "../utils/readingTime";
 
 const {
   post
 } = Astro.props;
 
-
-const date =
-  post.data.published
-    .toLocaleDateString(
-      "en-US",
-      {
-        month: "short",
-        day: "numeric",
-        year: "numeric"
-      }
-    )
-    .toUpperCase();
-
+const publishedDate =
+  post.data.published.toLocaleDateString(
+    "en-US",
+    {
+      month: "short",
+      day: "numeric",
+      year: "numeric"
+    }
+  );
 
 const minutes =
   readingTime(
     post.body ?? ""
   );
+
+const href =
+  `/field-notes/${post.id}/`;
 ---
 
 <article
   class="
-    p-8
-    bg-brand-card
+    group
+    h-full
+    bg-white
     border
     border-brand-border
-    shadow-sm
-    flex
-    flex-col
-    justify-between
-    min-h-full
+    overflow-hidden
+    transition-all
+    duration-300
+    hover:-translate-y-1
+    hover:shadow-[0_12px_30px_rgba(34,37,42,0.08)]
+    hover:border-brand-gold/50
   "
-  data-category={post.data.categorySlug}
 >
 
-  <div>
+  <a
+    href={href}
+    class="
+      flex
+      flex-col
+      h-full
+      p-7
+      sm:p-8
+    "
+  >
+
+    <!-- TOP META -->
 
     <div
       class="
         flex
+        flex-wrap
         items-center
-        gap-3
-        text-xs
-        text-brand-slate
-        mb-3
+        gap-x-3
+        gap-y-2
+        mb-6
+        text-[10px]
+        uppercase
+        tracking-[0.16em]
+        font-medium
       "
     >
 
       <span
         class="
-          font-mono
           text-brand-gold
-        "
-      >
-        {date}
-      </span>
-
-      <span>
-        •
-      </span>
-
-      <span
-        class="
-          uppercase
-          tracking-wider
-          font-medium
         "
       >
         {post.data.category}
       </span>
 
+
+      <span
+        class="
+          text-brand-border
+        "
+      >
+        •
+      </span>
+
+
+      <span
+        class="
+          text-brand-slate
+        "
+      >
+        {publishedDate}
+      </span>
+
+
+      <span
+        class="
+          text-brand-border
+        "
+      >
+        •
+      </span>
+
+
+      <span
+        class="
+          text-brand-slate
+        "
+      >
+        {minutes} min read
+      </span>
+
     </div>
 
 
-    <h2
+    <!-- TITLE -->
+
+    <h3
       class="
         font-serif
-        text-xl
-        sm:text-2xl
+        text-2xl
+        sm:text-[1.7rem]
+        leading-[1.35]
         text-brand-charcoal
-        mb-4
+        mb-5
+        transition-colors
+        duration-300
+        group-hover:text-brand-gold
       "
     >
       {post.data.title}
-    </h2>
+    </h3>
 
+
+    <!-- DESCRIPTION -->
 
     <p
       class="
-        text-brand-slate
         text-sm
-        leading-relaxed
+        sm:text-[15px]
+        text-brand-slate
+        leading-7
         font-light
-        mb-6
+        mb-8
       "
     >
       {post.data.description}
     </p>
 
-  </div>
 
+    <!-- READ MORE -->
 
-  <div
-    class="
-      pt-4
-      border-t
-      border-brand-border
-      flex
-      items-center
-      justify-between
-      gap-4
-    "
-  >
-
-    <span
+    <div
       class="
-        text-xs
-        text-brand-slate
+        mt-auto
+        pt-5
+        border-t
+        border-brand-border
+        flex
+        items-center
+        justify-between
+        gap-4
       "
     >
-      {minutes} min read
-    </span>
+
+      <span
+        class="
+          text-[11px]
+          uppercase
+          tracking-[0.18em]
+          font-semibold
+          text-brand-charcoal
+          transition-colors
+          duration-300
+          group-hover:text-brand-gold
+        "
+      >
+        Read Field Note
+      </span>
 
 
-    <a
-      href={`/field-notes/${post.id}/`}
-      class="
-        text-xs
-        font-semibold
-        text-brand-gold
-        uppercase
-        tracking-widest
-        hover:underline
-      "
-    >
-      Read Article →
-    </a>
+      <span
+        class="
+          text-lg
+          text-brand-gold
+          transition-transform
+          duration-300
+          group-hover:translate-x-1
+        "
+        aria-hidden="true"
+      >
+        →
+      </span>
 
-  </div>
+    </div>
+
+  </a>
 
 </article>
