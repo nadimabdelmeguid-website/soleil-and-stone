@@ -1,0 +1,35 @@
+name: Daily Soleil & Stone Rebuild
+
+on:
+  schedule:
+    - cron: "30 8 * * *"
+      timezone: "America/Los_Angeles"
+
+  workflow_dispatch:
+
+jobs:
+  trigger-vercel-deployment:
+    name: Trigger Vercel Production Rebuild
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Trigger Vercel Deploy Hook
+        env:
+          VERCEL_DEPLOY_HOOK: ${{ secrets.VERCEL_DEPLOY_HOOK }}
+        run: |
+          if [ -z "$VERCEL_DEPLOY_HOOK" ]; then
+            echo "VERCEL_DEPLOY_HOOK secret is missing."
+            exit 1
+          fi
+
+          echo "Triggering Soleil & Stone production rebuild..."
+
+          curl \
+            --silent \
+            --show-error \
+            --fail \
+            --request POST \
+            "$VERCEL_DEPLOY_HOOK"
+
+          echo
+          echo "Deployment triggered successfully."
