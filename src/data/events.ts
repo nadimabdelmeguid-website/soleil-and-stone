@@ -1099,7 +1099,43 @@ export const events: SiteEvent[] = [
   // =====================================================
   // FEBRUARY 2026
   // =====================================================
+{
+  id:
+    "ieee-deepwater-exploration-feb-2026",
 
+  title:
+    "Cheers Oceaneers! Feb: DWE - DeepWater Exploration",
+
+  role:
+    "attending",
+
+  participation:
+    "attending",
+
+  startDate:
+    "2026-02-17",
+
+  venue:
+    "Quantum Brewing",
+
+  city:
+    "San Diego",
+
+  description:
+    "IEEE San Diego technical meetup focused on deep-water exploration, subsea systems, sensing, communications, autonomy, power systems and ocean-engineering technologies.",
+
+  url:
+    "https://www.meetup.com/san-diego-ieee-meetup/events/312492316/",
+
+  buttonLabel:
+    "View Event",
+
+  typeLabel:
+    "Attending Engineering Event",
+
+  showOnHome:
+    true
+},
   {
     id:
       "hardware-meetup-feb-2026",
@@ -1634,6 +1670,43 @@ export const events: SiteEvent[] = [
   // OCTOBER 2025
   // =====================================================
 
+  {
+  id:
+    "startups-in-action-oct-2025",
+
+  title:
+    "Startups in Action: Present Your Idea. Pitch. Network and More.",
+
+  role:
+    "attending",
+
+  participation:
+    "attending",
+
+  startDate:
+    "2025-10-29",
+
+  venue:
+    "SURF Incubator",
+
+  city:
+    "Seattle",
+
+  description:
+    "Startup ecosystem event focused on MVP showcases, pitch practice, product validation, co-founder search, fundraising, peer feedback and founder support.",
+
+  url:
+    "https://www.meetup.com/startups-and-action/events/310961895/",
+
+  buttonLabel:
+    "View Event",
+
+  typeLabel:
+    "Attending Startup Event",
+
+  showOnHome:
+    true
+},
   {
     id:
       "simbiosyx-oct-2025",
