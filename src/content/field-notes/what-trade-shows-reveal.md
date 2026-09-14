@@ -4,7 +4,7 @@ description: "Trade shows can reveal more than products and announcements. They 
 published: 2026-10-02
 
 category: "Trade Shows"
-categorySlug: "trade-shows"
+categorySlug: "tradeshows"
 
 featured: true
 draft: false
