@@ -1,192 +1,46 @@
----
-import { site } from "../data/site";
----
-
-<div
+<a
+  href={site.linkedin}
+  target="_blank"
+  rel="noopener noreferrer"
+  aria-label="LinkedIn"
   class="
-    bg-white
-    border
-    border-brand-border
-    p-6
-    sm:p-8
+    inline-flex
+    items-center
+    justify-center
+    text-brand-charcoal
+    hover:text-brand-gold
+    transition-colors
   "
 >
-  <div
-    class="
-      flex
-      flex-col
-      sm:flex-row
-      items-start
-      gap-6
-    "
+  <svg
+    viewBox="0 0 24 24"
+    class="w-4 h-4"
+    fill="currentColor"
+    aria-hidden="true"
   >
+    <path
+      d="
+        M20.45 20.45h-3.56
+        v-5.57
+        c0-1.33-.03-3.04-1.85-3.04
+        -1.85 0-2.13 1.45-2.13 2.94
+        v5.67H9.35
+        V8.98h3.42
+        v1.57h.05
+        c.47-.9 1.64-1.85 3.37-1.85
+        3.6 0 4.26 2.37 4.26 5.45
+        v6.3z
 
-    <!-- PHOTO -->
+        M5.34 7.41
+        a2.07 2.07 0 1 1 0-4.14
+        2.07 2.07 0 0 1 0 4.14z
 
-    <img
-      src={site.profileImage}
-      alt={site.author.name}
-      class="
-        w-20
-        h-20
-        rounded-full
-        object-cover
-        flex-shrink-0
+        M7.12 20.45
+        H3.56
+        V8.98
+        h3.56
+        v11.47z
       "
     />
-
-
-    <!-- CONTENT -->
-
-    <div class="flex-1">
-
-      <span
-        class="
-          text-[10px]
-          uppercase
-          tracking-[0.18em]
-          text-brand-gold
-          font-semibold
-        "
-      >
-        Written By
-      </span>
-
-
-      <h3
-        class="
-          font-serif
-          text-xl
-          sm:text-2xl
-          text-brand-charcoal
-          mt-1
-          mb-1
-        "
-      >
-        {site.author.name}
-      </h3>
-
-
-      <p
-        class="
-          text-[11px]
-          sm:text-xs
-          uppercase
-          tracking-[0.12em]
-          text-brand-gold
-          font-semibold
-          mb-4
-        "
-      >
-        Hardware. Commercialization. Innovation Ecosystems.
-      </p>
-
-
-      <p
-        class="
-          text-sm
-          leading-relaxed
-          text-brand-slate
-          font-light
-          max-w-3xl
-        "
-      >
-        Industrial Engineer working at the intersection of hardware
-        commercialization, industry fieldwork, and innovation ecosystems.
-        Based in San Diego, I write about product development, manufacturing,
-        market adoption, and the people and systems that help technical ideas
-        move into the real world.
-      </p>
-
-
-      <!-- LINKS -->
-
-      <div
-        class="
-          flex
-          flex-wrap
-          items-center
-          gap-x-6
-          gap-y-3
-          mt-5
-        "
-      >
-
-        <a
-          href="/about/"
-          class="
-            inline-flex
-            items-center
-            gap-2
-            text-xs
-            uppercase
-            tracking-[0.14em]
-            font-semibold
-            text-brand-charcoal
-            hover:text-brand-gold
-            transition-colors
-          "
-        >
-          About
-          <span aria-hidden="true">→</span>
-        </a>
-
-
-        <a
-          href={site.linkedin}
-          target="_blank"
-          rel="noopener noreferrer"
-          class="
-            inline-flex
-            items-center
-            gap-2
-            text-xs
-            uppercase
-            tracking-[0.14em]
-            font-semibold
-            text-brand-charcoal
-            hover:text-brand-gold
-            transition-colors
-          "
-        >
-          LinkedIn
-
-          <svg
-            viewBox="0 0 24 24"
-            class="w-3.5 h-3.5"
-            fill="currentColor"
-            aria-hidden="true"
-          >
-            <path
-              d="
-                M20.45 20.45h-3.56
-                v-5.57
-                c0-1.33-.03-3.04-1.85-3.04
-                -1.85 0-2.13 1.45-2.13 2.94
-                v5.67H9.35
-                V8.98h3.42
-                v1.57h.05
-                c.47-.9 1.64-1.85 3.37-1.85
-                3.6 0 4.26 2.37 4.26 5.45
-                v6.3z
-
-                M5.34 7.41
-                a2.07 2.07 0 1 1 0-4.14
-                2.07 2.07 0 0 1 0 4.14z
-
-                M7.12 20.45
-                H3.56
-                V8.98
-                h3.56
-                v11.47z
-              "
-            />
-          </svg>
-        </a>
-
-      </div>
-
-    </div>
-
-  </div>
-</div>
+  </svg>
+</a>
