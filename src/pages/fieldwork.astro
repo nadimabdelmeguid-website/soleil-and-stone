@@ -2432,15 +2432,19 @@ const tradeShowLogoLoop =
        * Normalize every source logo to the same warm beige
        * used by the Past Fieldwork background (#F9F8F3).
        */
+      /*
+       * Darker warm-beige treatment so the logos remain
+       * clearly visible while still matching the cream palette.
+       */
       filter:
         brightness(0)
         saturate(100%)
-        invert(98%)
-        sepia(7%)
-        saturate(377%)
-        hue-rotate(9deg)
-        brightness(101%)
-        contrast(95%);
+        invert(69%)
+        sepia(18%)
+        saturate(560%)
+        hue-rotate(4deg)
+        brightness(88%)
+        contrast(88%);
 
       opacity:
         1;
