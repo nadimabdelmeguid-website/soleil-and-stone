@@ -1256,7 +1256,7 @@ const tradeShowLogoLoop =
 
       <section
         class="
-          bg-white
+          bg-brand-cream
           border-b
           border-brand-border
           overflow-hidden
@@ -1367,10 +1367,20 @@ const tradeShowLogoLoop =
                       items-center
                       justify-center
                       shrink-0
-                      px-8
-                      sm:px-10
                     "
                   >
+
+                    <div
+                      class="
+                        trade-show-logo-tile
+                        flex
+                        items-center
+                        justify-center
+                        bg-white
+                        border
+                        border-brand-border
+                      "
+                    >
 
                     <img
                       src={logo.src}
@@ -1380,9 +1390,10 @@ const tradeShowLogoLoop =
                         trade-show-logo
                         block
                         object-contain
-                        max-w-none
                       "
                     />
+
+                    </div>
 
                   </a>
 
@@ -2407,23 +2418,41 @@ const tradeShowLogoLoop =
 
 
     .trade-show-logo-link {
-      min-width:
+      width:
         220px;
+
+      padding:
+        0 12px;
+    }
+
+
+    .trade-show-logo-tile {
+      width:
+        196px;
+
+      height:
+        104px;
+
+      padding:
+        20px 24px;
     }
 
 
     .trade-show-logo {
       width:
-        auto;
+        100%;
 
       height:
-        52px;
+        100%;
 
       max-width:
-        190px;
+        148px;
+
+      max-height:
+        64px;
 
       opacity:
-        0.78;
+        0.82;
 
       transition:
         opacity 180ms ease,
@@ -2469,8 +2498,8 @@ const tradeShowLogoLoop =
       background:
         linear-gradient(
           to right,
-          #ffffff,
-          rgba(255, 255, 255, 0)
+          #F9F8F3,
+          rgba(249, 248, 243, 0)
         );
     }
 
@@ -2482,8 +2511,8 @@ const tradeShowLogoLoop =
       background:
         linear-gradient(
           to left,
-          #ffffff,
-          rgba(255, 255, 255, 0)
+          #F9F8F3,
+          rgba(249, 248, 243, 0)
         );
     }
 
@@ -2509,17 +2538,32 @@ const tradeShowLogoLoop =
     ) {
 
       .trade-show-logo-link {
-        min-width:
+        width:
           180px;
+
+        padding:
+          0 10px;
+      }
+
+
+      .trade-show-logo-tile {
+        width:
+          160px;
+
+        height:
+          92px;
+
+        padding:
+          18px 20px;
       }
 
 
       .trade-show-logo {
-        height:
-          44px;
-
         max-width:
-          155px;
+          120px;
+
+        max-height:
+          56px;
       }
 
 
