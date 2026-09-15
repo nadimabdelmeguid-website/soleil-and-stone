@@ -80,22 +80,6 @@ const upcomingEvents =
 
 /* =========================================================
    DYNAMIC FIELDWORK METRICS
-
-   Automatically calculated from events.ts:
-
-   total:
-   all completed professional events
-
-   exhibited:
-   completed events where participation = exhibitor
-
-   organizationsEngaged:
-   unique organizations represented through
-   sponsors, partners and speaker companies
-   across hosted / co-organized events
-
-   cities:
-   unique cities across completed events
    ========================================================= */
 
 const metrics =
@@ -881,8 +865,6 @@ function labelClass(
       "
     >
 
-      <!-- ARCHIVE HEADER -->
-
       <div
         class="
           flex
@@ -926,8 +908,6 @@ function labelClass(
 
 
 
-        <!-- FILTERS -->
-
         <div
           class="
             flex
@@ -938,8 +918,6 @@ function labelClass(
             lg:w-auto
           "
         >
-
-          <!-- YEAR -->
 
           <div
             class="
@@ -978,9 +956,7 @@ function labelClass(
               "
             >
 
-              <option
-                value="all"
-              >
+              <option value="all">
                 All Years
               </option>
 
@@ -1004,8 +980,6 @@ function labelClass(
           </div>
 
 
-
-          <!-- MONTH -->
 
           <div
             class="
@@ -1044,9 +1018,7 @@ function labelClass(
               "
             >
 
-              <option
-                value="all"
-              >
+              <option value="all">
                 All Months
               </option>
 
@@ -1074,8 +1046,6 @@ function labelClass(
       </div>
 
 
-
-      <!-- RESULT COUNT -->
 
       <div
         class="
@@ -1125,10 +1095,6 @@ function labelClass(
 
 
 
-      <!-- =================================================
-           EVENT ARCHIVE
-           ================================================= -->
-
       <div
         id="fieldwork-archive"
         class="
@@ -1176,10 +1142,6 @@ function labelClass(
                   data-month={String(eventMonth)}
                 >
 
-                  <!-- =====================================
-                       COLLAPSED SUMMARY
-                       ===================================== -->
-
                   <summary
                     class="
                       list-none
@@ -1195,8 +1157,6 @@ function labelClass(
                       sm:gap-6
                     "
                   >
-
-                    <!-- DATE / ROLE -->
 
                     <div
                       class="
@@ -1231,8 +1191,6 @@ function labelClass(
                     </div>
 
 
-
-                    <!-- TITLE -->
 
                     <div
                       class="
@@ -1273,8 +1231,6 @@ function labelClass(
                     </div>
 
 
-
-                    <!-- QUICK METADATA -->
 
                     <div
                       class="
@@ -1325,10 +1281,6 @@ function labelClass(
 
 
 
-                  <!-- =====================================
-                       EXPANDED CONTENT
-                       ===================================== -->
-
                   <div
                     class="
                       border-t
@@ -1347,8 +1299,6 @@ function labelClass(
                         gap-8
                       "
                     >
-
-                      <!-- EVENT DETAILS -->
 
                       <div
                         class="
@@ -1374,9 +1324,6 @@ function labelClass(
                           )
                         }
 
-
-
-                        <!-- PARTNERS / SPONSORS -->
 
                         {
                           (
@@ -1457,9 +1404,6 @@ function labelClass(
                           )
                         }
 
-
-
-                        <!-- SPEAKERS -->
 
                         {
                           event.speakers?.length > 0 && (
@@ -1546,8 +1490,6 @@ function labelClass(
 
 
 
-                      <!-- LINKS -->
-
                       <div
                         class="
                           lg:col-span-4
@@ -1580,7 +1522,6 @@ function labelClass(
                             ↗
                           </span>
                         </a>
-
 
 
                         {
@@ -1663,8 +1604,6 @@ function labelClass(
 
 
 
-      <!-- EMPTY STATE -->
-
       <div
         id="fieldwork-empty"
         class="
@@ -1706,10 +1645,6 @@ function labelClass(
   </section>
 
 
-
-  <!-- =====================================================
-       FILTER SCRIPT
-       ===================================================== -->
 
   <script is:inline>
 
@@ -1865,6 +1800,7 @@ function labelClass(
         applyFilters
       );
 
+
       monthSelect.addEventListener(
         "change",
         applyFilters
@@ -1877,6 +1813,7 @@ function labelClass(
 
           yearSelect.value =
             "all";
+
 
           monthSelect.value =
             "all";
