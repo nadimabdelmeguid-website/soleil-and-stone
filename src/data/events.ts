@@ -357,11 +357,8 @@ export const eventSeeds: SiteEvent[] = [
     typeLabel:
       "Hosted Community Event",
 
-    /*
-     * Add registrations after the event
-     * once the final Eventship confirmed
-     * count is available.
-     */
+     registrations:
+    127,
 
     showOnHome:
       true
