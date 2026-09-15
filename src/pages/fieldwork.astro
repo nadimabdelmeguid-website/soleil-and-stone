@@ -3,6 +3,12 @@ import {
   getCollection
 } from "astro:content";
 
+import {
+  readdir
+} from "node:fs/promises";
+
+import path from "node:path";
+
 import BaseLayout from "../layouts/BaseLayout.astro";
 
 import {
@@ -160,6 +166,97 @@ const months =
       label: "December"
     }
   ];
+
+
+/* =========================================================
+   ADDITIONAL FILTER OPTIONS
+   ========================================================= */
+
+const cities =
+  Array.from(
+    new Set(
+      completedEvents
+        .map(
+          (event) =>
+            event.city
+              ?.trim()
+        )
+        .filter(
+          (city):
+            city is string =>
+              Boolean(
+                city
+              )
+        )
+    )
+  )
+    .sort(
+      (a, b) =>
+        a.localeCompare(
+          b
+        )
+    );
+
+
+/* =========================================================
+   TRADE SHOW LOGOS
+
+   Every supported image added to public/tradeshows is
+   discovered automatically at build time.
+
+   The file name is matched against completed trade-show
+   events in events.ts. Examples:
+
+   ces.png
+   md&m-west.png
+   isc-west.png
+   aems.png
+   cedia-expo.png
+
+   A logo appears only after the matching event is completed,
+   keeping this section focused on trade shows already attended.
+   ========================================================= */
+
+const tradeShowLogoDirectory =
+  path.join(
+    process.cwd(),
+    "public",
+    "tradeshows"
+  );
+
+
+let tradeShowLogoFiles:
+  string[] = [];
+
+
+try {
+
+  tradeShowLogoFiles =
+    (
+      await readdir(
+        tradeShowLogoDirectory
+      )
+    )
+      .filter(
+        (file) =>
+          /\.(png|jpe?g|webp|svg)$/i
+            .test(
+              file
+            )
+      )
+      .sort(
+        (a, b) =>
+          a.localeCompare(
+            b
+          )
+      );
+
+} catch {
+
+  tradeShowLogoFiles =
+    [];
+
+}
 
 
 /* =========================================================
@@ -349,6 +446,311 @@ function labelClass(
   return "text-brand-slate";
 
 }
+
+
+/* =========================================================
+   EVENT CATEGORY
+
+   Used only for archive filtering. Existing event content
+   remains unchanged.
+   ========================================================= */
+
+function eventCategory(
+  event
+) {
+
+  const searchable =
+    [
+      event.title,
+      event.typeLabel,
+      event.description
+    ]
+      .filter(
+        Boolean
+      )
+      .join(
+        " "
+      )
+      .toLowerCase();
+
+
+  if (
+    event.eventType ===
+      "trade-show" ||
+    event.participation ===
+      "exhibitor" ||
+    searchable.includes(
+      "trade show"
+    ) ||
+    searchable.includes(
+      "expo"
+    ) ||
+    searchable.includes(
+      "exhibition"
+    )
+  ) {
+
+    return "trade-show";
+
+  }
+
+
+  if (
+    event.communityId ||
+    searchable.includes(
+      "startup"
+    ) ||
+    searchable.includes(
+      "founder"
+    ) ||
+    searchable.includes(
+      "community"
+    ) ||
+    searchable.includes(
+      "ecosystem"
+    ) ||
+    searchable.includes(
+      "mixer"
+    )
+  ) {
+
+    return "community";
+
+  }
+
+
+  if (
+    searchable.includes(
+      "hardware"
+    ) ||
+    searchable.includes(
+      "engineering"
+    ) ||
+    searchable.includes(
+      "technical"
+    ) ||
+    searchable.includes(
+      "embedded"
+    ) ||
+    searchable.includes(
+      "electronics"
+    ) ||
+    searchable.includes(
+      "manufacturing"
+    ) ||
+    searchable.includes(
+      "sensors"
+    ) ||
+    searchable.includes(
+      "medtech"
+    )
+  ) {
+
+    return "technical";
+
+  }
+
+
+  return "professional";
+
+}
+
+
+/* =========================================================
+   TRADE SHOW HELPERS
+   ========================================================= */
+
+function isTradeShowEvent(
+  event
+) {
+
+  return eventCategory(
+    event
+  ) ===
+    "trade-show";
+
+}
+
+
+function normalizeTradeShowKey(
+  value: string
+) {
+
+  return value
+    .replace(
+      /\.[^.]+$/,
+      ""
+    )
+    .replace(
+      /\b20\d{2}\b/g,
+      ""
+    )
+    .toLowerCase()
+    .replace(
+      /[^a-z0-9]/g,
+      ""
+    );
+
+}
+
+
+function tradeShowAcronym(
+  value: string
+) {
+
+  return value
+    .replace(
+      /\b20\d{2}\b/g,
+      ""
+    )
+    .replace(
+      /&/g,
+      " "
+    )
+    .split(
+      /[^A-Za-z0-9]+/
+    )
+    .filter(
+      Boolean
+    )
+    .map(
+      (word) =>
+        word[0]
+          ?.toLowerCase() ??
+        ""
+    )
+    .join(
+      ""
+    );
+
+}
+
+
+function tradeShowMatchKeys(
+  event
+) {
+
+  const title =
+    event.title ??
+    "";
+
+
+  const normalized =
+    normalizeTradeShowKey(
+      title
+    );
+
+
+  const acronym =
+    tradeShowAcronym(
+      title
+    );
+
+
+  return Array.from(
+    new Set(
+      [
+        normalized,
+        acronym
+      ]
+        .filter(
+          Boolean
+        )
+    )
+  );
+
+}
+
+
+const completedTradeShows =
+  completedEvents
+    .filter(
+      isTradeShowEvent
+    )
+    .sort(
+      (a, b) =>
+        parseDate(
+          b.startDate
+        ).getTime() -
+        parseDate(
+          a.startDate
+        ).getTime()
+    );
+
+
+const tradeShowLogos =
+  tradeShowLogoFiles
+    .map(
+      (file) => {
+
+        const logoKey =
+          normalizeTradeShowKey(
+            file
+          );
+
+
+        const event =
+          completedTradeShows.find(
+            (candidate) => {
+
+              const keys =
+                tradeShowMatchKeys(
+                  candidate
+                );
+
+
+              return keys.some(
+                (key) =>
+                  key ===
+                    logoKey ||
+                  key.includes(
+                    logoKey
+                  ) ||
+                  logoKey.includes(
+                    key
+                  )
+              );
+
+            }
+          );
+
+
+        if (
+          !event
+        ) {
+
+          return null;
+
+        }
+
+
+        return {
+
+          file,
+
+          src:
+            `/tradeshows/${file}`,
+
+          name:
+            event.title,
+
+          url:
+            event.url,
+
+          eventId:
+            event.id
+
+        };
+
+      }
+    )
+    .filter(
+      Boolean
+    );
+
+
+const tradeShowLogoLoop =
+  tradeShowLogos;
 ---
 
 <BaseLayout
@@ -846,6 +1248,160 @@ function labelClass(
 
 
   <!-- =====================================================
+       FEATURED TRADE SHOWS
+       ===================================================== -->
+
+  {
+    tradeShowLogos.length > 0 && (
+
+      <section
+        class="
+          bg-white
+          border-b
+          border-brand-border
+          overflow-hidden
+        "
+      >
+
+        <div
+          class="
+            max-w-6xl
+            w-full
+            mx-auto
+            px-6
+            pt-12
+            pb-4
+          "
+        >
+
+          <span
+            class="
+              text-[10px]
+              uppercase
+              tracking-[0.18em]
+              text-brand-gold
+              font-semibold
+            "
+          >
+            Featured Trade Shows
+          </span>
+
+
+          <h2
+            class="
+              font-serif
+              text-2xl
+              sm:text-3xl
+              text-brand-charcoal
+              mt-2
+            "
+          >
+            Industry Events I've Attended
+          </h2>
+
+
+          <p
+            class="
+              text-sm
+              text-brand-slate
+              font-light
+              leading-relaxed
+              max-w-2xl
+              mt-3
+            "
+          >
+            A selection of trade shows and industry exhibitions
+            from my fieldwork since 2025.
+          </p>
+
+        </div>
+
+
+        <div
+          class="
+            trade-show-marquee
+            relative
+            overflow-hidden
+            py-8
+          "
+        >
+
+          <div
+            class="
+              trade-show-fade
+              trade-show-fade-left
+            "
+            aria-hidden="true"
+          ></div>
+
+
+          <div
+            class="
+              trade-show-fade
+              trade-show-fade-right
+            "
+            aria-hidden="true"
+          ></div>
+
+
+          <div
+            class="
+              trade-show-track
+              flex
+              w-max
+            "
+          >
+
+            {
+              tradeShowLogoLoop.map(
+                (logo) => (
+
+                  <a
+                    href={logo.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={`Visit ${logo.name}`}
+                    class="
+                      trade-show-logo-link
+                      flex
+                      items-center
+                      justify-center
+                      shrink-0
+                      px-8
+                      sm:px-10
+                    "
+                  >
+
+                    <img
+                      src={logo.src}
+                      alt={`${logo.name} logo`}
+                      loading="lazy"
+                      class="
+                        trade-show-logo
+                        block
+                        object-contain
+                        max-w-none
+                      "
+                    />
+
+                  </a>
+
+                )
+              )
+            }
+
+          </div>
+
+        </div>
+
+      </section>
+
+    )
+  }
+
+
+
+  <!-- =====================================================
        ARCHIVE
        ===================================================== -->
 
@@ -869,9 +1425,6 @@ function labelClass(
         class="
           flex
           flex-col
-          lg:flex-row
-          lg:items-end
-          justify-between
           gap-8
           mb-8
         "
@@ -910,20 +1463,19 @@ function labelClass(
 
         <div
           class="
-            flex
-            flex-col
-            sm:flex-row
+            grid
+            grid-cols-1
+            sm:grid-cols-2
+            lg:grid-cols-3
+            xl:grid-cols-5
             gap-3
             w-full
-            lg:w-auto
           "
         >
 
-          <div
-            class="
-              min-w-[160px]
-            "
-          >
+          <!-- YEAR -->
+
+          <div>
 
             <label
               for="fieldwork-year"
@@ -981,11 +1533,9 @@ function labelClass(
 
 
 
-          <div
-            class="
-              min-w-[180px]
-            "
-          >
+          <!-- MONTH -->
+
+          <div>
 
             <label
               for="fieldwork-month"
@@ -1041,8 +1591,189 @@ function labelClass(
 
           </div>
 
-        </div>
 
+
+          <!-- PARTICIPATION -->
+
+          <div>
+
+            <label
+              for="fieldwork-participation"
+              class="
+                block
+                text-[9px]
+                uppercase
+                tracking-[0.14em]
+                text-brand-slate
+                mb-2
+              "
+            >
+              Participation
+            </label>
+
+
+            <select
+              id="fieldwork-participation"
+              class="
+                w-full
+                bg-white
+                border
+                border-brand-border
+                px-4
+                py-3
+                text-xs
+                text-brand-charcoal
+                outline-none
+                focus:border-brand-gold
+              "
+            >
+
+              <option value="all">
+                All Participation
+              </option>
+
+              <option value="hosted">
+                Hosted
+              </option>
+
+              <option value="co-organized">
+                Co-Organized
+              </option>
+
+              <option value="exhibitor">
+                Exhibitor
+              </option>
+
+              <option value="attending">
+                Attended
+              </option>
+
+            </select>
+
+          </div>
+
+
+
+          <!-- EVENT TYPE -->
+
+          <div>
+
+            <label
+              for="fieldwork-type"
+              class="
+                block
+                text-[9px]
+                uppercase
+                tracking-[0.14em]
+                text-brand-slate
+                mb-2
+              "
+            >
+              Event Type
+            </label>
+
+
+            <select
+              id="fieldwork-type"
+              class="
+                w-full
+                bg-white
+                border
+                border-brand-border
+                px-4
+                py-3
+                text-xs
+                text-brand-charcoal
+                outline-none
+                focus:border-brand-gold
+              "
+            >
+
+              <option value="all">
+                All Event Types
+              </option>
+
+              <option value="trade-show">
+                Trade Shows
+              </option>
+
+              <option value="community">
+                Community & Startup
+              </option>
+
+              <option value="technical">
+                Hardware & Technical
+              </option>
+
+              <option value="professional">
+                Professional
+              </option>
+
+            </select>
+
+          </div>
+
+
+
+          <!-- CITY -->
+
+          <div>
+
+            <label
+              for="fieldwork-city"
+              class="
+                block
+                text-[9px]
+                uppercase
+                tracking-[0.14em]
+                text-brand-slate
+                mb-2
+              "
+            >
+              City
+            </label>
+
+
+            <select
+              id="fieldwork-city"
+              class="
+                w-full
+                bg-white
+                border
+                border-brand-border
+                px-4
+                py-3
+                text-xs
+                text-brand-charcoal
+                outline-none
+                focus:border-brand-gold
+              "
+            >
+
+              <option value="all">
+                All Cities
+              </option>
+
+
+              {
+                cities.map(
+                  (city) => (
+
+                    <option
+                      value={city.toLowerCase()}
+                    >
+                      {city}
+                    </option>
+
+                  )
+                )
+              }
+
+            </select>
+
+          </div>
+
+        </div>
       </div>
 
 
@@ -1140,6 +1871,9 @@ function labelClass(
                   "
                   data-year={String(eventYear)}
                   data-month={String(eventMonth)}
+                  data-participation={event.participation}
+                  data-category={eventCategory(event)}
+                  data-city={event.city?.toLowerCase() ?? ""}
                 >
 
                   <summary
@@ -1635,7 +2369,7 @@ function labelClass(
             mt-2
           "
         >
-          Try selecting a different year or month.
+          Try adjusting the filters above.
         </p>
 
       </div>
@@ -1643,6 +2377,173 @@ function labelClass(
     </div>
 
   </section>
+
+
+
+  <style>
+
+    .trade-show-marquee {
+      width: 100%;
+    }
+
+
+    .trade-show-track {
+      animation:
+        trade-show-marquee
+        34s
+        linear
+        infinite;
+
+      will-change:
+        transform;
+    }
+
+
+    .trade-show-marquee:hover
+    .trade-show-track {
+      animation-play-state:
+        paused;
+    }
+
+
+    .trade-show-logo-link {
+      min-width:
+        220px;
+    }
+
+
+    .trade-show-logo {
+      width:
+        auto;
+
+      height:
+        52px;
+
+      max-width:
+        190px;
+
+      opacity:
+        0.78;
+
+      transition:
+        opacity 180ms ease,
+        transform 180ms ease;
+    }
+
+
+    .trade-show-logo-link:hover
+    .trade-show-logo {
+      opacity:
+        1;
+
+      transform:
+        scale(1.04);
+    }
+
+
+    .trade-show-fade {
+      position:
+        absolute;
+
+      top:
+        0;
+
+      bottom:
+        0;
+
+      width:
+        72px;
+
+      z-index:
+        2;
+
+      pointer-events:
+        none;
+    }
+
+
+    .trade-show-fade-left {
+      left:
+        0;
+
+      background:
+        linear-gradient(
+          to right,
+          #ffffff,
+          rgba(255, 255, 255, 0)
+        );
+    }
+
+
+    .trade-show-fade-right {
+      right:
+        0;
+
+      background:
+        linear-gradient(
+          to left,
+          #ffffff,
+          rgba(255, 255, 255, 0)
+        );
+    }
+
+
+    @keyframes trade-show-marquee {
+
+      from {
+        transform:
+          translateX(100vw);
+      }
+
+
+      to {
+        transform:
+          translateX(-100%);
+      }
+
+    }
+
+
+    @media (
+      max-width: 640px
+    ) {
+
+      .trade-show-logo-link {
+        min-width:
+          180px;
+      }
+
+
+      .trade-show-logo {
+        height:
+          44px;
+
+        max-width:
+          155px;
+      }
+
+
+      .trade-show-fade {
+        width:
+          36px;
+      }
+
+    }
+
+
+    @media (
+      prefers-reduced-motion:
+        reduce
+    ) {
+
+      .trade-show-track {
+        animation:
+          none;
+      }
+
+    }
+
+  </style>
 
 
 
@@ -1659,6 +2560,24 @@ function labelClass(
       const monthSelect =
         document.getElementById(
           "fieldwork-month"
+        );
+
+
+      const participationSelect =
+        document.getElementById(
+          "fieldwork-participation"
+        );
+
+
+      const typeSelect =
+        document.getElementById(
+          "fieldwork-type"
+        );
+
+
+      const citySelect =
+        document.getElementById(
+          "fieldwork-city"
         );
 
 
@@ -1690,7 +2609,10 @@ function labelClass(
 
       if (
         !yearSelect ||
-        !monthSelect
+        !monthSelect ||
+        !participationSelect ||
+        !typeSelect ||
+        !citySelect
       ) {
 
         return;
@@ -1707,6 +2629,18 @@ function labelClass(
 
         const selectedMonth =
           monthSelect.value;
+
+
+        const selectedParticipation =
+          participationSelect.value;
+
+
+        const selectedType =
+          typeSelect.value;
+
+
+        const selectedCity =
+          citySelect.value;
 
 
         let visibleCount =
@@ -1730,9 +2664,33 @@ function labelClass(
                 selectedMonth;
 
 
+            const matchesParticipation =
+              selectedParticipation ===
+                "all" ||
+              event.dataset.participation ===
+                selectedParticipation;
+
+
+            const matchesType =
+              selectedType ===
+                "all" ||
+              event.dataset.category ===
+                selectedType;
+
+
+            const matchesCity =
+              selectedCity ===
+                "all" ||
+              event.dataset.city ===
+                selectedCity;
+
+
             const visible =
               matchesYear &&
-              matchesMonth;
+              matchesMonth &&
+              matchesParticipation &&
+              matchesType &&
+              matchesCity;
 
 
             event.classList.toggle(
@@ -1795,16 +2753,23 @@ function labelClass(
 
 
 
-      yearSelect.addEventListener(
-        "change",
-        applyFilters
-      );
+      [
+        yearSelect,
+        monthSelect,
+        participationSelect,
+        typeSelect,
+        citySelect
+      ]
+        .forEach(
+          (select) => {
 
+            select.addEventListener(
+              "change",
+              applyFilters
+            );
 
-      monthSelect.addEventListener(
-        "change",
-        applyFilters
-      );
+          }
+        );
 
 
       resetButton?.addEventListener(
@@ -1816,6 +2781,18 @@ function labelClass(
 
 
           monthSelect.value =
+            "all";
+
+
+          participationSelect.value =
+            "all";
+
+
+          typeSelect.value =
+            "all";
+
+
+          citySelect.value =
             "all";
 
 
