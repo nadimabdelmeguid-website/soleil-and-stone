@@ -774,6 +774,51 @@ export const eventSeeds: SiteEvent[] = [
 
 
   {
+    id:
+      "infocomm-2026",
+
+    title:
+      "InfoComm 2026",
+
+    role:
+      "attending",
+
+    participation:
+      "attending",
+
+    startDate:
+      "2026-06-13",
+
+    endDate:
+      "2026-06-19",
+
+    venue:
+      "Las Vegas Convention Center",
+
+    city:
+      "Las Vegas",
+
+    description:
+      "Professional AV trade show spanning audio, video, conferencing, digital signage, AV networking, live events, integration and connected technologies.",
+
+    url:
+      "https://www.infocommshow.org/",
+
+    buttonLabel:
+      "View Show",
+
+    typeLabel:
+      "Attending Trade Show",
+
+    eventType:
+      "trade-show",
+
+    showOnHome:
+      true
+  },
+
+
+  {
   id:
     "startup-mixer-jun-2026",
 
@@ -1009,6 +1054,51 @@ export const eventSeeds: SiteEvent[] = [
 
   {
     id:
+      "isc-west-2026",
+
+    title:
+      "ISC West 2026",
+
+    role:
+      "attending",
+
+    participation:
+      "attending",
+
+    startDate:
+      "2026-03-23",
+
+    endDate:
+      "2026-03-27",
+
+    venue:
+      "The Venetian Expo",
+
+    city:
+      "Las Vegas",
+
+    description:
+      "Security-industry trade show spanning physical security, access control, surveillance, connected systems, public safety and emerging security technologies.",
+
+    url:
+      "https://www.discoverisc.com/west/en-us.html",
+
+    buttonLabel:
+      "View Show",
+
+    typeLabel:
+      "Attending Trade Show",
+
+    eventType:
+      "trade-show",
+
+    showOnHome:
+      true
+  },
+
+
+  {
+    id:
       "medtech-mixer-mar-2026",
 
     title:
@@ -1037,6 +1127,51 @@ export const eventSeeds: SiteEvent[] = [
 
     typeLabel:
       "Attending Medtech Event",
+
+    showOnHome:
+      true
+  },
+
+
+  {
+    id:
+      "iwce-2026",
+
+    title:
+      "IWCE 2026",
+
+    role:
+      "attending",
+
+    participation:
+      "attending",
+
+    startDate:
+      "2026-03-18",
+
+    endDate:
+      "2026-03-19",
+
+    venue:
+      "Las Vegas Convention Center",
+
+    city:
+      "Las Vegas",
+
+    description:
+      "Critical communications and connectivity trade show covering wireless systems, public safety communications, infrastructure, networking and connected technologies.",
+
+    url:
+      "https://iwceexpo.com/",
+
+    buttonLabel:
+      "View Show",
+
+    typeLabel:
+      "Attending Trade Show",
+
+    eventType:
+      "trade-show",
 
     showOnHome:
       true
@@ -1334,6 +1469,51 @@ export const eventSeeds: SiteEvent[] = [
 
   {
     id:
+      "mdm-west-2026",
+
+    title:
+      "MD&M West 2026",
+
+    role:
+      "attending",
+
+    participation:
+      "attending",
+
+    startDate:
+      "2026-02-03",
+
+    endDate:
+      "2026-02-05",
+
+    venue:
+      "Anaheim Convention Center",
+
+    city:
+      "Anaheim",
+
+    description:
+      "Advanced manufacturing and medical-device trade show spanning medtech, automation, plastics, packaging, design engineering and manufacturing technologies.",
+
+    url:
+      "https://www.mdmwest.com/",
+
+    buttonLabel:
+      "View Show",
+
+    typeLabel:
+      "Attending Trade Show",
+
+    eventType:
+      "trade-show",
+
+    showOnHome:
+      true
+  },
+
+
+  {
+    id:
       "founder-fridays-feb-2026",
 
     title:
@@ -1442,6 +1622,51 @@ export const eventSeeds: SiteEvent[] = [
 
     typeLabel:
       "Attending Startup Event",
+
+    showOnHome:
+      true
+  },
+
+
+  {
+    id:
+      "namm-show-2026",
+
+    title:
+      "The NAMM Show 2026",
+
+    role:
+      "attending",
+
+    participation:
+      "attending",
+
+    startDate:
+      "2026-01-20",
+
+    endDate:
+      "2026-01-24",
+
+    venue:
+      "Anaheim Convention Center",
+
+    city:
+      "Anaheim",
+
+    description:
+      "Global music-products and professional-audio trade show spanning musical instruments, audio technology, live sound, entertainment technology and product innovation.",
+
+    url:
+      "https://www.namm.org/",
+
+    buttonLabel:
+      "View Show",
+
+    typeLabel:
+      "Attending Trade Show",
+
+    eventType:
+      "trade-show",
 
     showOnHome:
       true
@@ -1736,6 +1961,93 @@ export const eventSeeds: SiteEvent[] = [
   showOnHome:
     true
 },
+  {
+    id:
+      "iacp-2025",
+
+    title:
+      "IACP 2025 Annual Conference and Exposition",
+
+    role:
+      "attending",
+
+    participation:
+      "attending",
+
+    startDate:
+      "2025-10-18",
+
+    endDate:
+      "2025-10-21",
+
+    city:
+      "Denver",
+
+    description:
+      "Public-safety and law-enforcement conference and exposition covering communications, safety technologies, operational systems, equipment and emerging public-safety solutions.",
+
+    url:
+      "https://www.theiacpconference.org/",
+
+    buttonLabel:
+      "View Show",
+
+    typeLabel:
+      "Attending Trade Show",
+
+    eventType:
+      "trade-show",
+
+    showOnHome:
+      true
+  },
+
+
+  {
+    id:
+      "westec-2025",
+
+    title:
+      "WESTEC 2025",
+
+    role:
+      "attending",
+
+    participation:
+      "attending",
+
+    startDate:
+      "2025-10-07",
+
+    endDate:
+      "2025-10-09",
+
+    venue:
+      "Anaheim Convention Center",
+
+    city:
+      "Anaheim",
+
+    description:
+      "Manufacturing technology trade show focused on machining, automation, production equipment, advanced manufacturing and industrial technologies.",
+
+    url:
+      "https://west.mtseries.com/",
+
+    buttonLabel:
+      "View Show",
+
+    typeLabel:
+      "Attending Trade Show",
+
+    eventType:
+      "trade-show",
+
+    showOnHome:
+      true
+  },
+
+
   {
     id:
       "simbiosyx-oct-2025",
