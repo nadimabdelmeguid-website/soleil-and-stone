@@ -1256,7 +1256,7 @@ const tradeShowLogoLoop =
 
       <section
         class="
-          bg-brand-cream
+          bg-white
           border-b
           border-brand-border
           overflow-hidden
@@ -1370,18 +1370,6 @@ const tradeShowLogoLoop =
                     "
                   >
 
-                    <div
-                      class="
-                        trade-show-logo-tile
-                        flex
-                        items-center
-                        justify-center
-                        bg-white
-                        border
-                        border-brand-border
-                      "
-                    >
-
                     <img
                       src={logo.src}
                       alt={`${logo.name} logo`}
@@ -1392,8 +1380,6 @@ const tradeShowLogoLoop =
                         object-contain
                       "
                     />
-
-                    </div>
 
                   </a>
 
@@ -2421,20 +2407,11 @@ const tradeShowLogoLoop =
       width:
         220px;
 
-      padding:
-        0 12px;
-    }
-
-
-    .trade-show-logo-tile {
-      width:
-        196px;
-
       height:
-        104px;
+        92px;
 
       padding:
-        20px 24px;
+        10px 18px;
     }
 
 
@@ -2446,13 +2423,27 @@ const tradeShowLogoLoop =
         100%;
 
       max-width:
-        148px;
+        170px;
 
       max-height:
-        64px;
+        66px;
+
+      /*
+       * Normalize every source logo to the same warm beige
+       * used by the Past Fieldwork background (#F9F8F3).
+       */
+      filter:
+        brightness(0)
+        saturate(100%)
+        invert(98%)
+        sepia(7%)
+        saturate(377%)
+        hue-rotate(9deg)
+        brightness(101%)
+        contrast(95%);
 
       opacity:
-        0.82;
+        1;
 
       transition:
         opacity 180ms ease,
@@ -2463,7 +2454,7 @@ const tradeShowLogoLoop =
     .trade-show-logo-link:hover
     .trade-show-logo {
       opacity:
-        1;
+        0.78;
 
       transform:
         scale(1.04);
@@ -2498,8 +2489,8 @@ const tradeShowLogoLoop =
       background:
         linear-gradient(
           to right,
-          #F9F8F3,
-          rgba(249, 248, 243, 0)
+          #ffffff,
+          rgba(255, 255, 255, 0)
         );
     }
 
@@ -2511,8 +2502,8 @@ const tradeShowLogoLoop =
       background:
         linear-gradient(
           to left,
-          #F9F8F3,
-          rgba(249, 248, 243, 0)
+          #ffffff,
+          rgba(255, 255, 255, 0)
         );
     }
 
@@ -2521,7 +2512,7 @@ const tradeShowLogoLoop =
 
       from {
         transform:
-          translateX(100vw);
+          translateX(0);
       }
 
 
@@ -2541,29 +2532,20 @@ const tradeShowLogoLoop =
         width:
           180px;
 
-        padding:
-          0 10px;
-      }
-
-
-      .trade-show-logo-tile {
-        width:
-          160px;
-
         height:
-          92px;
+          82px;
 
         padding:
-          18px 20px;
+          10px 14px;
       }
 
 
       .trade-show-logo {
         max-width:
-          120px;
+          145px;
 
         max-height:
-          56px;
+          58px;
       }
 
 
