@@ -3,27 +3,42 @@ import type {
   SiteEvent
 } from "../data/events";
 
+
 export type EventParticipation =
   | "hosted"
   | "co-organized"
   | "exhibitor"
   | "attending";
 
+
+/* =========================================================
+   DATE HELPERS
+   ========================================================= */
+
 export function parseMetricDate(
   value: string
 ) {
+
   return new Date(
     `${value}T12:00:00`
   );
+
 }
+
+
+/* =========================================================
+   COMPLETED EVENT
+   ========================================================= */
 
 export function isCompletedEvent(
   event: SiteEvent
 ) {
-  const end = parseMetricDate(
-    event.endDate ??
+
+  const end =
+    parseMetricDate(
+      event.endDate ??
       event.startDate
-  );
+    );
 
   end.setHours(
     23,
@@ -32,183 +47,246 @@ export function isCompletedEvent(
     999
   );
 
-  return end < new Date();
+  return end <
+    new Date();
+
 }
+
+
+/* =========================================================
+   PARTICIPATION
+   ========================================================= */
 
 export function getEventParticipation(
   event: SiteEvent
 ): EventParticipation {
+
   return event.participation;
+
 }
+
+
+/* =========================================================
+   PARTICIPATION PRIORITY
+
+   Used when multiple events share the same date.
+   ========================================================= */
 
 export function getParticipationPriority(
   event: SiteEvent
 ) {
+
   const participation =
     getEventParticipation(
       event
     );
 
-  if (
-    participation === "hosted" ||
-    participation === "co-organized"
-  ) {
-    return 3;
-  }
 
   if (
-    participation === "exhibitor"
+    participation ===
+      "hosted" ||
+    participation ===
+      "co-organized"
   ) {
-    return 2;
+
+    return 3;
+
   }
+
+
+  if (
+    participation ===
+      "exhibitor"
+  ) {
+
+    return 2;
+
+  }
+
 
   return 1;
+
 }
+
+
+/* =========================================================
+   LED EVENT
+
+   Hosted + co-organized.
+   ========================================================= */
 
 export function isLedEvent(
   event: SiteEvent
 ) {
-  const participation =
-    getEventParticipation(
-      event
-    );
 
   return (
-    participation === "hosted" ||
-    participation === "co-organized"
-  );
-}
-
-export function isTradeShow(
-  event: SiteEvent
-) {
-  if (
-    event.eventType ===
-      "trade-show"
-  ) {
-    return true;
-  }
-
-  if (
     event.participation ===
-      "exhibitor"
-  ) {
-    return true;
-  }
-
-  const label =
-    event.typeLabel
-      ?.toLowerCase() ??
-    "";
-
-  return (
-    label.includes(
-      "trade show"
-    ) ||
-    label.includes(
-      "expo"
-    ) ||
-    label.includes(
-      "exhibitor"
-    )
+      "hosted" ||
+    event.participation ===
+      "co-organized"
   );
+
 }
 
-function uniqueStrings(
-  values: string[]
+
+/* =========================================================
+   COMPLETED LED EVENTS
+   ========================================================= */
+
+export function getCompletedLedEvents(
+  events: SiteEvent[]
 ) {
-  const map =
-    new Map<
-      string,
-      string
-    >();
 
-  values
-    .filter(Boolean)
-    .forEach(
-      (value) => {
-        const clean =
-          value.trim();
-
-        if (!clean) {
-          return;
-        }
-
-        const key =
-          clean.toLowerCase();
-
-        if (
-          !map.has(key)
-        ) {
-          map.set(
-            key,
-            clean
-          );
-        }
-      }
-    );
-
-  return Array.from(
-    map.values()
+  return events.filter(
+    (event) =>
+      isCompletedEvent(
+        event
+      ) &&
+      isLedEvent(
+        event
+      )
   );
+
 }
 
-function uniqueSpeakers(
-  speakers: EventSpeaker[]
+
+/* =========================================================
+   UNIQUE SPEAKERS
+   ========================================================= */
+
+export function getUniqueSpeakers(
+  events: SiteEvent[]
 ) {
-  const map =
+
+  const uniqueSpeakers =
     new Map<
       string,
       EventSpeaker
     >();
 
-  speakers.forEach(
-    (speaker) => {
-      const key =
-        speaker.name
-          .trim()
-          .toLowerCase();
 
-      if (
-        !map.has(key)
-      ) {
-        map.set(
-          key,
-          speaker
-        );
+  events
+    .flatMap(
+      (event) =>
+        event.speakers ??
+        []
+    )
+    .forEach(
+      (speaker) => {
+
+        const key =
+          speaker.name
+            .trim()
+            .toLowerCase();
+
+
+        if (
+          !uniqueSpeakers.has(
+            key
+          )
+        ) {
+
+          uniqueSpeakers.set(
+            key,
+            speaker
+          );
+
+        }
+
       }
-    }
-  );
+    );
+
 
   return Array.from(
-    map.values()
+    uniqueSpeakers.values()
   );
+
 }
 
-export function getCommunityMetrics(
-  events: SiteEvent[],
-  communityId?: string
+
+/* =========================================================
+   UNIQUE STRINGS
+
+   Used for sponsors / partners / organizations.
+   Case-insensitive deduplication.
+   ========================================================= */
+
+function getUniqueStrings(
+  values: string[]
 ) {
-  const completedEvents =
-    events
-      .filter(
-        isCompletedEvent
-      )
-      .filter(
-        isLedEvent
-      )
-      .filter(
-        (event) =>
-          Boolean(
-            event.communityId
+
+  const unique =
+    new Map<
+      string,
+      string
+    >();
+
+
+  values
+    .filter(
+      Boolean
+    )
+    .forEach(
+      (value) => {
+
+        const clean =
+          value.trim();
+
+        const key =
+          clean.toLowerCase();
+
+
+        if (
+          !unique.has(
+            key
           )
-      )
-      .filter(
-        (event) =>
-          !communityId ||
-          event.communityId ===
-            communityId
-      );
+        ) {
+
+          unique.set(
+            key,
+            clean
+          );
+
+        }
+
+      }
+    );
+
+
+  return Array.from(
+    unique.values()
+  );
+
+}
+
+
+/* =========================================================
+   COMMUNITY METRICS
+
+   Aggregate across every completed event that belongs to
+   one of the site's communities and was hosted/co-organized.
+
+   This becomes the single source of truth for community.astro.
+   ========================================================= */
+
+export function getCommunityMetrics(
+  events: SiteEvent[]
+) {
+
+  const completedEvents =
+    events.filter(
+      (event) =>
+        Boolean(
+          event.communityId
+        ) &&
+        isCompletedEvent(
+          event
+        ) &&
+        isLedEvent(
+          event
+        )
+    );
+
 
   const registrations =
     completedEvents.reduce(
@@ -224,17 +302,15 @@ export function getCommunityMetrics(
       0
     );
 
+
   const speakers =
-    uniqueSpeakers(
-      completedEvents.flatMap(
-        (event) =>
-          event.speakers ??
-          []
-      )
+    getUniqueSpeakers(
+      completedEvents
     );
 
+
   const sponsors =
-    uniqueStrings(
+    getUniqueStrings(
       completedEvents.flatMap(
         (event) =>
           event.sponsors ??
@@ -242,8 +318,9 @@ export function getCommunityMetrics(
       )
     );
 
+
   const partners =
-    uniqueStrings(
+    getUniqueStrings(
       completedEvents.flatMap(
         (event) =>
           event.partners ??
@@ -251,7 +328,9 @@ export function getCommunityMetrics(
       )
     );
 
+
   return {
+
     events:
       completedEvents,
 
@@ -274,24 +353,150 @@ export function getCommunityMetrics(
 
     partnerCount:
       partners.length
+
   };
+
 }
+
+
+/* =========================================================
+   SINGLE COMMUNITY METRICS
+
+   Used by CommunityCard.astro.
+
+   Example:
+   startup-mixer
+   hardware-meetup
+   ========================================================= */
+
+export function getCommunityMetricsById(
+  events: SiteEvent[],
+  communityId: string
+) {
+
+  const completedEvents =
+    events
+      .filter(
+        (event) =>
+          event.communityId ===
+            communityId &&
+          isCompletedEvent(
+            event
+          ) &&
+          isLedEvent(
+            event
+          )
+      )
+      .sort(
+        (a, b) =>
+          parseMetricDate(
+            b.startDate
+          ).getTime() -
+          parseMetricDate(
+            a.startDate
+          ).getTime()
+      );
+
+
+  const registrations =
+    completedEvents.reduce(
+      (
+        total,
+        event
+      ) =>
+        total +
+        (
+          event.registrations ??
+          0
+        ),
+      0
+    );
+
+
+  const speakers =
+    getUniqueSpeakers(
+      completedEvents
+    );
+
+
+  const sponsors =
+    getUniqueStrings(
+      completedEvents.flatMap(
+        (event) =>
+          event.sponsors ??
+          []
+      )
+    );
+
+
+  const partners =
+    getUniqueStrings(
+      completedEvents.flatMap(
+        (event) =>
+          event.partners ??
+          []
+      )
+    );
+
+
+  return {
+
+    events:
+      completedEvents,
+
+    eventsLed:
+      completedEvents.length,
+
+    registrations,
+
+    speakers,
+
+    speakerCount:
+      speakers.length,
+
+    sponsors,
+
+    sponsorCount:
+      sponsors.length,
+
+    partners,
+
+    partnerCount:
+      partners.length
+
+  };
+
+}
+
+
+/* =========================================================
+   PROFESSIONAL / FIELDWORK METRICS
+
+   Used by fieldwork.astro.
+
+   All numbers automatically change as soon as an event
+   becomes completed.
+   ========================================================= */
 
 export function getProfessionalMetrics(
   events: SiteEvent[]
 ) {
+
   const completed =
     events.filter(
       isCompletedEvent
     );
+
 
   const hosted =
     completed.filter(
       (event) =>
         getEventParticipation(
           event
-        ) === "hosted"
+        ) ===
+          "hosted"
     );
+
 
   const coOrganized =
     completed.filter(
@@ -302,45 +507,32 @@ export function getProfessionalMetrics(
           "co-organized"
     );
 
+
   const exhibited =
     completed.filter(
       (event) =>
         getEventParticipation(
           event
-        ) === "exhibitor"
+        ) ===
+          "exhibitor"
     );
+
 
   const attended =
     completed.filter(
       (event) =>
         getEventParticipation(
           event
-        ) === "attending"
+        ) ===
+          "attending"
     );
+
 
   const ledEvents =
     completed.filter(
       isLedEvent
     );
 
-  const tradeShows =
-    completed.filter(
-      isTradeShow
-    );
-
-  const tradeShowsAttended =
-    tradeShows.filter(
-      (event) =>
-        event.participation ===
-          "attending"
-    );
-
-  const tradeShowsExhibited =
-    tradeShows.filter(
-      (event) =>
-        event.participation ===
-          "exhibitor"
-    );
 
   const registrationsLed =
     ledEvents.reduce(
@@ -356,40 +548,24 @@ export function getProfessionalMetrics(
       0
     );
 
+
   const ledEventsWithRegistrationData =
     ledEvents.filter(
       (event) =>
-        typeof event.registrations ===
+        typeof
+          event.registrations ===
           "number"
     ).length;
 
+
   const speakers =
-    uniqueSpeakers(
-      ledEvents.flatMap(
-        (event) =>
-          event.speakers ??
-          []
-      )
+    getUniqueSpeakers(
+      ledEvents
     );
 
-  const organizations =
-    uniqueStrings(
-      completed.flatMap(
-        (event) => [
-          ...(event.organizers ?? []),
-          ...(event.sponsors ?? []),
-          ...(event.partners ?? []),
-          ...(event.speakers ?? [])
-            .map(
-              (speaker) =>
-                speaker.company
-            )
-        ]
-      )
-    );
 
   const sponsors =
-    uniqueStrings(
+    getUniqueStrings(
       ledEvents.flatMap(
         (event) =>
           event.sponsors ??
@@ -397,8 +573,9 @@ export function getProfessionalMetrics(
       )
     );
 
+
   const partners =
-    uniqueStrings(
+    getUniqueStrings(
       ledEvents.flatMap(
         (event) =>
           event.partners ??
@@ -406,14 +583,50 @@ export function getProfessionalMetrics(
       )
     );
 
-  const cities =
-    uniqueStrings(
-      completed.map(
-        (event) =>
-          event.city ??
-          ""
-      )
+
+  const organizationNames =
+    ledEvents.flatMap(
+      (event) => [
+        ...(
+          event.sponsors ??
+          []
+        ),
+
+        ...(
+          event.partners ??
+          []
+        ),
+
+        ...(
+          event.speakers ??
+          []
+        ).map(
+          (speaker) =>
+            speaker.company
+        )
+      ]
     );
+
+
+  const organizations =
+    getUniqueStrings(
+      organizationNames
+    );
+
+
+  const cities =
+    getUniqueStrings(
+      completed
+        .map(
+          (event) =>
+            event.city ??
+            ""
+        )
+        .filter(
+          Boolean
+        )
+    );
+
 
   const years =
     new Set(
@@ -425,7 +638,9 @@ export function getProfessionalMetrics(
       )
     );
 
+
   return {
+
     total:
       completed.length,
 
@@ -436,22 +651,14 @@ export function getProfessionalMetrics(
       coOrganized.length,
 
     led:
-      ledEvents.length,
+      hosted.length +
+      coOrganized.length,
 
     exhibited:
       exhibited.length,
 
     attended:
       attended.length,
-
-    tradeShows:
-      tradeShows.length,
-
-    tradeShowsAttended:
-      tradeShowsAttended.length,
-
-    tradeShowsExhibited:
-      tradeShowsExhibited.length,
 
     registrationsLed,
 
@@ -474,5 +681,7 @@ export function getProfessionalMetrics(
 
     yearsActive:
       years.size
+
   };
+
 }
