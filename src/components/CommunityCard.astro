@@ -15,9 +15,6 @@ const {
 
 /* =========================================================
    AUTOMATED COMMUNITY-SPECIFIC METRICS
-
-   All event-related values now come from the same helper
-   used by the rest of the website.
    ========================================================= */
 
 const metrics =
@@ -34,11 +31,6 @@ const communityEvents =
 const registrations =
   metrics.registrations;
 
-
-/*
- * Keep these arrays because the existing UI uses
- * speakers.length and sponsors.length.
- */
 
 const speakers =
   metrics.speakers;
@@ -132,9 +124,7 @@ function hardwareTopic(
       "
     >
 
-      <!-- =================================================
-           INTRO
-           ================================================= -->
+      <!-- INTRO -->
 
       <div
         class="
@@ -221,6 +211,7 @@ function hardwareTopic(
 
           {
             community.secondaryUrl && (
+
               <a
                 href={community.secondaryUrl}
                 class="
@@ -247,6 +238,7 @@ function hardwareTopic(
                   →
                 </span>
               </a>
+
             )
           }
 
@@ -256,9 +248,7 @@ function hardwareTopic(
 
 
 
-      <!-- =================================================
-           SNAPSHOT
-           ================================================= -->
+      <!-- SNAPSHOT -->
 
       <div
         class:list={[
@@ -290,9 +280,7 @@ function hardwareTopic(
 
 
 
-        <!-- =================================================
-             METRICS
-             ================================================= -->
+        <!-- METRICS -->
 
         <div
           class="
@@ -447,9 +435,7 @@ function hardwareTopic(
 
 
 
-        <!-- =================================================
-             HARDWARE SECONDARY METRICS
-             ================================================= -->
+        <!-- HARDWARE SECONDARY METRICS -->
 
         {
           community.id ===
@@ -511,9 +497,7 @@ function hardwareTopic(
 
 
 
-        <!-- =================================================
-             FOCUS
-             ================================================= -->
+        <!-- FOCUS -->
 
         <div
           class="
@@ -550,6 +534,7 @@ function hardwareTopic(
             {
               community.focus.map(
                 (item) => (
+
                   <div
                     class="
                       flex
@@ -576,6 +561,7 @@ function hardwareTopic(
                     </span>
 
                   </div>
+
                 )
               )
             }
@@ -590,9 +576,7 @@ function hardwareTopic(
 
 
 
-    <!-- =====================================================
-         TRACK RECORD
-         ===================================================== -->
+    <!-- TRACK RECORD -->
 
     {
       communityEvents.length > 0 && (
@@ -701,9 +685,7 @@ function hardwareTopic(
 
 
 
-          <!-- =================================================
-               MIXER HORIZONTAL HISTORY
-               ================================================= -->
+          <!-- MIXER HORIZONTAL HISTORY -->
 
           {
             community.id ===
@@ -755,8 +737,6 @@ function hardwareTopic(
                         >
 
                           <div>
-
-                            <!-- MONTH BADGE -->
 
                             <div
                               class="
@@ -859,9 +839,7 @@ function hardwareTopic(
 
 
 
-          <!-- =================================================
-               HARDWARE PROGRAMMING
-               ================================================= -->
+          <!-- HARDWARE PROGRAMMING -->
 
           {
             community.id ===
@@ -890,8 +868,6 @@ function hardwareTopic(
                           shadow-[0_1px_0_rgba(34,37,42,0.02)]
                         "
                       >
-
-                        <!-- MONTH + REGISTRATIONS -->
 
                         <div
                           class="
@@ -945,9 +921,6 @@ function hardwareTopic(
                         </div>
 
 
-
-                        <!-- TITLE -->
-
                         <h4
                           class="
                             font-serif
@@ -961,9 +934,6 @@ function hardwareTopic(
                           )}
                         </h4>
 
-
-
-                        <!-- SPONSOR -->
 
                         {
                           event.sponsors?.length > 0 && (
@@ -1008,9 +978,6 @@ function hardwareTopic(
                           )
                         }
 
-
-
-                        <!-- SPEAKERS -->
 
                         {
                           event.speakers?.length > 0 && (
@@ -1087,9 +1054,6 @@ function hardwareTopic(
                           )
                         }
 
-
-
-                        <!-- LINK -->
 
                         <div
                           class="
