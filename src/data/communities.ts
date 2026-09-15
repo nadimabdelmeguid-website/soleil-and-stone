@@ -39,7 +39,7 @@ export const communities: Community[] = [
       "A recurring gathering designed to make it easier for founders, engineers, investors, operators and people exploring the San Diego startup ecosystem to meet in a relaxed, low-pressure setting.",
 
     members:
-      300,
+      425,
 
     primaryUrl:
       "https://eventship.com/host/nadim-abdel-meguid",
