@@ -1,9 +1,10 @@
+import syncedEvents from "./events.synced";
+
 export interface EventSpeaker {
   name: string;
   title?: string;
   company: string;
 }
-
 
 export interface SiteEvent {
   id: string;
@@ -47,11 +48,42 @@ export interface SiteEvent {
   partners?: string[];
 
   speakers?: EventSpeaker[];
+
+  organizers?: string[];
+
+  address?: string;
+
+  image?: string;
+
+  eventType?:
+    | "trade-show"
+    | "community"
+    | "startup"
+    | "technical"
+    | "professional"
+    | "industry";
 }
 
+export type SyncedEventPatch = Partial<
+  Pick<
+    SiteEvent,
+    | "title"
+    | "startDate"
+    | "endDate"
+    | "venue"
+    | "city"
+    | "address"
+    | "image"
+    | "registrations"
+    | "speakers"
+    | "sponsors"
+    | "organizers"
+    | "description"
+  >
+>;
 
-export const events: SiteEvent[] = [
 
+export const eventSeeds: SiteEvent[] = [
   // =====================================================
   // 2027
   // =====================================================
@@ -2017,3 +2049,99 @@ export const events: SiteEvent[] = [
   }
 
 ];
+
+function hasItems<T>(
+  value:
+    | T[]
+    | undefined
+): value is T[] {
+  return (
+    Array.isArray(
+      value
+    ) &&
+    value.length > 0
+  );
+}
+
+function mergeSyncedEvent(
+  event: SiteEvent
+): SiteEvent {
+  const synced =
+    (
+      syncedEvents as Record<
+        string,
+        SyncedEventPatch
+      >
+    )[event.id];
+
+  if (!synced) {
+    return event;
+  }
+
+  return {
+    ...event,
+
+    title:
+      synced.title ??
+      event.title,
+
+    startDate:
+      synced.startDate ??
+      event.startDate,
+
+    endDate:
+      synced.endDate ??
+      event.endDate,
+
+    venue:
+      synced.venue ??
+      event.venue,
+
+    city:
+      synced.city ??
+      event.city,
+
+    address:
+      synced.address ??
+      event.address,
+
+    image:
+      synced.image ??
+      event.image,
+
+    registrations:
+      synced.registrations ??
+      event.registrations,
+
+    speakers:
+      hasItems(
+        synced.speakers
+      )
+        ? synced.speakers
+        : event.speakers,
+
+    sponsors:
+      hasItems(
+        synced.sponsors
+      )
+        ? synced.sponsors
+        : event.sponsors,
+
+    organizers:
+      hasItems(
+        synced.organizers
+      )
+        ? synced.organizers
+        : event.organizers,
+
+    // Keep your curated description whenever one exists.
+    description:
+      event.description ??
+      synced.description
+  };
+}
+
+export const events: SiteEvent[] =
+  eventSeeds.map(
+    mergeSyncedEvent
+  );
