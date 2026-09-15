@@ -40,12 +40,14 @@ export function isCompletedEvent(
       event.startDate
     );
 
+
   end.setHours(
     23,
     59,
     59,
     999
   );
+
 
   return end <
     new Date();
@@ -584,9 +586,19 @@ export function getProfessionalMetrics(
     );
 
 
+  /*
+   * Organizations engaged now considers all completed
+   * fieldwork, not just hosted/co-organized events.
+   *
+   * For attended/exhibited events this will count any
+   * sponsor, partner or speaker-company data that exists
+   * on the corresponding event record.
+   */
+
   const organizationNames =
-    ledEvents.flatMap(
+    completed.flatMap(
       (event) => [
+
         ...(
           event.sponsors ??
           []
@@ -604,6 +616,7 @@ export function getProfessionalMetrics(
           (speaker) =>
             speaker.company
         )
+
       ]
     );
 
@@ -651,8 +664,7 @@ export function getProfessionalMetrics(
       coOrganized.length,
 
     led:
-      hosted.length +
-      coOrganized.length,
+      ledEvents.length,
 
     exhibited:
       exhibited.length,
