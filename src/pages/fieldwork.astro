@@ -2385,21 +2385,11 @@ const tradeShowLogoLoop =
 
 
     .trade-show-track {
-      animation:
-        trade-show-marquee
-        34s
-        linear
-        infinite;
-
       will-change:
         transform;
-    }
 
-
-    .trade-show-marquee:hover
-    .trade-show-track {
-      animation-play-state:
-        paused;
+      transform:
+        translate3d(0, 0, 0);
     }
 
 
@@ -2512,20 +2502,7 @@ const tradeShowLogoLoop =
     }
 
 
-    @keyframes trade-show-marquee {
 
-      from {
-        transform:
-          translateX(0);
-      }
-
-
-      to {
-        transform:
-          translateX(-100%);
-      }
-
-    }
 
 
     @media (
@@ -2567,8 +2544,8 @@ const tradeShowLogoLoop =
     ) {
 
       .trade-show-track {
-        animation:
-          none;
+        transform:
+          none !important;
       }
 
     }
@@ -2833,6 +2810,169 @@ const tradeShowLogoLoop =
 
 
       applyFilters();
+
+
+
+      /* =====================================================
+         SEAMLESS TRADE SHOW MARQUEE
+
+         Uses each logo only once in the DOM.
+
+         When the first logo has fully moved off the left edge,
+         that same element is moved to the end of the track.
+         This creates a true endless loop where the last logo is
+         immediately followed by the first, without cloned logos.
+         ===================================================== */
+
+      const marquee =
+        document.querySelector(
+          ".trade-show-marquee"
+        );
+
+
+      const track =
+        document.querySelector(
+          ".trade-show-track"
+        );
+
+
+      const reduceMotion =
+        window.matchMedia(
+          "(prefers-reduced-motion: reduce)"
+        );
+
+
+      if (
+        marquee &&
+        track &&
+        !reduceMotion.matches
+      ) {
+
+        let offset =
+          0;
+
+
+        let previousTime =
+          performance.now();
+
+
+        let paused =
+          false;
+
+
+        const speed =
+          38;
+
+
+        marquee.addEventListener(
+          "mouseenter",
+          () => {
+
+            paused =
+              true;
+
+          }
+        );
+
+
+        marquee.addEventListener(
+          "mouseleave",
+          () => {
+
+            paused =
+              false;
+
+            previousTime =
+              performance.now();
+
+          }
+        );
+
+
+        function animateMarquee(
+          currentTime
+        ) {
+
+          const delta =
+            Math.min(
+              (
+                currentTime -
+                previousTime
+              ) / 1000,
+              0.05
+            );
+
+
+          previousTime =
+            currentTime;
+
+
+          if (
+            !paused
+          ) {
+
+            offset -=
+              speed *
+              delta;
+
+
+            let firstLogo =
+              track.firstElementChild;
+
+
+            while (
+              firstLogo
+            ) {
+
+              const firstWidth =
+                firstLogo.getBoundingClientRect()
+                  .width;
+
+
+              if (
+                firstWidth <= 0 ||
+                -offset <
+                  firstWidth
+              ) {
+
+                break;
+
+              }
+
+
+              offset +=
+                firstWidth;
+
+
+              track.appendChild(
+                firstLogo
+              );
+
+
+              firstLogo =
+                track.firstElementChild;
+
+            }
+
+
+            track.style.transform =
+              `translate3d(${offset}px, 0, 0)`;
+
+          }
+
+
+          requestAnimationFrame(
+            animateMarquee
+          );
+
+        }
+
+
+        requestAnimationFrame(
+          animateMarquee
+        );
+
+      }
 
     })();
 
