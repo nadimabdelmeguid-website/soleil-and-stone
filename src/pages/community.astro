@@ -12,7 +12,7 @@ import {
 } from "../data/events";
 
 import {
-  isCompletedEvent
+  getCommunityMetrics
 } from "../utils/eventMetrics";
 
 
@@ -39,106 +39,31 @@ const communityMemberships =
 
 
 /* =========================================================
-   COMPLETED COMMUNITY EVENTS LED
+   AUTOMATED COMMUNITY METRICS
 
-   Only events that:
-   - belong to a community
-   - are completed
-   - were hosted or co-organized
+   Single source of truth:
+   events.ts → eventMetrics.ts → UI
+
+   Automatically includes only completed hosted /
+   co-organized community events.
    ========================================================= */
+
+const communityMetrics =
+  getCommunityMetrics(
+    events
+  );
+
 
 const communityEvents =
-  events.filter(
-    (event) =>
-      Boolean(
-        event.communityId
-      ) &&
-      isCompletedEvent(
-        event
-      ) &&
-      (
-        event.participation ===
-          "hosted" ||
-        event.participation ===
-          "co-organized"
-      )
-  );
+  communityMetrics.events;
 
-
-/* =========================================================
-   EXACT COMMUNITY REGISTRATIONS
-
-   These figures are taken directly from events.ts.
-   No "+" is added because the registration counts
-   are accurately tracked.
-   ========================================================= */
 
 const communityRegistrations =
-  communityEvents.reduce(
-    (
-      total,
-      event
-    ) =>
-      total +
-      (
-        event.registrations ??
-        0
-      ),
-    0
-  );
-
-
-/* =========================================================
-   UNIQUE COMMUNITY SPEAKERS
-
-   Duplicate speaker names count once.
-   ========================================================= */
-
-const communitySpeakers =
-  new Map<
-    string,
-    {
-      name: string;
-      title?: string;
-      company: string;
-    }
-  >();
-
-
-communityEvents
-  .flatMap(
-    (event) =>
-      event.speakers ??
-      []
-  )
-  .forEach(
-    (speaker) => {
-
-      const key =
-        speaker.name
-          .trim()
-          .toLowerCase();
-
-
-      if (
-        !communitySpeakers.has(
-          key
-        )
-      ) {
-
-        communitySpeakers.set(
-          key,
-          speaker
-        );
-
-      }
-
-    }
-  );
+  communityMetrics.registrations;
 
 
 const communitySpeakerCount =
-  communitySpeakers.size;
+  communityMetrics.speakerCount;
 ---
 
 <BaseLayout
