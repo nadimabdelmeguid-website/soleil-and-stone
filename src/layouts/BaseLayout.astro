@@ -4,6 +4,7 @@ import Footer from "../components/Footer.astro";
 
 import "../styles/global.css";
 
+
 interface Props {
   title: string;
 
@@ -31,6 +32,7 @@ interface Props {
   articleSection?: string;
 }
 
+
 const {
   title,
 
@@ -53,7 +55,8 @@ const {
   canonicalURL,
 
   articleSection
-} = Astro.props;
+} =
+  Astro.props;
 
 
 /* =====================================================
@@ -89,6 +92,7 @@ const socialImage =
    ===================================================== */
 
 const structuredData = {
+
   "@context":
     "https://schema.org",
 
@@ -103,6 +107,7 @@ const structuredData = {
 
   description:
     "Field notes, communities and ventures at the intersection of hardware, commercialization and innovation ecosystems."
+
 };
 ---
 
@@ -163,11 +168,6 @@ const structuredData = {
 
   <!-- =====================================================
        OPEN GRAPH
-
-       LinkedIn
-       Facebook
-       Slack
-       iMessage
        ===================================================== -->
 
   <meta
@@ -355,34 +355,43 @@ const structuredData = {
 
   <script is:inline>
     tailwind.config = {
+
       theme: {
+
         extend: {
+
           colors: {
+
             brand: {
+
               cream:
-                "#F9F8F3",
+                "var(--brand-cream)",
 
               card:
-                "#FFFFFF",
+                "var(--brand-card)",
 
               charcoal:
-                "#22252A",
+                "var(--brand-charcoal)",
 
               slate:
-                "#4A505A",
+                "var(--brand-slate)",
 
               gold:
-                "#C5A059",
+                "var(--brand-gold)",
 
               goldlight:
-                "#E5C98B",
+                "var(--brand-goldlight)",
 
               border:
-                "#E8E5DA"
+                "var(--brand-border)"
+
             }
+
           },
 
+
           fontFamily: {
+
             serif: [
               "Cinzel",
               "Georgia",
@@ -394,9 +403,13 @@ const structuredData = {
               "Inter",
               "sans-serif"
             ]
+
           }
+
         }
+
       }
+
     };
   </script>
 
@@ -453,11 +466,6 @@ const structuredData = {
 
   <!-- =====================================================
        CLOUDFLARE WEB ANALYTICS
-
-       Disabled when:
-       soleil_analytics_optout = "true"
-
-       Also disabled automatically on localhost.
        ===================================================== -->
 
   <script is:inline>
