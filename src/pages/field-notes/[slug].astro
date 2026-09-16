@@ -4,8 +4,15 @@ import {
   render
 } from "astro:content";
 
-import BaseLayout from "../../layouts/BaseLayout.astro";
-import FieldNoteLayout from "../../layouts/FieldNoteLayout.astro";
+import BaseLayout
+  from "../../layouts/BaseLayout.astro";
+
+import FieldNoteLayout
+  from "../../layouts/FieldNoteLayout.astro";
+
+import {
+  getFieldNoteImages
+} from "../../utils/fieldNoteImages";
 
 
 export async function getStaticPaths() {
@@ -59,7 +66,8 @@ export async function getStaticPaths() {
       return {
 
         params: {
-          slug: post.id
+          slug:
+            post.id
         },
 
         props: {
@@ -78,12 +86,26 @@ export async function getStaticPaths() {
 const {
   post,
   recommendedPost
-} = Astro.props;
+} =
+  Astro.props;
 
 
 const {
   Content
-} = await render(post);
+} =
+  await render(
+    post
+  );
+
+
+/* =====================================================
+   FIELD NOTE IMAGES
+   ===================================================== */
+
+const images =
+  await getFieldNoteImages(
+    post.id
+  );
 
 
 /* =====================================================
@@ -114,15 +136,22 @@ const articleURL =
   ).href;
 
 
+const socialImagePath =
+  images.cover ??
+  "/brand/social-default.png";
+
+
 const socialImage =
   new URL(
-    "/brand/social-default.png",
+    socialImagePath,
     siteOrigin
   ).href;
 
 
 const socialImageAlt =
-  `${post.data.title} | Soleil & Stone`;
+  images.cover
+    ? `${post.data.title} — Field Note`
+    : `${post.data.title} | Soleil & Stone`;
 
 
 const publisherLogo =
@@ -204,20 +233,23 @@ const articleSchema = {
   type="article"
   publishedTime={publishedTime}
   canonicalURL={canonicalURL}
-  image="/brand/social-default.png"
+  image={socialImagePath}
   imageAlt={socialImageAlt}
   articleSection={post.data.category}
 >
 
   <script
     type="application/ld+json"
-    set:html={JSON.stringify(articleSchema)}
+    set:html={JSON.stringify(
+      articleSchema
+    )}
   />
 
 
   <FieldNoteLayout
     post={post}
     recommendedPost={recommendedPost}
+    images={images}
   >
 
     <Content />
