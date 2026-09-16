@@ -69,6 +69,7 @@ const event =
  *
  * /community/#startup-mixer
  */
+
 const relatedCommunityUrl =
   event?.communityId
     ? `/community/#${event.communityId}`
@@ -93,6 +94,66 @@ const hasImages =
     images.gallery.length > 0
   );
 
+
+/*
+ * =========================================================
+ * SEO
+ * =========================================================
+ */
+
+const publishedTime =
+  new Date(
+    `${recap.published}T12:00:00Z`
+  ).toISOString();
+
+
+const socialImage =
+  images.cover ??
+  "/brand/social-default.png";
+
+
+const socialImageAlt =
+  images.cover
+    ? `${recap.title} — Event Recap`
+    : "Soleil & Stone";
+
+
+/*
+ * =========================================================
+ * PHOTO CREDIT WEBSITE LABEL
+ * =========================================================
+ */
+
+const photoCreditWebsite =
+  recap.photoCredit?.url
+    ? (() => {
+
+        try {
+
+          return new URL(
+            recap.photoCredit.url
+          )
+            .hostname
+            .replace(
+              /^www\./,
+              ""
+            );
+
+        } catch {
+
+          return recap.photoCredit.url;
+
+        }
+
+      })()
+    : null;
+
+
+/*
+ * =========================================================
+ * DATE FORMATTER
+ * =========================================================
+ */
 
 function formatDate(
   value: string
@@ -121,6 +182,11 @@ function formatDate(
 <BaseLayout
   title={`${recap.title} | Event Recap | Soleil & Stone`}
   description={recap.excerpt}
+  type="article"
+  publishedTime={publishedTime}
+  articleSection="Event Recap"
+  image={socialImage}
+  imageAlt={socialImageAlt}
 >
 
   <article>
@@ -341,7 +407,7 @@ function formatDate(
 
             <img
               src={images.cover}
-              alt={recap.title}
+              alt={`${recap.title} — Event Recap`}
               class="
                 w-full
                 h-auto
@@ -716,7 +782,8 @@ function formatDate(
 
 
             {
-              recap.photoCredit.url && (
+              recap.photoCredit.url &&
+              photoCreditWebsite && (
 
                 <a
                   href={recap.photoCredit.url}
@@ -735,7 +802,7 @@ function formatDate(
                     transition-colors
                   "
                 >
-                  bergitup.com
+                  {photoCreditWebsite}
                   <span>↗</span>
                 </a>
 
