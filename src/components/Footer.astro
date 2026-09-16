@@ -17,12 +17,8 @@ const linkedIn =
   "https://www.linkedin.com/in/nadim-abdel-meguid-aa5229108/";
 
 
-/*
- * Add your newsletter provider form endpoint here later.
- * Examples: Buttondown, Beehiiv, ConvertKit, Mailchimp.
- */
 const newsletterAction =
-  "";
+  "https://script.google.com/macros/s/AKfycbwz6i7O0njQhtJboM5q70n-Kkm9YkXALrVeCmCNbWWhe4HGZ-M6EJE_-3CmLzzjq20MuA/exec";
 ---
 
 <footer
@@ -458,10 +454,7 @@ const newsletterAction =
 
         <form
           id="footer-newsletter-form"
-          action={
-            newsletterAction ||
-            undefined
-          }
+          action={newsletterAction}
           method="post"
           class="
             mt-6
@@ -504,7 +497,15 @@ const newsletterAction =
           />
 
 
+          <input
+            type="hidden"
+            name="source"
+            value="Footer"
+          />
+
+
           <button
+            id="footer-newsletter-submit"
             type="submit"
             class="
               shrink-0
@@ -518,6 +519,8 @@ const newsletterAction =
               font-semibold
               text-white
               hover:opacity-85
+              disabled:opacity-50
+              disabled:cursor-not-allowed
               transition-opacity
             "
           >
@@ -525,6 +528,20 @@ const newsletterAction =
           </button>
 
         </form>
+
+
+        <p
+          id="footer-newsletter-status"
+          aria-live="polite"
+          class="
+            hidden
+            mt-3
+            text-[10px]
+            uppercase
+            tracking-[0.12em]
+            font-semibold
+          "
+        ></p>
 
       </div>
 
@@ -609,60 +626,159 @@ const newsletterAction =
 </footer>
 
 
-{
-  !newsletterAction && (
 
-    <script is:inline>
-      {`
-        (() => {
+<!-- =====================================================
+     NEWSLETTER SUBMISSION
+     ===================================================== -->
 
-          const form =
-            document.getElementById(
-              "footer-newsletter-form"
+<script is:inline>
+  (() => {
+
+    const form =
+      document.getElementById(
+        "footer-newsletter-form"
+      );
+
+    const button =
+      document.getElementById(
+        "footer-newsletter-submit"
+      );
+
+    const status =
+      document.getElementById(
+        "footer-newsletter-status"
+      );
+
+
+    if (
+      !form
+    ) {
+      return;
+    }
+
+
+    form.addEventListener(
+      "submit",
+      async (event) => {
+
+        event.preventDefault();
+
+
+        if (
+          button
+        ) {
+
+          button.disabled =
+            true;
+
+          button.textContent =
+            "Joining...";
+        }
+
+
+        if (
+          status
+        ) {
+
+          status.textContent =
+            "";
+
+          status.classList.add(
+            "hidden"
+          );
+
+          status.classList.remove(
+            "text-brand-gold",
+            "text-red-300"
+          );
+        }
+
+
+        try {
+
+          const formData =
+            new FormData(
+              form
             );
 
-          if (!form) return;
 
+          await fetch(
+            form.action,
+            {
+              method:
+                "POST",
 
-          form.addEventListener(
-            "submit",
-            (event) => {
+              body:
+                formData,
 
-              event.preventDefault();
-
-
-              const button =
-                form.querySelector(
-                  'button[type="submit"]'
-                );
-
-              if (!button) return;
-
-
-              const originalText =
-                button.textContent;
-
-
-              button.textContent =
-                "Coming Soon";
-
-
-              window.setTimeout(
-                () => {
-
-                  button.textContent =
-                    originalText;
-
-                },
-                1600
-              );
-
+              mode:
+                "no-cors"
             }
           );
 
-        })();
-      `}
-    </script>
 
-  )
-}
+          if (
+            status
+          ) {
+
+            status.textContent =
+              "You're on the list — thank you.";
+
+            status.classList.remove(
+              "hidden"
+            );
+
+            status.classList.add(
+              "text-brand-gold"
+            );
+          }
+
+
+          form.reset();
+
+        } catch (
+          error
+        ) {
+
+          console.error(
+            "Newsletter signup failed:",
+            error
+          );
+
+
+          if (
+            status
+          ) {
+
+            status.textContent =
+              "Something went wrong. Please try again.";
+
+            status.classList.remove(
+              "hidden"
+            );
+
+            status.classList.add(
+              "text-red-300"
+            );
+          }
+
+        } finally {
+
+          if (
+            button
+          ) {
+
+            button.disabled =
+              false;
+
+            button.textContent =
+              "Subscribe";
+          }
+
+        }
+
+      }
+    );
+
+  })();
+</script>
