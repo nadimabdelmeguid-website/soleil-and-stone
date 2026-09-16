@@ -6,6 +6,10 @@ import {
   publishedEventRecaps
 } from "../../data/eventRecaps";
 
+import {
+  getEventRecapImages
+} from "../../utils/eventRecapImages";
+
 
 function formatDate(
   value: string
@@ -29,6 +33,35 @@ function formatDate(
     );
 
 }
+
+
+/*
+ * =========================================================
+ * AUTOMATIC IMAGE DISCOVERY
+ * =========================================================
+ */
+
+const recapsWithImages =
+  await Promise.all(
+    publishedEventRecaps.map(
+      async (
+        recap
+      ) => {
+
+        const images =
+          await getEventRecapImages(
+            recap.slug
+          );
+
+
+        return {
+          recap,
+          images
+        };
+
+      }
+    )
+  );
 ---
 
 <BaseLayout
@@ -128,7 +161,7 @@ function formatDate(
     >
 
       {
-        publishedEventRecaps.length > 0
+        recapsWithImages.length > 0
           ? (
 
             <div
@@ -140,8 +173,11 @@ function formatDate(
             >
 
               {
-                publishedEventRecaps.map(
-                  (recap) => (
+                recapsWithImages.map(
+                  ({
+                    recap,
+                    images
+                  }) => (
 
                     <article
                       class="
@@ -155,14 +191,14 @@ function formatDate(
                     >
 
                       {
-                        recap.coverImage
+                        images.cover
                           ? (
 
                             <a
                               href={`/event-recaps/${recap.slug}/`}
                               class="
                                 block
-                                aspect-[16/8]
+                                aspect-[16/9]
                                 overflow-hidden
                                 border-b
                                 border-brand-border
@@ -170,13 +206,8 @@ function formatDate(
                             >
 
                               <img
-                                src={
-                                  recap.coverImage
-                                }
-                                alt={
-                                  recap.coverAlt ??
-                                  recap.title
-                                }
+                                src={images.cover}
+                                alt={recap.title}
                                 loading="lazy"
                                 class="
                                   w-full
