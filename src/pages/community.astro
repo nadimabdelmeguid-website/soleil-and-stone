@@ -68,17 +68,25 @@ const communitySpeakerCount =
 /* =========================================================
    HARDWARE MEETUP LOGOS
 
-   Folder:
+   Logos live in:
+
    public/hw-meetups-logos/
 
-   Preferred filename format:
+   Simple filenames are supported:
+
+   seacomp.png
+   velavu.png
+   dexcom.png
+
+   You can also add future logos using:
 
    Company Name__domain.com.png
 
    Example:
-   SEACOMP__seacomp.com.png
 
-   This lets the website URL be generated automatically.
+   New Company__newcompany.com.png
+
+   In that case the website link is created automatically.
    ========================================================= */
 
 const hardwareLogoDirectory =
@@ -107,6 +115,89 @@ type HardwareLogo = {
 };
 
 
+/* =========================================================
+   WEBSITE LINKS
+
+   Keys correspond to normalized filenames.
+
+   Example:
+
+   expertise-engineering.png
+   becomes
+   "expertise engineering"
+   ========================================================= */
+
+const hardwareLogoWebsites:
+  Record<
+    string,
+    string
+  > = {
+
+  "seacomp":
+    "https://www.seacomp.com/",
+
+  "velavu":
+    "https://www.velavu.com/",
+
+  "downtown works":
+    "https://www.downtownworks.com/",
+
+  "qhr":
+    "https://goqhr.com/",
+
+  "flyband":
+    "https://flyband.com/",
+
+  "informal":
+    "https://www.informal.com/",
+
+  "expertise engineering":
+    "https://expertiseengineering.com/",
+
+  "the disabled soloist":
+    "https://www.disabledsoloist.com/",
+
+  "dexcom":
+    "https://www.dexcom.com/",
+
+  "element biosciences":
+    "https://www.elementbiosciences.com/",
+
+  "dip":
+    "https://www.dip.studio/",
+
+  "dronekyll":
+    "https://www.dronekyll.com/"
+};
+
+
+/* =========================================================
+   NORMALIZE LOGO NAME
+   ========================================================= */
+
+function normalizeLogoName(
+  value: string
+) {
+
+  return value
+    .toLowerCase()
+    .replace(
+      /[-_]+/g,
+      " "
+    )
+    .replace(
+      /\s+/g,
+      " "
+    )
+    .trim();
+
+}
+
+
+/* =========================================================
+   PARSE LOGO FILE
+   ========================================================= */
+
 function parseHardwareLogo(
   filename: string
 ):
@@ -125,7 +216,9 @@ function parseHardwareLogo(
       extension
     )
   ) {
+
     return null;
+
   }
 
 
@@ -135,6 +228,16 @@ function parseHardwareLogo(
       extension
     );
 
+
+  /*
+   * Supports:
+   *
+   * seacomp.png
+   *
+   * and:
+   *
+   * SEACOMP__seacomp.com.png
+   */
 
   const [
     rawName,
@@ -159,11 +262,24 @@ function parseHardwareLogo(
 
 
   if (!name) {
+
     return null;
+
   }
 
 
-  const domain =
+  const normalizedName =
+    normalizeLogoName(
+      name
+    );
+
+
+  /*
+   * If the filename includes a domain,
+   * that domain takes priority.
+   */
+
+  const filenameDomain =
     rawDomain
       ?.trim()
       .replace(
@@ -177,20 +293,30 @@ function parseHardwareLogo(
 
 
   const url =
-    domain
-      ? `https://${domain}`
-      : undefined;
+    filenameDomain
+      ? `https://${filenameDomain}`
+      : hardwareLogoWebsites[
+          normalizedName
+        ];
 
 
   return {
+
     name,
+
     image:
       `/hw-meetups-logos/${encodeURIComponent(filename)}`,
+
     url
+
   };
 
 }
 
+
+/* =========================================================
+   READ LOGOS FROM PUBLIC FOLDER
+   ========================================================= */
 
 let hardwareLogos:
   HardwareLogo[] = [];
@@ -227,6 +353,11 @@ try {
 
 } catch {
 
+  /*
+   * The Community page still builds if the
+   * logo directory doesn't exist yet.
+   */
+
   hardwareLogos =
     [];
 
@@ -234,10 +365,9 @@ try {
 
 
 /* =========================================================
-   DUPLICATE LOGOS FOR SEAMLESS MARQUEE
+   TWO IDENTICAL GROUPS
 
-   Two identical groups are rendered next to each other.
-   CSS moves the track from right to left continuously.
+   Required to create the seamless continuous marquee.
    ========================================================= */
 
 const hardwareLogoGroups =
@@ -253,7 +383,7 @@ const hardwareLogoGroups =
 >
 
   <!-- =====================================================
-       HERO
+       HERO — WHITE
        ===================================================== -->
 
   <section
@@ -333,7 +463,7 @@ const hardwareLogoGroups =
 
 
   <!-- =====================================================
-       COMMUNITY TRACK RECORD
+       COMMUNITY TRACK RECORD — CREAM
        ===================================================== -->
 
   <section
@@ -353,6 +483,8 @@ const hardwareLogoGroups =
         py-12
       "
     >
+
+      <!-- SECTION HEADER -->
 
       <div
         class="
@@ -389,6 +521,10 @@ const hardwareLogoGroups =
 
 
 
+      <!-- =================================================
+           COMMUNITY METRICS
+           ================================================= -->
+
       <div
         class="
           grid
@@ -400,6 +536,8 @@ const hardwareLogoGroups =
           border-brand-border
         "
       >
+
+        <!-- COMMUNITY MEMBERSHIPS -->
 
         <div
           class="
@@ -436,6 +574,8 @@ const hardwareLogoGroups =
 
 
 
+        <!-- COMMUNITY EVENTS -->
+
         <div
           class="
             bg-white
@@ -471,6 +611,8 @@ const hardwareLogoGroups =
 
 
 
+        <!-- REGISTRATIONS -->
+
         <div
           class="
             bg-white
@@ -505,6 +647,8 @@ const hardwareLogoGroups =
         </div>
 
 
+
+        <!-- SPEAKERS -->
 
         <div
           class="
@@ -569,7 +713,8 @@ const hardwareLogoGroups =
               0 && (
 
               <!-- =========================================
-                   HARDWARE MEETUP CONTRIBUTORS
+                   HARDWARE MEETUP
+                   SPEAKERS & SPONSORS
                    ========================================= -->
 
               <section
@@ -587,7 +732,7 @@ const hardwareLogoGroups =
                     w-full
                     mx-auto
                     px-6
-                    pt-4
+                    pt-5
                     pb-16
                   "
                 >
@@ -646,8 +791,9 @@ const hardwareLogoGroups =
                   </div>
 
 
+
                   <!-- =====================================
-                       LOGO MARQUEE
+                       CONTINUOUS LOGO MARQUEE
                        ===================================== -->
 
                   <div
@@ -657,7 +803,6 @@ const hardwareLogoGroups =
                       overflow-hidden
                       border-y
                       border-brand-border
-                      py-7
                     "
                   >
 
@@ -681,6 +826,7 @@ const hardwareLogoGroups =
                       "
                     >
                     </div>
+
 
 
                     <!-- MOVING TRACK -->
@@ -719,11 +865,23 @@ const hardwareLogoGroups =
                                         href={logo.url}
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        aria-label={`Visit ${logo.name}`}
-                                        title={logo.name}
+                                        aria-label={
+                                          groupIndex === 0
+                                            ? `Visit ${logo.name}`
+                                            : undefined
+                                        }
+                                        title={
+                                          groupIndex === 0
+                                            ? `Visit ${logo.name}`
+                                            : undefined
+                                        }
+                                        tabindex={
+                                          groupIndex === 1
+                                            ? "-1"
+                                            : undefined
+                                        }
                                         class="
                                           hw-logo-link
-                                          group
                                         "
                                       >
 
@@ -785,6 +943,7 @@ const hardwareLogoGroups =
                   </div>
 
 
+
                   <p
                     class="
                       mt-4
@@ -813,7 +972,7 @@ const hardwareLogoGroups =
 
 
   <!-- =====================================================
-       CTA
+       CTA — WHITE
        ===================================================== -->
 
   <section
@@ -910,24 +1069,40 @@ const hardwareLogoGroups =
 
 
   <!-- =====================================================
-       HARDWARE LOGO MARQUEE STYLES
+       HARDWARE MEETUP LOGO STYLES
        ===================================================== -->
 
   <style>
 
+    /* =====================================================
+       MARQUEE CONTAINER
+       ===================================================== */
+
     .hw-logo-marquee {
       width:
         100%;
+
+      padding-top:
+        28px;
+
+      padding-bottom:
+        28px;
     }
 
 
-    /*
-     * Continuous track moving RIGHT → LEFT.
-     */
+
+    /* =====================================================
+       MOVING TRACK
+
+       Moves from RIGHT → LEFT.
+       ===================================================== */
 
     .hw-logo-track {
       display:
         flex;
+
+      align-items:
+        center;
 
       width:
         max-content;
@@ -944,7 +1119,8 @@ const hardwareLogoGroups =
 
 
     /*
-     * Pause while someone is interacting with a logo.
+     * Pause movement when the visitor wants
+     * to interact with one of the logos.
      */
 
     .hw-logo-marquee:hover
@@ -953,6 +1129,11 @@ const hardwareLogoGroups =
         paused;
     }
 
+
+
+    /* =====================================================
+       LOGO GROUP
+       ===================================================== */
 
     .hw-logo-group {
       display:
@@ -965,20 +1146,24 @@ const hardwareLogoGroups =
         0;
 
       gap:
-        54px;
+        46px;
 
       padding-right:
-        54px;
+        46px;
     }
 
 
-    /*
-     * Every organization receives exactly the same
-     * available visual area.
-     *
-     * There is deliberately NO card, NO border and
-     * NO white background around individual logos.
-     */
+
+    /* =====================================================
+       INDIVIDUAL LOGO AREA
+
+       Every logo receives the same footprint.
+
+       NO CARD.
+       NO WHITE SQUARE.
+       NO BORDER.
+       NO BACKGROUND.
+       ===================================================== */
 
     .hw-logo-link {
       width:
@@ -1006,12 +1191,29 @@ const hardwareLogoGroups =
         transparent;
 
       border:
-        0;
+        none;
 
       text-decoration:
         none;
+
+      outline-offset:
+        5px;
     }
 
+
+    .hw-logo-link:focus-visible {
+      outline:
+        1px solid
+        var(--brand-gold);
+    }
+
+
+
+    /* =====================================================
+       LOGO IMAGE
+
+       Same visual footprint regardless of source dimensions.
+       ===================================================== */
 
     .hw-logo-image {
       display:
@@ -1037,10 +1239,10 @@ const hardwareLogoGroups =
 
 
       /*
-       * SAME LOGO FILTER AS FIELDWORK.
+       * SAME FILTER AS FIELDWORK.
        *
-       * This normalizes differently colored source logos
-       * into the same warm muted tone.
+       * This normalizes all source logos to the same
+       * warm muted Soleil & Stone tone.
        */
 
       filter:
@@ -1064,6 +1266,11 @@ const hardwareLogoGroups =
     }
 
 
+
+    /* =====================================================
+       HOVER
+       ===================================================== */
+
     .hw-logo-link:hover
     .hw-logo-image {
       opacity:
@@ -1074,9 +1281,10 @@ const hardwareLogoGroups =
     }
 
 
-    /*
-     * Soft cream fades on both sides.
-     */
+
+    /* =====================================================
+       EDGE FADES
+       ===================================================== */
 
     .hw-logo-fade {
       position:
@@ -1089,7 +1297,7 @@ const hardwareLogoGroups =
         0;
 
       width:
-        70px;
+        72px;
 
       z-index:
         3;
@@ -1125,41 +1333,56 @@ const hardwareLogoGroups =
     }
 
 
-    /*
-     * Two identical logo groups are rendered.
-     * Moving -50% creates a seamless infinite loop.
-     */
+
+    /* =====================================================
+       MARQUEE ANIMATION
+       ===================================================== */
 
     @keyframes hw-logo-scroll {
 
       from {
+
         transform:
           translate3d(
             0,
             0,
             0
           );
+
       }
 
+
       to {
+
         transform:
           translate3d(
             -50%,
             0,
             0
           );
+
       }
 
     }
 
 
-    /*
-     * MOBILE
-     */
+
+    /* =====================================================
+       MOBILE
+       ===================================================== */
 
     @media (
       max-width: 640px
     ) {
+
+      .hw-logo-marquee {
+        padding-top:
+          22px;
+
+        padding-bottom:
+          22px;
+      }
+
 
       .hw-logo-track {
         animation-duration:
@@ -1169,10 +1392,10 @@ const hardwareLogoGroups =
 
       .hw-logo-group {
         gap:
-          34px;
+          28px;
 
         padding-right:
-          34px;
+          28px;
       }
 
 
@@ -1181,13 +1404,13 @@ const hardwareLogoGroups =
           135px;
 
         height:
-          64px;
+          62px;
 
         flex-basis:
           135px;
 
         padding:
-          8px;
+          7px;
       }
 
 
@@ -1208,12 +1431,10 @@ const hardwareLogoGroups =
     }
 
 
-    /*
-     * ACCESSIBILITY
-     *
-     * Don't continuously animate when the visitor has
-     * requested reduced motion.
-     */
+
+    /* =====================================================
+       REDUCED MOTION
+       ===================================================== */
 
     @media (
       prefers-reduced-motion:
