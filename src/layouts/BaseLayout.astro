@@ -6,6 +6,7 @@ import "../styles/global.css";
 
 interface Props {
   title: string;
+
   description?: string;
 
   /**
@@ -14,20 +15,44 @@ interface Props {
    */
   image?: string;
 
+  /**
+   * Accessible description for the social image.
+   */
+  imageAlt?: string;
+
   type?: "website" | "article";
 
   publishedTime?: string;
 
+  modifiedTime?: string;
+
   canonicalURL?: string;
+
+  articleSection?: string;
 }
 
 const {
   title,
-  description = "Soleil & Stone",
-  image = "/brand/social-default.png",
-  type = "website",
+
+  description =
+    "Soleil & Stone",
+
+  image =
+    "/brand/social-default.png",
+
+  imageAlt =
+    "Soleil & Stone",
+
+  type =
+    "website",
+
   publishedTime,
-  canonicalURL
+
+  modifiedTime,
+
+  canonicalURL,
+
+  articleSection
 } = Astro.props;
 
 
@@ -57,6 +82,28 @@ const socialImage =
     image,
     siteOrigin
   ).href;
+
+
+/* =====================================================
+   STRUCTURED DATA
+   ===================================================== */
+
+const structuredData = {
+  "@context":
+    "https://schema.org",
+
+  "@type":
+    "WebSite",
+
+  name:
+    "Soleil & Stone",
+
+  url:
+    siteOrigin,
+
+  description:
+    "Field notes, communities and ventures at the intersection of hardware, commercialization and innovation ecosystems."
+};
 ---
 
 <!doctype html>
@@ -102,6 +149,7 @@ const socialImage =
   </title>
 
 
+
   <!-- =====================================================
        CANONICAL
        ===================================================== -->
@@ -112,14 +160,24 @@ const socialImage =
   />
 
 
+
   <!-- =====================================================
        OPEN GRAPH
-       LinkedIn / Facebook / Slack / iMessage
+
+       LinkedIn
+       Facebook
+       Slack
+       iMessage
        ===================================================== -->
 
   <meta
     property="og:type"
     content={type}
+  />
+
+  <meta
+    property="og:locale"
+    content="en_US"
   />
 
   <meta
@@ -169,9 +227,14 @@ const socialImage =
 
   <meta
     property="og:image:alt"
-    content="Soleil & Stone"
+    content={imageAlt}
   />
 
+
+
+  <!-- =====================================================
+       ARTICLE META
+       ===================================================== -->
 
   {
     type === "article" &&
@@ -184,6 +247,33 @@ const socialImage =
 
     )
   }
+
+
+  {
+    type === "article" &&
+    modifiedTime && (
+
+      <meta
+        property="article:modified_time"
+        content={modifiedTime}
+      />
+
+    )
+  }
+
+
+  {
+    type === "article" &&
+    articleSection && (
+
+      <meta
+        property="article:section"
+        content={articleSection}
+      />
+
+    )
+  }
+
 
 
   <!-- =====================================================
@@ -212,8 +302,22 @@ const socialImage =
 
   <meta
     name="twitter:image:alt"
-    content="Soleil & Stone"
+    content={imageAlt}
   />
+
+
+
+  <!-- =====================================================
+       STRUCTURED DATA
+       ===================================================== -->
+
+  <script
+    type="application/ld+json"
+    set:html={JSON.stringify(
+      structuredData
+    )}
+  ></script>
+
 
 
   <!-- =====================================================
@@ -238,6 +342,7 @@ const socialImage =
   />
 
 
+
   <!-- =====================================================
        TAILWIND
        ===================================================== -->
@@ -254,13 +359,26 @@ const socialImage =
         extend: {
           colors: {
             brand: {
-              cream: "#F9F8F3",
-              card: "#FFFFFF",
-              charcoal: "#22252A",
-              slate: "#4A505A",
-              gold: "#C5A059",
-              goldlight: "#E5C98B",
-              border: "#E8E5DA"
+              cream:
+                "#F9F8F3",
+
+              card:
+                "#FFFFFF",
+
+              charcoal:
+                "#22252A",
+
+              slate:
+                "#4A505A",
+
+              gold:
+                "#C5A059",
+
+              goldlight:
+                "#E5C98B",
+
+              border:
+                "#E8E5DA"
             }
           },
 
@@ -281,6 +399,7 @@ const socialImage =
       }
     };
   </script>
+
 
 
   <!-- =====================================================
@@ -331,6 +450,7 @@ const socialImage =
   <Footer />
 
 
+
   <!-- =====================================================
        CLOUDFLARE WEB ANALYTICS
 
@@ -349,14 +469,17 @@ const socialImage =
 
 
       const isLocalhost =
-        window.location.hostname === "localhost" ||
-        window.location.hostname === "127.0.0.1";
+        window.location.hostname ===
+          "localhost" ||
+        window.location.hostname ===
+          "127.0.0.1";
 
 
       const hasOptedOut =
         localStorage.getItem(
           ANALYTICS_OPT_OUT_KEY
-        ) === "true";
+        ) ===
+        "true";
 
 
       if (
