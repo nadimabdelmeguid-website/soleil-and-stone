@@ -121,6 +121,10 @@ const socialImage =
   ).href;
 
 
+const socialImageAlt =
+  `${post.data.title} | Soleil & Stone`;
+
+
 const publisherLogo =
   new URL(
     "/brand/logo-primary.png",
@@ -200,6 +204,9 @@ const articleSchema = {
   type="article"
   publishedTime={publishedTime}
   canonicalURL={canonicalURL}
+  image="/brand/social-default.png"
+  imageAlt={socialImageAlt}
+  articleSection={post.data.category}
 >
 
   <script
