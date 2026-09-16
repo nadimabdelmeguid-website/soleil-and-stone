@@ -41,7 +41,7 @@ const sponsors =
 
 
 /* =========================================================
-   EXISTING DISPLAY HELPERS
+   DISPLAY HELPERS
    ========================================================= */
 
 function formatMonth(
@@ -60,30 +60,6 @@ function formatMonth(
         "numeric"
     }
   );
-
-}
-
-
-function hardwareTopic(
-  title: string
-) {
-
-  if (
-    title.includes(
-      "|"
-    )
-  ) {
-
-    return title
-      .split("|")
-      .slice(1)
-      .join("|")
-      .trim();
-
-  }
-
-
-  return title;
 
 }
 ---
@@ -576,7 +552,9 @@ function hardwareTopic(
 
 
 
-    <!-- TRACK RECORD -->
+    <!-- =====================================================
+         TRACK RECORD
+         ===================================================== -->
 
     {
       communityEvents.length > 0 && (
@@ -685,7 +663,9 @@ function hardwareTopic(
 
 
 
-          <!-- MIXER HORIZONTAL HISTORY -->
+          <!-- =================================================
+               MIXER HORIZONTAL HISTORY
+               ================================================= -->
 
           {
             community.id ===
@@ -839,7 +819,9 @@ function hardwareTopic(
 
 
 
-          <!-- HARDWARE PROGRAMMING -->
+          <!-- =================================================
+               HARDWARE PROGRAMMING
+               ================================================= -->
 
           {
             community.id ===
@@ -868,6 +850,8 @@ function hardwareTopic(
                           shadow-[0_1px_0_rgba(34,37,42,0.02)]
                         "
                       >
+
+                        <!-- MONTH + REGISTRATIONS -->
 
                         <div
                           class="
@@ -921,6 +905,9 @@ function hardwareTopic(
                         </div>
 
 
+
+                        <!-- TITLE -->
+
                         <h4
                           class="
                             font-serif
@@ -929,11 +916,12 @@ function hardwareTopic(
                             leading-snug
                           "
                         >
-                          {hardwareTopic(
-                            event.title
-                          )}
+                          {event.title}
                         </h4>
 
+
+
+                        <!-- SPONSOR -->
 
                         {
                           event.sponsors?.length > 0 && (
@@ -978,6 +966,9 @@ function hardwareTopic(
                           )
                         }
 
+
+
+                        <!-- SPEAKERS -->
 
                         {
                           event.speakers?.length > 0 && (
@@ -1055,6 +1046,9 @@ function hardwareTopic(
                         }
 
 
+
+                        <!-- LINK -->
+
                         <div
                           class="
                             mt-auto
@@ -1113,7 +1107,8 @@ function hardwareTopic(
 <style>
 
   .mixer-scroll {
-    scrollbar-width: thin;
+    scrollbar-width:
+      thin;
 
     scrollbar-color:
       #C5A059
@@ -1122,7 +1117,8 @@ function hardwareTopic(
 
 
   .mixer-scroll::-webkit-scrollbar {
-    height: 5px;
+    height:
+      5px;
   }
 
 
