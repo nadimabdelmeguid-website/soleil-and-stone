@@ -1,354 +1,428 @@
 ---
-import {
-  site
-} from "../data/site";
+import { site } from "../data/site";
 
+const currentYear = new Date().getFullYear();
+const siteName = site.name ?? "SOLEIL & STONE";
+const siteLocation = site.location ?? "San Diego, CA";
+const linkedIn =
+  site.linkedin ??
+  "https://www.linkedin.com/in/nadim-abdel-meguid-aa5229108/";
+const email =
+  site.email ??
+  "mailto:nadimabdelmeguid@gmail.com";
 
-const year =
-  new Date()
-    .getFullYear();
+/*
+ * Add your newsletter provider form endpoint here later.
+ * Examples: Buttondown, Beehiiv, ConvertKit, Mailchimp.
+ */
+const newsletterAction = "";
 ---
 
 <footer
   class="
     border-t
     border-brand-border
-    bg-white
+    bg-brand-charcoal
+    text-white
   "
 >
-
   <div
     class="
       max-w-6xl
       w-full
       mx-auto
       px-6
-      py-8
+      pt-14
+      pb-8
     "
   >
-
     <div
       class="
         grid
-        md:grid-cols-12
-        gap-8
-        items-start
+        grid-cols-1
+        md:grid-cols-2
+        lg:grid-cols-12
+        gap-10
+        lg:gap-8
       "
     >
-
-      <!-- =================================================
-           BRAND
-           ================================================= -->
-
-      <div
-        class="
-          md:col-span-5
-        "
-      >
-
+      <!-- BRAND -->
+      <div class="lg:col-span-4">
         <a
           href="/"
-          aria-label="Soleil & Stone home"
           class="
-            inline-block
+            inline-flex
+            items-center
+            gap-4
+            group
           "
         >
-          <img
-            src="/brand/logo-wordmark.png"
-            alt="Soleil & Stone"
-            class="footer-wordmark"
-          />
+          <svg
+            class="
+              w-11
+              h-11
+              text-brand-gold
+              shrink-0
+            "
+            viewBox="0 0 100 100"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            aria-hidden="true"
+          >
+            <line x1="50" y1="12" x2="50" y2="19" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+            <line x1="33" y1="18" x2="38" y2="23" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+            <line x1="67" y1="18" x2="62" y2="23" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+            <line x1="22" y1="32" x2="28" y2="34" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+            <line x1="78" y1="32" x2="72" y2="34" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+            <circle cx="50" cy="34" r="13" fill="currentColor"/>
+            <polygon points="50,26 20,56 50,56" fill="#D5C29C"/>
+            <polygon points="50,26 50,56 80,56" fill="currentColor"/>
+            <line x1="50" y1="26" x2="50" y2="56" stroke="#363A40" stroke-width="1"/>
+            <line x1="28" y1="60" x2="72" y2="60" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            <line x1="36" y1="64" x2="64" y2="64" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+            <line x1="42" y1="68" x2="58" y2="68" stroke="currentColor" stroke-width="1" stroke-linecap="round"/>
+          </svg>
+
+          <div>
+            <div
+              class="
+                font-serif
+                text-lg
+                tracking-[0.18em]
+                text-white
+                group-hover:text-brand-gold
+                transition-colors
+              "
+            >
+              {siteName}
+            </div>
+
+            <div
+              class="
+                mt-1
+                text-[9px]
+                uppercase
+                tracking-[0.16em]
+                text-white/45
+              "
+            >
+              {siteLocation}
+            </div>
+          </div>
         </a>
 
-
         <p
           class="
-            text-[10px]
-            text-brand-slate
-            font-light
-            mt-4
-          "
-        >
-          {site.location}
-        </p>
-
-
-        <p
-          class="
-            text-[10px]
-            text-brand-slate
-            font-light
+            mt-6
+            max-w-sm
+            text-sm
             leading-relaxed
-            max-w-xs
-            mt-2
+            font-light
+            text-white/60
           "
         >
-          Hardware, commercialization,
-          innovation ecosystems, and
-          observations from the field.
+          Field notes, communities and ventures at the intersection
+          of hardware, commercialization and innovation ecosystems.
         </p>
 
+        <a
+          href={email}
+          class="
+            inline-block
+            mt-5
+            text-xs
+            text-white/70
+            hover:text-brand-gold
+            transition-colors
+          "
+        >
+          Get in touch →
+        </a>
       </div>
 
-
-
-      <!-- =================================================
-           EXPLORE
-           ================================================= -->
-
-      <div
-        class="
-          md:col-span-4
-        "
-      >
-
-        <div
+      <!-- EXPLORE -->
+      <div class="lg:col-span-2">
+        <h2
           class="
-            text-[8px]
+            text-[10px]
             uppercase
-            tracking-[0.16em]
-            text-brand-gold
+            tracking-[0.18em]
             font-semibold
-            mb-4
+            text-white
           "
         >
           Explore
-        </div>
+        </h2>
 
-
-        <div
+        <nav
           class="
-            grid
-            grid-cols-2
-            gap-x-8
-            gap-y-3
+            mt-5
+            flex
+            flex-col
+            gap-3.5
+            text-sm
+            font-light
+            text-white/60
           "
         >
-
-          <a
-            href="/community/"
-            class="
-              text-[11px]
-              text-brand-slate
-              hover:text-brand-gold
-              transition-colors
-            "
-          >
+          <a href="/community/" class="hover:text-brand-gold transition-colors">
             Community
           </a>
-
-
-          <a
-            href="/about/"
-            class="
-              text-[11px]
-              text-brand-slate
-              hover:text-brand-gold
-              transition-colors
-            "
-          >
-            About
-          </a>
-
-
-          <a
-            href="/field-notes/"
-            class="
-              text-[11px]
-              text-brand-slate
-              hover:text-brand-gold
-              transition-colors
-            "
-          >
+          <a href="/field-notes/" class="hover:text-brand-gold transition-colors">
             Field Notes
           </a>
-
-
-          <a
-            href="/fieldwork/"
-            class="
-              text-[11px]
-              text-brand-slate
-              hover:text-brand-gold
-              transition-colors
-            "
-          >
+          <a href="/fieldwork/" class="hover:text-brand-gold transition-colors">
             Industry Fieldwork
           </a>
-
-        </div>
-
+          <a href="/about/" class="hover:text-brand-gold transition-colors">
+            About
+          </a>
+        </nav>
       </div>
 
-
-
-      <!-- =================================================
-           CONNECT
-           ================================================= -->
-
-      <div
-        class="
-          md:col-span-3
-          md:text-right
-        "
-      >
-
-        <div
+      <!-- CONNECT -->
+      <div class="lg:col-span-2">
+        <h2
           class="
-            text-[8px]
+            text-[10px]
             uppercase
-            tracking-[0.16em]
-            text-brand-gold
+            tracking-[0.18em]
             font-semibold
-            mb-4
+            text-white
           "
         >
           Connect
-        </div>
-
+        </h2>
 
         <div
           class="
+            mt-5
             flex
-            md:justify-end
-            gap-3
+            flex-col
+            gap-3.5
+            text-sm
+            font-light
+            text-white/60
           "
         >
-
-          <!-- LINKEDIN -->
+          <a href="/#contact" class="hover:text-brand-gold transition-colors">
+            Contact
+          </a>
 
           <a
-            href={site.linkedin}
+            href={linkedIn}
             target="_blank"
             rel="noopener noreferrer"
-            aria-label="LinkedIn"
-            class="
-              w-8
-              h-8
-              flex
-              items-center
-              justify-center
-              border
-              border-brand-border
-              text-brand-charcoal
-              hover:text-brand-gold
-              hover:border-brand-gold
-              transition-colors
-            "
+            class="hover:text-brand-gold transition-colors"
           >
-
-            <svg
-              viewBox="0 0 24 24"
-              width="14"
-              height="14"
-              fill="currentColor"
-              aria-hidden="true"
-            >
-              <path
-                d="M6.5 8.5H3.2V19h3.3V8.5ZM4.85 3A1.93 1.93 0 1 0 4.85 6.86 1.93 1.93 0 0 0 4.85 3ZM19 13.02c0-3.16-1.69-4.63-3.94-4.63-1.81 0-2.63 1-3.09 1.7V8.5H8.68V19h3.29v-5.2c0-1.37.26-2.7 1.96-2.7 1.68 0 1.7 1.57 1.7 2.79V19H19v-5.98Z"
-              />
-            </svg>
-
+            LinkedIn ↗
           </a>
 
-
-          <!-- EMAIL -->
-
-          <a
-            href={site.email}
-            aria-label="Email"
-            class="
-              w-8
-              h-8
-              flex
-              items-center
-              justify-center
-              border
-              border-brand-border
-              text-brand-charcoal
-              hover:text-brand-gold
-              hover:border-brand-gold
-              transition-colors
-            "
-          >
-
-            <svg
-              viewBox="0 0 24 24"
-              width="14"
-              height="14"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="1.7"
-              aria-hidden="true"
-            >
-              <rect
-                x="3"
-                y="5"
-                width="18"
-                height="14"
-                rx="1"
-              />
-
-              <path
-                d="m4 7 8 6 8-6"
-              />
-            </svg>
-
+          <a href={email} class="hover:text-brand-gold transition-colors">
+            Email
           </a>
-
         </div>
-
       </div>
 
+      <!-- NEWSLETTER -->
+      <div class="lg:col-span-4">
+        <span
+          class="
+            text-[10px]
+            uppercase
+            tracking-[0.18em]
+            text-brand-gold
+            font-semibold
+          "
+        >
+          Newsletter
+        </span>
+
+        <h2
+          class="
+            font-serif
+            text-xl
+            text-white
+            mt-2
+          "
+        >
+          Notes From The Field
+        </h2>
+
+        <p
+          class="
+            text-xs
+            leading-relaxed
+            font-light
+            text-white/55
+            mt-3
+            max-w-sm
+          "
+        >
+          Occasional notes on hardware, commercialization,
+          communities and what I’m learning in the field.
+        </p>
+
+        <form
+          id="footer-newsletter-form"
+          action={newsletterAction || undefined}
+          method="post"
+          class="
+            mt-6
+            flex
+            w-full
+            max-w-md
+          "
+        >
+          <label for="footer-newsletter-email" class="sr-only">
+            Email address
+          </label>
+
+          <input
+            id="footer-newsletter-email"
+            type="email"
+            name="email"
+            autocomplete="email"
+            required
+            placeholder="Your email"
+            class="
+              min-w-0
+              flex-1
+              border
+              border-white/20
+              border-r-0
+              bg-transparent
+              px-4
+              py-3
+              text-xs
+              text-white
+              placeholder:text-white/35
+              outline-none
+              focus:border-brand-gold
+            "
+          />
+
+          <button
+            type="submit"
+            class="
+              shrink-0
+              bg-brand-gold
+              px-4
+              sm:px-5
+              py-3
+              text-[10px]
+              uppercase
+              tracking-[0.14em]
+              font-semibold
+              text-white
+              hover:opacity-85
+              transition-opacity
+            "
+          >
+            Subscribe
+          </button>
+        </form>
+
+        {
+          !newsletterAction && (
+            <p
+              class="
+                mt-2
+                text-[9px]
+                leading-relaxed
+                text-white/30
+              "
+            >
+              Signup connection coming soon.
+            </p>
+          )
+        }
+      </div>
     </div>
 
-
-
-    <!-- =================================================
-         COPYRIGHT
-         ================================================= -->
-
+    <!-- BOTTOM BAR -->
     <div
       class="
-        mt-7
-        pt-4
+        mt-12
+        pt-6
         border-t
-        border-brand-border
-        text-[9px]
-        text-brand-slate
-        font-light
+        border-white/10
+        flex
+        flex-col
+        sm:flex-row
+        items-start
+        sm:items-center
+        justify-between
+        gap-4
       "
     >
-      © {year} Soleil & Stone.
-      All rights reserved.
+      <p class="text-[10px] font-light text-white/40">
+        © {currentYear} Soleil & Stone. All rights reserved.
+      </p>
+
+      <a
+        href={linkedIn}
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="LinkedIn Profile"
+        class="
+          w-9
+          h-9
+          rounded-full
+          border
+          border-white/10
+          flex
+          items-center
+          justify-center
+          text-white/45
+          hover:text-brand-gold
+          hover:border-brand-gold
+          transition-colors
+        "
+      >
+        <svg
+          class="w-4 h-4 fill-current"
+          viewBox="0 0 24 24"
+          aria-hidden="true"
+        >
+          <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.46 10.9v8.37H9.25V10.9H6.46M7.86 6.72a1.47 1.47 0 1 0 0 2.94 1.47 1.47 0 0 0 0-2.94Z"/>
+        </svg>
+      </a>
     </div>
-
   </div>
-
 </footer>
 
+{
+  !newsletterAction && (
+    <script is:inline>
+      {`
+        (() => {
+          const form =
+            document.getElementById("footer-newsletter-form");
 
+          if (!form) return;
 
-<style>
+          form.addEventListener("submit", (event) => {
+            event.preventDefault();
 
-  .footer-wordmark {
-    display: block;
-    width: 140px;
-    max-width: 140px;
-    height: auto;
-    object-fit: contain;
-  }
+            const button =
+              form.querySelector('button[type="submit"]');
 
+            if (!button) return;
 
-  @media (
-    max-width: 767px
-  ) {
+            const originalText =
+              button.textContent;
 
-    .footer-wordmark {
-      width: 125px;
-      max-width: 125px;
-    }
+            button.textContent =
+              "Coming Soon";
 
-  }
-
-</style>
+            window.setTimeout(() => {
+              button.textContent =
+                originalText;
+            }, 1600);
+          });
+        })();
+      `}
+    </script>
+  )
+}
