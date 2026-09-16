@@ -1,0 +1,994 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+
+import {
+  site
+} from "../data/site";
+
+
+const directEmail =
+  site.email
+    ?.replace(
+      /^mailto:/,
+      ""
+    ) ??
+  "nadimabdelmeguid@gmail.com";
+
+
+/*
+ * CONTACT FORM CONNECTION
+ * -----------------------
+ * Add your form provider endpoint here when ready.
+ *
+ * Good lightweight options:
+ * - Formspree
+ * - Basin
+ * - Web3Forms
+ * - your own serverless endpoint
+ *
+ * The page is fully styled now. Until an endpoint is added,
+ * the form prevents submission and shows a temporary message.
+ */
+const contactFormAction =
+  "";
+---
+
+<BaseLayout
+  title="Connect | Soleil & Stone"
+  description="Get in touch about hardware, commercialization, startup ecosystems, community building, events and emerging ventures."
+>
+
+  <!-- =====================================================
+       HERO
+       ===================================================== -->
+
+  <section
+    class="
+      bg-white
+      border-b
+      border-brand-border
+    "
+  >
+
+    <div
+      class="
+        max-w-6xl
+        w-full
+        mx-auto
+        px-6
+        pt-16
+        pb-14
+      "
+    >
+
+      <span
+        class="
+          text-[10px]
+          uppercase
+          tracking-[0.2em]
+          text-brand-gold
+          font-semibold
+        "
+      >
+        Connect
+      </span>
+
+
+      <h1
+        class="
+          font-serif
+          text-4xl
+          sm:text-5xl
+          lg:text-6xl
+          text-brand-charcoal
+          leading-[1.08]
+          mt-3
+          max-w-4xl
+        "
+      >
+        Start With A Conversation.
+      </h1>
+
+
+      <p
+        class="
+          text-base
+          sm:text-lg
+          text-brand-slate
+          font-light
+          leading-relaxed
+          max-w-3xl
+          mt-6
+        "
+      >
+        If you're building something technical, organizing around
+        innovation, exploring a collaboration, or simply think our
+        paths should cross, send me a note.
+      </p>
+
+    </div>
+
+  </section>
+
+
+
+  <!-- =====================================================
+       CONTACT FORM
+       ===================================================== -->
+
+  <section
+    class="
+      bg-brand-cream
+    "
+  >
+
+    <div
+      class="
+        max-w-6xl
+        w-full
+        mx-auto
+        px-6
+        py-16
+      "
+    >
+
+      <div
+        class="
+          grid
+          lg:grid-cols-12
+          gap-10
+          lg:gap-14
+          items-start
+        "
+      >
+
+        <!-- =================================================
+             FORM
+             ================================================= -->
+
+        <div
+          class="
+            lg:col-span-8
+          "
+        >
+
+          <div
+            class="
+              mb-9
+            "
+          >
+
+            <span
+              class="
+                text-[10px]
+                uppercase
+                tracking-[0.18em]
+                text-brand-gold
+                font-semibold
+              "
+            >
+              Send A Note
+            </span>
+
+
+            <h2
+              class="
+                font-serif
+                text-3xl
+                sm:text-4xl
+                text-brand-charcoal
+                mt-2
+              "
+            >
+              Tell Me What You're Working On.
+            </h2>
+
+
+            <p
+              class="
+                text-sm
+                text-brand-slate
+                font-light
+                leading-relaxed
+                mt-4
+                max-w-2xl
+              "
+            >
+              A few sentences are enough. Context helps me understand
+              where you are, what you're trying to move forward, and
+              whether I can be useful.
+            </p>
+
+          </div>
+
+
+          <form
+            id="contact-form"
+            action={contactFormAction || undefined}
+            method="post"
+            class="
+              space-y-6
+            "
+          >
+
+            <!-- NAME + EMAIL -->
+
+            <div
+              class="
+                grid
+                md:grid-cols-2
+                gap-5
+              "
+            >
+
+              <div>
+
+                <label
+                  for="contact-name"
+                  class="
+                    block
+                    text-[10px]
+                    uppercase
+                    tracking-[0.14em]
+                    text-brand-charcoal
+                    font-semibold
+                    mb-2
+                  "
+                >
+                  Name
+                </label>
+
+
+                <input
+                  id="contact-name"
+                  type="text"
+                  name="name"
+                  autocomplete="name"
+                  required
+                  placeholder="Your name"
+                  class="
+                    w-full
+                    bg-white
+                    border
+                    border-brand-border
+                    px-4
+                    py-3.5
+                    text-sm
+                    text-brand-charcoal
+                    placeholder:text-brand-slate/55
+                    outline-none
+                    focus:border-brand-gold
+                    transition-colors
+                  "
+                />
+
+              </div>
+
+
+              <div>
+
+                <label
+                  for="contact-email"
+                  class="
+                    block
+                    text-[10px]
+                    uppercase
+                    tracking-[0.14em]
+                    text-brand-charcoal
+                    font-semibold
+                    mb-2
+                  "
+                >
+                  Email
+                </label>
+
+
+                <input
+                  id="contact-email"
+                  type="email"
+                  name="email"
+                  autocomplete="email"
+                  required
+                  placeholder="you@company.com"
+                  class="
+                    w-full
+                    bg-white
+                    border
+                    border-brand-border
+                    px-4
+                    py-3.5
+                    text-sm
+                    text-brand-charcoal
+                    placeholder:text-brand-slate/55
+                    outline-none
+                    focus:border-brand-gold
+                    transition-colors
+                  "
+                />
+
+              </div>
+
+            </div>
+
+
+
+            <!-- COMPANY + WEBSITE -->
+
+            <div
+              class="
+                grid
+                md:grid-cols-2
+                gap-5
+              "
+            >
+
+              <div>
+
+                <label
+                  for="contact-company"
+                  class="
+                    block
+                    text-[10px]
+                    uppercase
+                    tracking-[0.14em]
+                    text-brand-charcoal
+                    font-semibold
+                    mb-2
+                  "
+                >
+                  Company / Organization
+                  <span
+                    class="
+                      text-brand-slate
+                      font-normal
+                    "
+                  >
+                    (Optional)
+                  </span>
+                </label>
+
+
+                <input
+                  id="contact-company"
+                  type="text"
+                  name="company"
+                  autocomplete="organization"
+                  placeholder="Company, startup, community..."
+                  class="
+                    w-full
+                    bg-white
+                    border
+                    border-brand-border
+                    px-4
+                    py-3.5
+                    text-sm
+                    text-brand-charcoal
+                    placeholder:text-brand-slate/55
+                    outline-none
+                    focus:border-brand-gold
+                    transition-colors
+                  "
+                />
+
+              </div>
+
+
+              <div>
+
+                <label
+                  for="contact-link"
+                  class="
+                    block
+                    text-[10px]
+                    uppercase
+                    tracking-[0.14em]
+                    text-brand-charcoal
+                    font-semibold
+                    mb-2
+                  "
+                >
+                  Website / LinkedIn
+                  <span
+                    class="
+                      text-brand-slate
+                      font-normal
+                    "
+                  >
+                    (Optional)
+                  </span>
+                </label>
+
+
+                <input
+                  id="contact-link"
+                  type="url"
+                  name="link"
+                  placeholder="https://"
+                  class="
+                    w-full
+                    bg-white
+                    border
+                    border-brand-border
+                    px-4
+                    py-3.5
+                    text-sm
+                    text-brand-charcoal
+                    placeholder:text-brand-slate/55
+                    outline-none
+                    focus:border-brand-gold
+                    transition-colors
+                  "
+                />
+
+              </div>
+
+            </div>
+
+
+
+            <!-- REASON -->
+
+            <div>
+
+              <label
+                for="contact-reason"
+                class="
+                  block
+                  text-[10px]
+                  uppercase
+                  tracking-[0.14em]
+                  text-brand-charcoal
+                  font-semibold
+                  mb-2
+                "
+              >
+                What brings you here?
+              </label>
+
+
+              <select
+                id="contact-reason"
+                name="reason"
+                required
+                class="
+                  w-full
+                  bg-white
+                  border
+                  border-brand-border
+                  px-4
+                  py-3.5
+                  text-sm
+                  text-brand-charcoal
+                  outline-none
+                  focus:border-brand-gold
+                  transition-colors
+                "
+              >
+
+                <option
+                  value=""
+                  selected
+                  disabled
+                >
+                  Select one...
+                </option>
+
+                <option value="hardware-commercialization">
+                  Hardware / Product Commercialization
+                </option>
+
+                <option value="startup-community">
+                  Startup / Ecosystem Community
+                </option>
+
+                <option value="event-collaboration">
+                  Event / Community Collaboration
+                </option>
+
+                <option value="venture-founder">
+                  Venture / Founder Conversation
+                </option>
+
+                <option value="speaking-media">
+                  Speaking / Media / Podcast
+                </option>
+
+                <option value="general">
+                  Something Else
+                </option>
+
+              </select>
+
+            </div>
+
+
+
+            <!-- MESSAGE -->
+
+            <div>
+
+              <label
+                for="contact-message"
+                class="
+                  block
+                  text-[10px]
+                  uppercase
+                  tracking-[0.14em]
+                  text-brand-charcoal
+                  font-semibold
+                  mb-2
+                "
+              >
+                What's the context?
+              </label>
+
+
+              <textarea
+                id="contact-message"
+                name="message"
+                required
+                rows="7"
+                placeholder="A few sentences about what you're building, exploring, organizing, or trying to move forward."
+                class="
+                  w-full
+                  bg-white
+                  border
+                  border-brand-border
+                  px-4
+                  py-3.5
+                  text-sm
+                  text-brand-charcoal
+                  placeholder:text-brand-slate/55
+                  outline-none
+                  resize-y
+                  focus:border-brand-gold
+                  transition-colors
+                "
+              ></textarea>
+
+            </div>
+
+
+
+            <!-- SUBMIT -->
+
+            <div
+              class="
+                pt-2
+              "
+            >
+
+              <button
+                type="submit"
+                class="
+                  w-full
+                  sm:w-auto
+                  inline-flex
+                  items-center
+                  justify-center
+                  gap-3
+                  bg-brand-charcoal
+                  text-white
+                  px-7
+                  py-3.5
+                  text-[10px]
+                  uppercase
+                  tracking-[0.16em]
+                  font-semibold
+                  hover:bg-brand-gold
+                  transition-colors
+                "
+              >
+                Send Message
+                <span>→</span>
+              </button>
+
+
+              <p
+                class="
+                  text-[10px]
+                  text-brand-slate
+                  font-light
+                  leading-relaxed
+                  mt-4
+                "
+              >
+                Your contact details are used only to respond to your message.
+              </p>
+
+
+              {
+                !contactFormAction && (
+
+                  <p
+                    id="contact-form-status"
+                    class="
+                      hidden
+                      text-[10px]
+                      uppercase
+                      tracking-[0.12em]
+                      text-brand-gold
+                      font-semibold
+                      mt-4
+                    "
+                  >
+                    Form connection coming soon — email me directly for now.
+                  </p>
+
+                )
+              }
+
+            </div>
+
+          </form>
+
+        </div>
+
+
+
+        <!-- =================================================
+             SIDEBAR
+             ================================================= -->
+
+        <aside
+          class="
+            lg:col-span-4
+            space-y-5
+          "
+        >
+
+          <!-- DIRECT CONTACT -->
+
+          <div
+            class="
+              bg-white
+              border
+              border-brand-border
+              p-6
+            "
+          >
+
+            <span
+              class="
+                text-[10px]
+                uppercase
+                tracking-[0.16em]
+                text-brand-gold
+                font-semibold
+              "
+            >
+              Direct
+            </span>
+
+
+            <h2
+              class="
+                font-serif
+                text-2xl
+                text-brand-charcoal
+                mt-2
+              "
+            >
+              Prefer Email?
+            </h2>
+
+
+            <p
+              class="
+                text-sm
+                text-brand-slate
+                font-light
+                leading-relaxed
+                mt-4
+              "
+            >
+              That's completely fine. I read messages myself and
+              usually prefer a little context over a cold calendar invite.
+            </p>
+
+
+            <a
+              href={`mailto:${directEmail}`}
+              class="
+                inline-flex
+                items-center
+                gap-2
+                text-xs
+                text-brand-charcoal
+                font-semibold
+                mt-5
+                hover:text-brand-gold
+                transition-colors
+                break-all
+              "
+            >
+              {directEmail}
+              <span>↗</span>
+            </a>
+
+
+            <div
+              class="
+                mt-6
+                pt-5
+                border-t
+                border-brand-border
+                text-xs
+                text-brand-slate
+                leading-relaxed
+              "
+            >
+              <span
+                class="
+                  text-brand-charcoal
+                  font-semibold
+                "
+              >
+                Based in:
+              </span>
+              {" "}
+              San Diego, California
+            </div>
+
+          </div>
+
+
+
+          <!-- GOOD REASONS TO REACH OUT -->
+
+          <div
+            class="
+              bg-white
+              border
+              border-brand-border
+              p-6
+            "
+          >
+
+            <span
+              class="
+                text-[10px]
+                uppercase
+                tracking-[0.16em]
+                text-brand-gold
+                font-semibold
+              "
+            >
+              Good Reasons To Reach Out
+            </span>
+
+
+            <div
+              class="
+                mt-5
+                space-y-5
+              "
+            >
+
+              <div
+                class="
+                  flex
+                  gap-4
+                "
+              >
+
+                <div
+                  class="
+                    w-7
+                    h-7
+                    shrink-0
+                    border
+                    border-brand-gold
+                    rounded-full
+                    flex
+                    items-center
+                    justify-center
+                    text-[9px]
+                    text-brand-gold
+                    font-semibold
+                  "
+                >
+                  01
+                </div>
+
+                <p
+                  class="
+                    text-sm
+                    text-brand-slate
+                    font-light
+                    leading-relaxed
+                  "
+                >
+                  You're building a hardware or technical product and
+                  want to compare notes on commercialization or market access.
+                </p>
+
+              </div>
+
+
+              <div
+                class="
+                  flex
+                  gap-4
+                "
+              >
+
+                <div
+                  class="
+                    w-7
+                    h-7
+                    shrink-0
+                    border
+                    border-brand-gold
+                    rounded-full
+                    flex
+                    items-center
+                    justify-center
+                    text-[9px]
+                    text-brand-gold
+                    font-semibold
+                  "
+                >
+                  02
+                </div>
+
+                <p
+                  class="
+                    text-sm
+                    text-brand-slate
+                    font-light
+                    leading-relaxed
+                  "
+                >
+                  You're organizing something useful for founders,
+                  engineers or the San Diego innovation ecosystem.
+                </p>
+
+              </div>
+
+
+              <div
+                class="
+                  flex
+                  gap-4
+                "
+              >
+
+                <div
+                  class="
+                    w-7
+                    h-7
+                    shrink-0
+                    border
+                    border-brand-gold
+                    rounded-full
+                    flex
+                    items-center
+                    justify-center
+                    text-[9px]
+                    text-brand-gold
+                    font-semibold
+                  "
+                >
+                  03
+                </div>
+
+                <p
+                  class="
+                    text-sm
+                    text-brand-slate
+                    font-light
+                    leading-relaxed
+                  "
+                >
+                  You see a potential collaboration, introduction,
+                  event, conversation or venture worth exploring.
+                </p>
+
+              </div>
+
+            </div>
+
+          </div>
+
+
+
+          <!-- WHAT HAPPENS NEXT -->
+
+          <div
+            class="
+              bg-brand-charcoal
+              border
+              border-brand-charcoal
+              p-6
+            "
+          >
+
+            <span
+              class="
+                text-[10px]
+                uppercase
+                tracking-[0.16em]
+                text-brand-gold
+                font-semibold
+              "
+            >
+              What Happens Next
+            </span>
+
+
+            <p
+              class="
+                font-serif
+                text-xl
+                text-white
+                mt-3
+              "
+            >
+              No pitch deck required.
+            </p>
+
+
+            <p
+              class="
+                text-sm
+                text-white/60
+                font-light
+                leading-relaxed
+                mt-4
+              "
+            >
+              I'll read your note, look at whatever context you send,
+              and reply if there's a useful next step. Sometimes that's
+              a conversation. Sometimes it's an introduction. Sometimes
+              it's simply exchanging a few ideas.
+            </p>
+
+          </div>
+
+        </aside>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+
+  {
+    !contactFormAction && (
+
+      <script is:inline>
+        {`
+          (() => {
+            const form =
+              document.getElementById(
+                "contact-form"
+              );
+
+            const status =
+              document.getElementById(
+                "contact-form-status"
+              );
+
+            if (!form) return;
+
+            form.addEventListener(
+              "submit",
+              (event) => {
+                event.preventDefault();
+
+                status?.classList.remove(
+                  "hidden"
+                );
+              }
+            );
+          })();
+        `}
+      </script>
+
+    )
+  }
+
+</BaseLayout>
