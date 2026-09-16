@@ -2139,11 +2139,9 @@ const tradeShowLogoLoop =
                            =========================================== -->
 
                       <div
-                        class:list={[
-                          event.image
-                            ? "lg:col-span-7"
-                            : "lg:col-span-8"
-                        ]}
+                        class="
+                          lg:col-span-8
+                        "
                       >
 
                         {
@@ -2333,79 +2331,16 @@ const tradeShowLogoLoop =
 
 
                       <!-- ===========================================
-                           EVENT FEATURED IMAGE
-                           =========================================== -->
-
-                      {
-                        event.image && (
-
-                          <div
-                            class="
-                              lg:col-span-3
-                            "
-                          >
-
-                            <a
-                              href={event.url}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              class="
-                                group/event-image
-                                block
-                              "
-                            >
-
-                              <div
-                                class="
-                                  overflow-hidden
-                                  border
-                                  border-brand-border
-                                  bg-brand-cream
-                                "
-                              >
-
-                                <img
-                                  src={event.image}
-                                  alt={`${event.title} event`}
-                                  loading="lazy"
-                                  decoding="async"
-                                  referrerpolicy="no-referrer"
-                                  class="
-                                    block
-                                    w-full
-                                    aspect-[16/10]
-                                    object-cover
-                                    transition-transform
-                                    duration-300
-                                    group-hover/event-image:scale-[1.02]
-                                  "
-                                />
-
-                              </div>
-
-                            </a>
-
-                          </div>
-
-                        )
-                      }
-
-
-
-                      <!-- ===========================================
                            EVENT LINKS + RELATED NOTES
                            =========================================== -->
 
                       <div
-                        class:list={[
-                          event.image
-                            ? "lg:col-span-2"
-                            : "lg:col-span-4",
-
-                          "lg:border-l",
-                          "lg:border-brand-border",
-                          "lg:pl-8"
-                        ]}
+                        class="
+                          lg:col-span-4
+                          lg:border-l
+                          lg:border-brand-border
+                          lg:pl-8
+                        "
                       >
 
                         <div
