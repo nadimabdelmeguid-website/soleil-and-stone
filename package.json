@@ -5,11 +5,16 @@
   "scripts": {
     "dev": "astro dev",
     "start": "astro dev",
-    "build": "astro build",
+    "sync-events": "tsx scripts/sync-events.ts",
+    "build": "npm run sync-events && astro build",
     "preview": "astro preview"
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.6.0",
-    "astro": "^5.0.0"
+    "astro": "^5.0.0",
+    "cheerio": "^1.0.0"
+  },
+  "devDependencies": {
+    "tsx": "^4.0.0"
   }
 }
