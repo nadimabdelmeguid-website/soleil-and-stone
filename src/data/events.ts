@@ -672,7 +672,7 @@ export const eventSeeds: SiteEvent[] = [
       "hardware-meetup-jun-2026",
 
     title:
-      "10th San Diego Hardware Meetup | The Road to Scale: San Diego's Zero-to-One Hardware Story",
+      "10th San Diego Hardware Meetup | The Road to Scale: Zero-to-One Hardware Story",
 
     role:
       "hosted",
