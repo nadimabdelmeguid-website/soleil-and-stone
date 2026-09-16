@@ -1,0 +1,453 @@
+---
+import BaseLayout
+  from "../../layouts/BaseLayout.astro";
+
+import {
+  publishedEventRecaps
+} from "../../data/eventRecaps";
+
+
+function formatDate(
+  value: string
+) {
+
+  return new Date(
+    `${value}T12:00:00`
+  )
+    .toLocaleDateString(
+      "en-US",
+      {
+        month:
+          "long",
+
+        day:
+          "numeric",
+
+        year:
+          "numeric"
+      }
+    );
+
+}
+---
+
+<BaseLayout
+  title="Event Recaps | Soleil & Stone"
+  description="Recaps from selected community events, startup gatherings, technical meetups and industry fieldwork."
+>
+
+  <!-- =====================================================
+       HERO
+       ===================================================== -->
+
+  <section
+    class="
+      bg-white
+      border-b
+      border-brand-border
+    "
+  >
+
+    <div
+      class="
+        max-w-6xl
+        w-full
+        mx-auto
+        px-6
+        pt-16
+        pb-14
+      "
+    >
+
+      <span
+        class="
+          text-[10px]
+          uppercase
+          tracking-[0.2em]
+          text-brand-gold
+          font-semibold
+        "
+      >
+        Event Recaps
+      </span>
+
+
+      <h1
+        class="
+          font-serif
+          text-4xl
+          sm:text-5xl
+          text-brand-charcoal
+          mt-2
+        "
+      >
+        Notes From The Room
+      </h1>
+
+
+      <p
+        class="
+          text-base
+          text-brand-slate
+          font-light
+          leading-relaxed
+          max-w-3xl
+          mt-5
+        "
+      >
+        Selected recaps from events I host,
+        co-organize or attend — what happened,
+        what people responded to, and what I
+        learned from being there.
+      </p>
+
+    </div>
+
+  </section>
+
+
+
+  <!-- =====================================================
+       RECAP GRID
+       ===================================================== -->
+
+  <section
+    class="
+      bg-brand-cream
+    "
+  >
+
+    <div
+      class="
+        max-w-6xl
+        w-full
+        mx-auto
+        px-6
+        py-16
+      "
+    >
+
+      {
+        publishedEventRecaps.length > 0
+          ? (
+
+            <div
+              class="
+                grid
+                md:grid-cols-2
+                gap-7
+              "
+            >
+
+              {
+                publishedEventRecaps.map(
+                  (recap) => (
+
+                    <article
+                      class="
+                        bg-white
+                        border
+                        border-brand-border
+                        overflow-hidden
+                        flex
+                        flex-col
+                      "
+                    >
+
+                      {
+                        recap.coverImage
+                          ? (
+
+                            <a
+                              href={`/event-recaps/${recap.slug}/`}
+                              class="
+                                block
+                                aspect-[16/8]
+                                overflow-hidden
+                                border-b
+                                border-brand-border
+                              "
+                            >
+
+                              <img
+                                src={
+                                  recap.coverImage
+                                }
+                                alt={
+                                  recap.coverAlt ??
+                                  recap.title
+                                }
+                                loading="lazy"
+                                class="
+                                  w-full
+                                  h-full
+                                  object-cover
+                                  transition-transform
+                                  duration-500
+                                  hover:scale-[1.02]
+                                "
+                              />
+
+                            </a>
+
+                          )
+                          : (
+
+                            <a
+                              href={`/event-recaps/${recap.slug}/`}
+                              class="
+                                block
+                                border-b
+                                border-brand-border
+                                bg-brand-cream
+                                px-7
+                                py-9
+                              "
+                            >
+
+                              <span
+                                class="
+                                  text-[9px]
+                                  uppercase
+                                  tracking-[0.18em]
+                                  text-brand-gold
+                                  font-semibold
+                                "
+                              >
+                                Event Recap
+                              </span>
+
+
+                              <div
+                                class="
+                                  font-serif
+                                  text-2xl
+                                  text-brand-charcoal
+                                  mt-3
+                                  leading-snug
+                                "
+                              >
+                                {recap.title}
+                              </div>
+
+                            </a>
+
+                          )
+                      }
+
+
+                      <div
+                        class="
+                          p-7
+                          flex
+                          flex-col
+                          flex-1
+                        "
+                      >
+
+                        <div
+                          class="
+                            flex
+                            flex-wrap
+                            items-center
+                            gap-3
+                            text-[10px]
+                            text-brand-slate
+                          "
+                        >
+
+                          <span
+                            class="
+                              inline-flex
+                              px-3
+                              py-1.5
+                              bg-brand-gold/10
+                              text-brand-gold
+                              uppercase
+                              tracking-[0.14em]
+                              font-semibold
+                            "
+                          >
+                            Recap
+                          </span>
+
+
+                          <span>
+                            {
+                              formatDate(
+                                recap.published
+                              )
+                            }
+                          </span>
+
+
+                          <span>
+                            ·
+                          </span>
+
+
+                          <span>
+                            {recap.readingMinutes}
+                            {" "}
+                            min read
+                          </span>
+
+                        </div>
+
+
+                        <a
+                          href={`/event-recaps/${recap.slug}/`}
+                          class="
+                            group
+                          "
+                        >
+
+                          <h2
+                            class="
+                              font-serif
+                              text-2xl
+                              sm:text-3xl
+                              text-brand-charcoal
+                              mt-5
+                              leading-snug
+                              group-hover:text-brand-gold
+                              transition-colors
+                            "
+                          >
+                            {recap.title}
+                          </h2>
+
+                        </a>
+
+
+                        <p
+                          class="
+                            text-sm
+                            text-brand-slate
+                            font-light
+                            leading-relaxed
+                            mt-4
+                          "
+                        >
+                          {recap.excerpt}
+                        </p>
+
+
+                        {
+                          recap.tags &&
+                          recap.tags.length > 0 && (
+
+                            <div
+                              class="
+                                flex
+                                flex-wrap
+                                gap-2
+                                mt-6
+                              "
+                            >
+
+                              {
+                                recap.tags.map(
+                                  (tag) => (
+
+                                    <span
+                                      class="
+                                        border
+                                        border-brand-border
+                                        rounded-full
+                                        px-3
+                                        py-1
+                                        text-[10px]
+                                        text-brand-slate
+                                      "
+                                    >
+                                      {tag}
+                                    </span>
+
+                                  )
+                                )
+                              }
+
+                            </div>
+
+                          )
+                        }
+
+
+                        <a
+                          href={`/event-recaps/${recap.slug}/`}
+                          class="
+                            inline-flex
+                            items-center
+                            gap-2
+                            mt-7
+                            text-[10px]
+                            uppercase
+                            tracking-[0.15em]
+                            font-semibold
+                            text-brand-charcoal
+                            hover:text-brand-gold
+                            transition-colors
+                          "
+                        >
+                          Read Recap
+                          <span>→</span>
+                        </a>
+
+                      </div>
+
+                    </article>
+
+                  )
+                )
+              }
+
+            </div>
+
+          )
+          : (
+
+            <div
+              class="
+                bg-white
+                border
+                border-brand-border
+                px-6
+                py-12
+                text-center
+              "
+            >
+
+              <p
+                class="
+                  font-serif
+                  text-2xl
+                  text-brand-charcoal
+                "
+              >
+                Recaps coming soon.
+              </p>
+
+
+              <p
+                class="
+                  text-sm
+                  text-brand-slate
+                  font-light
+                  mt-2
+                "
+              >
+                Selected events will appear here
+                after they're published.
+              </p>
+
+            </div>
+
+          )
+      }
+
+    </div>
+
+  </section>
+
+</BaseLayout>
