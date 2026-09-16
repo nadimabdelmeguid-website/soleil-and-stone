@@ -1,4 +1,10 @@
 ---
+import fs
+  from "node:fs/promises";
+
+import path
+  from "node:path";
+
 import BaseLayout
   from "../layouts/BaseLayout.astro";
 
@@ -60,6 +66,185 @@ const communityRegistrations =
 
 const communitySpeakerCount =
   communityMetrics.speakerCount;
+
+
+/* =========================================================
+   HARDWARE MEETUP LOGOS
+
+   Folder:
+   public/hw-meetups-logos/
+
+   Recommended filename format:
+
+   Company Name__domain.com.png
+
+   Examples:
+   SEACOMP__seacomp.com.png
+   Dip Studio__dip.studio.svg
+   Velavu__velavu.com.webp
+
+   Everything before "__" becomes the company name.
+   Everything after "__" becomes the website domain.
+
+   Adding/removing a file from the folder automatically
+   updates the Community page on the next build.
+   ========================================================= */
+
+const hardwareLogoDirectory =
+  path.resolve(
+    "public/hw-meetups-logos"
+  );
+
+
+const supportedLogoExtensions =
+  new Set(
+    [
+      ".png",
+      ".jpg",
+      ".jpeg",
+      ".webp",
+      ".svg",
+      ".avif"
+    ]
+  );
+
+
+type HardwareLogo = {
+  name: string;
+  image: string;
+  url?: string;
+};
+
+
+function parseHardwareLogo(
+  filename: string
+):
+  HardwareLogo | null {
+
+  const extension =
+    path
+      .extname(
+        filename
+      )
+      .toLowerCase();
+
+
+  if (
+    !supportedLogoExtensions.has(
+      extension
+    )
+  ) {
+    return null;
+  }
+
+
+  const basename =
+    path.basename(
+      filename,
+      extension
+    );
+
+
+  const [
+    rawName,
+    rawDomain
+  ] =
+    basename.split(
+      "__"
+    );
+
+
+  const name =
+    rawName
+      ?.replace(
+        /[-_]+/g,
+        " "
+      )
+      .replace(
+        /\s+/g,
+        " "
+      )
+      .trim();
+
+
+  if (!name) {
+    return null;
+  }
+
+
+  const domain =
+    rawDomain
+      ?.trim()
+      .replace(
+        /^https?:\/\//i,
+        ""
+      )
+      .replace(
+        /\/+$/,
+        ""
+      );
+
+
+  const url =
+    domain
+      ? `https://${domain}`
+      : undefined;
+
+
+  return {
+    name,
+    image:
+      `/hw-meetups-logos/${encodeURIComponent(filename)}`,
+    url
+  };
+
+}
+
+
+let hardwareLogos:
+  HardwareLogo[] = [];
+
+
+try {
+
+  const files =
+    await fs.readdir(
+      hardwareLogoDirectory
+    );
+
+
+  hardwareLogos =
+    files
+      .map(
+        parseHardwareLogo
+      )
+      .filter(
+        (
+          logo
+        ): logo is HardwareLogo =>
+          logo !== null
+      )
+      .sort(
+        (
+          a,
+          b
+        ) =>
+          a.name.localeCompare(
+            b.name
+          )
+      );
+
+} catch {
+
+  /*
+   * Keep the page build-safe if the directory
+   * has not been created yet.
+   */
+
+  hardwareLogos =
+    [];
+
+}
 ---
 
 <BaseLayout
@@ -384,9 +569,251 @@ const communitySpeakerCount =
     communities.map(
       (community) => (
 
-        <CommunityCard
-          community={community}
-        />
+        <>
+
+          <CommunityCard
+            community={community}
+          />
+
+
+          {
+            community.id ===
+              "hardware-meetup" &&
+            hardwareLogos.length >
+              0 && (
+
+              <!-- =========================================
+                   HARDWARE MEETUP ORGANIZATIONS
+                   ========================================= -->
+
+              <section
+                class="
+                  bg-brand-cream
+                  border-b
+                  border-brand-border
+                "
+              >
+
+                <div
+                  class="
+                    max-w-6xl
+                    w-full
+                    mx-auto
+                    px-6
+                    pt-2
+                    pb-16
+                  "
+                >
+
+                  <!-- HEADER -->
+
+                  <div
+                    class="
+                      max-w-3xl
+                      mb-8
+                    "
+                  >
+
+                    <span
+                      class="
+                        text-[10px]
+                        uppercase
+                        tracking-[0.2em]
+                        text-brand-gold
+                        font-semibold
+                      "
+                    >
+                      Community Contributors
+                    </span>
+
+
+                    <h3
+                      class="
+                        font-serif
+                        text-2xl
+                        sm:text-3xl
+                        font-normal
+                        text-brand-charcoal
+                        mt-2
+                        mb-3
+                      "
+                    >
+                      Speakers & Sponsors
+                    </h3>
+
+
+                    <p
+                      class="
+                        text-sm
+                        text-brand-slate
+                        leading-relaxed
+                        font-light
+                        max-w-2xl
+                      "
+                    >
+                      Organizations represented by speakers
+                      and sponsors supporting San Diego's
+                      hardware community.
+                    </p>
+
+                  </div>
+
+
+                  <!-- LOGO GRID -->
+
+                  <div
+                    class="
+                      grid
+                      grid-cols-2
+                      sm:grid-cols-3
+                      md:grid-cols-4
+                      lg:grid-cols-5
+                      gap-px
+                      bg-brand-border
+                      border
+                      border-brand-border
+                    "
+                  >
+
+                    {
+                      hardwareLogos.map(
+                        (logo) => (
+
+                          logo.url ? (
+
+                            <a
+                              href={logo.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              aria-label={`Visit ${logo.name}`}
+                              title={logo.name}
+                              class="
+                                group
+                                relative
+                                flex
+                                items-center
+                                justify-center
+                                min-h-[118px]
+                                bg-white
+                                px-6
+                                py-7
+                                transition-colors
+                                duration-200
+                                hover:bg-brand-cream
+                                focus:outline-none
+                                focus-visible:ring-2
+                                focus-visible:ring-brand-gold
+                                focus-visible:ring-inset
+                              "
+                            >
+
+                              <img
+                                src={logo.image}
+                                alt={`${logo.name} logo`}
+                                loading="lazy"
+                                decoding="async"
+                                class="
+                                  block
+                                  max-w-full
+                                  max-h-12
+                                  w-auto
+                                  h-auto
+                                  object-contain
+                                  grayscale
+                                  opacity-70
+                                  transition-all
+                                  duration-300
+                                  group-hover:grayscale-0
+                                  group-hover:opacity-100
+                                  group-hover:scale-[1.03]
+                                "
+                              />
+
+
+                              <span
+                                class="
+                                  absolute
+                                  top-3
+                                  right-3
+                                  text-[10px]
+                                  text-brand-gold
+                                  opacity-0
+                                  transition-opacity
+                                  duration-200
+                                  group-hover:opacity-100
+                                "
+                                aria-hidden="true"
+                              >
+                                ↗
+                              </span>
+
+                            </a>
+
+                          ) : (
+
+                            <div
+                              title={logo.name}
+                              class="
+                                flex
+                                items-center
+                                justify-center
+                                min-h-[118px]
+                                bg-white
+                                px-6
+                                py-7
+                              "
+                            >
+
+                              <img
+                                src={logo.image}
+                                alt={`${logo.name} logo`}
+                                loading="lazy"
+                                decoding="async"
+                                class="
+                                  block
+                                  max-w-full
+                                  max-h-12
+                                  w-auto
+                                  h-auto
+                                  object-contain
+                                  grayscale
+                                  opacity-70
+                                "
+                              />
+
+                            </div>
+
+                          )
+
+                        )
+                      )
+                    }
+
+                  </div>
+
+
+                  <!-- SMALL NOTE -->
+
+                  <p
+                    class="
+                      mt-4
+                      text-[10px]
+                      uppercase
+                      tracking-[0.14em]
+                      text-brand-slate/70
+                    "
+                  >
+                    Select a logo to visit the organization's website.
+                  </p>
+
+                </div>
+
+              </section>
+
+            )
+          }
+
+        </>
 
       )
     )
