@@ -1,7 +1,15 @@
 export interface EventRecapSection {
   heading: string;
+
   body: string[];
+
+  image?: string;
+
+  imageAlt?: string;
+
+  imageCaption?: string;
 }
+
 
 export interface EventRecap {
   slug: string;
@@ -10,8 +18,6 @@ export interface EventRecap {
    * Exact event id from src/data/events.ts.
    *
    * This is what connects a recap to an event.
-   * If no recap uses a given event id, no recap link
-   * needs to appear for that event.
    */
   eventId: string;
 
@@ -55,20 +61,14 @@ export interface EventRecap {
  *
  * 3. Give the recap a unique slug.
  *
- * 4. Optionally add a cover image under:
+ * 4. Optionally add images under:
  *
- *    public/event-recaps/<slug>/cover.jpg
+ *    public/event-recaps/<slug>/
  *
  * 5. Rebuild / deploy.
  *
  * The Event Recaps index and individual recap page
  * will be generated automatically.
- *
- * Fieldwork and HomeEvents can later use:
- *
- * getEventRecapByEventId(event.id)
- *
- * to display "Read Recap" only when a recap exists.
  * =========================================================
  */
 
@@ -98,6 +98,12 @@ export const eventRecaps:
       readingMinutes:
         4,
 
+      coverImage:
+        "/event-recaps/san-diego-county-startup-mixer-september-2026/cover.jpg",
+
+      coverAlt:
+        "Attendees talking during the San Diego County Startup Mixer at Harland Brewing.",
+
       tags:
         [
           "San Diego",
@@ -107,6 +113,7 @@ export const eventRecaps:
 
       stats:
         [
+
           {
             value:
               "127",
@@ -114,6 +121,7 @@ export const eventRecaps:
             label:
               "Registrations"
           },
+
 
           {
             value:
@@ -123,6 +131,7 @@ export const eventRecaps:
               "Attendees"
           },
 
+
           {
             value:
               "San Diego",
@@ -130,6 +139,7 @@ export const eventRecaps:
             label:
               "Community"
           }
+
         ],
 
       sections:
@@ -144,7 +154,16 @@ export const eventRecaps:
                 "This edition of the San Diego County Startup Mixer brought 127 registrations and more than 80 people through the venue over the course of the evening.",
 
                 "The most consistent feedback I heard was about the low-pressure format. People had room to circulate, meet several different groups and have longer conversations without feeling like they needed to pitch themselves or compete for attention."
-              ]
+              ],
+
+            image:
+              "/event-recaps/san-diego-county-startup-mixer-september-2026/room.jpg",
+
+            imageAlt:
+              "Several groups of attendees having conversations during the San Diego County Startup Mixer.",
+
+            imageCaption:
+              "Multiple conversations happening at once — exactly the kind of room I want the mixer to create."
           },
 
 
@@ -157,7 +176,16 @@ export const eventRecaps:
                 "I spoke with both first-time attendees and people who have supported the mixer over multiple editions. The common theme was that the no-pitch atmosphere makes the room more approachable, especially for people who are less comfortable with large networking events.",
 
                 "That feedback is useful because it clarifies what should not change as the community grows."
-              ]
+              ],
+
+            image:
+              "/event-recaps/san-diego-county-startup-mixer-september-2026/conversation.jpg",
+
+            imageAlt:
+              "A one-on-one conversation during the San Diego County Startup Mixer.",
+
+            imageCaption:
+              "The event works best when people have enough space and time for real conversations."
           },
 
 
@@ -171,6 +199,26 @@ export const eventRecaps:
 
                 "That means experimenting carefully with better introductions, clearer ways for attendees to find relevant people and stronger follow-up after the event — while keeping the evening itself casual."
               ]
+          },
+
+
+          {
+            heading:
+              "The setting",
+
+            body:
+              [
+                "Harland Brewing in Bay Park has given the mixer a setting that feels casual enough for people to settle into conversations naturally."
+              ],
+
+            image:
+              "/event-recaps/san-diego-county-startup-mixer-september-2026/venue.jpg",
+
+            imageAlt:
+              "Harland Brewing Co. exterior in Bay Park.",
+
+            imageCaption:
+              "Harland Brewing Co., Bay Park."
           }
 
         ]
