@@ -5,6 +5,15 @@ export interface EventRecapSection {
 }
 
 
+export interface EventRecapCredit {
+  label?: string;
+
+  name: string;
+
+  url?: string;
+}
+
+
 export interface EventRecap {
   slug: string;
 
@@ -32,6 +41,19 @@ export interface EventRecap {
   }>;
 
   sections: EventRecapSection[];
+
+  /*
+   * Optional credit displayed when photos exist.
+   *
+   * Example:
+   *
+   * photoCredit: {
+   *   label: "Photography",
+   *   name: "Berg",
+   *   url: "https://bergitup.com"
+   * }
+   */
+  photoCredit?: EventRecapCredit;
 
   draft?: boolean;
 }
@@ -138,6 +160,18 @@ export const eventRecaps:
           }
 
         ],
+
+      photoCredit:
+        {
+          label:
+            "Photography",
+
+          name:
+            "Berg",
+
+          url:
+            "https://bergitup.com"
+        },
 
       sections:
         [
