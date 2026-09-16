@@ -3,6 +3,10 @@ import {
   events
 } from "../data/events";
 
+import {
+  getEventRecapUrl
+} from "../utils/eventRecaps";
+
 
 const visibleEvents =
   events
@@ -508,7 +512,12 @@ const visibleEvents =
             event.partners,
 
           speakers:
-            event.speakers
+            event.speakers,
+
+          recapUrl:
+            getEventRecapUrl(
+              event.id
+            )
         })
       )
   }}
@@ -1579,33 +1588,70 @@ const visibleEvents =
               }
 
 
-              <a
-                href="${escapeHtml(
-                  event.url
-                )}"
-                target="_blank"
-                rel="noopener noreferrer"
+              <div
                 class="
-                  inline-flex
+                  flex
+                  flex-wrap
                   items-center
-                  gap-1.5
+                  gap-x-5
+                  gap-y-2
                   mt-3
-                  text-[9px]
-                  uppercase
-                  tracking-[0.14em]
-                  font-semibold
-                  text-brand-charcoal
-                  hover:text-brand-gold
-                  transition-colors
                 "
               >
-                ${escapeHtml(
-                  event.buttonLabel ||
-                  "View Event"
-                )}
 
-                ↗
-              </a>
+                <a
+                  href="${escapeHtml(
+                    event.url
+                  )}"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="
+                    inline-flex
+                    items-center
+                    gap-1.5
+                    text-[9px]
+                    uppercase
+                    tracking-[0.14em]
+                    font-semibold
+                    text-brand-charcoal
+                    hover:text-brand-gold
+                    transition-colors
+                  "
+                >
+                  ${escapeHtml(
+                    event.buttonLabel ||
+                    "View Event"
+                  )}
+                  ↗
+                </a>
+
+                ${
+                  event.recapUrl
+                    ? `
+                      <a
+                        href="${escapeHtml(
+                          event.recapUrl
+                        )}"
+                        class="
+                          inline-flex
+                          items-center
+                          gap-1.5
+                          text-[9px]
+                          uppercase
+                          tracking-[0.14em]
+                          font-semibold
+                          text-brand-gold
+                          hover:text-brand-charcoal
+                          transition-colors
+                        "
+                      >
+                        Read Recap →
+                      </a>
+                    `
+                    : ""
+                }
+
+              </div>
             `;
 
 
