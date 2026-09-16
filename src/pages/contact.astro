@@ -15,6 +15,11 @@ const directEmail =
   "nadimabdelmeguid@gmail.com";
 
 
+const linkedIn =
+  site.linkedin ??
+  "https://www.linkedin.com/in/nadim-abdel-meguid-aa5229108/";
+
+
 /*
  * CONTACT FORM CONNECTION
  * -----------------------
@@ -669,7 +674,7 @@ const contactFormAction =
                 mt-2
               "
             >
-              Prefer Email?
+              Prefer A Direct Message?
             </h2>
 
 
@@ -703,6 +708,66 @@ const contactFormAction =
               "
             >
               {directEmail}
+              <span>↗</span>
+            </a>
+
+
+            <div
+              class="
+                flex
+                items-center
+                gap-3
+                my-5
+              "
+              aria-hidden="true"
+            >
+
+              <span
+                class="
+                  h-px
+                  flex-1
+                  bg-brand-border
+                "
+              ></span>
+
+              <span
+                class="
+                  text-[9px]
+                  uppercase
+                  tracking-[0.18em]
+                  text-brand-slate
+                "
+              >
+                Or
+              </span>
+
+              <span
+                class="
+                  h-px
+                  flex-1
+                  bg-brand-border
+                "
+              ></span>
+
+            </div>
+
+
+            <a
+              href={linkedIn}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="
+                inline-flex
+                items-center
+                gap-2
+                text-xs
+                text-brand-charcoal
+                font-semibold
+                hover:text-brand-gold
+                transition-colors
+              "
+            >
+              Message me on LinkedIn
               <span>↗</span>
             </a>
 
@@ -892,59 +957,6 @@ const contactFormAction =
           </div>
 
 
-
-          <!-- WHAT HAPPENS NEXT -->
-
-          <div
-            class="
-              bg-brand-charcoal
-              border
-              border-brand-charcoal
-              p-6
-            "
-          >
-
-            <span
-              class="
-                text-[10px]
-                uppercase
-                tracking-[0.16em]
-                text-brand-gold
-                font-semibold
-              "
-            >
-              What Happens Next
-            </span>
-
-
-            <p
-              class="
-                font-serif
-                text-xl
-                text-white
-                mt-3
-              "
-            >
-              No pitch deck required.
-            </p>
-
-
-            <p
-              class="
-                text-sm
-                text-white/60
-                font-light
-                leading-relaxed
-                mt-4
-              "
-            >
-              I'll read your note, look at whatever context you send,
-              and reply if there's a useful next step. Sometimes that's
-              a conversation. Sometimes it's an introduction. Sometimes
-              it's simply exchanging a few ideas.
-            </p>
-
-          </div>
 
         </aside>
 
