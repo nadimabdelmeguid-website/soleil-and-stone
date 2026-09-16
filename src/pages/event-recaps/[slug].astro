@@ -1,0 +1,515 @@
+---
+import BaseLayout
+  from "../../layouts/BaseLayout.astro";
+
+import {
+  events
+} from "../../data/events";
+
+import {
+  publishedEventRecaps
+} from "../../data/eventRecaps";
+
+
+export function getStaticPaths() {
+
+  return publishedEventRecaps.map(
+    (recap) => ({
+
+      params:
+        {
+          slug:
+            recap.slug
+        },
+
+      props:
+        {
+          recap
+        }
+
+    })
+  );
+
+}
+
+
+const {
+  recap
+} =
+  Astro.props;
+
+
+const event =
+  events.find(
+    (item) =>
+      item.id ===
+        recap.eventId
+  );
+
+
+function formatDate(
+  value: string
+) {
+
+  return new Date(
+    `${value}T12:00:00`
+  )
+    .toLocaleDateString(
+      "en-US",
+      {
+        month:
+          "long",
+
+        day:
+          "numeric",
+
+        year:
+          "numeric"
+      }
+    );
+
+}
+---
+
+<BaseLayout
+  title={`${recap.title} | Event Recap | Soleil & Stone`}
+  description={recap.excerpt}
+>
+
+  <article>
+
+    <!-- =====================================================
+         ARTICLE HEADER
+         ===================================================== -->
+
+    <header
+      class="
+        bg-white
+        border-b
+        border-brand-border
+      "
+    >
+
+      <div
+        class="
+          max-w-4xl
+          w-full
+          mx-auto
+          px-6
+          pt-16
+          pb-12
+        "
+      >
+
+        <a
+          href="/event-recaps/"
+          class="
+            inline-flex
+            items-center
+            gap-2
+            text-[9px]
+            uppercase
+            tracking-[0.16em]
+            text-brand-slate
+            hover:text-brand-gold
+            transition-colors
+          "
+        >
+          ← All Event Recaps
+        </a>
+
+
+        <div
+          class="
+            mt-9
+            flex
+            flex-wrap
+            items-center
+            gap-3
+            text-[10px]
+            text-brand-slate
+          "
+        >
+
+          <span
+            class="
+              px-3
+              py-1.5
+              bg-brand-gold/10
+              text-brand-gold
+              uppercase
+              tracking-[0.14em]
+              font-semibold
+            "
+          >
+            {
+              recap.eyebrow ??
+              "Event Recap"
+            }
+          </span>
+
+
+          <span>
+            {
+              formatDate(
+                recap.published
+              )
+            }
+          </span>
+
+
+          <span>
+            ·
+          </span>
+
+
+          <span>
+            {recap.readingMinutes}
+            {" "}
+            min read
+          </span>
+
+        </div>
+
+
+        <h1
+          class="
+            font-serif
+            text-4xl
+            sm:text-5xl
+            text-brand-charcoal
+            leading-[1.12]
+            mt-6
+          "
+        >
+          {recap.title}
+        </h1>
+
+
+        <p
+          class="
+            text-base
+            sm:text-lg
+            text-brand-slate
+            font-light
+            leading-relaxed
+            mt-6
+            max-w-3xl
+          "
+        >
+          {recap.excerpt}
+        </p>
+
+
+        {
+          event && (
+
+            <div
+              class="
+                mt-8
+                pt-6
+                border-t
+                border-brand-border
+                flex
+                flex-wrap
+                gap-x-6
+                gap-y-2
+                text-xs
+                text-brand-slate
+              "
+            >
+
+              {
+                event.city && (
+
+                  <span>
+                    {event.city}
+                  </span>
+
+                )
+              }
+
+
+              <span>
+                {
+                  formatDate(
+                    event.startDate
+                  )
+                }
+              </span>
+
+
+              <a
+                href={event.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="
+                  text-brand-charcoal
+                  font-semibold
+                  hover:text-brand-gold
+                  transition-colors
+                "
+              >
+                View original event ↗
+              </a>
+
+            </div>
+
+          )
+        }
+
+      </div>
+
+    </header>
+
+
+
+    <!-- =====================================================
+         COVER IMAGE
+         ===================================================== -->
+
+    {
+      recap.coverImage && (
+
+        <div
+          class="
+            max-w-5xl
+            w-full
+            mx-auto
+            px-6
+            pt-10
+          "
+        >
+
+          <img
+            src={recap.coverImage}
+            alt={
+              recap.coverAlt ??
+              recap.title
+            }
+            class="
+              w-full
+              h-auto
+              border
+              border-brand-border
+            "
+          />
+
+        </div>
+
+      )
+    }
+
+
+
+    <!-- =====================================================
+         STATS
+         ===================================================== -->
+
+    {
+      recap.stats &&
+      recap.stats.length > 0 && (
+
+        <section
+          class="
+            max-w-4xl
+            w-full
+            mx-auto
+            px-6
+            pt-12
+          "
+        >
+
+          <div
+            class="
+              grid
+              sm:grid-cols-3
+              bg-brand-cream
+              border
+              border-brand-border
+            "
+          >
+
+            {
+              recap.stats.map(
+                (stat) => (
+
+                  <div
+                    class="
+                      px-6
+                      py-5
+                      border-b
+                      last:border-b-0
+                      sm:border-b-0
+                      sm:border-r
+                      sm:last:border-r-0
+                      border-brand-border
+                    "
+                  >
+
+                    <div
+                      class="
+                        font-serif
+                        text-3xl
+                        text-brand-charcoal
+                      "
+                    >
+                      {stat.value}
+                    </div>
+
+
+                    <div
+                      class="
+                        mt-1
+                        text-[9px]
+                        uppercase
+                        tracking-[0.14em]
+                        text-brand-slate
+                      "
+                    >
+                      {stat.label}
+                    </div>
+
+                  </div>
+
+                )
+              )
+            }
+
+          </div>
+
+        </section>
+
+      )
+    }
+
+
+
+    <!-- =====================================================
+         BODY
+         ===================================================== -->
+
+    <section
+      class="
+        max-w-3xl
+        w-full
+        mx-auto
+        px-6
+        py-14
+      "
+    >
+
+      <div
+        class="
+          space-y-11
+        "
+      >
+
+        {
+          recap.sections.map(
+            (section) => (
+
+              <section>
+
+                <h2
+                  class="
+                    font-serif
+                    text-2xl
+                    sm:text-3xl
+                    text-brand-charcoal
+                  "
+                >
+                  {section.heading}
+                </h2>
+
+
+                <div
+                  class="
+                    mt-4
+                    space-y-4
+                  "
+                >
+
+                  {
+                    section.body.map(
+                      (paragraph) => (
+
+                        <p
+                          class="
+                            text-base
+                            text-brand-slate
+                            font-light
+                            leading-[1.8]
+                          "
+                        >
+                          {paragraph}
+                        </p>
+
+                      )
+                    )
+                  }
+
+                </div>
+
+              </section>
+
+            )
+          )
+        }
+
+      </div>
+
+
+
+      <!-- ===================================================
+           TAGS
+           =================================================== -->
+
+      {
+        recap.tags &&
+        recap.tags.length > 0 && (
+
+          <div
+            class="
+              mt-12
+              pt-8
+              border-t
+              border-brand-border
+              flex
+              flex-wrap
+              gap-2
+            "
+          >
+
+            {
+              recap.tags.map(
+                (tag) => (
+
+                  <span
+                    class="
+                      border
+                      border-brand-border
+                      rounded-full
+                      px-3
+                      py-1
+                      text-[10px]
+                      text-brand-slate
+                    "
+                  >
+                    {tag}
+                  </span>
+
+                )
+              )
+            }
+
+          </div>
+
+        )
+      }
+
+    </section>
+
+  </article>
+
+</BaseLayout>
