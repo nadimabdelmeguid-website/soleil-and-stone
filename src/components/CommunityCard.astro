@@ -1,11 +1,22 @@
 ---
 import {
+  readdir
+} from "node:fs/promises";
+
+import path
+  from "node:path";
+
+import {
   events
 } from "../data/events";
 
 import {
   getCommunityMetricsById
 } from "../utils/eventMetrics";
+
+import {
+  getEventRecapUrl
+} from "../utils/eventRecaps";
 
 
 const {
@@ -41,6 +52,69 @@ const sponsors =
 
 
 /* =========================================================
+   COMMUNITY CARD IMAGES
+
+   Folder:
+   public/community-card-images/
+
+   Naming rule:
+   event.id + image extension
+
+   Examples:
+
+   startup-mixer-sep-2026.jpg
+   hardware-meetup-jun-2026.webp
+
+   No image file = no image rendered.
+   ========================================================= */
+
+const communityCardImageDirectory =
+  path.join(
+    process.cwd(),
+    "public",
+    "community-card-images"
+  );
+
+
+let communityCardImageFiles:
+  string[] = [];
+
+
+try {
+
+  communityCardImageFiles =
+    (
+      await readdir(
+        communityCardImageDirectory
+      )
+    )
+      .filter(
+        (file) =>
+          /\.(png|jpe?g|webp|avif|svg)$/i
+            .test(
+              file
+            )
+      )
+      .sort(
+        (a, b) =>
+          a.localeCompare(
+            b
+          )
+      );
+
+} catch {
+
+  /*
+   * Keep the page build-safe when the directory
+   * does not exist yet.
+   */
+  communityCardImageFiles =
+    [];
+
+}
+
+
+/* =========================================================
    DISPLAY HELPERS
    ========================================================= */
 
@@ -60,6 +134,30 @@ function formatMonth(
         "numeric"
     }
   );
+
+}
+
+
+function findCommunityCardImage(
+  eventId: string
+) {
+
+  const file =
+    communityCardImageFiles.find(
+      (candidate) =>
+        path
+          .parse(
+            candidate
+          )
+          .name
+          .toLowerCase() ===
+        eventId.toLowerCase()
+    );
+
+
+  return file
+    ? `/community-card-images/${encodeURIComponent(file)}`
+    : undefined;
 
 }
 ---
@@ -431,6 +529,7 @@ function formatMonth(
             >
 
               <span>
+
                 <strong
                   class="
                     text-brand-charcoal
@@ -441,6 +540,7 @@ function formatMonth(
 
                 {" "}
                 documented speakers
+
               </span>
 
 
@@ -454,6 +554,7 @@ function formatMonth(
 
 
               <span>
+
                 <strong
                   class="
                     text-brand-charcoal
@@ -464,6 +565,7 @@ function formatMonth(
 
                 {" "}
                 event sponsors
+
               </span>
 
             </div>
@@ -686,129 +788,224 @@ function formatMonth(
 
                 {
                   communityEvents.map(
-                    (event) => (
+                    (event) => {
 
-                      <a
-                        href={event.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        class="
-                          group
-                          flex-none
-                          w-[230px]
-                          sm:w-[250px]
-                          bg-white
-                          border
-                          border-brand-border
-                          p-5
-                          snap-start
-                          hover:border-brand-gold
-                          transition-colors
-                        "
-                      >
+                      const cardImage =
+                        findCommunityCardImage(
+                          event.id
+                        );
 
-                        <div
+
+                      const recapUrl =
+                        getEventRecapUrl(
+                          event.id
+                        );
+
+
+                      return (
+
+                        <article
                           class="
+                            group
+                            flex-none
+                            w-[230px]
+                            sm:w-[250px]
+                            bg-white
+                            border
+                            border-brand-border
+                            snap-start
+                            overflow-hidden
                             flex
-                            items-start
-                            justify-between
-                            gap-3
+                            flex-col
+                            hover:border-brand-gold
+                            transition-colors
                           "
                         >
 
-                          <div>
+                          <!-- OPTIONAL EVENT IMAGE -->
+
+                          {
+                            cardImage && (
+
+                              <a
+                                href={event.url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                class="
+                                  block
+                                  overflow-hidden
+                                  border-b
+                                  border-brand-border
+                                "
+                              >
+
+                                <img
+                                  src={cardImage}
+                                  alt={`${event.title} event`}
+                                  loading="lazy"
+                                  decoding="async"
+                                  class="
+                                    block
+                                    w-full
+                                    aspect-[16/9]
+                                    object-cover
+                                    transition-transform
+                                    duration-300
+                                    group-hover:scale-[1.02]
+                                  "
+                                />
+
+                              </a>
+
+                            )
+                          }
+
+
+                          <!-- CARD BODY -->
+
+                          <div
+                            class="
+                              p-5
+                              flex
+                              flex-col
+                              flex-1
+                            "
+                          >
 
                             <div
                               class="
-                                inline-flex
-                                px-2
-                                py-1
-                                bg-brand-gold/10
-                                text-[9px]
-                                uppercase
-                                tracking-[0.16em]
-                                text-brand-gold
-                                font-semibold
-                                mb-3
+                                flex
+                                items-start
+                                justify-between
+                                gap-3
                               "
                             >
-                              {formatMonth(
-                                event.startDate
-                              )}
+
+                              <div>
+
+                                <div
+                                  class="
+                                    inline-flex
+                                    px-2
+                                    py-1
+                                    bg-brand-gold/10
+                                    text-[9px]
+                                    uppercase
+                                    tracking-[0.16em]
+                                    text-brand-gold
+                                    font-semibold
+                                    mb-3
+                                  "
+                                >
+                                  {formatMonth(
+                                    event.startDate
+                                  )}
+                                </div>
+
+
+                                <a
+                                  href={event.url}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  class="
+                                    block
+                                    font-serif
+                                    text-lg
+                                    text-brand-charcoal
+                                    group-hover:text-brand-gold
+                                    transition-colors
+                                  "
+                                >
+                                  Startup Mixer
+                                </a>
+
+                              </div>
+
+
+                              <a
+                                href={event.url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                aria-label={`View ${event.title}`}
+                                class="
+                                  text-xs
+                                  text-brand-slate
+                                  hover:text-brand-gold
+                                  transition-colors
+                                "
+                              >
+                                ↗
+                              </a>
+
                             </div>
 
 
-                            <div
-                              class="
-                                font-serif
-                                text-lg
-                                text-brand-charcoal
-                                group-hover:text-brand-gold
-                                transition-colors
-                              "
-                            >
-                              Startup Mixer
-                            </div>
+
+                            <!-- RECAP
+
+                                 Registration count intentionally removed.
+
+                                 If this event has a recap,
+                                 show it here.
+
+                                 Otherwise render nothing.
+                            -->
+
+                            {
+                              recapUrl && (
+
+                                <div
+                                  class="
+                                    mt-auto
+                                    pt-5
+                                  "
+                                >
+
+                                  <div
+                                    class="
+                                      pt-4
+                                      border-t
+                                      border-brand-border
+                                    "
+                                  >
+
+                                    <a
+                                      href={recapUrl}
+                                      class="
+                                        inline-flex
+                                        items-center
+                                        gap-2
+                                        text-[9px]
+                                        uppercase
+                                        tracking-[0.15em]
+                                        text-brand-gold
+                                        font-semibold
+                                        hover:text-brand-charcoal
+                                        transition-colors
+                                      "
+                                    >
+                                      Read Recap
+
+                                      <span>
+                                        →
+                                      </span>
+
+                                    </a>
+
+                                  </div>
+
+                                </div>
+
+                              )
+                            }
 
                           </div>
 
+                        </article>
 
-                          <span
-                            class="
-                              text-xs
-                              text-brand-slate
-                            "
-                          >
-                            ↗
-                          </span>
+                      );
 
-                        </div>
-
-
-                        {
-                          typeof event.registrations ===
-                            "number" && (
-
-                            <div
-                              class="
-                                mt-5
-                                pt-4
-                                border-t
-                                border-brand-border
-                              "
-                            >
-
-                              <span
-                                class="
-                                  font-serif
-                                  text-xl
-                                  text-brand-gold
-                                "
-                              >
-                                {event.registrations}
-                              </span>
-
-
-                              <span
-                                class="
-                                  text-[9px]
-                                  uppercase
-                                  tracking-[0.13em]
-                                  text-brand-slate
-                                  ml-2
-                                "
-                              >
-                                registrations
-                              </span>
-
-                            </div>
-
-                          )
-                        }
-
-                      </a>
-
-                    )
+                    }
                   )
                 }
 
@@ -837,254 +1034,319 @@ function formatMonth(
 
                 {
                   communityEvents.map(
-                    (event) => (
+                    (event) => {
 
-                      <article
-                        class="
-                          bg-white
-                          border
-                          border-brand-border
-                          p-6
-                          flex
-                          flex-col
-                          shadow-[0_1px_0_rgba(34,37,42,0.02)]
-                        "
-                      >
+                      const cardImage =
+                        findCommunityCardImage(
+                          event.id
+                        );
 
-                        <!-- MONTH + REGISTRATIONS -->
 
-                        <div
+                      return (
+
+                        <article
                           class="
+                            bg-white
+                            border
+                            border-brand-border
                             flex
-                            items-center
-                            justify-between
-                            gap-3
-                            mb-4
+                            flex-col
+                            overflow-hidden
+                            shadow-[0_1px_0_rgba(34,37,42,0.02)]
                           "
                         >
 
-                          <span
-                            class="
-                              inline-flex
-                              px-2
-                              py-1
-                              bg-brand-gold/10
-                              text-[9px]
-                              uppercase
-                              tracking-[0.15em]
-                              text-brand-gold
-                              font-semibold
-                            "
-                          >
-                            {formatMonth(
-                              event.startDate
-                            )}
-                          </span>
-
+                          <!-- OPTIONAL EVENT IMAGE -->
 
                           {
-                            typeof event.registrations ===
-                              "number" && (
+                            cardImage && (
 
-                              <span
+                              <a
+                                href={event.url}
+                                target="_blank"
+                                rel="noopener noreferrer"
                                 class="
-                                  text-[9px]
-                                  uppercase
-                                  tracking-[0.12em]
-                                  text-brand-slate
+                                  group/hardware-image
+                                  block
+                                  overflow-hidden
+                                  border-b
+                                  border-brand-border
                                 "
                               >
-                                {event.registrations}
-                                {" "}
-                                registrations
-                              </span>
+
+                                <img
+                                  src={cardImage}
+                                  alt={`${event.title} event`}
+                                  loading="lazy"
+                                  decoding="async"
+                                  class="
+                                    block
+                                    w-full
+                                    aspect-[16/9]
+                                    object-cover
+                                    transition-transform
+                                    duration-300
+                                    group-hover/hardware-image:scale-[1.02]
+                                  "
+                                />
+
+                              </a>
 
                             )
                           }
 
-                        </div>
 
+                          <!-- CARD BODY -->
 
-
-                        <!-- TITLE -->
-
-                        <h4
-                          class="
-                            font-serif
-                            text-xl
-                            text-brand-charcoal
-                            leading-snug
-                          "
-                        >
-                          {event.title}
-                        </h4>
-
-
-
-                        <!-- SPONSOR -->
-
-                        {
-                          event.sponsors?.length > 0 && (
-
-                            <div
-                              class="
-                                mt-5
-                                p-3
-                                bg-brand-cream
-                                border
-                                border-brand-border
-                              "
-                            >
-
-                              <div
-                                class="
-                                  text-[8px]
-                                  uppercase
-                                  tracking-[0.15em]
-                                  text-brand-slate
-                                  mb-1
-                                "
-                              >
-                                Sponsor
-                              </div>
-
-
-                              <div
-                                class="
-                                  text-xs
-                                  font-semibold
-                                  text-brand-charcoal
-                                "
-                              >
-                                {event.sponsors.join(
-                                  ", "
-                                )}
-                              </div>
-
-                            </div>
-
-                          )
-                        }
-
-
-
-                        <!-- SPEAKERS -->
-
-                        {
-                          event.speakers?.length > 0 && (
-
-                            <div
-                              class="
-                                mt-5
-                              "
-                            >
-
-                              <div
-                                class="
-                                  text-[8px]
-                                  uppercase
-                                  tracking-[0.15em]
-                                  text-brand-slate
-                                  mb-3
-                                "
-                              >
-                                Speakers
-                              </div>
-
-
-                              <div
-                                class="
-                                  space-y-3
-                                "
-                              >
-
-                                {
-                                  event.speakers.map(
-                                    (speaker) => (
-
-                                      <div>
-
-                                        <div
-                                          class="
-                                            text-xs
-                                            font-semibold
-                                            text-brand-charcoal
-                                          "
-                                        >
-                                          {speaker.name}
-                                        </div>
-
-
-                                        <div
-                                          class="
-                                            text-[10px]
-                                            text-brand-slate
-                                            mt-0.5
-                                            leading-relaxed
-                                          "
-                                        >
-                                          {speaker.company}
-
-                                          {
-                                            speaker.title
-                                              ? ` · ${speaker.title}`
-                                              : ""
-                                          }
-                                        </div>
-
-                                      </div>
-
-                                    )
-                                  )
-                                }
-
-                              </div>
-
-                            </div>
-
-                          )
-                        }
-
-
-
-                        <!-- LINK -->
-
-                        <div
-                          class="
-                            mt-auto
-                            pt-6
-                          "
-                        >
-
-                          <a
-                            href={event.url}
-                            target="_blank"
-                            rel="noopener noreferrer"
+                          <div
                             class="
-                              inline-flex
-                              items-center
-                              gap-2
-                              text-[9px]
-                              uppercase
-                              tracking-[0.15em]
-                              text-brand-charcoal
-                              font-semibold
-                              hover:text-brand-gold
-                              transition-colors
+                              p-6
+                              flex
+                              flex-col
+                              flex-1
                             "
                           >
-                            View Event
 
-                            <span>
-                              ↗
-                            </span>
-                          </a>
+                            <!-- MONTH + REGISTRATIONS -->
 
-                        </div>
+                            <div
+                              class="
+                                flex
+                                items-center
+                                justify-between
+                                gap-3
+                                mb-4
+                              "
+                            >
 
-                      </article>
+                              <span
+                                class="
+                                  inline-flex
+                                  px-2
+                                  py-1
+                                  bg-brand-gold/10
+                                  text-[9px]
+                                  uppercase
+                                  tracking-[0.15em]
+                                  text-brand-gold
+                                  font-semibold
+                                "
+                              >
+                                {formatMonth(
+                                  event.startDate
+                                )}
+                              </span>
 
-                    )
+
+                              {
+                                typeof event.registrations ===
+                                  "number" && (
+
+                                  <span
+                                    class="
+                                      text-[9px]
+                                      uppercase
+                                      tracking-[0.12em]
+                                      text-brand-slate
+                                    "
+                                  >
+                                    {event.registrations}
+                                    {" "}
+                                    registrations
+                                  </span>
+
+                                )
+                              }
+
+                            </div>
+
+
+
+                            <!-- TITLE -->
+
+                            <h4
+                              class="
+                                font-serif
+                                text-xl
+                                text-brand-charcoal
+                                leading-snug
+                              "
+                            >
+                              {event.title}
+                            </h4>
+
+
+
+                            <!-- SPONSOR -->
+
+                            {
+                              event.sponsors?.length > 0 && (
+
+                                <div
+                                  class="
+                                    mt-5
+                                    p-3
+                                    bg-brand-cream
+                                    border
+                                    border-brand-border
+                                  "
+                                >
+
+                                  <div
+                                    class="
+                                      text-[8px]
+                                      uppercase
+                                      tracking-[0.15em]
+                                      text-brand-slate
+                                      mb-1
+                                    "
+                                  >
+                                    Sponsor
+                                  </div>
+
+
+                                  <div
+                                    class="
+                                      text-xs
+                                      font-semibold
+                                      text-brand-charcoal
+                                    "
+                                  >
+                                    {
+                                      event.sponsors.join(
+                                        ", "
+                                      )
+                                    }
+                                  </div>
+
+                                </div>
+
+                              )
+                            }
+
+
+
+                            <!-- SPEAKERS -->
+
+                            {
+                              event.speakers?.length > 0 && (
+
+                                <div
+                                  class="
+                                    mt-5
+                                  "
+                                >
+
+                                  <div
+                                    class="
+                                      text-[8px]
+                                      uppercase
+                                      tracking-[0.15em]
+                                      text-brand-slate
+                                      mb-3
+                                    "
+                                  >
+                                    Speakers
+                                  </div>
+
+
+                                  <div
+                                    class="
+                                      space-y-3
+                                    "
+                                  >
+
+                                    {
+                                      event.speakers.map(
+                                        (speaker) => (
+
+                                          <div>
+
+                                            <div
+                                              class="
+                                                text-xs
+                                                font-semibold
+                                                text-brand-charcoal
+                                              "
+                                            >
+                                              {speaker.name}
+                                            </div>
+
+
+                                            <div
+                                              class="
+                                                text-[10px]
+                                                text-brand-slate
+                                                mt-0.5
+                                                leading-relaxed
+                                              "
+                                            >
+                                              {speaker.company}
+
+                                              {
+                                                speaker.title
+                                                  ? ` · ${speaker.title}`
+                                                  : ""
+                                              }
+                                            </div>
+
+                                          </div>
+
+                                        )
+                                      )
+                                    }
+
+                                  </div>
+
+                                </div>
+
+                              )
+                            }
+
+
+
+                            <!-- EVENT LINK -->
+
+                            <div
+                              class="
+                                mt-auto
+                                pt-6
+                              "
+                            >
+
+                              <a
+                                href={event.url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                class="
+                                  inline-flex
+                                  items-center
+                                  gap-2
+                                  text-[9px]
+                                  uppercase
+                                  tracking-[0.15em]
+                                  text-brand-charcoal
+                                  font-semibold
+                                  hover:text-brand-gold
+                                  transition-colors
+                                "
+                              >
+                                View Event
+
+                                <span>
+                                  ↗
+                                </span>
+                              </a>
+
+                            </div>
+
+                          </div>
+
+                        </article>
+
+                      );
+
+                    }
                   )
                 }
 
