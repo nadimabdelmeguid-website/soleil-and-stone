@@ -7,45 +7,37 @@
   "
 >
 
-  <div>
+  <a
+    href={event.url}
+    target="_blank"
+    rel="noopener noreferrer"
+    class="
+      block
+      font-serif
+      text-lg
+      text-brand-charcoal
+      leading-snug
+      group-hover:text-brand-gold
+      transition-colors
+    "
+  >
+    Startup Mixer
 
-    <div
+    <span
       class="
-        inline-flex
-        px-2
-        py-1
-        bg-brand-gold/10
+        ml-2
+        font-sans
         text-[9px]
         uppercase
-        tracking-[0.16em]
+        tracking-[0.14em]
         text-brand-gold
         font-semibold
-        mb-3
+        whitespace-nowrap
       "
     >
-      {formatMonth(
-        event.startDate
-      )}
-    </div>
-
-
-    <a
-      href={event.url}
-      target="_blank"
-      rel="noopener noreferrer"
-      class="
-        block
-        font-serif
-        text-lg
-        text-brand-charcoal
-        group-hover:text-brand-gold
-        transition-colors
-      "
-    >
-      Startup Mixer
-    </a>
-
-  </div>
+      — {formatMonth(event.startDate)}
+    </span>
+  </a>
 
 
   <a
@@ -58,6 +50,8 @@
       text-brand-slate
       hover:text-brand-gold
       transition-colors
+      shrink-0
+      mt-1
     "
   >
     ↗
