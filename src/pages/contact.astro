@@ -927,6 +927,70 @@ const contactFormAction =
 
 
 
+
+  <!-- =====================================================
+       CONTACT REASON PRESELECTION
+
+       Examples:
+
+       /contact/?reason=hardware-commercialization
+       /contact/?reason=startup-community
+       /contact/?reason=event-collaboration
+       /contact/?reason=venture-founder
+       /contact/?reason=speaking-media
+       /contact/?reason=general
+       ===================================================== -->
+
+  <script is:inline>
+    (() => {
+
+      const params =
+        new URLSearchParams(
+          window.location.search
+        );
+
+
+      const requestedReason =
+        params.get(
+          "reason"
+        );
+
+
+      const select =
+        document.getElementById(
+          "contact-reason"
+        );
+
+
+      if (
+        !requestedReason ||
+        !select
+      ) {
+        return;
+      }
+
+
+      const option =
+        Array.from(
+          select.options
+        ).find(
+          (item) =>
+            item.value ===
+              requestedReason
+        );
+
+
+      if (
+        option
+      ) {
+        select.value =
+          requestedReason;
+      }
+
+    })();
+  </script>
+
+
   {
     !contactFormAction && (
 
