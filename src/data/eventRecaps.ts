@@ -2,12 +2,6 @@ export interface EventRecapSection {
   heading: string;
 
   body: string[];
-
-  image?: string;
-
-  imageAlt?: string;
-
-  imageCaption?: string;
 }
 
 
@@ -15,9 +9,8 @@ export interface EventRecap {
   slug: string;
 
   /*
-   * Exact event id from src/data/events.ts.
-   *
-   * This is what connects a recap to an event.
+   * Must exactly match the event id
+   * from src/data/events.ts.
    */
   eventId: string;
 
@@ -30,10 +23,6 @@ export interface EventRecap {
   excerpt: string;
 
   readingMinutes: number;
-
-  coverImage?: string;
-
-  coverAlt?: string;
 
   tags?: string[];
 
@@ -53,22 +42,36 @@ export interface EventRecap {
  * EVENT RECAPS
  * =========================================================
  *
- * To add a recap:
+ * ADDING A NEW RECAP
  *
- * 1. Add ONE object below.
+ * 1. Add one recap object below.
  *
- * 2. Set eventId to the exact event id from events.ts.
+ * 2. eventId must exactly match the id in events.ts.
  *
  * 3. Give the recap a unique slug.
  *
- * 4. Optionally add images under:
+ * 4. Create:
  *
  *    public/event-recaps/<slug>/
  *
- * 5. Rebuild / deploy.
+ * 5. Add photos using:
  *
- * The Event Recaps index and individual recap page
- * will be generated automatically.
+ *    cover.jpg
+ *    01.jpg
+ *    02.jpg
+ *    03.jpg
+ *    04.jpg
+ *
+ * Supported:
+ *
+ *    .jpg
+ *    .jpeg
+ *    .png
+ *    .webp
+ *
+ * Images are discovered automatically.
+ *
+ * No image paths need to be entered here.
  * =========================================================
  */
 
@@ -97,12 +100,6 @@ export const eventRecaps:
 
       readingMinutes:
         4,
-
-      coverImage:
-        "/event-recaps/san-diego-county-startup-mixer-september-2026/cover.jpg",
-
-      coverAlt:
-        "Attendees talking during the San Diego County Startup Mixer at Harland Brewing.",
 
       tags:
         [
@@ -154,16 +151,7 @@ export const eventRecaps:
                 "This edition of the San Diego County Startup Mixer brought 127 registrations and more than 80 people through the venue over the course of the evening.",
 
                 "The most consistent feedback I heard was about the low-pressure format. People had room to circulate, meet several different groups and have longer conversations without feeling like they needed to pitch themselves or compete for attention."
-              ],
-
-            image:
-              "/event-recaps/san-diego-county-startup-mixer-september-2026/room.jpg",
-
-            imageAlt:
-              "Several groups of attendees having conversations during the San Diego County Startup Mixer.",
-
-            imageCaption:
-              "Multiple conversations happening at once — exactly the kind of room I want the mixer to create."
+              ]
           },
 
 
@@ -176,16 +164,7 @@ export const eventRecaps:
                 "I spoke with both first-time attendees and people who have supported the mixer over multiple editions. The common theme was that the no-pitch atmosphere makes the room more approachable, especially for people who are less comfortable with large networking events.",
 
                 "That feedback is useful because it clarifies what should not change as the community grows."
-              ],
-
-            image:
-              "/event-recaps/san-diego-county-startup-mixer-september-2026/conversation.jpg",
-
-            imageAlt:
-              "A one-on-one conversation during the San Diego County Startup Mixer.",
-
-            imageCaption:
-              "The event works best when people have enough space and time for real conversations."
+              ]
           },
 
 
@@ -209,16 +188,7 @@ export const eventRecaps:
             body:
               [
                 "Harland Brewing in Bay Park has given the mixer a setting that feels casual enough for people to settle into conversations naturally."
-              ],
-
-            image:
-              "/event-recaps/san-diego-county-startup-mixer-september-2026/venue.jpg",
-
-            imageAlt:
-              "Harland Brewing Co. exterior in Bay Park.",
-
-            imageCaption:
-              "Harland Brewing Co., Bay Park."
+              ]
           }
 
         ]
