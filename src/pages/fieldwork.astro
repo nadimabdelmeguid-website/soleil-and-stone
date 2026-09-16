@@ -558,6 +558,20 @@ function eventCategory(
 
 /* =========================================================
    TRADE SHOW HELPERS
+
+   LOGO + EVENT LINK AUTOMATION
+
+   Primary rule:
+   - logo filename = event.id + image extension
+
+   Example:
+   event.id: "isc-west-2026"
+   file:     public/tradeshows/isc-west-2026.png
+
+   The logo's clickable link ALWAYS comes directly from
+   event.url in events.ts. No URL is inferred from filenames.
+
+   Fallback name matching is kept only for older logo files.
    ========================================================= */
 
 function isTradeShowEvent(
@@ -572,15 +586,25 @@ function isTradeShowEvent(
 }
 
 
+function stripExtension(
+  value: string
+) {
+
+  return value.replace(
+    /\.[^.]+$/,
+    ""
+  );
+
+}
+
+
 function normalizeTradeShowKey(
   value: string
 ) {
 
-  return value
-    .replace(
-      /\.[^.]+$/,
-      ""
-    )
+  return stripExtension(
+    value
+  )
     .replace(
       /\b20\d{2}\b/g,
       ""
@@ -626,37 +650,102 @@ function tradeShowAcronym(
 }
 
 
-function tradeShowMatchKeys(
+function findLogoForEvent(
   event
 ) {
 
-  const title =
-    event.title ??
-    "";
+  /*
+   * 1. Exact event-id match.
+   *
+   * This is the preferred and fully predictable workflow.
+   */
+  const exactFile =
+    tradeShowLogoFiles.find(
+      (file) =>
+        stripExtension(
+          file
+        ).toLowerCase() ===
+        event.id.toLowerCase()
+    );
 
 
-  const normalized =
+  if (
+    exactFile
+  ) {
+
+    return exactFile;
+
+  }
+
+
+  /*
+   * 2. Backward-compatible fallback for existing logos whose
+   * filenames predate the event-id naming convention.
+   */
+  const titleKey =
     normalizeTradeShowKey(
-      title
+      event.title ??
+      ""
+    );
+
+
+  const idKey =
+    normalizeTradeShowKey(
+      event.id ??
+      ""
     );
 
 
   const acronym =
     tradeShowAcronym(
-      title
+      event.title ??
+      ""
     );
 
 
-  return Array.from(
-    new Set(
-      [
-        normalized,
-        acronym
-      ]
-        .filter(
-          Boolean
+  return tradeShowLogoFiles.find(
+    (file) => {
+
+      const logoKey =
+        normalizeTradeShowKey(
+          file
+        );
+
+
+      return (
+        logoKey ===
+          titleKey ||
+        logoKey ===
+          idKey ||
+        logoKey ===
+          acronym ||
+        (
+          logoKey.length >= 4 &&
+          titleKey.includes(
+            logoKey
+          )
+        ) ||
+        (
+          titleKey.length >= 4 &&
+          logoKey.includes(
+            titleKey
+          )
+        ) ||
+        (
+          logoKey.length >= 4 &&
+          idKey.includes(
+            logoKey
+          )
+        ) ||
+        (
+          idKey.length >= 4 &&
+          logoKey.includes(
+            idKey
+          )
         )
-    )
+      );
+
+    }
   );
 
 }
@@ -678,45 +767,32 @@ const completedTradeShows =
     );
 
 
+/*
+ * EVENT-FIRST MAPPING
+ *
+ * The event record is the source of truth.
+ *
+ * - event.id finds the logo
+ * - event.title supplies accessible text
+ * - event.url supplies the clickable destination
+ * - event.startDate controls ordering
+ *
+ * This guarantees that the logo link always stays synchronized
+ * with the URL stored in events.ts.
+ */
 const tradeShowLogos =
-  tradeShowLogoFiles
+  completedTradeShows
     .map(
-      (file) => {
+      (event) => {
 
-        const logoKey =
-          normalizeTradeShowKey(
-            file
-          );
-
-
-        const event =
-          completedTradeShows.find(
-            (candidate) => {
-
-              const keys =
-                tradeShowMatchKeys(
-                  candidate
-                );
-
-
-              return keys.some(
-                (key) =>
-                  key ===
-                    logoKey ||
-                  key.includes(
-                    logoKey
-                  ) ||
-                  logoKey.includes(
-                    key
-                  )
-              );
-
-            }
+        const file =
+          findLogoForEvent(
+            event
           );
 
 
         if (
-          !event
+          !file
         ) {
 
           return null;
