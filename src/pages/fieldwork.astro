@@ -21,6 +21,10 @@ import {
   getProfessionalMetrics
 } from "../utils/eventMetrics";
 
+import {
+  getEventRecapUrl
+} from "../utils/eventRecaps";
+
 
 const now =
   new Date();
@@ -1916,6 +1920,12 @@ const tradeShowLogoLoop =
                 );
 
 
+              const recapUrl =
+                getEventRecapUrl(
+                  event.id
+                );
+
+
               const eventDate =
                 parseDate(
                   event.startDate
@@ -2306,29 +2316,61 @@ const tradeShowLogoLoop =
                         "
                       >
 
-                        <a
-                          href={event.url}
-                          target="_blank"
-                          rel="noopener noreferrer"
+                        <div
                           class="
-                            inline-flex
+                            flex
+                            flex-wrap
                             items-center
-                            gap-2
-                            text-[10px]
-                            uppercase
-                            tracking-[0.15em]
-                            font-semibold
-                            text-brand-charcoal
-                            hover:text-brand-gold
-                            transition-colors
+                            gap-x-5
+                            gap-y-3
                           "
                         >
-                          View Event
 
-                          <span>
-                            ↗
-                          </span>
-                        </a>
+                          <a
+                            href={event.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="
+                              inline-flex
+                              items-center
+                              gap-2
+                              text-[10px]
+                              uppercase
+                              tracking-[0.15em]
+                              font-semibold
+                              text-brand-charcoal
+                              hover:text-brand-gold
+                              transition-colors
+                            "
+                          >
+                            View Event
+                            <span>↗</span>
+                          </a>
+
+                          {
+                            recapUrl && (
+                              <a
+                                href={recapUrl}
+                                class="
+                                  inline-flex
+                                  items-center
+                                  gap-2
+                                  text-[10px]
+                                  uppercase
+                                  tracking-[0.15em]
+                                  font-semibold
+                                  text-brand-gold
+                                  hover:text-brand-charcoal
+                                  transition-colors
+                                "
+                              >
+                                Read Recap
+                                <span>→</span>
+                              </a>
+                            )
+                          }
+
+                        </div>
 
 
                         {
