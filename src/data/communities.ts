@@ -48,7 +48,7 @@ export const communities: Community[] = [
       "View Upcoming Mixers",
 
     secondaryUrl:
-      "/?type=partnership#contact",
+      "/contact/?reason=event-collaboration",
 
     secondaryLabel:
       "Partner With The Mixer",
@@ -90,7 +90,7 @@ export const communities: Community[] = [
       "View Hardware Meetup",
 
     secondaryUrl:
-      "/?type=partnership#contact",
+      "/contact/?reason=event-collaboration",
 
     secondaryLabel:
       "Partner With The Meetup",
