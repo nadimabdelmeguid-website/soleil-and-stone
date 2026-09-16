@@ -330,8 +330,6 @@ export const eventSeeds: SiteEvent[] = [
   venue: "Harland Brewing Co. - Bay Park",
   city: "San Diego",
 
-  image: "https://YOUR-IMAGE-URL-HERE",
-
   description:
     "Monthly gathering connecting founders, tech professionals, investors and people interested in the growing San Diego startup ecosystem.",
 
