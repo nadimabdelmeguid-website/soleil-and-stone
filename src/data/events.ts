@@ -84,6 +84,7 @@ export type SyncedEventPatch = Partial<
 
 
 export const eventSeeds: SiteEvent[] = [
+
   // =====================================================
   // 2027
   // =====================================================
@@ -320,27 +321,49 @@ export const eventSeeds: SiteEvent[] = [
   },
 
 
- {
-  id: "startup-mixer-sep-2026",
-  title: "San Diego County Startup Mixer Sep-2026",
-  role: "hosted",
-  participation: "hosted",
-  communityId: "startup-mixer",
-  startDate: "2026-09-14",
-  venue: "Harland Brewing Co. - Bay Park",
-  city: "San Diego",
+  {
+    id:
+      "startup-mixer-sep-2026",
 
-  description:
-    "Monthly gathering connecting founders, tech professionals, investors and people interested in the growing San Diego startup ecosystem.",
+    title:
+      "San Diego County Startup Mixer Sep-2026",
 
-  url:
-    "https://eventship.com/event/san-diego-county-startup-mixer-5",
+    role:
+      "hosted",
 
-  buttonLabel: "View Event",
-  typeLabel: "Hosted Community Event",
-  registrations: 127,
-  showOnHome: true
-},
+    participation:
+      "hosted",
+
+    communityId:
+      "startup-mixer",
+
+    startDate:
+      "2026-09-14",
+
+    venue:
+      "Harland Brewing Co. - Bay Park",
+
+    city:
+      "San Diego",
+
+    description:
+      "Monthly gathering connecting founders, tech professionals, investors and people interested in the growing San Diego startup ecosystem.",
+
+    url:
+      "https://eventship.com/event/san-diego-county-startup-mixer-5",
+
+    buttonLabel:
+      "View Event",
+
+    typeLabel:
+      "Hosted Community Event",
+
+    registrations:
+      127,
+
+    showOnHome:
+      true
+  },
 
 
   {
@@ -797,48 +820,48 @@ export const eventSeeds: SiteEvent[] = [
 
 
   {
-  id:
-    "startup-mixer-jun-2026",
+    id:
+      "startup-mixer-jun-2026",
 
-  title:
-    "San Diego County Startup Mixer Jun-2026",
+    title:
+      "San Diego County Startup Mixer Jun-2026",
 
-  role:
-    "hosted",
+    role:
+      "hosted",
 
-  participation:
-    "hosted",
+    participation:
+      "hosted",
 
-  communityId:
-    "startup-mixer",
+    communityId:
+      "startup-mixer",
 
-  startDate:
-    "2026-06-08",
+    startDate:
+      "2026-06-08",
 
-  venue:
-    "Harland Brewing Co. - Bay Park",
+    venue:
+      "Harland Brewing Co. - Bay Park",
 
-  city:
-    "San Diego",
+    city:
+      "San Diego",
 
-  description:
-    "Monthly founder and startup ecosystem gathering focused on networking, potential co-founder connections and sharing what people are building across San Diego.",
+    description:
+      "Monthly founder and startup ecosystem gathering focused on networking, potential co-founder connections and sharing what people are building across San Diego.",
 
-  url:
-    "https://eventship.com/event/san-diego-county-startup-mixer-3",
+    url:
+      "https://eventship.com/event/san-diego-county-startup-mixer-3",
 
-  buttonLabel:
-    "View Event",
+    buttonLabel:
+      "View Event",
 
-  typeLabel:
-    "Hosted Community Event",
+    typeLabel:
+      "Hosted Community Event",
 
-  registrations:
-    73,
+    registrations:
+      73,
 
-  showOnHome:
-    true
-},
+    showOnHome:
+      true
+  },
 
 
 
@@ -1241,43 +1264,46 @@ export const eventSeeds: SiteEvent[] = [
   // =====================================================
   // FEBRUARY 2026
   // =====================================================
-{
-  id:
-    "ieee-deepwater-exploration-feb-2026",
 
-  title:
-    "Cheers Oceaneers! Feb-2026: DWE - DeepWater Exploration",
+  {
+    id:
+      "ieee-deepwater-exploration-feb-2026",
 
-  role:
-    "attending",
+    title:
+      "Cheers Oceaneers! Feb-2026: DWE - DeepWater Exploration",
 
-  participation:
-    "attending",
+    role:
+      "attending",
 
-  startDate:
-    "2026-02-17",
+    participation:
+      "attending",
 
-  venue:
-    "Quantum Brewing",
+    startDate:
+      "2026-02-17",
 
-  city:
-    "San Diego",
+    venue:
+      "Quantum Brewing",
 
-  description:
-    "IEEE San Diego technical meetup focused on deep-water exploration, subsea systems, sensing, communications, autonomy, power systems and ocean-engineering technologies.",
+    city:
+      "San Diego",
 
-  url:
-    "https://www.meetup.com/san-diego-ieee-meetup/events/312492316/",
+    description:
+      "IEEE San Diego technical meetup focused on deep-water exploration, subsea systems, sensing, communications, autonomy, power systems and ocean-engineering technologies.",
 
-  buttonLabel:
-    "View Event",
+    url:
+      "https://www.meetup.com/san-diego-ieee-meetup/events/312492316/",
 
-  typeLabel:
-    "Attending Engineering Event",
+    buttonLabel:
+      "View Event",
 
-  showOnHome:
-    true
-},
+    typeLabel:
+      "Attending Engineering Event",
+
+    showOnHome:
+      true
+  },
+
+
   {
     id:
       "hardware-meetup-feb-2026",
@@ -1349,10 +1375,6 @@ export const eventSeeds: SiteEvent[] = [
           "Dronekyll"
       },
 
-      /*
-       * Ryan Roberts was identified in the
-       * event material you provided.
-       */
       {
         name:
           "Ryan Roberts",
@@ -1903,42 +1925,44 @@ export const eventSeeds: SiteEvent[] = [
   // =====================================================
 
   {
-  id:
-    "startups-in-action-oct-2025",
+    id:
+      "startups-in-action-oct-2025",
 
-  title:
-    "Startups in Action: Present Your Idea. Pitch. Network and More.",
+    title:
+      "Startups in Action: Present Your Idea. Pitch. Network and More.",
 
-  role:
-    "attending",
+    role:
+      "attending",
 
-  participation:
-    "attending",
+    participation:
+      "attending",
 
-  startDate:
-    "2025-10-29",
+    startDate:
+      "2025-10-29",
 
-  venue:
-    "SURF Incubator",
+    venue:
+      "SURF Incubator",
 
-  city:
-    "Seattle",
+    city:
+      "Seattle",
 
-  description:
-    "Startup ecosystem event focused on MVP showcases, pitch practice, product validation, co-founder search, fundraising, peer feedback and founder support.",
+    description:
+      "Startup ecosystem event focused on MVP showcases, pitch practice, product validation, co-founder search, fundraising, peer feedback and founder support.",
 
-  url:
-    "https://www.meetup.com/startups-and-action/events/310961895/",
+    url:
+      "https://www.meetup.com/startups-and-action/events/310961895/",
 
-  buttonLabel:
-    "View Event",
+    buttonLabel:
+      "View Event",
 
-  typeLabel:
-    "Attending Startup Event",
+    typeLabel:
+      "Attending Startup Event",
 
-  showOnHome:
-    true
-},
+    showOnHome:
+      true
+  },
+
+
   {
     id:
       "iacp-2025",
@@ -2112,46 +2136,46 @@ export const eventSeeds: SiteEvent[] = [
   },
 
 
- {
-  id:
-    "cedia-expo-2025",
+  {
+    id:
+      "cedia-expo-2025",
 
-  title:
-    "CEDIA Expo 2025",
+    title:
+      "CEDIA Expo 2025",
 
-  role:
-    "attending",
+    role:
+      "attending",
 
-  participation:
-    "attending",
+    participation:
+      "attending",
 
-  startDate:
-    "2025-09-03",
+    startDate:
+      "2025-09-03",
 
-  endDate:
-    "2025-09-06",
+    endDate:
+      "2025-09-06",
 
-  venue:
-    "Colorado Convention Center",
+    venue:
+      "Colorado Convention Center",
 
-  city:
-    "Denver",
+    city:
+      "Denver",
 
-  description:
-    "Industry engagement across smart-home technology, professional audio, connected devices and product integration.",
+    description:
+      "Industry engagement across smart-home technology, professional audio, connected devices and product integration.",
 
-  url:
-    "https://cediaexpo.com/",
+    url:
+      "https://cediaexpo.com/",
 
-  buttonLabel:
-    "View Show",
+    buttonLabel:
+      "View Show",
 
-  typeLabel:
-    "Attending Trade Show",
+    typeLabel:
+      "Attending Trade Show",
 
-  showOnHome:
-    true
-},
+    showOnHome:
+      true
+  },
 
 
 
@@ -2337,22 +2361,51 @@ export const eventSeeds: SiteEvent[] = [
 
 ];
 
+
+/* =========================================================
+   MERGE HELPERS
+   ========================================================= */
+
 function hasItems<T>(
   value:
     | T[]
     | undefined
 ): value is T[] {
+
   return (
     Array.isArray(
       value
     ) &&
     value.length > 0
   );
+
 }
+
+
+/* =========================================================
+   MERGE SYNCED EVENT DATA
+
+   IMPORTANT:
+
+   eventSeeds / events.ts is authoritative for the title.
+
+   External sync may enrich:
+   - dates
+   - venue
+   - location
+   - image
+   - registrations
+   - speakers
+   - sponsors
+   - organizers
+
+   But it cannot replace the manually curated title.
+   ========================================================= */
 
 function mergeSyncedEvent(
   event: SiteEvent
 ): SiteEvent {
+
   const synced =
     (
       syncedEvents as Record<
@@ -2361,15 +2414,19 @@ function mergeSyncedEvent(
       >
     )[event.id];
 
+
   if (!synced) {
     return event;
   }
 
+
   return {
     ...event,
 
+    /*
+     * MANUAL TITLE ALWAYS WINS.
+     */
     title:
-      synced.title ??
       event.title,
 
     startDate:
@@ -2421,12 +2478,16 @@ function mergeSyncedEvent(
         ? synced.organizers
         : event.organizers,
 
-    // Keep your curated description whenever one exists.
+    /*
+     * Keep your curated description whenever one exists.
+     */
     description:
       event.description ??
       synced.description
   };
+
 }
+
 
 export const events: SiteEvent[] =
   eventSeeds.map(
