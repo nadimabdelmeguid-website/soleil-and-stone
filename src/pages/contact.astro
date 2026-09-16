@@ -20,22 +20,8 @@ const linkedIn =
   "https://www.linkedin.com/in/nadim-abdel-meguid-aa5229108/";
 
 
-/*
- * CONTACT FORM CONNECTION
- * -----------------------
- * Add your form provider endpoint here when ready.
- *
- * Good lightweight options:
- * - Formspree
- * - Basin
- * - Web3Forms
- * - your own serverless endpoint
- *
- * The page is fully styled now. Until an endpoint is added,
- * the form prevents submission and shows a temporary message.
- */
 const contactFormAction =
-  "";
+  "https://script.google.com/macros/s/AKfycbx9gIdfavzV2_Xw1A1PDpDr03ez-4serBZTjXHgsWWVQ905vLwuUVPwQa09JqSx9U8N/exec";
 ---
 
 <BaseLayout
@@ -209,7 +195,7 @@ const contactFormAction =
 
           <form
             id="contact-form"
-            action={contactFormAction || undefined}
+            action={contactFormAction}
             method="post"
             class="
               space-y-6
@@ -407,7 +393,7 @@ const contactFormAction =
                 <input
                   id="contact-link"
                   type="url"
-                  name="link"
+                  name="website"
                   placeholder="https://"
                   class="
                     w-full
@@ -555,6 +541,17 @@ const contactFormAction =
 
 
 
+            <!-- PAGE URL -->
+
+            <input
+              id="contact-page-url"
+              type="hidden"
+              name="pageUrl"
+              value=""
+            />
+
+
+
             <!-- SUBMIT -->
 
             <div
@@ -564,6 +561,7 @@ const contactFormAction =
             >
 
               <button
+                id="contact-submit"
                 type="submit"
                 class="
                   w-full
@@ -581,11 +579,18 @@ const contactFormAction =
                   tracking-[0.16em]
                   font-semibold
                   hover:bg-brand-gold
+                  disabled:opacity-50
+                  disabled:cursor-not-allowed
                   transition-colors
                 "
               >
-                Send Message
-                <span>→</span>
+                <span id="contact-submit-label">
+                  Send Message
+                </span>
+
+                <span>
+                  →
+                </span>
               </button>
 
 
@@ -602,26 +607,18 @@ const contactFormAction =
               </p>
 
 
-              {
-                !contactFormAction && (
-
-                  <p
-                    id="contact-form-status"
-                    class="
-                      hidden
-                      text-[10px]
-                      uppercase
-                      tracking-[0.12em]
-                      text-brand-gold
-                      font-semibold
-                      mt-4
-                    "
-                  >
-                    Form connection coming soon — email me directly for now.
-                  </p>
-
-                )
-              }
+              <p
+                id="contact-form-status"
+                aria-live="polite"
+                class="
+                  hidden
+                  text-[10px]
+                  uppercase
+                  tracking-[0.12em]
+                  font-semibold
+                  mt-4
+                "
+              ></p>
 
             </div>
 
@@ -712,8 +709,6 @@ const contactFormAction =
             </a>
 
 
-
-
             <a
               href={linkedIn}
               target="_blank"
@@ -789,12 +784,7 @@ const contactFormAction =
               "
             >
 
-              <div
-                class="
-                  flex
-                  gap-4
-                "
-              >
+              <div class="flex gap-4">
 
                 <div
                   class="
@@ -830,12 +820,7 @@ const contactFormAction =
               </div>
 
 
-              <div
-                class="
-                  flex
-                  gap-4
-                "
-              >
+              <div class="flex gap-4">
 
                 <div
                   class="
@@ -871,12 +856,7 @@ const contactFormAction =
               </div>
 
 
-              <div
-                class="
-                  flex
-                  gap-4
-                "
-              >
+              <div class="flex gap-4">
 
                 <div
                   class="
@@ -915,8 +895,6 @@ const contactFormAction =
 
           </div>
 
-
-
         </aside>
 
       </div>
@@ -927,103 +905,271 @@ const contactFormAction =
 
 
 
-
   <!-- =====================================================
-       CONTACT REASON PRESELECTION
+       CONTACT FORM BEHAVIOR
 
-       Examples:
-
-       /contact/?reason=hardware-commercialization
-       /contact/?reason=startup-community
-       /contact/?reason=event-collaboration
-       /contact/?reason=venture-founder
-       /contact/?reason=speaking-media
-       /contact/?reason=general
+       - Preselect reason from URL
+       - Add current page URL
+       - Submit to Google Apps Script
+       - Keep visitor on Soleil & Stone
        ===================================================== -->
 
   <script is:inline>
     (() => {
 
-      const params =
-        new URLSearchParams(
-          window.location.search
+      const form =
+        document.getElementById(
+          "contact-form"
         );
-
-
-      const requestedReason =
-        params.get(
-          "reason"
-        );
-
 
       const select =
         document.getElementById(
           "contact-reason"
         );
 
+      const pageUrl =
+        document.getElementById(
+          "contact-page-url"
+        );
+
+      const submitButton =
+        document.getElementById(
+          "contact-submit"
+        );
+
+      const submitLabel =
+        document.getElementById(
+          "contact-submit-label"
+        );
+
+      const status =
+        document.getElementById(
+          "contact-form-status"
+        );
+
+
+      /* ================================================
+         REASON PRESELECTION
+         ================================================ */
+
+      const params =
+        new URLSearchParams(
+          window.location.search
+        );
+
+      const requestedReason =
+        params.get(
+          "reason"
+        );
 
       if (
-        !requestedReason ||
-        !select
+        requestedReason &&
+        select
+      ) {
+
+        const option =
+          Array.from(
+            select.options
+          ).find(
+            (item) =>
+              item.value ===
+              requestedReason
+          );
+
+        if (
+          option
+        ) {
+          select.value =
+            requestedReason;
+        }
+      }
+
+
+      /* ================================================
+         PAGE URL
+         ================================================ */
+
+      if (
+        pageUrl
+      ) {
+        pageUrl.value =
+          window.location.href;
+      }
+
+
+      /* ================================================
+         FORM SUBMISSION
+         ================================================ */
+
+      if (
+        !form
       ) {
         return;
       }
 
 
-      const option =
-        Array.from(
-          select.options
-        ).find(
-          (item) =>
-            item.value ===
-              requestedReason
-        );
+      form.addEventListener(
+        "submit",
+        async (event) => {
+
+          event.preventDefault();
 
 
-      if (
-        option
-      ) {
-        select.value =
-          requestedReason;
-      }
+          if (
+            submitButton
+          ) {
+            submitButton.disabled =
+              true;
+          }
+
+
+          if (
+            submitLabel
+          ) {
+            submitLabel.textContent =
+              "Sending...";
+          }
+
+
+          if (
+            status
+          ) {
+
+            status.textContent =
+              "";
+
+            status.classList.add(
+              "hidden"
+            );
+
+            status.classList.remove(
+              "text-brand-gold",
+              "text-red-600"
+            );
+          }
+
+
+          try {
+
+            const formData =
+              new FormData(
+                form
+              );
+
+
+            await fetch(
+              form.action,
+              {
+                method:
+                  "POST",
+
+                body:
+                  formData,
+
+                mode:
+                  "no-cors"
+              }
+            );
+
+
+            if (
+              status
+            ) {
+
+              status.textContent =
+                "Message sent — thank you. I'll be in touch.";
+
+              status.classList.remove(
+                "hidden"
+              );
+
+              status.classList.add(
+                "text-brand-gold"
+              );
+            }
+
+
+            form.reset();
+
+
+            if (
+              requestedReason &&
+              select
+            ) {
+
+              const option =
+                Array.from(
+                  select.options
+                ).find(
+                  (item) =>
+                    item.value ===
+                    requestedReason
+                );
+
+              if (
+                option
+              ) {
+                select.value =
+                  requestedReason;
+              }
+            }
+
+
+            if (
+              pageUrl
+            ) {
+              pageUrl.value =
+                window.location.href;
+            }
+
+          } catch (
+            error
+          ) {
+
+            console.error(
+              "Contact form submission failed:",
+              error
+            );
+
+
+            if (
+              status
+            ) {
+
+              status.textContent =
+                "Something went wrong. Please try again or email me directly.";
+
+              status.classList.remove(
+                "hidden"
+              );
+
+              status.classList.add(
+                "text-red-600"
+              );
+            }
+
+          } finally {
+
+            if (
+              submitButton
+            ) {
+              submitButton.disabled =
+                false;
+            }
+
+
+            if (
+              submitLabel
+            ) {
+              submitLabel.textContent =
+                "Send Message";
+            }
+          }
+
+        }
+      );
 
     })();
   </script>
-
-
-  {
-    !contactFormAction && (
-
-      <script is:inline>
-        {`
-          (() => {
-            const form =
-              document.getElementById(
-                "contact-form"
-              );
-
-            const status =
-              document.getElementById(
-                "contact-form-status"
-              );
-
-            if (!form) return;
-
-            form.addEventListener(
-              "submit",
-              (event) => {
-                event.preventDefault();
-
-                status?.classList.remove(
-                  "hidden"
-                );
-              }
-            );
-          })();
-        `}
-      </script>
-
-    )
-  }
 
 </BaseLayout>
