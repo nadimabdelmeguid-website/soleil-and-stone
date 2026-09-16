@@ -1,21 +1,28 @@
 ---
 import { site } from "../data/site";
 
-const currentYear = new Date().getFullYear();
-const siteName = site.name ?? "SOLEIL & STONE";
-const siteLocation = site.location ?? "San Diego, CA";
+const currentYear =
+  new Date().getFullYear();
+
+const siteName =
+  site.name ??
+  "SOLEIL & STONE";
+
+const siteLocation =
+  site.location ??
+  "San Diego, CA";
+
 const linkedIn =
   site.linkedin ??
   "https://www.linkedin.com/in/nadim-abdel-meguid-aa5229108/";
-const email =
-  site.email ??
-  "mailto:nadimabdelmeguid@gmail.com";
+
 
 /*
  * Add your newsletter provider form endpoint here later.
  * Examples: Buttondown, Beehiiv, ConvertKit, Mailchimp.
  */
-const newsletterAction = "";
+const newsletterAction =
+  "";
 ---
 
 <footer
@@ -26,6 +33,7 @@ const newsletterAction = "";
     text-white
   "
 >
+
   <div
     class="
       max-w-6xl
@@ -36,6 +44,7 @@ const newsletterAction = "";
       pb-8
     "
   >
+
     <div
       class="
         grid
@@ -46,8 +55,17 @@ const newsletterAction = "";
         lg:gap-8
       "
     >
-      <!-- BRAND -->
-      <div class="lg:col-span-4">
+
+      <!-- ===================================================
+           BRAND
+           =================================================== -->
+
+      <div
+        class="
+          lg:col-span-4
+        "
+      >
+
         <a
           href="/"
           class="
@@ -57,6 +75,7 @@ const newsletterAction = "";
             group
           "
         >
+
           <svg
             class="
               w-11
@@ -69,21 +88,118 @@ const newsletterAction = "";
             xmlns="http://www.w3.org/2000/svg"
             aria-hidden="true"
           >
-            <line x1="50" y1="12" x2="50" y2="19" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-            <line x1="33" y1="18" x2="38" y2="23" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-            <line x1="67" y1="18" x2="62" y2="23" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-            <line x1="22" y1="32" x2="28" y2="34" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-            <line x1="78" y1="32" x2="72" y2="34" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-            <circle cx="50" cy="34" r="13" fill="currentColor"/>
-            <polygon points="50,26 20,56 50,56" fill="#D5C29C"/>
-            <polygon points="50,26 50,56 80,56" fill="currentColor"/>
-            <line x1="50" y1="26" x2="50" y2="56" stroke="#363A40" stroke-width="1"/>
-            <line x1="28" y1="60" x2="72" y2="60" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-            <line x1="36" y1="64" x2="64" y2="64" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
-            <line x1="42" y1="68" x2="58" y2="68" stroke="currentColor" stroke-width="1" stroke-linecap="round"/>
+
+            <line
+              x1="50"
+              y1="12"
+              x2="50"
+              y2="19"
+              stroke="currentColor"
+              stroke-width="1.8"
+              stroke-linecap="round"
+            />
+
+            <line
+              x1="33"
+              y1="18"
+              x2="38"
+              y2="23"
+              stroke="currentColor"
+              stroke-width="1.8"
+              stroke-linecap="round"
+            />
+
+            <line
+              x1="67"
+              y1="18"
+              x2="62"
+              y2="23"
+              stroke="currentColor"
+              stroke-width="1.8"
+              stroke-linecap="round"
+            />
+
+            <line
+              x1="22"
+              y1="32"
+              x2="28"
+              y2="34"
+              stroke="currentColor"
+              stroke-width="1.8"
+              stroke-linecap="round"
+            />
+
+            <line
+              x1="78"
+              y1="32"
+              x2="72"
+              y2="34"
+              stroke="currentColor"
+              stroke-width="1.8"
+              stroke-linecap="round"
+            />
+
+            <circle
+              cx="50"
+              cy="34"
+              r="13"
+              fill="currentColor"
+            />
+
+            <polygon
+              points="50,26 20,56 50,56"
+              fill="#D5C29C"
+            />
+
+            <polygon
+              points="50,26 50,56 80,56"
+              fill="currentColor"
+            />
+
+            <line
+              x1="50"
+              y1="26"
+              x2="50"
+              y2="56"
+              stroke="#363A40"
+              stroke-width="1"
+            />
+
+            <line
+              x1="28"
+              y1="60"
+              x2="72"
+              y2="60"
+              stroke="currentColor"
+              stroke-width="1.5"
+              stroke-linecap="round"
+            />
+
+            <line
+              x1="36"
+              y1="64"
+              x2="64"
+              y2="64"
+              stroke="currentColor"
+              stroke-width="1.2"
+              stroke-linecap="round"
+            />
+
+            <line
+              x1="42"
+              y1="68"
+              x2="58"
+              y2="68"
+              stroke="currentColor"
+              stroke-width="1"
+              stroke-linecap="round"
+            />
+
           </svg>
 
+
           <div>
+
             <div
               class="
                 font-serif
@@ -97,6 +213,7 @@ const newsletterAction = "";
               {siteName}
             </div>
 
+
             <div
               class="
                 mt-1
@@ -108,8 +225,11 @@ const newsletterAction = "";
             >
               {siteLocation}
             </div>
+
           </div>
+
         </a>
+
 
         <p
           class="
@@ -125,40 +245,20 @@ const newsletterAction = "";
           of hardware, commercialization and innovation ecosystems.
         </p>
 
-        <div
-          class="
-            flex
-            flex-wrap
-            items-center
-            gap-x-4
-            gap-y-2
-            mt-5
-            text-xs
-            text-white/70
-          "
-        >
-          <a
-            href={email}
-            class="hover:text-brand-gold transition-colors"
-          >
-            Email
-          </a>
-
-          <span class="text-white/25" aria-hidden="true">·</span>
-
-          <a
-            href={linkedIn}
-            target="_blank"
-            rel="noopener noreferrer"
-            class="hover:text-brand-gold transition-colors"
-          >
-            LinkedIn ↗
-          </a>
-        </div>
       </div>
 
-      <!-- EXPLORE -->
-      <div class="lg:col-span-2">
+
+
+      <!-- ===================================================
+           EXPLORE
+           =================================================== -->
+
+      <div
+        class="
+          lg:col-span-2
+        "
+      >
+
         <h2
           class="
             text-[10px]
@@ -171,6 +271,7 @@ const newsletterAction = "";
           Explore
         </h2>
 
+
         <nav
           class="
             mt-5
@@ -182,23 +283,66 @@ const newsletterAction = "";
             text-white/60
           "
         >
-          <a href="/" class="hover:text-brand-gold transition-colors">
+
+          <a
+            href="/"
+            class="
+              hover:text-brand-gold
+              transition-colors
+            "
+          >
             Home
           </a>
-          <a href="/community/" class="hover:text-brand-gold transition-colors">
+
+
+          <a
+            href="/community/"
+            class="
+              hover:text-brand-gold
+              transition-colors
+            "
+          >
             Community
           </a>
-          <a href="/about/" class="hover:text-brand-gold transition-colors">
+
+
+          <a
+            href="/about/"
+            class="
+              hover:text-brand-gold
+              transition-colors
+            "
+          >
             About
           </a>
-          <a href="/contact/" class="hover:text-brand-gold transition-colors">
+
+
+          <a
+            href="/contact/"
+            class="
+              hover:text-brand-gold
+              transition-colors
+            "
+          >
             Contact
           </a>
+
         </nav>
+
       </div>
 
-      <!-- CONTENT -->
-      <div class="lg:col-span-2">
+
+
+      <!-- ===================================================
+           CONTENT
+           =================================================== -->
+
+      <div
+        class="
+          lg:col-span-2
+        "
+      >
+
         <h2
           class="
             text-[10px]
@@ -211,6 +355,7 @@ const newsletterAction = "";
           Content
         </h2>
 
+
         <nav
           class="
             mt-5
@@ -222,20 +367,55 @@ const newsletterAction = "";
             text-white/60
           "
         >
-          <a href="/field-notes/" class="hover:text-brand-gold transition-colors">
+
+          <a
+            href="/field-notes/"
+            class="
+              hover:text-brand-gold
+              transition-colors
+            "
+          >
             Field Notes
           </a>
-          <a href="/fieldwork/" class="hover:text-brand-gold transition-colors">
+
+
+          <a
+            href="/fieldwork/"
+            class="
+              hover:text-brand-gold
+              transition-colors
+            "
+          >
             Fieldwork
           </a>
-          <a href="/event-recaps/" class="hover:text-brand-gold transition-colors">
+
+
+          <a
+            href="/event-recaps/"
+            class="
+              hover:text-brand-gold
+              transition-colors
+            "
+          >
             Event Recaps
           </a>
+
         </nav>
+
       </div>
 
-      <!-- NEWSLETTER -->
-      <div class="lg:col-span-4">
+
+
+      <!-- ===================================================
+           NEWSLETTER
+           =================================================== -->
+
+      <div
+        class="
+          lg:col-span-4
+        "
+      >
+
         <span
           class="
             text-[10px]
@@ -248,6 +428,7 @@ const newsletterAction = "";
           Newsletter
         </span>
 
+
         <h2
           class="
             font-serif
@@ -258,6 +439,7 @@ const newsletterAction = "";
         >
           Notes From The Field
         </h2>
+
 
         <p
           class="
@@ -273,9 +455,13 @@ const newsletterAction = "";
           communities and what I’m learning in the field.
         </p>
 
+
         <form
           id="footer-newsletter-form"
-          action={newsletterAction || undefined}
+          action={
+            newsletterAction ||
+            undefined
+          }
           method="post"
           class="
             mt-6
@@ -284,9 +470,14 @@ const newsletterAction = "";
             max-w-md
           "
         >
-          <label for="footer-newsletter-email" class="sr-only">
+
+          <label
+            for="footer-newsletter-email"
+            class="sr-only"
+          >
             Email address
           </label>
+
 
           <input
             id="footer-newsletter-email"
@@ -312,6 +503,7 @@ const newsletterAction = "";
             "
           />
 
+
           <button
             type="submit"
             class="
@@ -331,13 +523,19 @@ const newsletterAction = "";
           >
             Subscribe
           </button>
+
         </form>
 
-
       </div>
+
     </div>
 
-    <!-- BOTTOM BAR -->
+
+
+    <!-- =====================================================
+         BOTTOM BAR
+         ===================================================== -->
+
     <div
       class="
         mt-12
@@ -353,9 +551,17 @@ const newsletterAction = "";
         gap-4
       "
     >
-      <p class="text-[10px] font-light text-white/40">
+
+      <p
+        class="
+          text-[10px]
+          font-light
+          text-white/40
+        "
+      >
         © {currentYear} Soleil & Stone. All rights reserved.
       </p>
+
 
       <a
         href={linkedIn}
@@ -377,49 +583,86 @@ const newsletterAction = "";
           transition-colors
         "
       >
+
         <svg
-          class="w-4 h-4 fill-current"
+          class="
+            w-4
+            h-4
+            fill-current
+          "
           viewBox="0 0 24 24"
           aria-hidden="true"
         >
-          <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.46 10.9v8.37H9.25V10.9H6.46M7.86 6.72a1.47 1.47 0 1 0 0 2.94 1.47 1.47 0 0 0 0-2.94Z"/>
+
+          <path
+            d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.46 10.9v8.37H9.25V10.9H6.46M7.86 6.72a1.47 1.47 0 1 0 0 2.94 1.47 1.47 0 0 0 0-2.94Z"
+          />
+
         </svg>
+
       </a>
+
     </div>
+
   </div>
+
 </footer>
+
 
 {
   !newsletterAction && (
+
     <script is:inline>
       {`
         (() => {
+
           const form =
-            document.getElementById("footer-newsletter-form");
+            document.getElementById(
+              "footer-newsletter-form"
+            );
 
           if (!form) return;
 
-          form.addEventListener("submit", (event) => {
-            event.preventDefault();
 
-            const button =
-              form.querySelector('button[type="submit"]');
+          form.addEventListener(
+            "submit",
+            (event) => {
 
-            if (!button) return;
+              event.preventDefault();
 
-            const originalText =
-              button.textContent;
 
-            button.textContent =
-              "Coming Soon";
+              const button =
+                form.querySelector(
+                  'button[type="submit"]'
+                );
 
-            window.setTimeout(() => {
+              if (!button) return;
+
+
+              const originalText =
+                button.textContent;
+
+
               button.textContent =
-                originalText;
-            }, 1600);
-          });
+                "Coming Soon";
+
+
+              window.setTimeout(
+                () => {
+
+                  button.textContent =
+                    originalText;
+
+                },
+                1600
+              );
+
+            }
+          );
+
         })();
       `}
     </script>
+
   )
 }
