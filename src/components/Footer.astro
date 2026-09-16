@@ -125,19 +125,36 @@ const newsletterAction = "";
           of hardware, commercialization and innovation ecosystems.
         </p>
 
-        <a
-          href={email}
+        <div
           class="
-            inline-block
+            flex
+            flex-wrap
+            items-center
+            gap-x-4
+            gap-y-2
             mt-5
             text-xs
             text-white/70
-            hover:text-brand-gold
-            transition-colors
           "
         >
-          Get in touch →
-        </a>
+          <a
+            href={email}
+            class="hover:text-brand-gold transition-colors"
+          >
+            Email
+          </a>
+
+          <span class="text-white/25" aria-hidden="true">·</span>
+
+          <a
+            href={linkedIn}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="hover:text-brand-gold transition-colors"
+          >
+            LinkedIn ↗
+          </a>
+        </div>
       </div>
 
       <!-- EXPLORE -->
@@ -165,22 +182,22 @@ const newsletterAction = "";
             text-white/60
           "
         >
+          <a href="/" class="hover:text-brand-gold transition-colors">
+            Home
+          </a>
           <a href="/community/" class="hover:text-brand-gold transition-colors">
             Community
-          </a>
-          <a href="/field-notes/" class="hover:text-brand-gold transition-colors">
-            Field Notes
-          </a>
-          <a href="/fieldwork/" class="hover:text-brand-gold transition-colors">
-            Industry Fieldwork
           </a>
           <a href="/about/" class="hover:text-brand-gold transition-colors">
             About
           </a>
+          <a href="/contact/" class="hover:text-brand-gold transition-colors">
+            Contact
+          </a>
         </nav>
       </div>
 
-      <!-- CONNECT -->
+      <!-- CONTENT -->
       <div class="lg:col-span-2">
         <h2
           class="
@@ -191,10 +208,10 @@ const newsletterAction = "";
             text-white
           "
         >
-          Connect
+          Content
         </h2>
 
-        <div
+        <nav
           class="
             mt-5
             flex
@@ -205,23 +222,16 @@ const newsletterAction = "";
             text-white/60
           "
         >
-          <a href="/#contact" class="hover:text-brand-gold transition-colors">
-            Contact
+          <a href="/field-notes/" class="hover:text-brand-gold transition-colors">
+            Field Notes
           </a>
-
-          <a
-            href={linkedIn}
-            target="_blank"
-            rel="noopener noreferrer"
-            class="hover:text-brand-gold transition-colors"
-          >
-            LinkedIn ↗
+          <a href="/fieldwork/" class="hover:text-brand-gold transition-colors">
+            Fieldwork
           </a>
-
-          <a href={email} class="hover:text-brand-gold transition-colors">
-            Email
+          <a href="/event-recaps/" class="hover:text-brand-gold transition-colors">
+            Event Recaps
           </a>
-        </div>
+        </nav>
       </div>
 
       <!-- NEWSLETTER -->
@@ -323,20 +333,7 @@ const newsletterAction = "";
           </button>
         </form>
 
-        {
-          !newsletterAction && (
-            <p
-              class="
-                mt-2
-                text-[9px]
-                leading-relaxed
-                text-white/30
-              "
-            >
-              Signup connection coming soon.
-            </p>
-          )
-        }
+
       </div>
     </div>
 
