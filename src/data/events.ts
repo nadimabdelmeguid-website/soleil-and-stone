@@ -192,7 +192,7 @@ export const eventSeeds: SiteEvent[] = [
       "san-diego-startup-week-2026",
 
     title:
-      "San Diego Startup Week",
+      "San Diego Startup Week 2026",
 
     role:
       "attending",
@@ -236,7 +236,7 @@ export const eventSeeds: SiteEvent[] = [
       "la-tech-week-2026",
 
     title:
-      "LA Tech Week",
+      "LA Tech Week 2026",
 
     role:
       "attending",
@@ -283,7 +283,7 @@ export const eventSeeds: SiteEvent[] = [
       "embedded-world-na-2026",
 
     title:
-      "embedded world North America",
+      "Embedded World North America 2026",
 
     role:
       "attending",
@@ -322,7 +322,7 @@ export const eventSeeds: SiteEvent[] = [
 
  {
   id: "startup-mixer-sep-2026",
-  title: "San Diego County Startup Mixer",
+  title: "San Diego County Startup Mixer Sep-2026",
   role: "hosted",
   participation: "hosted",
   communityId: "startup-mixer",
@@ -387,7 +387,7 @@ export const eventSeeds: SiteEvent[] = [
       "vibecraft-sep-2026",
 
     title:
-      "VibeCraft",
+      "VibeCraft Sep-2026",
 
     role:
       "attending",
@@ -464,7 +464,7 @@ export const eventSeeds: SiteEvent[] = [
       "howl-house-aug-2026",
 
     title:
-      "Howl House | End of Summer Party",
+      "Howl House | End of Summer Party 2026",
 
     role:
       "attending",
@@ -536,7 +536,7 @@ export const eventSeeds: SiteEvent[] = [
       "startup-mixer-aug-2026",
 
     title:
-      "San Diego County Startup Mixer",
+      "San Diego County Startup Mixer Aug-2026",
 
     role:
       "hosted",
@@ -586,7 +586,7 @@ export const eventSeeds: SiteEvent[] = [
       "startup-mixer-jul-2026",
 
     title:
-      "San Diego County Startup Mixer",
+      "San Diego County Startup Mixer Jul-2026",
 
     role:
       "hosted",
@@ -631,7 +631,7 @@ export const eventSeeds: SiteEvent[] = [
       "founder-fridays-jul-2026",
 
     title:
-      "Founder Fridays",
+      "Founder Fridays Jul-2026",
 
     role:
       "attending",
@@ -801,7 +801,7 @@ export const eventSeeds: SiteEvent[] = [
     "startup-mixer-jun-2026",
 
   title:
-    "San Diego County Startup Mixer",
+    "San Diego County Startup Mixer Jun-2026",
 
   role:
     "hosted",
@@ -851,7 +851,7 @@ export const eventSeeds: SiteEvent[] = [
       "startup-mixer-may-2026",
 
     title:
-      "San Diego County Startup Mixer",
+      "San Diego County Startup Mixer May-2026",
 
     role:
       "hosted",
@@ -985,7 +985,7 @@ export const eventSeeds: SiteEvent[] = [
       "startup-mixer-apr-2026",
 
     title:
-      "San Diego County Startup Mixer",
+      "San Diego County Startup Mixer Apr-2026",
 
     role:
       "hosted",
@@ -1080,7 +1080,7 @@ export const eventSeeds: SiteEvent[] = [
       "medtech-mixer-mar-2026",
 
     title:
-      "San Diego Medtech Mixer",
+      "San Diego Medtech Mixer Mar-2026",
 
     role:
       "attending",
@@ -1161,7 +1161,7 @@ export const eventSeeds: SiteEvent[] = [
       "north-county-startup-mixer-mar-2026",
 
     title:
-      "North County SD Startup Mixer",
+      "North County SD Startup Mixer Mar-2026",
 
     role:
       "attending",
@@ -1197,7 +1197,7 @@ export const eventSeeds: SiteEvent[] = [
       "startup-mixer-mar-2026",
 
     title:
-      "San Diego County Startup Mixer",
+      "San Diego County Startup Mixer Mar-2026",
 
     role:
       "hosted",
@@ -1246,7 +1246,7 @@ export const eventSeeds: SiteEvent[] = [
     "ieee-deepwater-exploration-feb-2026",
 
   title:
-    "Cheers Oceaneers! Feb: DWE - DeepWater Exploration",
+    "Cheers Oceaneers! Feb-2026: DWE - DeepWater Exploration",
 
   role:
     "attending",
@@ -1414,7 +1414,7 @@ export const eventSeeds: SiteEvent[] = [
       "north-county-startup-mixer-feb-2026",
 
     title:
-      "North County SD Startup Mixer",
+      "North County SD Startup Mixer Feb-2026",
 
     role:
       "attending",
@@ -1495,7 +1495,7 @@ export const eventSeeds: SiteEvent[] = [
       "founder-fridays-feb-2026",
 
     title:
-      "Founder Fridays",
+      "Founder Fridays Feb-2026",
 
     role:
       "attending",
@@ -1575,7 +1575,7 @@ export const eventSeeds: SiteEvent[] = [
       "north-county-startup-mixer-jan-2026",
 
     title:
-      "North County SD Startup Mixer",
+      "North County SD Startup Mixer Jan-2026",
 
     role:
       "attending",
@@ -1656,7 +1656,7 @@ export const eventSeeds: SiteEvent[] = [
       "medtech-mixer-jan-2026",
 
     title:
-      "San Diego Medtech Mixer",
+      "San Diego Medtech Mixer Jan-2026",
 
     role:
       "attending",
@@ -1866,7 +1866,7 @@ export const eventSeeds: SiteEvent[] = [
       "medtech-mixer-nov-2025",
 
     title:
-      "San Diego Medtech Mixer",
+      "San Diego Medtech Mixer Nov-2025",
 
     role:
       "attending",
@@ -1944,7 +1944,7 @@ export const eventSeeds: SiteEvent[] = [
       "iacp-2025",
 
     title:
-      "IACP 2025 Annual Conference and Exposition",
+      "IACP 2025",
 
     role:
       "attending",
@@ -2164,7 +2164,7 @@ export const eventSeeds: SiteEvent[] = [
       "north-county-startup-mixer-jul-2025",
 
     title:
-      "North County SD Startup Mixer",
+      "North County SD Startup Mixer Jul-2025",
 
     role:
       "attending",
