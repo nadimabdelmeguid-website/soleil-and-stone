@@ -1964,7 +1964,7 @@ const tradeShowLogoLoop =
                       list-none
                       cursor-pointer
                       px-5
-                      py-5
+                      py-4
                       sm:px-6
                       flex
                       flex-col
@@ -1975,9 +1975,11 @@ const tradeShowLogoLoop =
                     "
                   >
 
+                    <!-- ROLE + DATE -->
+
                     <div
                       class="
-                        sm:w-[165px]
+                        sm:w-[145px]
                         sm:shrink-0
                       "
                     >
@@ -2009,10 +2011,46 @@ const tradeShowLogoLoop =
 
 
 
+                    <!-- EVENT THUMBNAIL -->
+
+                    {
+                      event.image && (
+
+                        <div
+                          class="
+                            fieldwork-thumb
+                            sm:shrink-0
+                          "
+                        >
+
+                          <img
+                            src={event.image}
+                            alt={`${event.title} event`}
+                            loading="lazy"
+                            decoding="async"
+                            referrerpolicy="no-referrer"
+                            class="
+                              block
+                              w-full
+                              h-full
+                              object-cover
+                            "
+                          />
+
+                        </div>
+
+                      )
+                    }
+
+
+
+                    <!-- TITLE + CITY -->
+
                     <div
                       class="
                         flex-1
                         min-w-0
+                        sm:pl-1
                       "
                     >
 
@@ -2049,37 +2087,16 @@ const tradeShowLogoLoop =
 
 
 
+                    <!-- EXPAND -->
+
                     <div
                       class="
                         flex
                         items-center
-                        gap-4
                         sm:justify-end
-                        sm:min-w-[150px]
+                        sm:min-w-[24px]
                       "
                     >
-
-                      {
-                        typeof event.registrations ===
-                          "number" && (
-
-                          <span
-                            class="
-                              text-[9px]
-                              uppercase
-                              tracking-[0.12em]
-                              text-brand-gold
-                              font-semibold
-                            "
-                          >
-                            {event.registrations}
-                            {" "}
-                            Registrations
-                          </span>
-
-                        )
-                      }
-
 
                       <span
                         class="
@@ -2574,6 +2591,23 @@ const tradeShowLogoLoop =
 
 
   <style>
+
+    .fieldwork-thumb {
+      width: 112px;
+      height: 70px;
+      overflow: hidden;
+      background: var(--brand-cream);
+      border: 1px solid var(--brand-border);
+    }
+
+
+    @media (max-width: 639px) {
+      .fieldwork-thumb {
+        width: 100%;
+        height: 150px;
+      }
+    }
+
 
     .trade-show-marquee {
       width: 100%;
