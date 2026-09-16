@@ -58,6 +58,24 @@ const event =
 
 
 /*
+ * If the event belongs to one of the communities,
+ * link directly to that community's section.
+ *
+ * Example:
+ *
+ * communityId: "startup-mixer"
+ *
+ * becomes:
+ *
+ * /community/#startup-mixer
+ */
+const relatedCommunityUrl =
+  event?.communityId
+    ? `/community/#${event.communityId}`
+    : null;
+
+
+/*
  * =========================================================
  * AUTOMATIC IMAGE DISCOVERY
  * =========================================================
@@ -66,6 +84,13 @@ const event =
 const images =
   await getEventRecapImages(
     recap.slug
+  );
+
+
+const hasImages =
+  Boolean(
+    images.cover ||
+    images.gallery.length > 0
   );
 
 
@@ -234,8 +259,9 @@ function formatDate(
                 border-brand-border
                 flex
                 flex-wrap
+                items-center
                 gap-x-6
-                gap-y-2
+                gap-y-3
                 text-xs
                 text-brand-slate
               "
@@ -262,20 +288,22 @@ function formatDate(
 
 
               {
-                event.url && (
+                relatedCommunityUrl && (
 
                   <a
-                    href={event.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
+                    href={relatedCommunityUrl}
                     class="
+                      inline-flex
+                      items-center
+                      gap-2
                       text-brand-charcoal
                       font-semibold
                       hover:text-brand-gold
                       transition-colors
                     "
                   >
-                    View Original Event ↗
+                    View The Startup Mixer
+                    <span>→</span>
                   </a>
 
                 )
@@ -586,14 +614,12 @@ function formatDate(
 
 
     <!-- =====================================================
-         PHOTO CREDIT
+         PHOTOGRAPHER SHOUTOUT
          ===================================================== -->
 
     {
-      (
-        images.cover ||
-        images.gallery.length > 0
-      ) && (
+      hasImages &&
+      recap.photoCredit && (
 
         <section
           class="
@@ -601,19 +627,122 @@ function formatDate(
             w-full
             mx-auto
             px-6
-            pb-12
+            pb-14
           "
         >
 
-          <p
+          <div
             class="
-              text-[10px]
-              text-brand-slate/60
-              font-light
+              border-t
+              border-brand-border
+              pt-7
+              flex
+              flex-col
+              sm:flex-row
+              sm:items-center
+              sm:justify-between
+              gap-3
             "
           >
-            Event photography by Ryan Berg.
-          </p>
+
+            <div>
+
+              <span
+                class="
+                  block
+                  text-[9px]
+                  uppercase
+                  tracking-[0.16em]
+                  text-brand-gold
+                  font-semibold
+                "
+              >
+                {
+                  recap.photoCredit.label ??
+                  "Photography"
+                }
+              </span>
+
+
+              <p
+                class="
+                  text-sm
+                  text-brand-slate
+                  font-light
+                  mt-2
+                "
+              >
+                Shoutout to
+                {" "}
+
+                {
+                  recap.photoCredit.url
+                    ? (
+
+                      <a
+                        href={recap.photoCredit.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="
+                          text-brand-charcoal
+                          font-semibold
+                          hover:text-brand-gold
+                          transition-colors
+                        "
+                      >
+                        {recap.photoCredit.name}
+                      </a>
+
+                    )
+                    : (
+
+                      <span
+                        class="
+                          text-brand-charcoal
+                          font-semibold
+                        "
+                      >
+                        {recap.photoCredit.name}
+                      </span>
+
+                    )
+                }
+
+                {" "}
+                for capturing the night.
+              </p>
+
+            </div>
+
+
+            {
+              recap.photoCredit.url && (
+
+                <a
+                  href={recap.photoCredit.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="
+                    inline-flex
+                    items-center
+                    gap-2
+                    text-[10px]
+                    uppercase
+                    tracking-[0.14em]
+                    text-brand-charcoal
+                    font-semibold
+                    hover:text-brand-gold
+                    transition-colors
+                  "
+                >
+                  bergitup.com
+                  <span>↗</span>
+                </a>
+
+              )
+            }
+
+          </div>
 
         </section>
 
