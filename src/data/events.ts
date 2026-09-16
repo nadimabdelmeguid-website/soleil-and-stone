@@ -320,49 +320,29 @@ export const eventSeeds: SiteEvent[] = [
   },
 
 
-  {
-    id:
-      "startup-mixer-sep-2026",
+ {
+  id: "startup-mixer-sep-2026",
+  title: "San Diego County Startup Mixer",
+  role: "hosted",
+  participation: "hosted",
+  communityId: "startup-mixer",
+  startDate: "2026-09-14",
+  venue: "Harland Brewing Co. - Bay Park",
+  city: "San Diego",
 
-    title:
-      "San Diego County Startup Mixer",
+  image: "https://YOUR-IMAGE-URL-HERE",
 
-    role:
-      "hosted",
+  description:
+    "Monthly gathering connecting founders, tech professionals, investors and people interested in the growing San Diego startup ecosystem.",
 
-    participation:
-      "hosted",
+  url:
+    "https://eventship.com/event/san-diego-county-startup-mixer-5",
 
-    communityId:
-      "startup-mixer",
-
-    startDate:
-      "2026-09-14",
-
-    venue:
-      "Harland Brewing Co. - Bay Park",
-
-    city:
-      "San Diego",
-
-    description:
-      "Monthly gathering connecting founders, tech professionals, investors and people interested in the growing San Diego startup ecosystem.",
-
-    url:
-      "https://eventship.com/event/san-diego-county-startup-mixer-5",
-
-    buttonLabel:
-      "View Event",
-
-    typeLabel:
-      "Hosted Community Event",
-
-     registrations:
-    127,
-
-    showOnHome:
-      true
-  },
+  buttonLabel: "View Event",
+  typeLabel: "Hosted Community Event",
+  registrations: 127,
+  showOnHome: true
+},
 
 
   {
