@@ -26,9 +26,6 @@ import {
 
 /* =========================================================
    COMMUNITY MEMBERSHIPS
-
-   Membership figures may represent a growing community
-   size / lower-bound estimate, so the UI can still show "+".
    ========================================================= */
 
 const communityMemberships =
@@ -74,20 +71,14 @@ const communitySpeakerCount =
    Folder:
    public/hw-meetups-logos/
 
-   Recommended filename format:
+   Preferred filename format:
 
    Company Name__domain.com.png
 
-   Examples:
+   Example:
    SEACOMP__seacomp.com.png
-   Dip Studio__dip.studio.svg
-   Velavu__velavu.com.webp
 
-   Everything before "__" becomes the company name.
-   Everything after "__" becomes the website domain.
-
-   Adding/removing a file from the folder automatically
-   updates the Community page on the next build.
+   This lets the website URL be generated automatically.
    ========================================================= */
 
 const hardwareLogoDirectory =
@@ -236,15 +227,24 @@ try {
 
 } catch {
 
-  /*
-   * Keep the page build-safe if the directory
-   * has not been created yet.
-   */
-
   hardwareLogos =
     [];
 
 }
+
+
+/* =========================================================
+   DUPLICATE LOGOS FOR SEAMLESS MARQUEE
+
+   Two identical groups are rendered next to each other.
+   CSS moves the track from right to left continuously.
+   ========================================================= */
+
+const hardwareLogoGroups =
+  [
+    hardwareLogos,
+    hardwareLogos
+  ];
 ---
 
 <BaseLayout
@@ -253,7 +253,7 @@ try {
 >
 
   <!-- =====================================================
-       HERO — WHITE
+       HERO
        ===================================================== -->
 
   <section
@@ -333,7 +333,7 @@ try {
 
 
   <!-- =====================================================
-       COMMUNITY TRACK RECORD — CREAM
+       COMMUNITY TRACK RECORD
        ===================================================== -->
 
   <section
@@ -353,8 +353,6 @@ try {
         py-12
       "
     >
-
-      <!-- SECTION HEADER -->
 
       <div
         class="
@@ -391,10 +389,6 @@ try {
 
 
 
-      <!-- =================================================
-           COMMUNITY METRICS
-           ================================================= -->
-
       <div
         class="
           grid
@@ -406,8 +400,6 @@ try {
           border-brand-border
         "
       >
-
-        <!-- COMMUNITY MEMBERSHIPS -->
 
         <div
           class="
@@ -444,8 +436,6 @@ try {
 
 
 
-        <!-- COMMUNITY EVENTS LED -->
-
         <div
           class="
             bg-white
@@ -481,8 +471,6 @@ try {
 
 
 
-        <!-- COMMUNITY REGISTRATIONS -->
-
         <div
           class="
             bg-white
@@ -517,8 +505,6 @@ try {
         </div>
 
 
-
-        <!-- INDUSTRY SPEAKERS -->
 
         <div
           class="
@@ -583,7 +569,7 @@ try {
               0 && (
 
               <!-- =========================================
-                   HARDWARE MEETUP ORGANIZATIONS
+                   HARDWARE MEETUP CONTRIBUTORS
                    ========================================= -->
 
               <section
@@ -591,6 +577,7 @@ try {
                   bg-brand-cream
                   border-b
                   border-brand-border
+                  overflow-hidden
                 "
               >
 
@@ -600,7 +587,7 @@ try {
                     w-full
                     mx-auto
                     px-6
-                    pt-2
+                    pt-4
                     pb-16
                   "
                 >
@@ -609,8 +596,7 @@ try {
 
                   <div
                     class="
-                      max-w-3xl
-                      mb-8
+                      mb-9
                     "
                   >
 
@@ -645,10 +631,11 @@ try {
                     <p
                       class="
                         text-sm
+                        sm:text-base
                         text-brand-slate
                         leading-relaxed
                         font-light
-                        max-w-2xl
+                        max-w-3xl
                       "
                     >
                       Organizations represented by speakers
@@ -659,148 +646,152 @@ try {
                   </div>
 
 
-                  <!-- LOGO GRID -->
+                  <!-- =====================================
+                       LOGO MARQUEE
+                       ===================================== -->
 
                   <div
                     class="
-                      grid
-                      grid-cols-2
-                      sm:grid-cols-3
-                      md:grid-cols-4
-                      lg:grid-cols-5
-                      gap-px
-                      bg-brand-border
-                      border
+                      hw-logo-marquee
+                      relative
+                      overflow-hidden
+                      border-y
                       border-brand-border
+                      py-7
                     "
                   >
 
-                    {
-                      hardwareLogos.map(
-                        (logo) => (
+                    <!-- LEFT FADE -->
 
-                          logo.url ? (
-
-                            <a
-                              href={logo.url}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              aria-label={`Visit ${logo.name}`}
-                              title={logo.name}
-                              class="
-                                group
-                                relative
-                                flex
-                                items-center
-                                justify-center
-                                min-h-[118px]
-                                bg-white
-                                px-6
-                                py-7
-                                transition-colors
-                                duration-200
-                                hover:bg-brand-cream
-                                focus:outline-none
-                                focus-visible:ring-2
-                                focus-visible:ring-brand-gold
-                                focus-visible:ring-inset
-                              "
-                            >
-
-                              <img
-                                src={logo.image}
-                                alt={`${logo.name} logo`}
-                                loading="lazy"
-                                decoding="async"
-                                class="
-                                  block
-                                  max-w-full
-                                  max-h-12
-                                  w-auto
-                                  h-auto
-                                  object-contain
-                                  grayscale
-                                  opacity-70
-                                  transition-all
-                                  duration-300
-                                  group-hover:grayscale-0
-                                  group-hover:opacity-100
-                                  group-hover:scale-[1.03]
-                                "
-                              />
+                    <div
+                      class="
+                        hw-logo-fade
+                        hw-logo-fade-left
+                      "
+                    >
+                    </div>
 
 
-                              <span
-                                class="
-                                  absolute
-                                  top-3
-                                  right-3
-                                  text-[10px]
-                                  text-brand-gold
-                                  opacity-0
-                                  transition-opacity
-                                  duration-200
-                                  group-hover:opacity-100
-                                "
-                                aria-hidden="true"
-                              >
-                                ↗
-                              </span>
+                    <!-- RIGHT FADE -->
 
-                            </a>
+                    <div
+                      class="
+                        hw-logo-fade
+                        hw-logo-fade-right
+                      "
+                    >
+                    </div>
 
-                          ) : (
+
+                    <!-- MOVING TRACK -->
+
+                    <div
+                      class="
+                        hw-logo-track
+                      "
+                    >
+
+                      {
+                        hardwareLogoGroups.map(
+                          (
+                            group,
+                            groupIndex
+                          ) => (
 
                             <div
-                              title={logo.name}
                               class="
-                                flex
-                                items-center
-                                justify-center
-                                min-h-[118px]
-                                bg-white
-                                px-6
-                                py-7
+                                hw-logo-group
                               "
+                              aria-hidden={
+                                groupIndex === 1
+                                  ? "true"
+                                  : undefined
+                              }
                             >
 
-                              <img
-                                src={logo.image}
-                                alt={`${logo.name} logo`}
-                                loading="lazy"
-                                decoding="async"
-                                class="
-                                  block
-                                  max-w-full
-                                  max-h-12
-                                  w-auto
-                                  h-auto
-                                  object-contain
-                                  grayscale
-                                  opacity-70
-                                "
-                              />
+                              {
+                                group.map(
+                                  (logo) => (
+
+                                    logo.url ? (
+
+                                      <a
+                                        href={logo.url}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        aria-label={`Visit ${logo.name}`}
+                                        title={logo.name}
+                                        class="
+                                          hw-logo-link
+                                          group
+                                        "
+                                      >
+
+                                        <img
+                                          src={logo.image}
+                                          alt={
+                                            groupIndex === 0
+                                              ? `${logo.name} logo`
+                                              : ""
+                                          }
+                                          loading="lazy"
+                                          decoding="async"
+                                          class="
+                                            hw-logo-image
+                                          "
+                                        />
+
+                                      </a>
+
+                                    ) : (
+
+                                      <div
+                                        title={logo.name}
+                                        class="
+                                          hw-logo-link
+                                        "
+                                      >
+
+                                        <img
+                                          src={logo.image}
+                                          alt={
+                                            groupIndex === 0
+                                              ? `${logo.name} logo`
+                                              : ""
+                                          }
+                                          loading="lazy"
+                                          decoding="async"
+                                          class="
+                                            hw-logo-image
+                                          "
+                                        />
+
+                                      </div>
+
+                                    )
+
+                                  )
+                                )
+                              }
 
                             </div>
 
                           )
-
                         )
-                      )
-                    }
+                      }
+
+                    </div>
 
                   </div>
 
-
-                  <!-- SMALL NOTE -->
 
                   <p
                     class="
                       mt-4
                       text-[10px]
                       uppercase
-                      tracking-[0.14em]
-                      text-brand-slate/70
+                      tracking-[0.15em]
+                      text-brand-slate
                     "
                   >
                     Select a logo to visit the organization's website.
@@ -822,7 +813,7 @@ try {
 
 
   <!-- =====================================================
-       CTA — WHITE
+       CTA
        ===================================================== -->
 
   <section
@@ -915,5 +906,342 @@ try {
     </div>
 
   </section>
+
+
+
+  <!-- =====================================================
+       HARDWARE LOGO MARQUEE STYLES
+       ===================================================== -->
+
+  <style>
+
+    .hw-logo-marquee {
+      width:
+        100%;
+    }
+
+
+    /*
+     * Continuous track moving RIGHT → LEFT.
+     */
+
+    .hw-logo-track {
+      display:
+        flex;
+
+      width:
+        max-content;
+
+      will-change:
+        transform;
+
+      animation:
+        hw-logo-scroll
+        36s
+        linear
+        infinite;
+    }
+
+
+    /*
+     * Pause while someone is interacting with a logo.
+     */
+
+    .hw-logo-marquee:hover
+    .hw-logo-track {
+      animation-play-state:
+        paused;
+    }
+
+
+    .hw-logo-group {
+      display:
+        flex;
+
+      align-items:
+        center;
+
+      flex-shrink:
+        0;
+
+      gap:
+        54px;
+
+      padding-right:
+        54px;
+    }
+
+
+    /*
+     * Every organization receives exactly the same
+     * available visual area.
+     *
+     * There is deliberately NO card, NO border and
+     * NO white background around individual logos.
+     */
+
+    .hw-logo-link {
+      width:
+        170px;
+
+      height:
+        72px;
+
+      flex:
+        0 0 170px;
+
+      display:
+        flex;
+
+      align-items:
+        center;
+
+      justify-content:
+        center;
+
+      padding:
+        8px 10px;
+
+      background:
+        transparent;
+
+      border:
+        0;
+
+      text-decoration:
+        none;
+    }
+
+
+    .hw-logo-image {
+      display:
+        block;
+
+      width:
+        100%;
+
+      height:
+        100%;
+
+      max-width:
+        150px;
+
+      max-height:
+        54px;
+
+      object-fit:
+        contain;
+
+      object-position:
+        center;
+
+
+      /*
+       * SAME LOGO FILTER AS FIELDWORK.
+       *
+       * This normalizes differently colored source logos
+       * into the same warm muted tone.
+       */
+
+      filter:
+        brightness(0)
+        saturate(100%)
+        invert(69%)
+        sepia(18%)
+        saturate(560%)
+        hue-rotate(4deg)
+        brightness(88%)
+        contrast(88%);
+
+
+      opacity:
+        1;
+
+
+      transition:
+        opacity 180ms ease,
+        transform 180ms ease;
+    }
+
+
+    .hw-logo-link:hover
+    .hw-logo-image {
+      opacity:
+        0.78;
+
+      transform:
+        scale(1.04);
+    }
+
+
+    /*
+     * Soft cream fades on both sides.
+     */
+
+    .hw-logo-fade {
+      position:
+        absolute;
+
+      top:
+        0;
+
+      bottom:
+        0;
+
+      width:
+        70px;
+
+      z-index:
+        3;
+
+      pointer-events:
+        none;
+    }
+
+
+    .hw-logo-fade-left {
+      left:
+        0;
+
+      background:
+        linear-gradient(
+          to right,
+          var(--brand-cream),
+          rgba(244, 241, 232, 0)
+        );
+    }
+
+
+    .hw-logo-fade-right {
+      right:
+        0;
+
+      background:
+        linear-gradient(
+          to left,
+          var(--brand-cream),
+          rgba(244, 241, 232, 0)
+        );
+    }
+
+
+    /*
+     * Two identical logo groups are rendered.
+     * Moving -50% creates a seamless infinite loop.
+     */
+
+    @keyframes hw-logo-scroll {
+
+      from {
+        transform:
+          translate3d(
+            0,
+            0,
+            0
+          );
+      }
+
+      to {
+        transform:
+          translate3d(
+            -50%,
+            0,
+            0
+          );
+      }
+
+    }
+
+
+    /*
+     * MOBILE
+     */
+
+    @media (
+      max-width: 640px
+    ) {
+
+      .hw-logo-track {
+        animation-duration:
+          28s;
+      }
+
+
+      .hw-logo-group {
+        gap:
+          34px;
+
+        padding-right:
+          34px;
+      }
+
+
+      .hw-logo-link {
+        width:
+          135px;
+
+        height:
+          64px;
+
+        flex-basis:
+          135px;
+
+        padding:
+          8px;
+      }
+
+
+      .hw-logo-image {
+        max-width:
+          120px;
+
+        max-height:
+          46px;
+      }
+
+
+      .hw-logo-fade {
+        width:
+          32px;
+      }
+
+    }
+
+
+    /*
+     * ACCESSIBILITY
+     *
+     * Don't continuously animate when the visitor has
+     * requested reduced motion.
+     */
+
+    @media (
+      prefers-reduced-motion:
+        reduce
+    ) {
+
+      .hw-logo-track {
+        animation:
+          none;
+
+        transform:
+          none;
+      }
+
+
+      .hw-logo-marquee {
+        overflow-x:
+          auto;
+      }
+
+
+      .hw-logo-group:nth-child(2) {
+        display:
+          none;
+      }
+
+    }
+
+  </style>
 
 </BaseLayout>
