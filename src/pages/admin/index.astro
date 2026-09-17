@@ -128,17 +128,18 @@ const supabasePublishableKey =
         box-shadow: var(--shadow);
       }
 
-      .auth-mark {
-        width: 54px;
-        height: 54px;
-        border: 1px solid var(--gold);
-        display: grid;
-        place-items: center;
-        color: var(--gold);
+      .auth-logo-link {
+        display: inline-flex;
+        align-items: center;
         margin-bottom: 26px;
-        font-family: "Cinzel", Georgia, serif;
-        font-size: 18px;
-        letter-spacing: 0.08em;
+        text-decoration: none;
+      }
+
+      .auth-logo {
+        display: block;
+        width: 88px;
+        height: auto;
+        object-fit: contain;
       }
 
       .eyebrow {
@@ -1073,9 +1074,17 @@ const supabasePublishableKey =
       class="auth-screen"
     >
       <div class="auth-card">
-        <div class="auth-mark">
-          S&S
-        </div>
+        <a
+          href="/"
+          class="auth-logo-link"
+          aria-label="Soleil & Stone home"
+        >
+          <img
+            src="/brand/logo-primary.png"
+            alt="Soleil & Stone"
+            class="auth-logo"
+          />
+        </a>
 
         <p class="eyebrow">
           Private Administration
@@ -2810,7 +2819,10 @@ const supabasePublishableKey =
 
               options: {
                 emailRedirectTo:
-                  `${window.location.origin}/admin/`
+                  window.location.hostname === "localhost" ||
+                  window.location.hostname === "127.0.0.1"
+                    ? `${window.location.origin}/admin/`
+                    : "https://soleilandstone.co/admin/"
               }
             }
           );
