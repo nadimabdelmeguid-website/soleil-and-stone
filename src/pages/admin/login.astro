@@ -14,9 +14,7 @@ const supabasePublishableKey =
 
 <head>
 
-  <meta
-    charset="UTF-8"
-  />
+  <meta charset="UTF-8" />
 
   <meta
     name="viewport"
@@ -65,6 +63,7 @@ const supabasePublishableKey =
       --border: #DDD8CB;
       --danger: #A94B4B;
       --success: #477A5A;
+
       --shadow:
         0 18px 60px
         rgba(
@@ -77,48 +76,43 @@ const supabasePublishableKey =
 
 
     * {
-      box-sizing:
-        border-box;
+      box-sizing: border-box;
     }
 
 
     html,
     body {
-      margin:
-        0;
-
-      min-height:
-        100%;
-
-      background:
-        var(--cream);
+      margin: 0;
+      min-height: 100%;
+      background: var(--cream);
     }
 
 
     body {
-      color:
-        var(--charcoal);
+      color: var(--charcoal);
 
       font-family:
         "Plus Jakarta Sans",
         Inter,
         sans-serif;
 
-      -webkit-font-smoothing:
-        antialiased;
+      -webkit-font-smoothing: antialiased;
     }
 
 
     button,
     input {
-      font:
-        inherit;
+      font: inherit;
+    }
+
+
+    button {
+      cursor: pointer;
     }
 
 
     .hidden {
-      display:
-        none !important;
+      display: none !important;
     }
 
 
@@ -128,17 +122,13 @@ const supabasePublishableKey =
        ===================================================== */
 
     .screen {
-      min-height:
-        100vh;
+      min-height: 100vh;
 
-      display:
-        grid;
+      display: grid;
 
-      place-items:
-        center;
+      place-items: center;
 
-      padding:
-        28px;
+      padding: 28px;
 
       background:
         radial-gradient(
@@ -167,18 +157,15 @@ const supabasePublishableKey =
           500px
         );
 
-      background:
-        #FFFFFF;
+      background: #FFFFFF;
 
       border:
         1px solid
         var(--border);
 
-      padding:
-        40px;
+      padding: 40px;
 
-      box-shadow:
-        var(--shadow);
+      box-shadow: var(--shadow);
     }
 
 
@@ -188,26 +175,20 @@ const supabasePublishableKey =
        ===================================================== */
 
     .logo-link {
-      display:
-        inline-flex;
+      display: inline-flex;
 
-      margin-bottom:
-        28px;
+      margin-bottom: 28px;
 
-      text-decoration:
-        none;
+      text-decoration: none;
     }
 
 
     .logo {
-      display:
-        block;
+      display: block;
 
-      width:
-        112px;
+      width: 112px;
 
-      height:
-        auto;
+      height: auto;
     }
 
 
@@ -220,26 +201,20 @@ const supabasePublishableKey =
       margin:
         0 0 9px;
 
-      color:
-        var(--gold);
+      color: var(--gold);
 
-      font-size:
-        10px;
+      font-size: 10px;
 
-      font-weight:
-        600;
+      font-weight: 600;
 
-      letter-spacing:
-        0.2em;
+      letter-spacing: 0.2em;
 
-      text-transform:
-        uppercase;
+      text-transform: uppercase;
     }
 
 
     h1 {
-      margin:
-        0;
+      margin: 0;
 
       font-family:
         "Cinzel",
@@ -253,11 +228,9 @@ const supabasePublishableKey =
           42px
         );
 
-      font-weight:
-        400;
+      font-weight: 400;
 
-      line-height:
-        1.2;
+      line-height: 1.2;
     }
 
 
@@ -265,17 +238,13 @@ const supabasePublishableKey =
       margin:
         18px 0 28px;
 
-      color:
-        var(--slate);
+      color: var(--slate);
 
-      font-size:
-        14px;
+      font-size: 14px;
 
-      line-height:
-        1.75;
+      line-height: 1.75;
 
-      font-weight:
-        300;
+      font-weight: 300;
     }
 
 
@@ -285,57 +254,44 @@ const supabasePublishableKey =
        ===================================================== */
 
     .field + .field {
-      margin-top:
-        16px;
+      margin-top: 16px;
     }
 
 
     label {
-      display:
-        block;
+      display: block;
 
-      margin-bottom:
-        8px;
+      margin-bottom: 8px;
 
-      font-size:
-        10px;
+      font-size: 10px;
 
-      font-weight:
-        600;
+      font-weight: 600;
 
-      letter-spacing:
-        0.13em;
+      letter-spacing: 0.13em;
 
-      text-transform:
-        uppercase;
+      text-transform: uppercase;
     }
 
 
     input {
-      width:
-        100%;
+      width: 100%;
 
-      min-height:
-        50px;
+      min-height: 50px;
 
       border:
         1px solid
         var(--border);
 
-      border-radius:
-        0;
+      border-radius: 0;
 
-      background:
-        #FFFFFF;
+      background: #FFFFFF;
 
-      color:
-        var(--charcoal);
+      color: var(--charcoal);
 
       padding:
         0 14px;
 
-      outline:
-        none;
+      outline: none;
 
       transition:
         border-color 160ms ease,
@@ -344,8 +300,7 @@ const supabasePublishableKey =
 
 
     input:focus {
-      border-color:
-        var(--gold);
+      border-color: var(--gold);
 
       box-shadow:
         0 0 0 3px
@@ -359,17 +314,13 @@ const supabasePublishableKey =
 
 
     .code-input {
-      font-size:
-        26px;
+      font-size: 26px;
 
-      letter-spacing:
-        0.28em;
+      letter-spacing: 0.22em;
 
-      text-align:
-        center;
+      text-align: center;
 
-      font-weight:
-        500;
+      font-weight: 500;
     }
 
 
@@ -379,54 +330,39 @@ const supabasePublishableKey =
        ===================================================== */
 
     .button {
-      width:
-        100%;
+      width: 100%;
 
-      min-height:
-        50px;
+      min-height: 50px;
 
-      margin-top:
-        18px;
+      margin-top: 18px;
 
       border:
         1px solid
         var(--charcoal);
 
-      border-radius:
-        0;
+      border-radius: 0;
 
       background:
         var(--charcoal);
 
-      color:
-        #FFFFFF;
+      color: #FFFFFF;
 
-      display:
-        inline-flex;
+      display: inline-flex;
 
-      align-items:
-        center;
+      align-items: center;
 
-      justify-content:
-        center;
+      justify-content: center;
 
       padding:
         0 16px;
 
-      font-size:
-        10px;
+      font-size: 10px;
 
-      font-weight:
-        600;
+      font-weight: 600;
 
-      letter-spacing:
-        0.16em;
+      letter-spacing: 0.16em;
 
-      text-transform:
-        uppercase;
-
-      cursor:
-        pointer;
+      text-transform: uppercase;
 
       transition:
         background 160ms ease,
@@ -436,32 +372,26 @@ const supabasePublishableKey =
 
 
     .button:hover {
-      background:
-        var(--gold);
+      background: var(--gold);
 
-      border-color:
-        var(--gold);
+      border-color: var(--gold);
     }
 
 
     .button:disabled {
-      cursor:
-        not-allowed;
+      cursor: not-allowed;
 
-      opacity:
-        0.5;
+      opacity: 0.5;
     }
 
 
     .secondary {
-      margin-top:
-        10px;
+      margin-top: 10px;
 
       border-color:
         var(--border);
 
-      background:
-        #FFFFFF;
+      background: #FFFFFF;
 
       color:
         var(--charcoal);
@@ -469,8 +399,7 @@ const supabasePublishableKey =
 
 
     .secondary:hover {
-      background:
-        #FFFFFF;
+      background: #FFFFFF;
 
       border-color:
         var(--gold);
@@ -489,23 +418,19 @@ const supabasePublishableKey =
       margin:
         16px 0 0;
 
-      font-size:
-        12px;
+      font-size: 12px;
 
-      line-height:
-        1.6;
+      line-height: 1.6;
     }
 
 
     .message.success {
-      color:
-        var(--success);
+      color: var(--success);
     }
 
 
     .message.error {
-      color:
-        var(--danger);
+      color: var(--danger);
     }
 
 
@@ -526,11 +451,9 @@ const supabasePublishableKey =
       color:
         var(--slate);
 
-      font-size:
-        12px;
+      font-size: 12px;
 
-      line-height:
-        1.6;
+      line-height: 1.6;
     }
 
 
@@ -541,11 +464,9 @@ const supabasePublishableKey =
       color:
         var(--slate);
 
-      font-size:
-        10px;
+      font-size: 10px;
 
-      line-height:
-        1.6;
+      line-height: 1.6;
     }
 
 
@@ -559,8 +480,7 @@ const supabasePublishableKey =
     ) {
 
       .screen {
-        padding:
-          18px;
+        padding: 18px;
       }
 
 
@@ -571,14 +491,14 @@ const supabasePublishableKey =
 
 
       input {
-        font-size:
-          16px;
+        font-size: 16px;
       }
 
 
       .code-input {
-        font-size:
-          24px;
+        font-size: 23px;
+
+        letter-spacing: 0.16em;
       }
 
     }
@@ -590,13 +510,9 @@ const supabasePublishableKey =
 
 <body>
 
-  <main
-    class="screen"
-  >
+  <main class="screen">
 
-    <section
-      class="card"
-    >
+    <section class="card">
 
       <a
         href="/"
@@ -613,9 +529,7 @@ const supabasePublishableKey =
       </a>
 
 
-      <p
-        class="eyebrow"
-      >
+      <p class="eyebrow">
         Private Administration
       </p>
 
@@ -630,30 +544,20 @@ const supabasePublishableKey =
            REQUEST CODE
            ================================================= -->
 
-      <div
-        id="request-step"
-      >
+      <div id="request-step">
 
-        <p
-          class="copy"
-        >
+        <p class="copy">
           Enter your authorized email address.
-          We’ll send you a six-digit secure code
+          We’ll send you a secure one-time code
           to access the Soleil & Stone admin.
         </p>
 
 
-        <form
-          id="request-form"
-        >
+        <form id="request-form">
 
-          <div
-            class="field"
-          >
+          <div class="field">
 
-            <label
-              for="email"
-            >
+            <label for="email">
               Email
             </label>
 
@@ -692,10 +596,8 @@ const supabasePublishableKey =
         class="hidden"
       >
 
-        <p
-          class="copy"
-        >
-          Check your inbox and enter the six-digit
+        <p class="copy">
+          Check your inbox and enter the secure
           code from the Soleil & Stone email.
         </p>
 
@@ -706,17 +608,11 @@ const supabasePublishableKey =
         ></p>
 
 
-        <form
-          id="verify-form"
-        >
+        <form id="verify-form">
 
-          <div
-            class="field"
-          >
+          <div class="field">
 
-            <label
-              for="code"
-            >
+            <label for="code">
               Verification code
             </label>
 
@@ -727,9 +623,10 @@ const supabasePublishableKey =
               type="text"
               inputmode="numeric"
               autocomplete="one-time-code"
-              pattern="[0-9]{6}"
-              maxlength="6"
-              placeholder="000000"
+              pattern="[0-9]{6,8}"
+              minlength="6"
+              maxlength="8"
+              placeholder="00000000"
               required
             />
 
@@ -759,9 +656,7 @@ const supabasePublishableKey =
         </form>
 
 
-        <p
-          class="small-note"
-        >
+        <p class="small-note">
           Codes are single-use.
           If the code expires, request a new one.
         </p>
@@ -1095,8 +990,10 @@ const supabasePublishableKey =
                   pendingEmail,
 
                 options: {
+
                   shouldCreateUser:
                     false
+
                 }
               }
             );
@@ -1180,17 +1077,17 @@ const supabasePublishableKey =
             )
             .slice(
               0,
-              6
+              8
             );
 
 
         if (
-          token.length !==
-            6
+          token.length !== 6 &&
+          token.length !== 8
         ) {
 
           setMessage(
-            "Enter the six-digit code from your email.",
+            "Enter the complete verification code from your email.",
             "error"
           );
 
@@ -1263,9 +1160,28 @@ const supabasePublishableKey =
           error
         ) {
 
-          setMessage(
+          const rawMessage =
             error?.message ||
-              "That code could not be verified. Please request a new one.",
+            "That code could not be verified.";
+
+
+          const friendlyMessage =
+            rawMessage
+              .toLowerCase()
+              .includes(
+                "expired"
+              ) ||
+            rawMessage
+              .toLowerCase()
+              .includes(
+                "invalid"
+              )
+                ? "That code is invalid or has expired. Request a new code and enter the complete code from the latest email."
+                : rawMessage;
+
+
+          setMessage(
+            friendlyMessage,
             "error"
           );
 
@@ -1302,7 +1218,7 @@ const supabasePublishableKey =
             )
             .slice(
               0,
-              6
+              8
             );
 
       }
