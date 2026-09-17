@@ -52,6 +52,20 @@ const sponsors =
 
 
 /* =========================================================
+   HARDWARE PROGRAMMING LOOP
+
+   Two identical groups create the seamless continuous
+   right-to-left Recent Programming carousel.
+   ========================================================= */
+
+const hardwareProgrammingGroups =
+  [
+    communityEvents,
+    communityEvents
+  ];
+
+
+/* =========================================================
    COMMUNITY CARD IMAGES
 
    Folder:
@@ -1025,7 +1039,7 @@ function findCommunityCardImage(
 
 
           <!-- =================================================
-               HARDWARE PROGRAMMING
+               HARDWARE PROGRAMMING — CONTINUOUS CAROUSEL
                ================================================= -->
 
           {
@@ -1034,248 +1048,252 @@ function findCommunityCardImage(
 
               <div
                 class="
-                  grid
-                  lg:grid-cols-3
-                  gap-5
+                  hardware-programming-marquee
+                  relative
+                  overflow-hidden
                 "
               >
 
-                {
-                  communityEvents.map(
-                    (event) => {
+                <!-- LEFT EDGE FADE -->
 
-                      const cardImage =
-                        findCommunityCardImage(
-                          event.id
-                        );
-
-
-                      const recapUrl =
-                        getEventRecapUrl(
-                          event.id
-                        );
+                <div
+                  class="
+                    hardware-programming-fade
+                    hardware-programming-fade-left
+                  "
+                >
+                </div>
 
 
-                      return (
+                <!-- RIGHT EDGE FADE -->
 
-                        <article
+                <div
+                  class="
+                    hardware-programming-fade
+                    hardware-programming-fade-right
+                  "
+                >
+                </div>
+
+
+                <!-- MOVING TRACK -->
+
+                <div
+                  class="
+                    hardware-programming-track
+                  "
+                >
+
+                  {
+                    hardwareProgrammingGroups.map(
+                      (
+                        group,
+                        groupIndex
+                      ) => (
+
+                        <div
                           class="
-                            bg-white
-                            border
-                            border-brand-border
-                            flex
-                            flex-col
-                            overflow-hidden
-                            shadow-[0_1px_0_rgba(34,37,42,0.02)]
+                            hardware-programming-group
                           "
+                          aria-hidden={
+                            groupIndex === 1
+                              ? "true"
+                              : undefined
+                          }
                         >
 
-                          <!-- OPTIONAL IMAGE -->
-
                           {
-                            cardImage && (
+                            group.map(
+                              (event) => {
 
-                              <a
-                                href={event.url}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                class="
-                                  group/hardware-image
-                                  block
-                                  overflow-hidden
-                                  border-b
-                                  border-brand-border
-                                "
-                              >
-
-                                <img
-                                  src={cardImage}
-                                  alt={`${event.title} event`}
-                                  loading="lazy"
-                                  decoding="async"
-                                  class="
-                                    block
-                                    w-full
-                                    aspect-[16/9]
-                                    object-cover
-                                    transition-transform
-                                    duration-300
-                                    group-hover/hardware-image:scale-[1.02]
-                                  "
-                                />
-
-                              </a>
-
-                            )
-                          }
+                                const cardImage =
+                                  findCommunityCardImage(
+                                    event.id
+                                  );
 
 
-
-                          <!-- CARD BODY -->
-
-                          <div
-                            class="
-                              p-6
-                              flex
-                              flex-col
-                              flex-1
-                            "
-                          >
-
-                            <!-- DATE + REGISTRATIONS -->
-
-                            <div
-                              class="
-                                flex
-                                items-center
-                                justify-between
-                                gap-3
-                                mb-4
-                              "
-                            >
-
-                              <span
-                                class="
-                                  inline-flex
-                                  px-2
-                                  py-1
-                                  bg-brand-gold/10
-                                  text-[9px]
-                                  uppercase
-                                  tracking-[0.15em]
-                                  text-brand-gold
-                                  font-semibold
-                                "
-                              >
-                                {formatMonth(
-                                  event.startDate
-                                )}
-                              </span>
+                                const recapUrl =
+                                  getEventRecapUrl(
+                                    event.id
+                                  );
 
 
-                              {
-                                typeof event.registrations ===
-                                  "number" && (
+                                return (
 
-                                  <span
+                                  <article
                                     class="
-                                      text-[9px]
-                                      uppercase
-                                      tracking-[0.12em]
-                                      text-brand-slate
+                                      hardware-programming-card
+                                      bg-white
+                                      border
+                                      border-brand-border
+                                      flex
+                                      flex-col
+                                      overflow-hidden
+                                      shadow-[0_1px_0_rgba(34,37,42,0.02)]
                                     "
                                   >
-                                    {event.registrations}
-                                    {" "}
-                                    registrations
-                                  </span>
 
-                                )
-                              }
+                                    <!-- OPTIONAL IMAGE -->
 
-                            </div>
-
-
-
-                            <!-- TITLE -->
-
-                            <h4
-                              class="
-                                font-serif
-                                text-xl
-                                text-brand-charcoal
-                                leading-snug
-                              "
-                            >
-                              {event.title}
-                            </h4>
-
-
-
-                            <!-- SPONSOR -->
-
-                            {
-                              event.sponsors?.length > 0 && (
-
-                                <div
-                                  class="
-                                    mt-5
-                                    p-3
-                                    bg-brand-cream
-                                    border
-                                    border-brand-border
-                                  "
-                                >
-
-                                  <div
-                                    class="
-                                      text-[8px]
-                                      uppercase
-                                      tracking-[0.15em]
-                                      text-brand-slate
-                                      mb-1
-                                    "
-                                  >
-                                    Sponsor
-                                  </div>
-
-
-                                  <div
-                                    class="
-                                      text-xs
-                                      font-semibold
-                                      text-brand-charcoal
-                                    "
-                                  >
                                     {
-                                      event.sponsors.join(
-                                        ", "
+                                      cardImage && (
+
+                                        <a
+                                          href={event.url}
+                                          target="_blank"
+                                          rel="noopener noreferrer"
+                                          tabindex={
+                                            groupIndex === 1
+                                              ? "-1"
+                                              : undefined
+                                          }
+                                          class="
+                                            group/hardware-image
+                                            block
+                                            overflow-hidden
+                                            border-b
+                                            border-brand-border
+                                          "
+                                        >
+
+                                          <img
+                                            src={cardImage}
+                                            alt={
+                                              groupIndex === 0
+                                                ? `${event.title} event`
+                                                : ""
+                                            }
+                                            loading="lazy"
+                                            decoding="async"
+                                            class="
+                                              block
+                                              w-full
+                                              aspect-[16/9]
+                                              object-cover
+                                              transition-transform
+                                              duration-300
+                                              group-hover/hardware-image:scale-[1.02]
+                                            "
+                                          />
+
+                                        </a>
+
                                       )
                                     }
-                                  </div>
-
-                                </div>
-
-                              )
-                            }
 
 
 
-                            <!-- SPEAKERS -->
+                                    <!-- CARD BODY -->
 
-                            {
-                              event.speakers?.length > 0 && (
+                                    <div
+                                      class="
+                                        p-5
+                                        sm:p-6
+                                        flex
+                                        flex-col
+                                        flex-1
+                                      "
+                                    >
 
-                                <div
-                                  class="
-                                    mt-5
-                                  "
-                                >
+                                      <!-- DATE + REGISTRATIONS -->
 
-                                  <div
-                                    class="
-                                      text-[8px]
-                                      uppercase
-                                      tracking-[0.15em]
-                                      text-brand-slate
-                                      mb-3
-                                    "
-                                  >
-                                    Speakers
-                                  </div>
+                                      <div
+                                        class="
+                                          flex
+                                          flex-wrap
+                                          items-center
+                                          justify-between
+                                          gap-3
+                                          mb-4
+                                        "
+                                      >
+
+                                        <span
+                                          class="
+                                            inline-flex
+                                            px-2
+                                            py-1
+                                            bg-brand-gold/10
+                                            text-[9px]
+                                            uppercase
+                                            tracking-[0.15em]
+                                            text-brand-gold
+                                            font-semibold
+                                          "
+                                        >
+                                          {formatMonth(
+                                            event.startDate
+                                          )}
+                                        </span>
 
 
-                                  <div
-                                    class="
-                                      space-y-3
-                                    "
-                                  >
+                                        {
+                                          typeof event.registrations ===
+                                            "number" && (
 
-                                    {
-                                      event.speakers.map(
-                                        (speaker) => (
+                                            <span
+                                              class="
+                                                text-[9px]
+                                                uppercase
+                                                tracking-[0.12em]
+                                                text-brand-slate
+                                              "
+                                            >
+                                              {event.registrations}
+                                              {" "}
+                                              registrations
+                                            </span>
 
-                                          <div>
+                                          )
+                                        }
+
+                                      </div>
+
+
+
+                                      <!-- TITLE -->
+
+                                      <h4
+                                        class="
+                                          font-serif
+                                          text-lg
+                                          sm:text-xl
+                                          text-brand-charcoal
+                                          leading-snug
+                                        "
+                                      >
+                                        {event.title}
+                                      </h4>
+
+
+
+                                      <!-- SPONSOR -->
+
+                                      {
+                                        event.sponsors?.length > 0 && (
+
+                                          <div
+                                            class="
+                                              mt-5
+                                              p-3
+                                              bg-brand-cream
+                                              border
+                                              border-brand-border
+                                            "
+                                          >
+
+                                            <div
+                                              class="
+                                                text-[8px]
+                                                uppercase
+                                                tracking-[0.15em]
+                                                text-brand-slate
+                                                mb-1
+                                              "
+                                            >
+                                              Sponsor
+                                            </div>
+
 
                                             <div
                                               class="
@@ -1284,129 +1302,204 @@ function findCommunityCardImage(
                                                 text-brand-charcoal
                                               "
                                             >
-                                              {speaker.name}
-                                            </div>
-
-
-                                            <div
-                                              class="
-                                                text-[10px]
-                                                text-brand-slate
-                                                mt-0.5
-                                                leading-relaxed
-                                              "
-                                            >
-                                              {speaker.company}
-
                                               {
-                                                speaker.title
-                                                  ? ` · ${speaker.title}`
-                                                  : ""
+                                                event.sponsors.join(
+                                                  ", "
+                                                )
                                               }
                                             </div>
 
                                           </div>
 
                                         )
-                                      )
-                                    }
-
-                                  </div>
-
-                                </div>
-
-                              )
-                            }
+                                      }
 
 
 
-                            <!-- CTAS -->
+                                      <!-- SPEAKERS -->
 
-                            <div
-                              class="
-                                mt-auto
-                                pt-6
-                              "
-                            >
+                                      {
+                                        event.speakers?.length > 0 && (
 
-                              <div
-                                class="
-                                  flex
-                                  flex-wrap
-                                  items-center
-                                  gap-x-5
-                                  gap-y-3
-                                "
-                              >
+                                          <div
+                                            class="
+                                              mt-5
+                                            "
+                                          >
 
-                                <a
-                                  href={event.url}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  class="
-                                    inline-flex
-                                    items-center
-                                    gap-2
-                                    text-[9px]
-                                    uppercase
-                                    tracking-[0.15em]
-                                    text-brand-charcoal
-                                    font-semibold
-                                    hover:text-brand-gold
-                                    transition-colors
-                                  "
-                                >
-                                  View Event
-
-                                  <span>
-                                    ↗
-                                  </span>
-
-                                </a>
+                                            <div
+                                              class="
+                                                text-[8px]
+                                                uppercase
+                                                tracking-[0.15em]
+                                                text-brand-slate
+                                                mb-3
+                                              "
+                                            >
+                                              Speakers
+                                            </div>
 
 
-                                {
-                                  recapUrl && (
+                                            <div
+                                              class="
+                                                space-y-3
+                                              "
+                                            >
 
-                                    <a
-                                      href={recapUrl}
-                                      class="
-                                        inline-flex
-                                        items-center
-                                        gap-2
-                                        text-[9px]
-                                        uppercase
-                                        tracking-[0.15em]
-                                        text-brand-gold
-                                        font-semibold
-                                        hover:text-brand-charcoal
-                                        transition-colors
-                                      "
-                                    >
-                                      Read Recap
+                                              {
+                                                event.speakers.map(
+                                                  (speaker) => (
 
-                                      <span>
-                                        →
-                                      </span>
+                                                    <div>
 
-                                    </a>
+                                                      <div
+                                                        class="
+                                                          text-xs
+                                                          font-semibold
+                                                          text-brand-charcoal
+                                                        "
+                                                      >
+                                                        {speaker.name}
+                                                      </div>
 
-                                  )
-                                }
 
-                              </div>
+                                                      <div
+                                                        class="
+                                                          text-[10px]
+                                                          text-brand-slate
+                                                          mt-0.5
+                                                          leading-relaxed
+                                                        "
+                                                      >
+                                                        {speaker.company}
 
-                            </div>
+                                                        {
+                                                          speaker.title
+                                                            ? ` · ${speaker.title}`
+                                                            : ""
+                                                        }
+                                                      </div>
 
-                          </div>
+                                                    </div>
 
-                        </article>
+                                                  )
+                                                )
+                                              }
 
-                      );
+                                            </div>
 
-                    }
-                  )
-                }
+                                          </div>
+
+                                        )
+                                      }
+
+
+
+                                      <!-- CTAS -->
+
+                                      <div
+                                        class="
+                                          mt-auto
+                                          pt-6
+                                        "
+                                      >
+
+                                        <div
+                                          class="
+                                            flex
+                                            flex-wrap
+                                            items-center
+                                            gap-x-5
+                                            gap-y-3
+                                          "
+                                        >
+
+                                          <a
+                                            href={event.url}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            tabindex={
+                                              groupIndex === 1
+                                                ? "-1"
+                                                : undefined
+                                            }
+                                            class="
+                                              inline-flex
+                                              items-center
+                                              gap-2
+                                              text-[9px]
+                                              uppercase
+                                              tracking-[0.15em]
+                                              text-brand-charcoal
+                                              font-semibold
+                                              hover:text-brand-gold
+                                              transition-colors
+                                            "
+                                          >
+                                            View Event
+
+                                            <span>
+                                              ↗
+                                            </span>
+
+                                          </a>
+
+
+                                          {
+                                            recapUrl && (
+
+                                              <a
+                                                href={recapUrl}
+                                                tabindex={
+                                                  groupIndex === 1
+                                                    ? "-1"
+                                                    : undefined
+                                                }
+                                                class="
+                                                  inline-flex
+                                                  items-center
+                                                  gap-2
+                                                  text-[9px]
+                                                  uppercase
+                                                  tracking-[0.15em]
+                                                  text-brand-gold
+                                                  font-semibold
+                                                  hover:text-brand-charcoal
+                                                  transition-colors
+                                                "
+                                              >
+                                                Read Recap
+
+                                                <span>
+                                                  →
+                                                </span>
+
+                                              </a>
+
+                                            )
+                                          }
+
+                                        </div>
+
+                                      </div>
+
+                                    </div>
+
+                                  </article>
+
+                                );
+
+                              }
+                            )
+                          }
+
+                        </div>
+
+                      )
+                    )
+                  }
+
+                </div>
 
               </div>
 
@@ -1425,6 +1518,10 @@ function findCommunityCardImage(
 
 
 <style>
+
+  /* =========================================================
+     STARTUP MIXER MANUAL SCROLL
+     ========================================================= */
 
   .mixer-scroll {
     scrollbar-width:
@@ -1451,6 +1548,278 @@ function findCommunityCardImage(
   .mixer-scroll::-webkit-scrollbar-thumb {
     background:
       #C5A059;
+  }
+
+
+
+  /* =========================================================
+     HARDWARE PROGRAMMING MARQUEE
+     ========================================================= */
+
+  .hardware-programming-marquee {
+    width:
+      100%;
+
+    overflow:
+      hidden;
+  }
+
+
+  .hardware-programming-track {
+    display:
+      flex;
+
+    align-items:
+      stretch;
+
+    width:
+      max-content;
+
+    will-change:
+      transform;
+
+    animation:
+      hardware-programming-scroll
+      42s
+      linear
+      infinite;
+  }
+
+
+
+  /*
+   * Pause while someone is interacting with the cards.
+   */
+
+  .hardware-programming-marquee:hover
+  .hardware-programming-track,
+  .hardware-programming-marquee:focus-within
+  .hardware-programming-track {
+    animation-play-state:
+      paused;
+  }
+
+
+
+  /* =========================================================
+     LOOP GROUP
+     ========================================================= */
+
+  .hardware-programming-group {
+    display:
+      flex;
+
+    align-items:
+      stretch;
+
+    flex-shrink:
+      0;
+
+    gap:
+      20px;
+
+    padding-right:
+      20px;
+  }
+
+
+
+  /* =========================================================
+     CARD SIZE
+
+     Fixed carousel widths create a consistent visual rhythm
+     while still fitting comfortably on mobile.
+     ========================================================= */
+
+  .hardware-programming-card {
+    width:
+      340px;
+
+    flex:
+      0 0 340px;
+  }
+
+
+
+  /* =========================================================
+     EDGE FADES
+     ========================================================= */
+
+  .hardware-programming-fade {
+    position:
+      absolute;
+
+    top:
+      0;
+
+    bottom:
+      0;
+
+    width:
+      42px;
+
+    z-index:
+      3;
+
+    pointer-events:
+      none;
+  }
+
+
+  .hardware-programming-fade-left {
+    left:
+      0;
+
+    background:
+      linear-gradient(
+        to right,
+        var(--brand-cream),
+        rgba(244, 241, 232, 0)
+      );
+  }
+
+
+  .hardware-programming-fade-right {
+    right:
+      0;
+
+    background:
+      linear-gradient(
+        to left,
+        var(--brand-cream),
+        rgba(244, 241, 232, 0)
+      );
+  }
+
+
+
+  /* =========================================================
+     RIGHT → LEFT ANIMATION
+     ========================================================= */
+
+  @keyframes hardware-programming-scroll {
+
+    from {
+      transform:
+        translate3d(
+          0,
+          0,
+          0
+        );
+    }
+
+
+    to {
+      transform:
+        translate3d(
+          -50%,
+          0,
+          0
+        );
+    }
+
+  }
+
+
+
+  /* =========================================================
+     MOBILE
+     ========================================================= */
+
+  @media (
+    max-width: 639px
+  ) {
+
+    .hardware-programming-track {
+      animation-duration:
+        34s;
+    }
+
+
+    .hardware-programming-group {
+      gap:
+        14px;
+
+      padding-right:
+        14px;
+    }
+
+
+    .hardware-programming-card {
+      width:
+        280px;
+
+      flex:
+        0 0 280px;
+    }
+
+
+    .hardware-programming-fade {
+      width:
+        22px;
+    }
+
+  }
+
+
+
+  /* =========================================================
+     REDUCED MOTION
+
+     Visitors who request reduced motion receive a normal
+     horizontally scrollable card row instead.
+     ========================================================= */
+
+  @media (
+    prefers-reduced-motion:
+      reduce
+  ) {
+
+    .hardware-programming-marquee {
+      overflow-x:
+        auto;
+
+      scrollbar-width:
+        thin;
+
+      scrollbar-color:
+        #C5A059
+        #E8E5DA;
+    }
+
+
+    .hardware-programming-track {
+      animation:
+        none;
+
+      transform:
+        none;
+    }
+
+
+    .hardware-programming-group:nth-child(2) {
+      display:
+        none;
+    }
+
+
+    .hardware-programming-marquee::-webkit-scrollbar {
+      height:
+        5px;
+    }
+
+
+    .hardware-programming-marquee::-webkit-scrollbar-track {
+      background:
+        #E8E5DA;
+    }
+
+
+    .hardware-programming-marquee::-webkit-scrollbar-thumb {
+      background:
+        #C5A059;
+    }
+
   }
 
 </style>
