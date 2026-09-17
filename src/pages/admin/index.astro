@@ -448,81 +448,6 @@ const supabasePublishableKey =
         display: none;
       }
 
-      async function loadCommunities() {
-        const { data, error } = await supabase
-          .from("communities")
-          .select("*")
-          .order("sort_order", { ascending: true });
-
-        if (error) {
-          showToast(`Could not load communities: ${error.message}`, "error");
-          return;
-        }
-
-        state.communities = data || [];
-      }
-
-
-      async function loadOrganizations() {
-        const { data, error } = await supabase
-          .from("organizations")
-          .select("*")
-          .order("name", { ascending: true });
-
-        if (error) {
-          showToast(`Could not load organizations: ${error.message}`, "error");
-          return;
-        }
-
-        state.organizations = data || [];
-      }
-
-
-      async function loadPeople() {
-        const { data, error } = await supabase
-          .from("people")
-          .select("*")
-          .order("name", { ascending: true });
-
-        if (error) {
-          showToast(`Could not load speakers: ${error.message}`, "error");
-          return;
-        }
-
-        state.people = data || [];
-      }
-
-
-      async function loadEventSpeakers() {
-        const { data, error } = await supabase
-          .from("event_speakers")
-          .select("*")
-          .order("sort_order", { ascending: true });
-
-        if (error) {
-          showToast(`Could not load speaker links: ${error.message}`, "error");
-          return;
-        }
-
-        state.eventSpeakers = data || [];
-      }
-
-
-      async function loadEventSponsors() {
-        const { data, error } = await supabase
-          .from("event_sponsors")
-          .select("*")
-          .order("sort_order", { ascending: true });
-
-        if (error) {
-          showToast(`Could not load sponsor links: ${error.message}`, "error");
-          return;
-        }
-
-        state.eventSponsors = data || [];
-      }
-
-
       /* =====================================================
          DASHBOARD
          ===================================================== */
@@ -656,6 +581,61 @@ const supabasePublishableKey =
       .markdown-tool:hover {
         border-color: var(--gold);
         color: var(--gold);
+      }
+
+      .target-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 8px 12px;
+        margin-top: 8px;
+      }
+
+      .target-option {
+        min-height: 38px;
+        border: 1px solid var(--border);
+        background: var(--cream);
+        padding: 9px 10px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: var(--slate);
+        font-size: 10px;
+        cursor: pointer;
+      }
+
+      .target-option:has(input:checked) {
+        border-color: var(--gold);
+        color: var(--charcoal);
+        background: rgba(197, 160, 89, 0.08);
+      }
+
+      .target-badges {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 5px;
+        margin-top: 7px;
+      }
+
+      .target-badge {
+        border: 1px solid var(--border);
+        background: var(--cream);
+        padding: 3px 6px;
+        color: var(--slate);
+        font-size: 8px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      .editor-media-row {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 8px;
+        align-items: center;
+        margin: 8px 0 10px;
+      }
+
+      .compact-action {
+        white-space: nowrap;
       }
 
       .empty-state {
@@ -1137,6 +1117,14 @@ const supabasePublishableKey =
           grid-template-columns: repeat(2, minmax(0, 1fr));
         }
 
+        .target-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .editor-media-row {
+          grid-template-columns: 1fr;
+        }
+
         .modal-backdrop {
           padding: 0;
           place-items: stretch;
@@ -1430,7 +1418,7 @@ const supabasePublishableKey =
               </div>
 
               <div class="sync-note">
-                CMS migration complete. Edit the live content source here; public pages can be connected to Supabase next.
+                CMS content is live. Counts, media placement and editorial assets are managed here before the public pages are connected.
               </div>
             </div>
 
@@ -1771,6 +1759,22 @@ const supabasePublishableKey =
                   </div>
 
                   <div style="margin-top: 14px;">
+                    <label class="label">Publish / use in</label>
+                    <p class="field-help" style="margin-top: 4px;">
+                      Select every section where this asset should be available. You can choose more than one.
+                    </p>
+                    <div class="target-grid" id="media-publish-targets">
+                      <label class="target-option"><input type="checkbox" value="community" /> Community</label>
+                      <label class="target-option"><input type="checkbox" value="fieldwork" /> Fieldwork</label>
+                      <label class="target-option"><input type="checkbox" value="field-notes" /> Field Notes</label>
+                      <label class="target-option"><input type="checkbox" value="events" /> Events</label>
+                      <label class="target-option"><input type="checkbox" value="event-recaps" /> Event Recaps</label>
+                      <label class="target-option"><input type="checkbox" value="sponsors" /> Sponsors & Logos</label>
+                      <label class="target-option"><input type="checkbox" value="global" /> Global / reusable</label>
+                    </div>
+                  </div>
+
+                  <div style="margin-top: 14px;">
                     <label
                       class="label"
                       for="media-alt-text"
@@ -1822,6 +1826,16 @@ const supabasePublishableKey =
                         type="search"
                         placeholder="Search media..."
                       />
+                      <select id="media-target-filter" class="select" style="max-width: 190px;">
+                        <option value="all">All placements</option>
+                        <option value="community">Community</option>
+                        <option value="fieldwork">Fieldwork</option>
+                        <option value="field-notes">Field Notes</option>
+                        <option value="events">Events</option>
+                        <option value="event-recaps">Event Recaps</option>
+                        <option value="sponsors">Sponsors & Logos</option>
+                        <option value="global">Global</option>
+                      </select>
                     </div>
                   </div>
 
@@ -2327,6 +2341,8 @@ const supabasePublishableKey =
                       No cover image
                     </option>
                   </select>
+                  <button class="quiet-button" type="button" data-cover-upload="event-cover-media" data-cover-target="events,fieldwork" style="margin-top: 8px;">Upload new cover image</button>
+                  <input id="event-cover-upload" class="hidden" type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml,image/avif" />
                 </div>
 
                 <div class="form-field full">
@@ -2491,7 +2507,15 @@ const supabasePublishableKey =
                     <button class="markdown-tool" type="button" data-markdown-action="quote">Quote</button>
                     <button class="markdown-tool" type="button" data-markdown-action="bullet">Bullets</button>
                     <button class="markdown-tool" type="button" data-markdown-action="number">Numbered</button>
+                    <button class="markdown-tool" type="button" data-editor-upload="field-note-content" data-editor-target="field-notes">Upload Image</button>
                   </div>
+                  <div class="editor-media-row">
+                    <select id="field-note-inline-media" class="select">
+                      <option value="">Insert existing image...</option>
+                    </select>
+                    <button id="field-note-insert-media" class="secondary-button compact-action" type="button">Insert image</button>
+                  </div>
+                  <input id="field-note-inline-upload" class="hidden" type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml,image/avif" />
                   <textarea
                     id="field-note-content"
                     class="textarea"
@@ -2499,7 +2523,7 @@ const supabasePublishableKey =
                     placeholder="Write your Field Note here..."
                   ></textarea>
                   <p class="field-help">
-                    Content is stored as Markdown. Use the toolbar for common formatting; image assets can be selected as the hero image from the Media Library.
+                    Content is stored as Markdown. Upload an image here to insert it exactly where your cursor is, or reuse an existing Media Library image.
                   </p>
                 </div>
 
@@ -2526,6 +2550,8 @@ const supabasePublishableKey =
                       No hero image
                     </option>
                   </select>
+                  <button class="quiet-button" type="button" data-cover-upload="field-note-hero-media" data-cover-target="field-notes" style="margin-top: 8px;">Upload new hero image</button>
+                  <input id="field-note-hero-upload" class="hidden" type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml,image/avif" />
                 </div>
 
                 <div class="form-field">
@@ -2709,7 +2735,15 @@ const supabasePublishableKey =
                     <button class="markdown-tool" type="button" data-markdown-action="quote">Quote</button>
                     <button class="markdown-tool" type="button" data-markdown-action="bullet">Bullets</button>
                     <button class="markdown-tool" type="button" data-markdown-action="number">Numbered</button>
+                    <button class="markdown-tool" type="button" data-editor-upload="recap-content" data-editor-target="event-recaps,fieldwork">Upload Image</button>
                   </div>
+                  <div class="editor-media-row">
+                    <select id="recap-inline-media" class="select">
+                      <option value="">Insert existing image...</option>
+                    </select>
+                    <button id="recap-insert-media" class="secondary-button compact-action" type="button">Insert image</button>
+                  </div>
+                  <input id="recap-inline-upload" class="hidden" type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml,image/avif" />
                   <textarea
                     id="recap-content"
                     class="textarea"
@@ -2756,6 +2790,8 @@ const supabasePublishableKey =
                       No hero image
                     </option>
                   </select>
+                  <button class="quiet-button" type="button" data-cover-upload="recap-hero-media" data-cover-target="event-recaps,fieldwork" style="margin-top: 8px;">Upload new hero image</button>
+                  <input id="recap-hero-upload" class="hidden" type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml,image/avif" />
                 </div>
 
                 <div class="form-field full">
@@ -2981,7 +3017,11 @@ const supabasePublishableKey =
           "all",
 
         selectedMediaFile:
-          null
+          null,
+
+        pendingEditorUpload: null,
+
+        pendingCoverUpload: null
       };
 
 
@@ -3090,6 +3130,51 @@ const supabasePublishableKey =
         return Array.isArray(value)
           ? value.filter(Boolean).join("\n")
           : "";
+      }
+
+
+      const mediaTargetLabels = {
+        community: "Community",
+        fieldwork: "Fieldwork",
+        "field-notes": "Field Notes",
+        events: "Events",
+        "event-recaps": "Event Recaps",
+        sponsors: "Sponsors & Logos",
+        global: "Global"
+      };
+
+
+      function getMediaPublishTargets() {
+        return $$("#media-publish-targets input[type='checkbox']:checked")
+          .map((input) => input.value);
+      }
+
+
+      function resetMediaPublishTargets() {
+        $$("#media-publish-targets input[type='checkbox']")
+          .forEach((input) => { input.checked = false; });
+      }
+
+
+      function mediaAvailableFor(item, target) {
+        if (!item || item.status !== "active") return false;
+        const targets = Array.isArray(item.publish_targets) ? item.publish_targets : [];
+        return targets.length === 0 || targets.includes("global") || targets.includes(target);
+      }
+
+
+      function insertMarkdownImage(textarea, media) {
+        if (!textarea || !media?.public_url) return;
+        const alt = (media.alt_text || media.file_name || "Image")
+          .replace(/[\[\]]/g, "");
+        const markdown = `![${alt}](${media.public_url})`;
+        const start = textarea.selectionStart ?? textarea.value.length;
+        const end = textarea.selectionEnd ?? start;
+        const prefix = start > 0 && textarea.value[start - 1] !== "\n" ? "\n\n" : "";
+        const suffix = end < textarea.value.length && textarea.value[end] !== "\n" ? "\n\n" : "";
+        textarea.setRangeText(`${prefix}${markdown}${suffix}`, start, end, "end");
+        textarea.focus();
+        textarea.dispatchEvent(new Event("input", { bubbles: true }));
       }
 
 
@@ -3629,6 +3714,83 @@ const supabasePublishableKey =
           "";
 
       }
+
+
+      async function loadCommunities() {
+        const { data, error } = await supabase
+          .from("communities")
+          .select("*")
+          .order("sort_order", { ascending: true });
+
+        if (error) {
+          showToast(`Could not load communities: ${error.message}`, "error");
+          return;
+        }
+
+        state.communities = data || [];
+      }
+
+
+      async function loadOrganizations() {
+        const { data, error } = await supabase
+          .from("organizations")
+          .select("*")
+          .order("name", { ascending: true });
+
+        if (error) {
+          showToast(`Could not load organizations: ${error.message}`, "error");
+          return;
+        }
+
+        state.organizations = data || [];
+      }
+
+
+      async function loadPeople() {
+        const { data, error } = await supabase
+          .from("people")
+          .select("*")
+          .order("name", { ascending: true });
+
+        if (error) {
+          showToast(`Could not load speakers: ${error.message}`, "error");
+          return;
+        }
+
+        state.people = data || [];
+      }
+
+
+      async function loadEventSpeakers() {
+        const { data, error } = await supabase
+          .from("event_speakers")
+          .select("*")
+          .order("sort_order", { ascending: true });
+
+        if (error) {
+          showToast(`Could not load speaker links: ${error.message}`, "error");
+          return;
+        }
+
+        state.eventSpeakers = data || [];
+      }
+
+
+      async function loadEventSponsors() {
+        const { data, error } = await supabase
+          .from("event_sponsors")
+          .select("*")
+          .order("sort_order", { ascending: true });
+
+        if (error) {
+          showToast(`Could not load sponsor links: ${error.message}`, "error");
+          return;
+        }
+
+        state.eventSponsors = data || [];
+      }
+
+
 
 
       /* =====================================================
@@ -5159,27 +5321,35 @@ const supabasePublishableKey =
             .toLowerCase() || "";
 
 
+        const targetFilter =
+          $("#media-target-filter")?.value || "all";
+
+
         const items =
           state.media.filter(
-            (
-              item
-            ) =>
-              !search ||
-              [
-                item.file_name,
-                item.alt_text,
-                item.credit,
-                item.media_kind
-              ]
-                .filter(Boolean)
-                .some(
-                  (
-                    value
-                  ) =>
-                    String(value)
-                      .toLowerCase()
-                      .includes(search)
-                )
+            (item) => {
+              const matchesSearch =
+                !search ||
+                [
+                  item.file_name,
+                  item.alt_text,
+                  item.credit,
+                  item.media_kind,
+                  ...(Array.isArray(item.publish_targets) ? item.publish_targets : [])
+                ]
+                  .filter(Boolean)
+                  .some((value) =>
+                    String(value).toLowerCase().includes(search)
+                  );
+
+              const targets = Array.isArray(item.publish_targets) ? item.publish_targets : [];
+              const matchesTarget =
+                targetFilter === "all" ||
+                targets.includes(targetFilter) ||
+                (targetFilter !== "global" && targets.includes("global"));
+
+              return matchesSearch && matchesTarget;
+            }
           );
 
 
@@ -5221,6 +5391,13 @@ const supabasePublishableKey =
                       ${escapeHtml(item.media_kind || "image")}
                       · ${escapeHtml(item.status || "active")}
                     </div>
+                    <div class="target-badges">
+                      ${(Array.isArray(item.publish_targets) && item.publish_targets.length
+                        ? item.publish_targets
+                        : ["global"])
+                        .map((target) => `<span class="target-badge">${escapeHtml(mediaTargetLabels[target] || target)}</span>`)
+                        .join("")}
+                    </div>
                     <div class="row-actions" style="margin-top: 10px;">
                       ${item.public_url ? `<button class="secondary-button" type="button" data-copy-media-url="${escapeHtml(item.public_url)}">Copy URL</button>` : ""}
                       <button class="quiet-button" type="button" data-toggle-media="${escapeHtml(item.id)}">
@@ -5261,6 +5438,56 @@ const supabasePublishableKey =
       }
 
 
+      async function uploadMediaFile(
+        file,
+        { targets = [], mediaKind = "image", altText = null, credit = null } = {}
+      ) {
+        if (!file) throw new Error("No file selected.");
+        if (!file.type?.startsWith("image/")) {
+          throw new Error("Please select an image file.");
+        }
+
+        const cleanName = safeFileName(file.name);
+        const storagePath =
+          `uploads/${new Date().getFullYear()}/${crypto.randomUUID()}-${cleanName}`;
+
+        const { error: uploadError } = await supabase.storage
+          .from("cms-media")
+          .upload(storagePath, file, { cacheControl: "3600", upsert: false });
+
+        if (uploadError) throw uploadError;
+
+        const { data: publicUrlData } = supabase.storage
+          .from("cms-media")
+          .getPublicUrl(storagePath);
+
+        const { data: record, error: recordError } = await supabase
+          .from("media")
+          .insert({
+            storage_path: storagePath,
+            public_url: publicUrlData.publicUrl,
+            file_name: file.name,
+            mime_type: file.type || null,
+            file_size: file.size,
+            alt_text: altText || null,
+            credit: credit || null,
+            media_kind: mediaKind,
+            publish_targets: targets,
+            status: "active",
+            created_by: state.user?.id || null
+          })
+          .select("*")
+          .single();
+
+        if (recordError) {
+          await supabase.storage.from("cms-media").remove([storagePath]);
+          throw recordError;
+        }
+
+        return record;
+      }
+
+
       async function uploadSelectedMedia() {
 
         const file =
@@ -5288,86 +5515,17 @@ const supabasePublishableKey =
 
         try {
 
-          const cleanName =
-            safeFileName(
-              file.name
-            );
+          const targets = getMediaPublishTargets();
 
-          const storagePath =
-            `uploads/${new Date().getFullYear()}/${crypto.randomUUID()}-${cleanName}`;
-
-
-          const {
-            error:
-              uploadError
-          } =
-            await supabase.storage
-              .from("cms-media")
-              .upload(
-                storagePath,
-                file,
-                {
-                  cacheControl:
-                    "3600",
-                  upsert:
-                    false
-                }
-              );
-
-
-          if (
-            uploadError
-          ) {
-            throw uploadError;
-          }
-
-
-          const {
-            data:
-              publicUrlData
-          } =
-            supabase.storage
-              .from("cms-media")
-              .getPublicUrl(
-                storagePath
-              );
-
-
-          const {
-            error:
-              recordError
-          } =
-            await supabase
-              .from("media")
-              .insert({
-                storage_path:
-                  storagePath,
-                public_url:
-                  publicUrlData.publicUrl,
-                file_name:
-                  file.name,
-                mime_type:
-                  file.type || null,
-                file_size:
-                  file.size,
-                alt_text:
-                  $("#media-alt-text").value.trim() || null,
-                credit:
-                  $("#media-credit").value.trim() || null,
-                media_kind:
-                  $("#media-kind").value,
-                status:
-                  "active",
-                created_by:
-                  state.user?.id || null
-              });
-
-
-          if (
-            recordError
-          ) {
-            throw recordError;
-          }
+          await uploadMediaFile(
+            file,
+            {
+              targets,
+              mediaKind: $("#media-kind").value,
+              altText: $("#media-alt-text").value.trim() || null,
+              credit: $("#media-credit").value.trim() || null
+            }
+          );
 
 
           state.selectedMediaFile =
@@ -5376,6 +5534,7 @@ const supabasePublishableKey =
           $("#media-file-input").value = "";
           $("#media-alt-text").value = "";
           $("#media-credit").value = "";
+          resetMediaPublishTargets();
           $("#drop-zone").classList.remove("dragging");
           $("#drop-zone strong").textContent = "Drop image here";
           $("#drop-zone span").textContent = "PNG, JPG, WebP, SVG or AVIF";
@@ -5504,7 +5663,9 @@ const supabasePublishableKey =
           $("#field-note-hero-media"),
           $("#recap-hero-media"),
           $("#organization-logo-media"),
-          $("#person-photo-media")
+          $("#person-photo-media"),
+          $("#field-note-inline-media"),
+          $("#recap-inline-media")
         ];
 
 
@@ -5530,23 +5691,25 @@ const supabasePublishableKey =
                   ? "No logo"
                   : select.id === "person-photo-media"
                     ? "No photo"
-                    : "No hero image";
+                    : select.id.endsWith("inline-media")
+                      ? "Insert existing image..."
+                      : "No hero image";
 
+            const target =
+              select.id.startsWith("field-note")
+                ? "field-notes"
+                : select.id.startsWith("recap")
+                  ? "event-recaps"
+                  : select.id === "organization-logo-media"
+                    ? "sponsors"
+                    : "events";
 
             select.innerHTML =
               `<option value="">${emptyLabel}</option>` +
               state.media
-                .filter(
-                  (
-                    item
-                  ) =>
-                    item.status === "active"
-                )
-                .map(
-                  (
-                    item
-                  ) =>
-                    `<option value="${escapeHtml(item.id)}">${escapeHtml(item.file_name)}</option>`
+                .filter((item) => mediaAvailableFor(item, target))
+                .map((item) =>
+                  `<option value="${escapeHtml(item.id)}">${escapeHtml(item.file_name)}</option>`
                 )
                 .join("");
 
@@ -5896,6 +6059,64 @@ const supabasePublishableKey =
         closeModal("person");
         showToast(existingId ? "Speaker updated." : "Speaker created.");
         await loadAllContent();
+      }
+
+
+      function mediaById(id) {
+        return state.media.find((item) => String(item.id) === String(id));
+      }
+
+
+      async function uploadAndInsertEditorImage(file, textareaId, target) {
+        if (!file) return;
+        const textarea = $(`#${textareaId}`);
+        try {
+          const media = await uploadMediaFile(file, {
+            targets: String(target || "").split(",").map((value) => value.trim()).filter(Boolean),
+            mediaKind: "image",
+            altText: file.name.replace(/\.[^.]+$/, "")
+          });
+          await loadMedia();
+          refreshMediaSelectors();
+          refreshCounts();
+          insertMarkdownImage(textarea, media);
+          showToast("Image uploaded and inserted into the content.");
+        } catch (error) {
+          console.error(error);
+          showToast(error?.message || "Could not upload image.", "error");
+        }
+      }
+
+
+      async function uploadAndSelectCover(file, selectId, target) {
+        if (!file) return;
+        try {
+          const media = await uploadMediaFile(file, {
+            targets: String(target || "").split(",").map((value) => value.trim()).filter(Boolean),
+            mediaKind: "image",
+            altText: file.name.replace(/\.[^.]+$/, "")
+          });
+          await loadMedia();
+          refreshMediaSelectors();
+          refreshCounts();
+          $(`#${selectId}`).value = media.id;
+          showToast("Image uploaded and selected.");
+        } catch (error) {
+          console.error(error);
+          showToast(error?.message || "Could not upload image.", "error");
+        }
+      }
+
+
+      function insertSelectedLibraryImage(selectId, textareaId) {
+        const select = $(`#${selectId}`);
+        const media = mediaById(select?.value);
+        if (!media) {
+          showToast("Choose an image first.", "error");
+          return;
+        }
+        insertMarkdownImage($(`#${textareaId}`), media);
+        select.value = "";
       }
 
 
@@ -6765,6 +6986,80 @@ const supabasePublishableKey =
           );
         }
       );
+
+
+      $("#media-target-filter").addEventListener(
+        "change",
+        renderMedia
+      );
+
+
+      $$("[data-editor-upload]").forEach((button) => {
+        button.addEventListener("click", () => {
+          const textareaId = button.dataset.editorUpload;
+          const target = button.dataset.editorTarget;
+          const input = textareaId === "field-note-content"
+            ? $("#field-note-inline-upload")
+            : $("#recap-inline-upload");
+          state.pendingEditorUpload = { textareaId, target };
+          input.value = "";
+          input.click();
+        });
+      });
+
+
+      $("#field-note-inline-upload").addEventListener("change", async (event) => {
+        const pending = state.pendingEditorUpload;
+        if (pending) await uploadAndInsertEditorImage(event.target.files?.[0], pending.textareaId, pending.target);
+        state.pendingEditorUpload = null;
+      });
+
+
+      $("#recap-inline-upload").addEventListener("change", async (event) => {
+        const pending = state.pendingEditorUpload;
+        if (pending) await uploadAndInsertEditorImage(event.target.files?.[0], pending.textareaId, pending.target);
+        state.pendingEditorUpload = null;
+      });
+
+
+      $("#field-note-insert-media").addEventListener("click", () =>
+        insertSelectedLibraryImage("field-note-inline-media", "field-note-content")
+      );
+
+      $("#recap-insert-media").addEventListener("click", () =>
+        insertSelectedLibraryImage("recap-inline-media", "recap-content")
+      );
+
+
+
+      $$("[data-cover-upload]").forEach((button) => {
+        button.addEventListener("click", () => {
+          const selectId = button.dataset.coverUpload;
+          const target = button.dataset.coverTarget;
+          const inputMap = {
+            "event-cover-media": "#event-cover-upload",
+            "field-note-hero-media": "#field-note-hero-upload",
+            "recap-hero-media": "#recap-hero-upload"
+          };
+          const input = $(inputMap[selectId]);
+          state.pendingCoverUpload = { selectId, target };
+          input.value = "";
+          input.click();
+        });
+      });
+
+
+      [
+        $("#event-cover-upload"),
+        $("#field-note-hero-upload"),
+        $("#recap-hero-upload")
+      ].forEach((input) => {
+        input.addEventListener("change", async (event) => {
+          const pending = state.pendingCoverUpload;
+          if (pending) await uploadAndSelectCover(event.target.files?.[0], pending.selectId, pending.target);
+          state.pendingCoverUpload = null;
+        });
+      });
 
 
       $("#upload-media-button").addEventListener(
