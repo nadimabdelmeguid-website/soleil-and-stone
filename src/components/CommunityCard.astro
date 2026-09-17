@@ -877,7 +877,7 @@ function findCommunityCardImage(
                             "
                           >
 
-                            <!-- TITLE + DATE + EXTERNAL LINK -->
+                            <!-- TITLE + DATE -->
 
                             <div
                               class="
@@ -957,7 +957,7 @@ function findCommunityCardImage(
 
 
 
-                            <!-- RECAP ONLY IF ONE EXISTS -->
+                            <!-- RECAP -->
 
                             {
                               recapUrl && (
@@ -1046,6 +1046,12 @@ function findCommunityCardImage(
 
                       const cardImage =
                         findCommunityCardImage(
+                          event.id
+                        );
+
+
+                      const recapUrl =
+                        getEventRecapUrl(
                           event.id
                         );
 
@@ -1314,7 +1320,7 @@ function findCommunityCardImage(
 
 
 
-                            <!-- EVENT LINK -->
+                            <!-- CTAS -->
 
                             <div
                               class="
@@ -1323,30 +1329,72 @@ function findCommunityCardImage(
                               "
                             >
 
-                              <a
-                                href={event.url}
-                                target="_blank"
-                                rel="noopener noreferrer"
+                              <div
                                 class="
-                                  inline-flex
+                                  flex
+                                  flex-wrap
                                   items-center
-                                  gap-2
-                                  text-[9px]
-                                  uppercase
-                                  tracking-[0.15em]
-                                  text-brand-charcoal
-                                  font-semibold
-                                  hover:text-brand-gold
-                                  transition-colors
+                                  gap-x-5
+                                  gap-y-3
                                 "
                               >
-                                View Event
 
-                                <span>
-                                  ↗
-                                </span>
+                                <a
+                                  href={event.url}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  class="
+                                    inline-flex
+                                    items-center
+                                    gap-2
+                                    text-[9px]
+                                    uppercase
+                                    tracking-[0.15em]
+                                    text-brand-charcoal
+                                    font-semibold
+                                    hover:text-brand-gold
+                                    transition-colors
+                                  "
+                                >
+                                  View Event
 
-                              </a>
+                                  <span>
+                                    ↗
+                                  </span>
+
+                                </a>
+
+
+                                {
+                                  recapUrl && (
+
+                                    <a
+                                      href={recapUrl}
+                                      class="
+                                        inline-flex
+                                        items-center
+                                        gap-2
+                                        text-[9px]
+                                        uppercase
+                                        tracking-[0.15em]
+                                        text-brand-gold
+                                        font-semibold
+                                        hover:text-brand-charcoal
+                                        transition-colors
+                                      "
+                                    >
+                                      Read Recap
+
+                                      <span>
+                                        →
+                                      </span>
+
+                                    </a>
+
+                                  )
+                                }
+
+                              </div>
 
                             </div>
 
