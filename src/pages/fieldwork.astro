@@ -264,6 +264,88 @@ try {
 
 
 /* =========================================================
+   FIELDWORK EVENT IMAGES
+
+   Folder:
+   public/fieldwork-event-images/
+
+   Naming rule:
+   event.id + image extension
+
+   Examples:
+   startup-mixer-sep-2026.jpg
+   hardware-meetup-jun-2026.webp
+
+   If no matching file exists, no thumbnail is rendered.
+   ========================================================= */
+
+const fieldworkEventImageDirectory =
+  path.join(
+    process.cwd(),
+    "public",
+    "fieldwork-event-images"
+  );
+
+
+let fieldworkEventImageFiles:
+  string[] = [];
+
+
+try {
+
+  fieldworkEventImageFiles =
+    (
+      await readdir(
+        fieldworkEventImageDirectory
+      )
+    )
+      .filter(
+        (file) =>
+          /\.(png|jpe?g|webp|avif|svg)$/i
+            .test(
+              file
+            )
+      )
+      .sort(
+        (a, b) =>
+          a.localeCompare(
+            b
+          )
+      );
+
+} catch {
+
+  fieldworkEventImageFiles =
+    [];
+
+}
+
+
+function findFieldworkEventImage(
+  eventId: string
+) {
+
+  const file =
+    fieldworkEventImageFiles.find(
+      (candidate) =>
+        path
+          .parse(
+            candidate
+          )
+          .name
+          .toLowerCase() ===
+        eventId.toLowerCase()
+    );
+
+
+  return file
+    ? `/fieldwork-event-images/${encodeURIComponent(file)}`
+    : undefined;
+
+}
+
+
+/* =========================================================
    HELPERS
    ========================================================= */
 
@@ -1926,6 +2008,12 @@ const tradeShowLogoLoop =
                 );
 
 
+              const fieldworkImage =
+                findFieldworkEventImage(
+                  event.id
+                );
+
+
               const eventDate =
                 parseDate(
                   event.startDate
@@ -2014,7 +2102,7 @@ const tradeShowLogoLoop =
                     <!-- EVENT THUMBNAIL -->
 
                     {
-                      event.image && (
+                      fieldworkImage && (
 
                         <div
                           class="
@@ -2024,11 +2112,10 @@ const tradeShowLogoLoop =
                         >
 
                           <img
-                            src={event.image}
+                            src={fieldworkImage}
                             alt={`${event.title} event`}
                             loading="lazy"
                             decoding="async"
-                            referrerpolicy="no-referrer"
                             class="
                               block
                               w-full
