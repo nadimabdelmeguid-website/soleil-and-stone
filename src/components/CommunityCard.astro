@@ -1025,7 +1025,9 @@ function findCommunityCardImage(
 
 
           <!-- =================================================
-               HARDWARE PROGRAMMING — MANUAL SWIPE CAROUSEL
+               HARDWARE PROGRAMMING
+               MOBILE = ONE-CARD SWIPE
+               DESKTOP = ORIGINAL THREE-COLUMN GRID
                ================================================= -->
 
           {
@@ -1035,8 +1037,6 @@ function findCommunityCardImage(
               <div
                 class="
                   hardware-programming-shell
-                  max-w-2xl
-                  mx-auto
                 "
               >
 
@@ -1430,6 +1430,7 @@ function findCommunityCardImage(
                 <p
                   class="
                     hardware-programming-hint
+                    lg:hidden
                     mt-4
                     text-[9px]
                     uppercase
@@ -1502,7 +1503,7 @@ function findCommunityCardImage(
 
 
   /* =========================================================
-     HARDWARE PROGRAMMING — MANUAL SWIPE CAROUSEL
+     HARDWARE PROGRAMMING — MOBILE SWIPE / DESKTOP GRID
      ========================================================= */
 
   .hardware-programming-shell {
@@ -1510,6 +1511,13 @@ function findCommunityCardImage(
       100%;
   }
 
+
+  /*
+   * MOBILE / TABLET
+   *
+   * One full card is visible at a time.
+   * Each swipe snaps to the next card.
+   */
 
   .hardware-programming-scroll {
     width:
@@ -1583,28 +1591,72 @@ function findCommunityCardImage(
 
 
   /* =========================================================
-     MOBILE
+     DESKTOP
+
+     Restore the original Recent Programming layout:
+     three equal cards across the page with the original
+     card proportions and spacing.
+
+     If the number of cards later becomes too large, this
+     desktop section can be converted to a horizontal
+     scroller like Mixer History without changing mobile.
      ========================================================= */
 
   @media (
-    max-width: 639px
+    min-width: 1024px
   ) {
 
-    .hardware-programming-shell {
-      max-width:
-        100%;
+    .hardware-programming-scroll {
+      display:
+        grid;
+
+      grid-template-columns:
+        repeat(
+          3,
+          minmax(
+            0,
+            1fr
+          )
+        );
+
+      gap:
+        1.25rem;
+
+      overflow:
+        visible;
+
+      scroll-snap-type:
+        none;
+
+      scrollbar-width:
+        none;
+
+      touch-action:
+        auto;
+    }
+
+
+    .hardware-programming-scroll::-webkit-scrollbar {
+      display:
+        none;
     }
 
 
     .hardware-programming-card {
       width:
-        100%;
+        auto;
 
       min-width:
-        100%;
+        0;
 
       flex:
-        0 0 100%;
+        initial;
+
+      scroll-snap-align:
+        none;
+
+      scroll-snap-stop:
+        normal;
     }
 
   }
