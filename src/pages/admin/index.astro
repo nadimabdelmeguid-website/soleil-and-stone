@@ -1,0 +1,5485 @@
+---
+const supabaseUrl =
+  import.meta.env.PUBLIC_SUPABASE_URL ??
+  "https://szdhkttphzvtmljuhcqs.supabase.co";
+
+const supabasePublishableKey =
+  import.meta.env.PUBLIC_SUPABASE_PUBLISHABLE_KEY ??
+  "sb_publishable_iN7aDql5whleXHRCRVNS-w_Awl-iQez";
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    />
+
+    <meta
+      name="robots"
+      content="noindex, nofollow"
+    />
+
+    <meta
+      name="theme-color"
+      content="#22252A"
+    />
+
+    <title>
+      Soleil & Stone | Admin
+    </title>
+
+    <link
+      rel="preconnect"
+      href="https://fonts.googleapis.com"
+    />
+
+    <link
+      rel="preconnect"
+      href="https://fonts.gstatic.com"
+      crossorigin
+    />
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      :root {
+        --cream: #f4f1e8;
+        --card: #ffffff;
+        --charcoal: #22252a;
+        --slate: #4a505a;
+        --gold: #c5a059;
+        --gold-light: #e5c98b;
+        --border: #ddd8cb;
+        --danger: #a94b4b;
+        --success: #477a5a;
+        --shadow: 0 18px 60px rgba(34, 37, 42, 0.08);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        background: var(--cream);
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        background: var(--cream);
+        color: var(--charcoal);
+        font-family: "Plus Jakarta Sans", Inter, sans-serif;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      button,
+      input,
+      textarea,
+      select {
+        font: inherit;
+      }
+
+      button,
+      a {
+        -webkit-tap-highlight-color: transparent;
+      }
+
+      button {
+        cursor: pointer;
+      }
+
+      .hidden {
+        display: none !important;
+      }
+
+      .serif {
+        font-family: "Cinzel", Georgia, serif;
+      }
+
+      /* =====================================================
+         AUTH
+         ===================================================== */
+
+      .auth-screen {
+        min-height: 100vh;
+        display: grid;
+        place-items: center;
+        padding: 28px;
+        background:
+          radial-gradient(
+            circle at top left,
+            rgba(197, 160, 89, 0.14),
+            transparent 34%
+          ),
+          var(--cream);
+      }
+
+      .auth-card {
+        width: min(100%, 460px);
+        background: white;
+        border: 1px solid var(--border);
+        padding: 38px;
+        box-shadow: var(--shadow);
+      }
+
+      .auth-mark {
+        width: 54px;
+        height: 54px;
+        border: 1px solid var(--gold);
+        display: grid;
+        place-items: center;
+        color: var(--gold);
+        margin-bottom: 26px;
+        font-family: "Cinzel", Georgia, serif;
+        font-size: 18px;
+        letter-spacing: 0.08em;
+      }
+
+      .eyebrow {
+        margin: 0 0 8px;
+        color: var(--gold);
+        font-size: 10px;
+        font-weight: 600;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+      }
+
+      .auth-title {
+        margin: 0;
+        font-family: "Cinzel", Georgia, serif;
+        font-size: clamp(28px, 5vw, 38px);
+        font-weight: 400;
+        line-height: 1.2;
+      }
+
+      .auth-copy {
+        margin: 16px 0 26px;
+        color: var(--slate);
+        font-size: 14px;
+        line-height: 1.7;
+        font-weight: 300;
+      }
+
+      .label {
+        display: block;
+        margin-bottom: 8px;
+        color: var(--charcoal);
+        font-size: 10px;
+        font-weight: 600;
+        letter-spacing: 0.13em;
+        text-transform: uppercase;
+      }
+
+      .input,
+      .select,
+      .textarea {
+        width: 100%;
+        border: 1px solid var(--border);
+        border-radius: 0;
+        background: white;
+        color: var(--charcoal);
+        outline: none;
+        transition:
+          border-color 160ms ease,
+          box-shadow 160ms ease;
+      }
+
+      .input,
+      .select {
+        min-height: 46px;
+        padding: 0 13px;
+      }
+
+      .textarea {
+        min-height: 120px;
+        padding: 13px;
+        resize: vertical;
+        line-height: 1.6;
+      }
+
+      .input:focus,
+      .select:focus,
+      .textarea:focus {
+        border-color: var(--gold);
+        box-shadow: 0 0 0 3px rgba(197, 160, 89, 0.12);
+      }
+
+      .primary-button,
+      .secondary-button,
+      .quiet-button,
+      .danger-button {
+        min-height: 44px;
+        border-radius: 0;
+        padding: 0 16px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        font-size: 10px;
+        font-weight: 600;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        transition:
+          background 160ms ease,
+          color 160ms ease,
+          border-color 160ms ease,
+          opacity 160ms ease;
+      }
+
+      .primary-button {
+        border: 1px solid var(--charcoal);
+        background: var(--charcoal);
+        color: white;
+      }
+
+      .primary-button:hover {
+        border-color: var(--gold);
+        background: var(--gold);
+      }
+
+      .secondary-button {
+        border: 1px solid var(--border);
+        background: white;
+        color: var(--charcoal);
+      }
+
+      .secondary-button:hover {
+        border-color: var(--gold);
+        color: var(--gold);
+      }
+
+      .quiet-button {
+        border: 0;
+        background: transparent;
+        color: var(--slate);
+        padding-inline: 8px;
+      }
+
+      .quiet-button:hover {
+        color: var(--gold);
+      }
+
+      .danger-button {
+        border: 1px solid rgba(169, 75, 75, 0.3);
+        background: rgba(169, 75, 75, 0.06);
+        color: var(--danger);
+      }
+
+      .primary-button:disabled,
+      .secondary-button:disabled,
+      .danger-button:disabled {
+        cursor: not-allowed;
+        opacity: 0.48;
+      }
+
+      .auth-submit {
+        width: 100%;
+        margin-top: 16px;
+      }
+
+      .form-message {
+        margin: 14px 0 0;
+        font-size: 12px;
+        line-height: 1.6;
+      }
+
+      .form-message.success {
+        color: var(--success);
+      }
+
+      .form-message.error {
+        color: var(--danger);
+      }
+
+      /* =====================================================
+         APP SHELL
+         ===================================================== */
+
+      .admin-app {
+        min-height: 100vh;
+      }
+
+      .admin-shell {
+        min-height: 100vh;
+        display: grid;
+        grid-template-columns: 250px minmax(0, 1fr);
+      }
+
+      .sidebar {
+        position: sticky;
+        top: 0;
+        height: 100vh;
+        background: var(--charcoal);
+        color: white;
+        border-right: 1px solid rgba(255, 255, 255, 0.08);
+        padding: 26px 20px;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .admin-brand {
+        color: white;
+        text-decoration: none;
+      }
+
+      .admin-brand-name {
+        font-family: "Cinzel", Georgia, serif;
+        font-size: 17px;
+        letter-spacing: 0.14em;
+      }
+
+      .admin-brand-subtitle {
+        margin-top: 5px;
+        color: rgba(255, 255, 255, 0.46);
+        font-size: 9px;
+        font-weight: 600;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+      }
+
+      .sidebar-nav {
+        margin-top: 38px;
+        display: grid;
+        gap: 4px;
+      }
+
+      .nav-button {
+        width: 100%;
+        min-height: 44px;
+        border: 0;
+        background: transparent;
+        color: rgba(255, 255, 255, 0.62);
+        padding: 0 12px;
+        text-align: left;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        font-size: 12px;
+        transition:
+          background 160ms ease,
+          color 160ms ease;
+      }
+
+      .nav-button:hover,
+      .nav-button.active {
+        background: rgba(255, 255, 255, 0.06);
+        color: white;
+      }
+
+      .nav-button.active {
+        box-shadow: inset 2px 0 0 var(--gold);
+      }
+
+      .nav-count {
+        color: rgba(255, 255, 255, 0.35);
+        font-size: 10px;
+      }
+
+      .sidebar-footer {
+        margin-top: auto;
+        padding-top: 24px;
+        border-top: 1px solid rgba(255, 255, 255, 0.08);
+      }
+
+      .sidebar-email {
+        margin-bottom: 12px;
+        color: rgba(255, 255, 255, 0.45);
+        font-size: 10px;
+        line-height: 1.5;
+        word-break: break-word;
+      }
+
+      .sidebar-signout {
+        color: rgba(255, 255, 255, 0.7);
+      }
+
+      .main {
+        min-width: 0;
+        padding: 34px;
+      }
+
+      .main-inner {
+        width: min(100%, 1180px);
+        margin: 0 auto;
+      }
+
+      .topbar {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 22px;
+        margin-bottom: 30px;
+      }
+
+      .page-title {
+        margin: 0;
+        font-family: "Cinzel", Georgia, serif;
+        font-size: clamp(28px, 4vw, 40px);
+        font-weight: 400;
+        line-height: 1.2;
+      }
+
+      .page-subtitle {
+        margin: 8px 0 0;
+        color: var(--slate);
+        font-size: 13px;
+        line-height: 1.6;
+        font-weight: 300;
+      }
+
+      .sync-note {
+        border: 1px solid rgba(197, 160, 89, 0.35);
+        background: rgba(197, 160, 89, 0.08);
+        padding: 12px 14px;
+        color: #80652f;
+        font-size: 11px;
+        line-height: 1.55;
+      }
+
+      .mobile-menu-button {
+        display: none;
+      }
+
+      /* =====================================================
+         DASHBOARD
+         ===================================================== */
+
+      .quick-actions {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 12px;
+        margin-bottom: 28px;
+      }
+
+      .quick-action {
+        min-height: 92px;
+        border: 1px solid var(--border);
+        background: white;
+        padding: 16px;
+        text-align: left;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        color: var(--charcoal);
+        transition:
+          border-color 160ms ease,
+          transform 160ms ease;
+      }
+
+      .quick-action:hover {
+        border-color: var(--gold);
+        transform: translateY(-1px);
+      }
+
+      .quick-action-icon {
+        color: var(--gold);
+        font-size: 18px;
+      }
+
+      .quick-action-label {
+        font-size: 10px;
+        font-weight: 600;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+      }
+
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 1px;
+        background: var(--border);
+        border: 1px solid var(--border);
+        margin-bottom: 28px;
+      }
+
+      .stat-card {
+        background: white;
+        padding: 20px;
+      }
+
+      .stat-value {
+        font-family: "Cinzel", Georgia, serif;
+        font-size: 30px;
+        color: var(--gold);
+      }
+
+      .stat-label {
+        margin-top: 6px;
+        color: var(--slate);
+        font-size: 9px;
+        font-weight: 600;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+      }
+
+      .panel {
+        border: 1px solid var(--border);
+        background: white;
+      }
+
+      .panel-header {
+        min-height: 66px;
+        padding: 16px 18px;
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 18px;
+      }
+
+      .panel-title {
+        margin: 0;
+        font-family: "Cinzel", Georgia, serif;
+        font-size: 18px;
+        font-weight: 400;
+      }
+
+      .panel-copy {
+        margin: 3px 0 0;
+        color: var(--slate);
+        font-size: 11px;
+        font-weight: 300;
+      }
+
+      .empty-state {
+        padding: 44px 20px;
+        text-align: center;
+        color: var(--slate);
+      }
+
+      .empty-state strong {
+        display: block;
+        margin-bottom: 8px;
+        color: var(--charcoal);
+        font-family: "Cinzel", Georgia, serif;
+        font-weight: 400;
+        font-size: 19px;
+      }
+
+      /* =====================================================
+         CONTENT LISTS
+         ===================================================== */
+
+      .toolbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 14px;
+        margin-bottom: 18px;
+      }
+
+      .toolbar-left {
+        min-width: 0;
+        flex: 1;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .search-input {
+        width: min(100%, 420px);
+      }
+
+      .filters {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 7px;
+        margin-bottom: 16px;
+      }
+
+      .filter-button {
+        min-height: 34px;
+        border: 1px solid var(--border);
+        background: white;
+        padding: 0 12px;
+        color: var(--slate);
+        font-size: 9px;
+        font-weight: 600;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+      }
+
+      .filter-button.active {
+        border-color: var(--charcoal);
+        background: var(--charcoal);
+        color: white;
+      }
+
+      .content-list {
+        border: 1px solid var(--border);
+        background: white;
+      }
+
+      .content-row {
+        padding: 16px 18px;
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 18px;
+        align-items: center;
+        border-bottom: 1px solid var(--border);
+      }
+
+      .content-row:last-child {
+        border-bottom: 0;
+      }
+
+      .row-title {
+        margin: 0;
+        font-family: "Cinzel", Georgia, serif;
+        font-size: 16px;
+        font-weight: 400;
+        line-height: 1.4;
+      }
+
+      .row-meta {
+        margin-top: 5px;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 7px;
+        color: var(--slate);
+        font-size: 10px;
+      }
+
+      .status-pill {
+        display: inline-flex;
+        align-items: center;
+        min-height: 24px;
+        padding: 0 8px;
+        border: 1px solid var(--border);
+        color: var(--slate);
+        font-size: 8px;
+        font-weight: 600;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+      }
+
+      .status-pill.published,
+      .status-pill.active {
+        border-color: rgba(71, 122, 90, 0.25);
+        background: rgba(71, 122, 90, 0.07);
+        color: var(--success);
+      }
+
+      .status-pill.draft {
+        border-color: rgba(197, 160, 89, 0.35);
+        background: rgba(197, 160, 89, 0.08);
+        color: #80652f;
+      }
+
+      .status-pill.archived {
+        opacity: 0.72;
+      }
+
+      .row-actions {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      /* =====================================================
+         MEDIA
+         ===================================================== */
+
+      .media-layout {
+        display: grid;
+        grid-template-columns: minmax(260px, 340px) minmax(0, 1fr);
+        gap: 18px;
+      }
+
+      .upload-panel {
+        border: 1px solid var(--border);
+        background: white;
+        padding: 20px;
+        align-self: start;
+      }
+
+      .drop-zone {
+        margin-top: 16px;
+        border: 1px dashed #bdb6a6;
+        background: var(--cream);
+        min-height: 180px;
+        display: grid;
+        place-items: center;
+        padding: 20px;
+        text-align: center;
+        transition:
+          border-color 160ms ease,
+          background 160ms ease;
+      }
+
+      .drop-zone.dragging {
+        border-color: var(--gold);
+        background: rgba(197, 160, 89, 0.1);
+      }
+
+      .drop-zone strong {
+        display: block;
+        margin-bottom: 6px;
+        font-family: "Cinzel", Georgia, serif;
+        font-weight: 400;
+      }
+
+      .drop-zone span {
+        color: var(--slate);
+        font-size: 11px;
+        line-height: 1.6;
+      }
+
+      .media-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 12px;
+      }
+
+      .media-card {
+        border: 1px solid var(--border);
+        background: white;
+        min-width: 0;
+      }
+
+      .media-preview {
+        aspect-ratio: 4 / 3;
+        background: var(--cream);
+        border-bottom: 1px solid var(--border);
+        display: grid;
+        place-items: center;
+        overflow: hidden;
+      }
+
+      .media-preview img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+      }
+
+      .media-card-body {
+        padding: 11px;
+      }
+
+      .media-name {
+        margin: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        font-size: 10px;
+        font-weight: 500;
+      }
+
+      .media-meta {
+        margin-top: 5px;
+        color: var(--slate);
+        font-size: 9px;
+      }
+
+      /* =====================================================
+         MODAL / EDITOR
+         ===================================================== */
+
+      .modal-backdrop {
+        position: fixed;
+        inset: 0;
+        z-index: 100;
+        background: rgba(34, 37, 42, 0.54);
+        display: grid;
+        place-items: center;
+        padding: 20px;
+        overflow-y: auto;
+      }
+
+      .modal {
+        width: min(100%, 880px);
+        max-height: calc(100vh - 40px);
+        overflow-y: auto;
+        background: var(--cream);
+        border: 1px solid var(--border);
+        box-shadow: 0 24px 100px rgba(0, 0, 0, 0.2);
+      }
+
+      .modal-header {
+        position: sticky;
+        top: 0;
+        z-index: 4;
+        min-height: 70px;
+        padding: 14px 20px;
+        background: white;
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 18px;
+      }
+
+      .modal-title {
+        margin: 0;
+        font-family: "Cinzel", Georgia, serif;
+        font-size: 20px;
+        font-weight: 400;
+      }
+
+      .modal-body {
+        padding: 20px;
+      }
+
+      .form-section {
+        border: 1px solid var(--border);
+        background: white;
+        margin-bottom: 14px;
+      }
+
+      .form-section-header {
+        padding: 14px 16px;
+        border-bottom: 1px solid var(--border);
+      }
+
+      .form-section-title {
+        margin: 0;
+        font-family: "Cinzel", Georgia, serif;
+        font-size: 15px;
+        font-weight: 400;
+      }
+
+      .form-section-copy {
+        margin: 4px 0 0;
+        color: var(--slate);
+        font-size: 10px;
+        line-height: 1.5;
+      }
+
+      .form-section-body {
+        padding: 16px;
+      }
+
+      .form-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 14px;
+      }
+
+      .form-field.full {
+        grid-column: 1 / -1;
+      }
+
+      .checkbox-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 18px;
+      }
+
+      .checkbox-label {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        color: var(--slate);
+        font-size: 11px;
+      }
+
+      .modal-footer {
+        position: sticky;
+        bottom: 0;
+        z-index: 4;
+        padding: 14px 20px;
+        background: white;
+        border-top: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+      }
+
+      .modal-footer-right {
+        display: flex;
+        gap: 8px;
+      }
+
+      /* =====================================================
+         TOAST
+         ===================================================== */
+
+      .toast {
+        position: fixed;
+        right: 22px;
+        bottom: 22px;
+        z-index: 200;
+        width: min(calc(100% - 44px), 360px);
+        border: 1px solid var(--border);
+        background: white;
+        padding: 13px 15px;
+        box-shadow: var(--shadow);
+        color: var(--charcoal);
+        font-size: 12px;
+        line-height: 1.55;
+      }
+
+      .toast.success {
+        border-left: 3px solid var(--success);
+      }
+
+      .toast.error {
+        border-left: 3px solid var(--danger);
+      }
+
+      /* =====================================================
+         MOBILE
+         ===================================================== */
+
+      @media (max-width: 900px) {
+        .admin-shell {
+          display: block;
+        }
+
+        .sidebar {
+          position: fixed;
+          left: 0;
+          top: 0;
+          z-index: 80;
+          width: min(86vw, 300px);
+          transform: translateX(-105%);
+          transition: transform 180ms ease;
+        }
+
+        .sidebar.open {
+          transform: translateX(0);
+        }
+
+        .mobile-menu-button {
+          display: inline-flex;
+        }
+
+        .main {
+          padding: 22px;
+        }
+
+        .quick-actions,
+        .stats-grid {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .media-layout {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media (max-width: 640px) {
+        .auth-card {
+          padding: 26px 22px;
+        }
+
+        .main {
+          padding: 18px 14px 28px;
+        }
+
+        .topbar {
+          align-items: center;
+        }
+
+        .page-title {
+          font-size: 28px;
+        }
+
+        .quick-actions {
+          grid-template-columns: 1fr 1fr;
+        }
+
+        .stats-grid {
+          grid-template-columns: 1fr 1fr;
+        }
+
+        .toolbar {
+          align-items: stretch;
+          flex-direction: column;
+        }
+
+        .toolbar-left {
+          width: 100%;
+        }
+
+        .search-input {
+          width: 100%;
+        }
+
+        .content-row {
+          grid-template-columns: 1fr;
+        }
+
+        .row-actions {
+          justify-content: flex-start;
+        }
+
+        .media-grid {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .modal-backdrop {
+          padding: 0;
+          place-items: stretch;
+        }
+
+        .modal {
+          width: 100%;
+          max-height: 100vh;
+          min-height: 100vh;
+          border: 0;
+        }
+
+        .form-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .form-field.full {
+          grid-column: auto;
+        }
+
+        .modal-footer {
+          align-items: stretch;
+          flex-direction: column;
+        }
+
+        .modal-footer-right {
+          width: 100%;
+        }
+
+        .modal-footer-right > * {
+          flex: 1;
+        }
+      }
+
+      @media (max-width: 430px) {
+        .quick-actions {
+          grid-template-columns: 1fr;
+        }
+
+        .media-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- =====================================================
+         AUTH SCREEN
+         ===================================================== -->
+
+    <section
+      id="auth-screen"
+      class="auth-screen"
+    >
+      <div class="auth-card">
+        <div class="auth-mark">
+          S&S
+        </div>
+
+        <p class="eyebrow">
+          Private Administration
+        </p>
+
+        <h1 class="auth-title">
+          Content Manager
+        </h1>
+
+        <p class="auth-copy">
+          Manage events, Field Notes, recaps, photos, logos and community content without editing the website code.
+        </p>
+
+        <form id="login-form">
+          <label
+            class="label"
+            for="login-email"
+          >
+            Email
+          </label>
+
+          <input
+            id="login-email"
+            class="input"
+            type="email"
+            autocomplete="email"
+            placeholder="you@example.com"
+            required
+          />
+
+          <button
+            id="login-submit"
+            class="primary-button auth-submit"
+            type="submit"
+          >
+            Send secure login link
+          </button>
+        </form>
+
+        <p
+          id="login-message"
+          class="form-message hidden"
+          aria-live="polite"
+        ></p>
+      </div>
+    </section>
+
+
+    <!-- =====================================================
+         ADMIN APP
+         ===================================================== -->
+
+    <div
+      id="admin-app"
+      class="admin-app hidden"
+    >
+      <div class="admin-shell">
+        <aside
+          id="sidebar"
+          class="sidebar"
+        >
+          <a
+            class="admin-brand"
+            href="/admin/"
+          >
+            <div class="admin-brand-name">
+              SOLEIL & STONE
+            </div>
+
+            <div class="admin-brand-subtitle">
+              Content Manager
+            </div>
+          </a>
+
+          <nav class="sidebar-nav">
+            <button
+              class="nav-button active"
+              type="button"
+              data-section="dashboard"
+            >
+              <span>Dashboard</span>
+            </button>
+
+            <button
+              class="nav-button"
+              type="button"
+              data-section="events"
+            >
+              <span>Events</span>
+              <span
+                id="nav-events-count"
+                class="nav-count"
+              >
+                0
+              </span>
+            </button>
+
+            <button
+              class="nav-button"
+              type="button"
+              data-section="field-notes"
+            >
+              <span>Field Notes</span>
+              <span
+                id="nav-field-notes-count"
+                class="nav-count"
+              >
+                0
+              </span>
+            </button>
+
+            <button
+              class="nav-button"
+              type="button"
+              data-section="recaps"
+            >
+              <span>Event Recaps</span>
+              <span
+                id="nav-recaps-count"
+                class="nav-count"
+              >
+                0
+              </span>
+            </button>
+
+            <button
+              class="nav-button"
+              type="button"
+              data-section="media"
+            >
+              <span>Media Library</span>
+              <span
+                id="nav-media-count"
+                class="nav-count"
+              >
+                0
+              </span>
+            </button>
+
+            <button
+              class="nav-button"
+              type="button"
+              data-section="organizations"
+            >
+              <span>Sponsors & Logos</span>
+            </button>
+
+            <button
+              class="nav-button"
+              type="button"
+              data-section="people"
+            >
+              <span>Speakers</span>
+            </button>
+          </nav>
+
+          <div class="sidebar-footer">
+            <div
+              id="sidebar-email"
+              class="sidebar-email"
+            ></div>
+
+            <a
+              class="quiet-button sidebar-signout"
+              href="/"
+            >
+              View website ↗
+            </a>
+
+            <button
+              id="signout-button"
+              class="quiet-button sidebar-signout"
+              type="button"
+            >
+              Sign out
+            </button>
+          </div>
+        </aside>
+
+        <main class="main">
+          <div class="main-inner">
+            <div class="topbar">
+              <div>
+                <button
+                  id="mobile-menu-button"
+                  class="secondary-button mobile-menu-button"
+                  type="button"
+                  aria-label="Open admin navigation"
+                >
+                  Menu
+                </button>
+
+                <p
+                  id="page-eyebrow"
+                  class="eyebrow"
+                >
+                  Overview
+                </p>
+
+                <h1
+                  id="page-title"
+                  class="page-title"
+                >
+                  Dashboard
+                </h1>
+
+                <p
+                  id="page-subtitle"
+                  class="page-subtitle"
+                >
+                  Manage Soleil & Stone content from one place.
+                </p>
+              </div>
+
+              <div class="sync-note">
+                Admin CMS is live. Public pages will be connected after the existing content migration.
+              </div>
+            </div>
+
+
+            <!-- =============================================
+                 DASHBOARD
+                 ============================================= -->
+
+            <section
+              id="section-dashboard"
+              class="admin-section"
+              data-admin-section="dashboard"
+            >
+              <div class="quick-actions">
+                <button
+                  class="quick-action"
+                  type="button"
+                  data-quick-action="event"
+                >
+                  <span class="quick-action-icon">＋</span>
+                  <span class="quick-action-label">New Event</span>
+                </button>
+
+                <button
+                  class="quick-action"
+                  type="button"
+                  data-quick-action="field-note"
+                >
+                  <span class="quick-action-icon">＋</span>
+                  <span class="quick-action-label">Field Note</span>
+                </button>
+
+                <button
+                  class="quick-action"
+                  type="button"
+                  data-quick-action="recap"
+                >
+                  <span class="quick-action-icon">＋</span>
+                  <span class="quick-action-label">Event Recap</span>
+                </button>
+
+                <button
+                  class="quick-action"
+                  type="button"
+                  data-quick-action="media"
+                >
+                  <span class="quick-action-icon">↑</span>
+                  <span class="quick-action-label">Upload Media</span>
+                </button>
+              </div>
+
+              <div class="stats-grid">
+                <div class="stat-card">
+                  <div
+                    id="stat-events"
+                    class="stat-value"
+                  >
+                    0
+                  </div>
+                  <div class="stat-label">
+                    Events
+                  </div>
+                </div>
+
+                <div class="stat-card">
+                  <div
+                    id="stat-field-notes"
+                    class="stat-value"
+                  >
+                    0
+                  </div>
+                  <div class="stat-label">
+                    Field Notes
+                  </div>
+                </div>
+
+                <div class="stat-card">
+                  <div
+                    id="stat-recaps"
+                    class="stat-value"
+                  >
+                    0
+                  </div>
+                  <div class="stat-label">
+                    Event Recaps
+                  </div>
+                </div>
+
+                <div class="stat-card">
+                  <div
+                    id="stat-media"
+                    class="stat-value"
+                  >
+                    0
+                  </div>
+                  <div class="stat-label">
+                    Media Files
+                  </div>
+                </div>
+              </div>
+
+              <div class="panel">
+                <div class="panel-header">
+                  <div>
+                    <h2 class="panel-title">
+                      Recent Content
+                    </h2>
+                    <p class="panel-copy">
+                      Your most recently updated CMS items.
+                    </p>
+                  </div>
+                </div>
+
+                <div id="recent-content-list"></div>
+              </div>
+            </section>
+
+
+            <!-- =============================================
+                 EVENTS
+                 ============================================= -->
+
+            <section
+              id="section-events"
+              class="admin-section hidden"
+              data-admin-section="events"
+            >
+              <div class="toolbar">
+                <div class="toolbar-left">
+                  <input
+                    id="events-search"
+                    class="input search-input"
+                    type="search"
+                    placeholder="Search events..."
+                  />
+                </div>
+
+                <button
+                  id="add-event-button"
+                  class="primary-button"
+                  type="button"
+                >
+                  + Add Event
+                </button>
+              </div>
+
+              <div
+                id="event-filters"
+                class="filters"
+              >
+                <button
+                  class="filter-button active"
+                  type="button"
+                  data-filter="all"
+                >
+                  All
+                </button>
+                <button
+                  class="filter-button"
+                  type="button"
+                  data-filter="upcoming"
+                >
+                  Upcoming
+                </button>
+                <button
+                  class="filter-button"
+                  type="button"
+                  data-filter="past"
+                >
+                  Past
+                </button>
+                <button
+                  class="filter-button"
+                  type="button"
+                  data-filter="draft"
+                >
+                  Drafts
+                </button>
+                <button
+                  class="filter-button"
+                  type="button"
+                  data-filter="archived"
+                >
+                  Archived
+                </button>
+              </div>
+
+              <div
+                id="events-list"
+                class="content-list"
+              ></div>
+            </section>
+
+
+            <!-- =============================================
+                 FIELD NOTES
+                 ============================================= -->
+
+            <section
+              id="section-field-notes"
+              class="admin-section hidden"
+              data-admin-section="field-notes"
+            >
+              <div class="toolbar">
+                <div class="toolbar-left">
+                  <input
+                    id="field-notes-search"
+                    class="input search-input"
+                    type="search"
+                    placeholder="Search Field Notes..."
+                  />
+                </div>
+
+                <button
+                  id="add-field-note-button"
+                  class="primary-button"
+                  type="button"
+                >
+                  + New Field Note
+                </button>
+              </div>
+
+              <div
+                id="field-notes-list"
+                class="content-list"
+              ></div>
+            </section>
+
+
+            <!-- =============================================
+                 RECAPS
+                 ============================================= -->
+
+            <section
+              id="section-recaps"
+              class="admin-section hidden"
+              data-admin-section="recaps"
+            >
+              <div class="toolbar">
+                <div class="toolbar-left">
+                  <input
+                    id="recaps-search"
+                    class="input search-input"
+                    type="search"
+                    placeholder="Search event recaps..."
+                  />
+                </div>
+
+                <button
+                  id="add-recap-button"
+                  class="primary-button"
+                  type="button"
+                >
+                  + New Recap
+                </button>
+              </div>
+
+              <div
+                id="recaps-list"
+                class="content-list"
+              ></div>
+            </section>
+
+
+            <!-- =============================================
+                 MEDIA
+                 ============================================= -->
+
+            <section
+              id="section-media"
+              class="admin-section hidden"
+              data-admin-section="media"
+            >
+              <div class="media-layout">
+                <div class="upload-panel">
+                  <p class="eyebrow">
+                    Upload
+                  </p>
+
+                  <h2 class="panel-title">
+                    Add Photos & Logos
+                  </h2>
+
+                  <p class="panel-copy">
+                    Drag a file here or choose one from your device. You can use it later as an event image, logo, Field Note image or recap photo.
+                  </p>
+
+                  <div
+                    id="drop-zone"
+                    class="drop-zone"
+                  >
+                    <div>
+                      <strong>
+                        Drop image here
+                      </strong>
+                      <span>
+                        PNG, JPG, WebP, SVG or AVIF
+                      </span>
+
+                      <div style="margin-top: 14px;">
+                        <button
+                          id="choose-media-button"
+                          class="secondary-button"
+                          type="button"
+                        >
+                          Choose file
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  <input
+                    id="media-file-input"
+                    class="hidden"
+                    type="file"
+                    accept="image/png,image/jpeg,image/webp,image/svg+xml,image/avif"
+                  />
+
+                  <div style="margin-top: 14px;">
+                    <label
+                      class="label"
+                      for="media-kind"
+                    >
+                      Type
+                    </label>
+
+                    <select
+                      id="media-kind"
+                      class="select"
+                    >
+                      <option value="image">
+                        Photo / Image
+                      </option>
+                      <option value="logo">
+                        Logo
+                      </option>
+                    </select>
+                  </div>
+
+                  <div style="margin-top: 14px;">
+                    <label
+                      class="label"
+                      for="media-alt-text"
+                    >
+                      Alt text
+                    </label>
+
+                    <input
+                      id="media-alt-text"
+                      class="input"
+                      type="text"
+                      placeholder="Describe the image"
+                    />
+                  </div>
+
+                  <div style="margin-top: 14px;">
+                    <label
+                      class="label"
+                      for="media-credit"
+                    >
+                      Credit
+                    </label>
+
+                    <input
+                      id="media-credit"
+                      class="input"
+                      type="text"
+                      placeholder="Photographer or source"
+                    />
+                  </div>
+
+                  <button
+                    id="upload-media-button"
+                    class="primary-button"
+                    type="button"
+                    style="width: 100%; margin-top: 16px;"
+                    disabled
+                  >
+                    Upload
+                  </button>
+                </div>
+
+                <div>
+                  <div class="toolbar">
+                    <div class="toolbar-left">
+                      <input
+                        id="media-search"
+                        class="input search-input"
+                        type="search"
+                        placeholder="Search media..."
+                      />
+                    </div>
+                  </div>
+
+                  <div
+                    id="media-grid"
+                    class="media-grid"
+                  ></div>
+                </div>
+              </div>
+            </section>
+
+
+            <!-- =============================================
+                 ORGANIZATIONS
+                 ============================================= -->
+
+            <section
+              id="section-organizations"
+              class="admin-section hidden"
+              data-admin-section="organizations"
+            >
+              <div class="panel">
+                <div class="panel-header">
+                  <div>
+                    <h2 class="panel-title">
+                      Sponsors & Organizations
+                    </h2>
+                    <p class="panel-copy">
+                      This manager will connect sponsor names, websites and logos to events.
+                    </p>
+                  </div>
+                </div>
+
+                <div class="empty-state">
+                  <strong>
+                    Ready for migration
+                  </strong>
+                  Your existing Hardware Meetup logos will be imported here before the public site switches to the CMS.
+                </div>
+              </div>
+            </section>
+
+
+            <!-- =============================================
+                 PEOPLE
+                 ============================================= -->
+
+            <section
+              id="section-people"
+              class="admin-section hidden"
+              data-admin-section="people"
+            >
+              <div class="panel">
+                <div class="panel-header">
+                  <div>
+                    <h2 class="panel-title">
+                      Speakers
+                    </h2>
+                    <p class="panel-copy">
+                      Reusable speaker profiles for Hardware Meetup and other programming.
+                    </p>
+                  </div>
+                </div>
+
+                <div class="empty-state">
+                  <strong>
+                    Ready for migration
+                  </strong>
+                  Speaker profiles from your current event data will be imported here in the migration phase.
+                </div>
+              </div>
+            </section>
+          </div>
+        </main>
+      </div>
+    </div>
+
+
+    <!-- =====================================================
+         EVENT MODAL
+         ===================================================== -->
+
+    <div
+      id="event-modal"
+      class="modal-backdrop hidden"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="event-modal-title"
+    >
+      <form
+        id="event-form"
+        class="modal"
+      >
+        <div class="modal-header">
+          <div>
+            <p class="eyebrow">
+              Event Editor
+            </p>
+            <h2
+              id="event-modal-title"
+              class="modal-title"
+            >
+              Add Event
+            </h2>
+          </div>
+
+          <button
+            class="quiet-button"
+            type="button"
+            data-close-modal="event"
+          >
+            Close
+          </button>
+        </div>
+
+        <div class="modal-body">
+          <input
+            id="event-record-id"
+            type="hidden"
+          />
+
+          <div class="form-section">
+            <div class="form-section-header">
+              <h3 class="form-section-title">
+                Event Details
+              </h3>
+              <p class="form-section-copy">
+                Past events remain fully editable forever.
+              </p>
+            </div>
+
+            <div class="form-section-body">
+              <div class="form-grid">
+                <div class="form-field full">
+                  <label
+                    class="label"
+                    for="event-title"
+                  >
+                    Title
+                  </label>
+                  <input
+                    id="event-title"
+                    class="input"
+                    type="text"
+                    required
+                  />
+                </div>
+
+                <div class="form-field">
+                  <label
+                    class="label"
+                    for="event-start-date"
+                  >
+                    Start date
+                  </label>
+                  <input
+                    id="event-start-date"
+                    class="input"
+                    type="date"
+                    required
+                  />
+                </div>
+
+                <div class="form-field">
+                  <label
+                    class="label"
+                    for="event-end-date"
+                  >
+                    End date
+                  </label>
+                  <input
+                    id="event-end-date"
+                    class="input"
+                    type="date"
+                  />
+                </div>
+
+                <div class="form-field">
+                  <label
+                    class="label"
+                    for="event-type"
+                  >
+                    Event type
+                  </label>
+                  <input
+                    id="event-type"
+                    class="input"
+                    type="text"
+                    placeholder="meetup, trade-show..."
+                  />
+                </div>
+
+                <div class="form-field">
+                  <label
+                    class="label"
+                    for="event-participation"
+                  >
+                    Participation
+                  </label>
+                  <select
+                    id="event-participation"
+                    class="select"
+                  >
+                    <option value="">
+                      Select
+                    </option>
+                    <option value="hosted">
+                      Hosted
+                    </option>
+                    <option value="co-organized">
+                      Co-organized
+                    </option>
+                    <option value="attending">
+                      Attending
+                    </option>
+                    <option value="exhibitor">
+                      Exhibitor
+                    </option>
+                  </select>
+                </div>
+
+                <div class="form-field">
+                  <label
+                    class="label"
+                    for="event-role"
+                  >
+                    Role label
+                  </label>
+                  <input
+                    id="event-role"
+                    class="input"
+                    type="text"
+                    placeholder="Host, Co-organizer..."
+                  />
+                </div>
+
+                <div class="form-field">
+                  <label
+                    class="label"
+                    for="event-registrations"
+                  >
+                    Registrations
+                  </label>
+                  <input
+                    id="event-registrations"
+                    class="input"
+                    type="number"
+                    min="0"
+                    step="1"
+                  />
+                </div>
+
+                <div class="form-field full">
+                  <label
+                    class="label"
+                    for="event-description"
+                  >
+                    Description
+                  </label>
+                  <textarea
+                    id="event-description"
+                    class="textarea"
+                  ></textarea>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-section">
+            <div class="form-section-header">
+              <h3 class="form-section-title">
+                Location & Link
+              </h3>
+            </div>
+
+            <div class="form-section-body">
+              <div class="form-grid">
+                <div class="form-field">
+                  <label
+                    class="label"
+                    for="event-venue"
+                  >
+                    Venue
+                  </label>
+                  <input
+                    id="event-venue"
+                    class="input"
+                    type="text"
+                  />
+                </div>
+
+                <div class="form-field">
+                  <label
+                    class="label"
+                    for="event-city"
+                  >
+                    City
+                  </label>
+                  <input
+                    id="event-city"
+                    class="input"
+                    type="text"
+                  />
+                </div>
+
+                <div class="form-field">
+                  <label
+                    class="label"
+                    for="event-region"
+                  >
+                    State / Region
+                  </label>
+                  <input
+                    id="event-region"
+                    class="input"
+                    type="text"
+                  />
+                </div>
+
+                <div class="form-field">
+                  <label
+                    class="label"
+                    for="event-country"
+                  >
+                    Country
+                  </label>
+                  <input
+                    id="event-country"
+                    class="input"
+                    type="text"
+                    value="USA"
+                  />
+                </div>
+
+                <div class="form-field full">
+                  <label
+                    class="label"
+                    for="event-url"
+                  >
+                    Event URL
+                  </label>
+                  <input
+                    id="event-url"
+                    class="input"
+                    type="url"
+                    placeholder="https://..."
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-section">
+            <div class="form-section-header">
+              <h3 class="form-section-title">
+                Publishing
+              </h3>
+              <p class="form-section-copy">
+                Drafts stay private. Published content can later feed the public website automatically.
+              </p>
+            </div>
+
+            <div class="form-section-body">
+              <div class="form-grid">
+                <div class="form-field">
+                  <label
+                    class="label"
+                    for="event-status"
+                  >
+                    Status
+                  </label>
+                  <select
+                    id="event-status"
+                    class="select"
+                  >
+                    <option value="draft">
+                      Draft
+                    </option>
+                    <option value="published">
+                      Published
+                    </option>
+                    <option value="archived">
+                      Archived
+                    </option>
+                  </select>
+                </div>
+
+                <div class="form-field">
+                  <label
+                    class="label"
+                    for="event-cover-media"
+                  >
+                    Cover image
+                  </label>
+                  <select
+                    id="event-cover-media"
+                    class="select"
+                  >
+                    <option value="">
+                      No cover image
+                    </option>
+                  </select>
+                </div>
+
+                <div class="form-field full">
+                  <div class="checkbox-row">
+                    <label class="checkbox-label">
+                      <input
+                        id="event-show-home"
+                        type="checkbox"
+                      />
+                      Show on homepage
+                    </label>
+
+                    <label class="checkbox-label">
+                      <input
+                        id="event-featured"
+                        type="checkbox"
+                      />
+                      Featured
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button
+            id="archive-event-button"
+            class="danger-button hidden"
+            type="button"
+          >
+            Archive Event
+          </button>
+
+          <div class="modal-footer-right">
+            <button
+              class="secondary-button"
+              type="button"
+              data-close-modal="event"
+            >
+              Cancel
+            </button>
+
+            <button
+              id="save-event-button"
+              class="primary-button"
+              type="submit"
+            >
+              Save Event
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+
+
+    <!-- =====================================================
+         FIELD NOTE MODAL
+         ===================================================== -->
+
+    <div
+      id="field-note-modal"
+      class="modal-backdrop hidden"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="field-note-modal-title"
+    >
+      <form
+        id="field-note-form"
+        class="modal"
+      >
+        <div class="modal-header">
+          <div>
+            <p class="eyebrow">
+              Field Note Editor
+            </p>
+            <h2
+              id="field-note-modal-title"
+              class="modal-title"
+            >
+              New Field Note
+            </h2>
+          </div>
+
+          <button
+            class="quiet-button"
+            type="button"
+            data-close-modal="field-note"
+          >
+            Close
+          </button>
+        </div>
+
+        <div class="modal-body">
+          <input
+            id="field-note-record-id"
+            type="hidden"
+          />
+
+          <div class="form-section">
+            <div class="form-section-body">
+              <div class="form-grid">
+                <div class="form-field full">
+                  <label class="label" for="field-note-title">
+                    Title
+                  </label>
+                  <input
+                    id="field-note-title"
+                    class="input"
+                    type="text"
+                    required
+                  />
+                </div>
+
+                <div class="form-field">
+                  <label class="label" for="field-note-category">
+                    Category
+                  </label>
+                  <input
+                    id="field-note-category"
+                    class="input"
+                    type="text"
+                    placeholder="Ecosystems & Community"
+                  />
+                </div>
+
+                <div class="form-field">
+                  <label class="label" for="field-note-status">
+                    Status
+                  </label>
+                  <select
+                    id="field-note-status"
+                    class="select"
+                  >
+                    <option value="draft">Draft</option>
+                    <option value="published">Published</option>
+                    <option value="archived">Archived</option>
+                  </select>
+                </div>
+
+                <div class="form-field full">
+                  <label class="label" for="field-note-excerpt">
+                    Short description
+                  </label>
+                  <textarea
+                    id="field-note-excerpt"
+                    class="textarea"
+                    style="min-height: 90px;"
+                  ></textarea>
+                </div>
+
+                <div class="form-field full">
+                  <label class="label" for="field-note-content">
+                    Content
+                  </label>
+                  <textarea
+                    id="field-note-content"
+                    class="textarea"
+                    style="min-height: 360px;"
+                    placeholder="Write your Field Note here..."
+                  ></textarea>
+                  <p class="panel-copy" style="margin-top: 8px;">
+                    This is the first editor version. A rich text toolbar and inline image insertion will be added before migration.
+                  </p>
+                </div>
+
+                <div class="form-field">
+                  <label class="label" for="field-note-published-at">
+                    Publish date
+                  </label>
+                  <input
+                    id="field-note-published-at"
+                    class="input"
+                    type="datetime-local"
+                  />
+                </div>
+
+                <div class="form-field">
+                  <label class="label" for="field-note-hero-media">
+                    Hero image
+                  </label>
+                  <select
+                    id="field-note-hero-media"
+                    class="select"
+                  >
+                    <option value="">
+                      No hero image
+                    </option>
+                  </select>
+                </div>
+
+                <div class="form-field full">
+                  <label class="checkbox-label">
+                    <input
+                      id="field-note-featured"
+                      type="checkbox"
+                    />
+                    Feature on homepage
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <span></span>
+          <div class="modal-footer-right">
+            <button
+              class="secondary-button"
+              type="button"
+              data-close-modal="field-note"
+            >
+              Cancel
+            </button>
+
+            <button
+              id="save-field-note-button"
+              class="primary-button"
+              type="submit"
+            >
+              Save Field Note
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+
+
+    <!-- =====================================================
+         RECAP MODAL
+         ===================================================== -->
+
+    <div
+      id="recap-modal"
+      class="modal-backdrop hidden"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="recap-modal-title"
+    >
+      <form
+        id="recap-form"
+        class="modal"
+      >
+        <div class="modal-header">
+          <div>
+            <p class="eyebrow">
+              Recap Editor
+            </p>
+            <h2
+              id="recap-modal-title"
+              class="modal-title"
+            >
+              New Event Recap
+            </h2>
+          </div>
+
+          <button
+            class="quiet-button"
+            type="button"
+            data-close-modal="recap"
+          >
+            Close
+          </button>
+        </div>
+
+        <div class="modal-body">
+          <input
+            id="recap-record-id"
+            type="hidden"
+          />
+
+          <div class="form-section">
+            <div class="form-section-body">
+              <div class="form-grid">
+                <div class="form-field full">
+                  <label class="label" for="recap-event-id">
+                    Event
+                  </label>
+                  <select
+                    id="recap-event-id"
+                    class="select"
+                    required
+                  >
+                    <option value="">
+                      Select an event
+                    </option>
+                  </select>
+                </div>
+
+                <div class="form-field full">
+                  <label class="label" for="recap-title">
+                    Recap title
+                  </label>
+                  <input
+                    id="recap-title"
+                    class="input"
+                    type="text"
+                    required
+                  />
+                </div>
+
+                <div class="form-field full">
+                  <label class="label" for="recap-excerpt">
+                    Short description
+                  </label>
+                  <textarea
+                    id="recap-excerpt"
+                    class="textarea"
+                    style="min-height: 90px;"
+                  ></textarea>
+                </div>
+
+                <div class="form-field full">
+                  <label class="label" for="recap-content">
+                    Recap content
+                  </label>
+                  <textarea
+                    id="recap-content"
+                    class="textarea"
+                    style="min-height: 320px;"
+                    placeholder="Write the event recap..."
+                  ></textarea>
+                </div>
+
+                <div class="form-field">
+                  <label class="label" for="recap-status">
+                    Status
+                  </label>
+                  <select
+                    id="recap-status"
+                    class="select"
+                  >
+                    <option value="draft">Draft</option>
+                    <option value="published">Published</option>
+                    <option value="archived">Archived</option>
+                  </select>
+                </div>
+
+                <div class="form-field">
+                  <label class="label" for="recap-published-at">
+                    Publish date
+                  </label>
+                  <input
+                    id="recap-published-at"
+                    class="input"
+                    type="datetime-local"
+                  />
+                </div>
+
+                <div class="form-field full">
+                  <label class="label" for="recap-hero-media">
+                    Hero image
+                  </label>
+                  <select
+                    id="recap-hero-media"
+                    class="select"
+                  >
+                    <option value="">
+                      No hero image
+                    </option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <span></span>
+          <div class="modal-footer-right">
+            <button
+              class="secondary-button"
+              type="button"
+              data-close-modal="recap"
+            >
+              Cancel
+            </button>
+
+            <button
+              id="save-recap-button"
+              class="primary-button"
+              type="submit"
+            >
+              Save Recap
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+
+
+    <!-- =====================================================
+         TOAST
+         ===================================================== -->
+
+    <div
+      id="toast"
+      class="toast hidden"
+      aria-live="polite"
+    ></div>
+
+
+    <!-- =====================================================
+         ADMIN LOGIC
+         ===================================================== -->
+
+    <script
+      type="module"
+      define:vars={{ supabaseUrl, supabasePublishableKey }}
+    >
+      import {
+        createClient
+      } from "https://esm.sh/@supabase/supabase-js@2";
+
+
+      const supabase =
+        createClient(
+          supabaseUrl,
+          supabasePublishableKey,
+          {
+            auth: {
+              persistSession:
+                true,
+
+              autoRefreshToken:
+                true,
+
+              detectSessionInUrl:
+                true
+            }
+          }
+        );
+
+
+      const state = {
+        user:
+          null,
+
+        events:
+          [],
+
+        fieldNotes:
+          [],
+
+        recaps:
+          [],
+
+        media:
+          [],
+
+        eventFilter:
+          "all",
+
+        selectedMediaFile:
+          null
+      };
+
+
+      const $ =
+        (
+          selector
+        ) =>
+          document.querySelector(
+            selector
+          );
+
+
+      const $$ =
+        (
+          selector
+        ) =>
+          Array.from(
+            document.querySelectorAll(
+              selector
+            )
+          );
+
+
+      /* =====================================================
+         UTILITIES
+         ===================================================== */
+
+      function escapeHtml(
+        value = ""
+      ) {
+
+        return String(
+          value
+        )
+          .replaceAll(
+            "&",
+            "&amp;"
+          )
+          .replaceAll(
+            "<",
+            "&lt;"
+          )
+          .replaceAll(
+            ">",
+            "&gt;"
+          )
+          .replaceAll(
+            '"',
+            "&quot;"
+          )
+          .replaceAll(
+            "'",
+            "&#039;"
+          );
+
+      }
+
+
+      function slugify(
+        value
+      ) {
+
+        return String(
+          value || "content"
+        )
+          .normalize(
+            "NFD"
+          )
+          .replace(
+            /[\u0300-\u036f]/g,
+            ""
+          )
+          .toLowerCase()
+          .replace(
+            /[^a-z0-9]+/g,
+            "-"
+          )
+          .replace(
+            /^-+|-+$/g,
+            ""
+          )
+          .slice(
+            0,
+            90
+          );
+
+      }
+
+
+      function formatDate(
+        value
+      ) {
+
+        if (
+          !value
+        ) {
+          return "No date";
+        }
+
+
+        const date =
+          new Date(
+            `${value}T12:00:00`
+          );
+
+
+        return date.toLocaleDateString(
+          "en-US",
+          {
+            month:
+              "short",
+
+            day:
+              "numeric",
+
+            year:
+              "numeric"
+          }
+        );
+
+      }
+
+
+      function toLocalDateTimeInput(
+        value
+      ) {
+
+        if (
+          !value
+        ) {
+          return "";
+        }
+
+
+        const date =
+          new Date(
+            value
+          );
+
+
+        const offset =
+          date.getTimezoneOffset();
+
+
+        const local =
+          new Date(
+            date.getTime() -
+            offset *
+              60_000
+          );
+
+
+        return local
+          .toISOString()
+          .slice(
+            0,
+            16
+          );
+
+      }
+
+
+      function showToast(
+        message,
+        type = "success"
+      ) {
+
+        const toast =
+          $("#toast");
+
+
+        toast.textContent =
+          message;
+
+        toast.className =
+          `toast ${type}`;
+
+
+        window.clearTimeout(
+          showToast.timeout
+        );
+
+
+        showToast.timeout =
+          window.setTimeout(
+            () => {
+
+              toast.classList.add(
+                "hidden"
+              );
+
+            },
+            3600
+          );
+
+      }
+
+
+      function setButtonLoading(
+        button,
+        loading,
+        loadingText,
+        normalText
+      ) {
+
+        if (
+          !button
+        ) {
+          return;
+        }
+
+
+        button.disabled =
+          loading;
+
+        button.textContent =
+          loading
+            ? loadingText
+            : normalText;
+
+      }
+
+
+      function getEventTimeState(
+        event
+      ) {
+
+        const today =
+          new Date();
+
+        today.setHours(
+          0,
+          0,
+          0,
+          0
+        );
+
+
+        const end =
+          new Date(
+            `${event.end_date || event.start_date}T23:59:59`
+          );
+
+
+        return end < today
+          ? "past"
+          : "upcoming";
+
+      }
+
+
+      /* =====================================================
+         AUTH
+         ===================================================== */
+
+      async function sendLoginLink(
+        email
+      ) {
+
+        const {
+          error
+        } =
+          await supabase.auth.signInWithOtp(
+            {
+              email,
+
+              options: {
+                emailRedirectTo:
+                  `${window.location.origin}/admin/`
+              }
+            }
+          );
+
+
+        if (
+          error
+        ) {
+          throw error;
+        }
+
+      }
+
+
+      async function bootstrapAdminMembership(
+        user
+      ) {
+
+        const email =
+          user?.email;
+
+
+        if (
+          !user?.id ||
+          !email
+        ) {
+          return false;
+        }
+
+
+        const {
+          error:
+            upsertError
+        } =
+          await supabase
+            .from(
+              "admin_users"
+            )
+            .upsert(
+              {
+                user_id:
+                  user.id,
+
+                email,
+
+                display_name:
+                  user.user_metadata?.full_name ||
+                  "Nadim"
+              },
+              {
+                onConflict:
+                  "user_id"
+              }
+            );
+
+
+        if (
+          upsertError
+        ) {
+          console.warn(
+            "Admin bootstrap denied:",
+            upsertError.message
+          );
+
+          return false;
+        }
+
+
+        const {
+          data,
+          error
+        } =
+          await supabase
+            .from(
+              "admin_users"
+            )
+            .select(
+              "user_id,email,display_name"
+            )
+            .eq(
+              "user_id",
+              user.id
+            )
+            .maybeSingle();
+
+
+        return Boolean(
+          !error &&
+          data?.user_id
+        );
+
+      }
+
+
+      async function handleSession(
+        session
+      ) {
+
+        if (
+          !session?.user
+        ) {
+          showAuth();
+          return;
+        }
+
+
+        const allowed =
+          await bootstrapAdminMembership(
+            session.user
+          );
+
+
+        if (
+          !allowed
+        ) {
+
+          await supabase.auth.signOut();
+
+          showAuth(
+            "This account is not authorized to access the Soleil & Stone admin."
+          );
+
+          return;
+        }
+
+
+        state.user =
+          session.user;
+
+
+        showAdmin();
+
+
+        await loadAllContent();
+
+      }
+
+
+      function showAuth(
+        errorMessage = ""
+      ) {
+
+        $("#auth-screen")
+          .classList.remove(
+            "hidden"
+          );
+
+        $("#admin-app")
+          .classList.add(
+            "hidden"
+          );
+
+
+        if (
+          errorMessage
+        ) {
+
+          const message =
+            $("#login-message");
+
+          message.textContent =
+            errorMessage;
+
+          message.className =
+            "form-message error";
+
+        }
+
+      }
+
+
+      function showAdmin() {
+
+        $("#auth-screen")
+          .classList.add(
+            "hidden"
+          );
+
+        $("#admin-app")
+          .classList.remove(
+            "hidden"
+          );
+
+        $("#sidebar-email").textContent =
+          state.user?.email ||
+          "";
+
+      }
+
+
+      /* =====================================================
+         DATA LOADING
+         ===================================================== */
+
+      async function loadAllContent() {
+
+        await Promise.all(
+          [
+            loadEvents(),
+            loadFieldNotes(),
+            loadRecaps(),
+            loadMedia()
+          ]
+        );
+
+
+        refreshCounts();
+        renderRecentContent();
+        refreshMediaSelectors();
+        refreshRecapEventSelector();
+
+      }
+
+
+      async function loadEvents() {
+
+        const {
+          data,
+          error
+        } =
+          await supabase
+            .from(
+              "events"
+            )
+            .select(
+              "*"
+            )
+            .order(
+              "start_date",
+              {
+                ascending:
+                  false
+              }
+            );
+
+
+        if (
+          error
+        ) {
+
+          showToast(
+            `Could not load events: ${error.message}`,
+            "error"
+          );
+
+          return;
+        }
+
+
+        state.events =
+          data || [];
+
+        renderEvents();
+
+      }
+
+
+      async function loadFieldNotes() {
+
+        const {
+          data,
+          error
+        } =
+          await supabase
+            .from(
+              "field_notes"
+            )
+            .select(
+              "*"
+            )
+            .order(
+              "updated_at",
+              {
+                ascending:
+                  false
+              }
+            );
+
+
+        if (
+          error
+        ) {
+
+          showToast(
+            `Could not load Field Notes: ${error.message}`,
+            "error"
+          );
+
+          return;
+        }
+
+
+        state.fieldNotes =
+          data || [];
+
+        renderFieldNotes();
+
+      }
+
+
+      async function loadRecaps() {
+
+        const {
+          data,
+          error
+        } =
+          await supabase
+            .from(
+              "event_recaps"
+            )
+            .select(
+              "*"
+            )
+            .order(
+              "updated_at",
+              {
+                ascending:
+                  false
+              }
+            );
+
+
+        if (
+          error
+        ) {
+
+          showToast(
+            `Could not load recaps: ${error.message}`,
+            "error"
+          );
+
+          return;
+        }
+
+
+        state.recaps =
+          data || [];
+
+        renderRecaps();
+
+      }
+
+
+      async function loadMedia() {
+
+        const {
+          data,
+          error
+        } =
+          await supabase
+            .from(
+              "media"
+            )
+            .select(
+              "*"
+            )
+            .order(
+              "created_at",
+              {
+                ascending:
+                  false
+              }
+            );
+
+
+        if (
+          error
+        ) {
+
+          showToast(
+            `Could not load media: ${error.message}`,
+            "error"
+          );
+
+          return;
+        }
+
+
+        state.media =
+          data || [];
+
+        renderMedia();
+
+      }
+
+
+      /* =====================================================
+         DASHBOARD
+         ===================================================== */
+
+      function refreshCounts() {
+
+        const values = {
+          events:
+            state.events.length,
+
+          fieldNotes:
+            state.fieldNotes.length,
+
+          recaps:
+            state.recaps.length,
+
+          media:
+            state.media.length
+        };
+
+
+        $("#stat-events").textContent =
+          values.events;
+
+        $("#stat-field-notes").textContent =
+          values.fieldNotes;
+
+        $("#stat-recaps").textContent =
+          values.recaps;
+
+        $("#stat-media").textContent =
+          values.media;
+
+        $("#nav-events-count").textContent =
+          values.events;
+
+        $("#nav-field-notes-count").textContent =
+          values.fieldNotes;
+
+        $("#nav-recaps-count").textContent =
+          values.recaps;
+
+        $("#nav-media-count").textContent =
+          values.media;
+
+      }
+
+
+      function renderRecentContent() {
+
+        const items = [
+          ...state.events.map(
+            (
+              item
+            ) => ({
+              ...item,
+              contentType:
+                "Event",
+              contentSection:
+                "events"
+            })
+          ),
+
+          ...state.fieldNotes.map(
+            (
+              item
+            ) => ({
+              ...item,
+              contentType:
+                "Field Note",
+              contentSection:
+                "field-notes"
+            })
+          ),
+
+          ...state.recaps.map(
+            (
+              item
+            ) => ({
+              ...item,
+              contentType:
+                "Recap",
+              contentSection:
+                "recaps"
+            })
+          )
+        ]
+          .sort(
+            (
+              a,
+              b
+            ) =>
+              new Date(
+                b.updated_at ||
+                b.created_at ||
+                0
+              ).getTime() -
+              new Date(
+                a.updated_at ||
+                a.created_at ||
+                0
+              ).getTime()
+          )
+          .slice(
+            0,
+            6
+          );
+
+
+        const container =
+          $("#recent-content-list");
+
+
+        if (
+          items.length === 0
+        ) {
+
+          container.innerHTML =
+            `
+              <div class="empty-state">
+                <strong>Your CMS is ready</strong>
+                Add your first item here, then we will migrate the existing website content into the same system.
+              </div>
+            `;
+
+          return;
+        }
+
+
+        container.innerHTML =
+          items
+            .map(
+              (
+                item
+              ) => `
+                <div class="content-row">
+                  <div>
+                    <h3 class="row-title">
+                      ${escapeHtml(item.title || item.file_name || "Untitled")}
+                    </h3>
+                    <div class="row-meta">
+                      <span>${escapeHtml(item.contentType)}</span>
+                      <span>•</span>
+                      <span class="status-pill ${escapeHtml(item.status || "published")}">
+                        ${escapeHtml(item.status || "published")}
+                      </span>
+                    </div>
+                  </div>
+                  <div class="row-actions">
+                    <button
+                      class="secondary-button"
+                      type="button"
+                      data-recent-section="${escapeHtml(item.contentSection)}"
+                    >
+                      Open
+                    </button>
+                  </div>
+                </div>
+              `
+            )
+            .join(
+              ""
+            );
+
+      }
+
+
+      /* =====================================================
+         EVENTS
+         ===================================================== */
+
+      function getFilteredEvents() {
+
+        const search =
+          $("#events-search")
+            .value
+            .trim()
+            .toLowerCase();
+
+
+        return state.events.filter(
+          (
+            event
+          ) => {
+
+            const matchesSearch =
+              !search ||
+              [
+                event.title,
+                event.city,
+                event.venue,
+                event.description
+              ]
+                .filter(
+                  Boolean
+                )
+                .some(
+                  (
+                    value
+                  ) =>
+                    String(
+                      value
+                    )
+                      .toLowerCase()
+                      .includes(
+                        search
+                      )
+                );
+
+
+            if (
+              !matchesSearch
+            ) {
+              return false;
+            }
+
+
+            if (
+              state.eventFilter ===
+                "all"
+            ) {
+              return true;
+            }
+
+
+            if (
+              state.eventFilter ===
+                "draft" ||
+              state.eventFilter ===
+                "archived"
+            ) {
+
+              return event.status ===
+                state.eventFilter;
+
+            }
+
+
+            if (
+              event.status ===
+                "archived"
+            ) {
+              return false;
+            }
+
+
+            return getEventTimeState(
+              event
+            ) ===
+              state.eventFilter;
+
+          }
+        );
+
+      }
+
+
+      function renderEvents() {
+
+        const container =
+          $("#events-list");
+
+        const events =
+          getFilteredEvents();
+
+
+        if (
+          events.length === 0
+        ) {
+
+          container.innerHTML =
+            `
+              <div class="empty-state">
+                <strong>No events found</strong>
+                Add an event or change the current filter.
+              </div>
+            `;
+
+          return;
+        }
+
+
+        container.innerHTML =
+          events
+            .map(
+              (
+                event
+              ) => {
+
+                const timeState =
+                  getEventTimeState(
+                    event
+                  );
+
+
+                return `
+                  <div class="content-row">
+                    <div>
+                      <h3 class="row-title">
+                        ${escapeHtml(event.title)}
+                      </h3>
+
+                      <div class="row-meta">
+                        <span>${escapeHtml(formatDate(event.start_date))}</span>
+                        ${event.city ? `<span>•</span><span>${escapeHtml(event.city)}</span>` : ""}
+                        <span>•</span>
+                        <span>${escapeHtml(timeState)}</span>
+                        <span class="status-pill ${escapeHtml(event.status)}">
+                          ${escapeHtml(event.status)}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div class="row-actions">
+                      <button
+                        class="secondary-button"
+                        type="button"
+                        data-edit-event="${escapeHtml(event.id)}"
+                      >
+                        Edit
+                      </button>
+                    </div>
+                  </div>
+                `;
+
+              }
+            )
+            .join(
+              ""
+            );
+
+      }
+
+
+      function resetEventForm() {
+
+        $("#event-form").reset();
+        $("#event-record-id").value = "";
+        $("#event-country").value = "USA";
+        $("#event-status").value = "draft";
+        $("#event-modal-title").textContent = "Add Event";
+        $("#archive-event-button").classList.add("hidden");
+
+      }
+
+
+      function openEventModal(
+        eventId = ""
+      ) {
+
+        resetEventForm();
+
+
+        if (
+          eventId
+        ) {
+
+          const event =
+            state.events.find(
+              (
+                item
+              ) =>
+                item.id ===
+                eventId
+            );
+
+
+          if (
+            !event
+          ) {
+            return;
+          }
+
+
+          $("#event-modal-title").textContent =
+            "Edit Event";
+
+          $("#event-record-id").value =
+            event.id;
+
+          $("#event-title").value =
+            event.title || "";
+
+          $("#event-start-date").value =
+            event.start_date || "";
+
+          $("#event-end-date").value =
+            event.end_date || "";
+
+          $("#event-type").value =
+            event.event_type || "";
+
+          $("#event-participation").value =
+            event.participation || "";
+
+          $("#event-role").value =
+            event.role || "";
+
+          $("#event-registrations").value =
+            event.registrations ?? "";
+
+          $("#event-description").value =
+            event.description || "";
+
+          $("#event-venue").value =
+            event.venue || "";
+
+          $("#event-city").value =
+            event.city || "";
+
+          $("#event-region").value =
+            event.region || "";
+
+          $("#event-country").value =
+            event.country || "USA";
+
+          $("#event-url").value =
+            event.url || "";
+
+          $("#event-status").value =
+            event.status || "draft";
+
+          $("#event-cover-media").value =
+            event.cover_media_id || "";
+
+          $("#event-show-home").checked =
+            Boolean(
+              event.show_on_home
+            );
+
+          $("#event-featured").checked =
+            Boolean(
+              event.featured
+            );
+
+          $("#archive-event-button").classList.remove("hidden");
+
+        }
+
+
+        $("#event-modal").classList.remove("hidden");
+        document.body.style.overflow = "hidden";
+
+      }
+
+
+      async function saveEvent() {
+
+        const existingId =
+          $("#event-record-id").value;
+
+        const title =
+          $("#event-title")
+            .value
+            .trim();
+
+        const startDate =
+          $("#event-start-date").value;
+
+
+        const payload = {
+          title,
+          start_date:
+            startDate,
+          end_date:
+            $("#event-end-date").value ||
+            null,
+          event_type:
+            $("#event-type").value.trim() ||
+            null,
+          participation:
+            $("#event-participation").value ||
+            null,
+          role:
+            $("#event-role").value.trim() ||
+            null,
+          registrations:
+            $("#event-registrations").value === ""
+              ? null
+              : Number(
+                  $("#event-registrations").value
+                ),
+          description:
+            $("#event-description").value.trim() ||
+            null,
+          venue:
+            $("#event-venue").value.trim() ||
+            null,
+          city:
+            $("#event-city").value.trim() ||
+            null,
+          region:
+            $("#event-region").value.trim() ||
+            null,
+          country:
+            $("#event-country").value.trim() ||
+            "USA",
+          url:
+            $("#event-url").value.trim() ||
+            null,
+          status:
+            $("#event-status").value,
+          cover_media_id:
+            $("#event-cover-media").value ||
+            null,
+          show_on_home:
+            $("#event-show-home").checked,
+          featured:
+            $("#event-featured").checked
+        };
+
+
+        let response;
+
+
+        if (
+          existingId
+        ) {
+
+          response =
+            await supabase
+              .from(
+                "events"
+              )
+              .update(
+                payload
+              )
+              .eq(
+                "id",
+                existingId
+              );
+
+        } else {
+
+          const id =
+            `evt-${crypto.randomUUID()}`;
+
+          const slugBase =
+            slugify(
+              title
+            );
+
+          const year =
+            startDate
+              ? startDate.slice(
+                  0,
+                  4
+                )
+              : new Date().getFullYear();
+
+
+          response =
+            await supabase
+              .from(
+                "events"
+              )
+              .insert(
+                {
+                  id,
+                  slug:
+                    `${slugBase}-${year}-${crypto.randomUUID().slice(0, 6)}`,
+                  ...payload
+                }
+              );
+
+        }
+
+
+        if (
+          response.error
+        ) {
+          throw response.error;
+        }
+
+
+        closeModal(
+          "event"
+        );
+
+        showToast(
+          existingId
+            ? "Event updated."
+            : "Event created."
+        );
+
+        await loadEvents();
+        refreshCounts();
+        renderRecentContent();
+        refreshRecapEventSelector();
+
+      }
+
+
+      async function archiveCurrentEvent() {
+
+        const eventId =
+          $("#event-record-id").value;
+
+
+        if (
+          !eventId
+        ) {
+          return;
+        }
+
+
+        const confirmed =
+          window.confirm(
+            "Archive this event? It will remain editable and can be restored later."
+          );
+
+
+        if (
+          !confirmed
+        ) {
+          return;
+        }
+
+
+        const {
+          error
+        } =
+          await supabase
+            .from(
+              "events"
+            )
+            .update(
+              {
+                status:
+                  "archived"
+              }
+            )
+            .eq(
+              "id",
+              eventId
+            );
+
+
+        if (
+          error
+        ) {
+          throw error;
+        }
+
+
+        closeModal(
+          "event"
+        );
+
+        showToast(
+          "Event archived. You can still edit or restore it later."
+        );
+
+        await loadEvents();
+        refreshCounts();
+
+      }
+
+
+      /* =====================================================
+         FIELD NOTES
+         ===================================================== */
+
+      function renderFieldNotes() {
+
+        const search =
+          $("#field-notes-search")
+            ?.value
+            .trim()
+            .toLowerCase() ||
+          "";
+
+
+        const items =
+          state.fieldNotes.filter(
+            (
+              item
+            ) =>
+              !search ||
+              [
+                item.title,
+                item.excerpt,
+                item.category
+              ]
+                .filter(
+                  Boolean
+                )
+                .some(
+                  (
+                    value
+                  ) =>
+                    String(
+                      value
+                    )
+                      .toLowerCase()
+                      .includes(
+                        search
+                      )
+                )
+          );
+
+
+        const container =
+          $("#field-notes-list");
+
+
+        if (
+          items.length === 0
+        ) {
+
+          container.innerHTML =
+            `
+              <div class="empty-state">
+                <strong>No Field Notes yet</strong>
+                Create a draft here or wait for the migration of your existing articles.
+              </div>
+            `;
+
+          return;
+        }
+
+
+        container.innerHTML =
+          items
+            .map(
+              (
+                item
+              ) => `
+                <div class="content-row">
+                  <div>
+                    <h3 class="row-title">
+                      ${escapeHtml(item.title)}
+                    </h3>
+                    <div class="row-meta">
+                      ${item.category ? `<span>${escapeHtml(item.category)}</span><span>•</span>` : ""}
+                      <span class="status-pill ${escapeHtml(item.status)}">
+                        ${escapeHtml(item.status)}
+                      </span>
+                    </div>
+                  </div>
+                  <div class="row-actions">
+                    <button
+                      class="secondary-button"
+                      type="button"
+                      data-edit-field-note="${escapeHtml(item.id)}"
+                    >
+                      Edit
+                    </button>
+                  </div>
+                </div>
+              `
+            )
+            .join(
+              ""
+            );
+
+      }
+
+
+      function resetFieldNoteForm() {
+
+        $("#field-note-form").reset();
+        $("#field-note-record-id").value = "";
+        $("#field-note-status").value = "draft";
+        $("#field-note-modal-title").textContent = "New Field Note";
+
+      }
+
+
+      function openFieldNoteModal(
+        id = ""
+      ) {
+
+        resetFieldNoteForm();
+
+
+        if (
+          id
+        ) {
+
+          const item =
+            state.fieldNotes.find(
+              (
+                note
+              ) =>
+                note.id ===
+                id
+            );
+
+
+          if (
+            !item
+          ) {
+            return;
+          }
+
+
+          $("#field-note-modal-title").textContent = "Edit Field Note";
+          $("#field-note-record-id").value = item.id;
+          $("#field-note-title").value = item.title || "";
+          $("#field-note-category").value = item.category || "";
+          $("#field-note-status").value = item.status || "draft";
+          $("#field-note-excerpt").value = item.excerpt || "";
+          $("#field-note-content").value = item.content_markdown || "";
+          $("#field-note-published-at").value = toLocalDateTimeInput(item.published_at);
+          $("#field-note-hero-media").value = item.hero_media_id || "";
+          $("#field-note-featured").checked = Boolean(item.featured);
+
+        }
+
+
+        $("#field-note-modal").classList.remove("hidden");
+        document.body.style.overflow = "hidden";
+
+      }
+
+
+      async function saveFieldNote() {
+
+        const existingId =
+          $("#field-note-record-id").value;
+
+        const title =
+          $("#field-note-title").value.trim();
+
+        const status =
+          $("#field-note-status").value;
+
+        let publishedAt =
+          $("#field-note-published-at").value;
+
+
+        if (
+          status === "published" &&
+          !publishedAt
+        ) {
+          publishedAt =
+            new Date().toISOString();
+        } else if (
+          publishedAt
+        ) {
+          publishedAt =
+            new Date(
+              publishedAt
+            ).toISOString();
+        } else {
+          publishedAt =
+            null;
+        }
+
+
+        const payload = {
+          title,
+          excerpt:
+            $("#field-note-excerpt").value.trim() || null,
+          category:
+            $("#field-note-category").value.trim() || null,
+          content_markdown:
+            $("#field-note-content").value,
+          hero_media_id:
+            $("#field-note-hero-media").value || null,
+          featured:
+            $("#field-note-featured").checked,
+          published_at:
+            publishedAt,
+          status
+        };
+
+
+        let response;
+
+
+        if (
+          existingId
+        ) {
+
+          response =
+            await supabase
+              .from("field_notes")
+              .update(payload)
+              .eq("id", existingId);
+
+        } else {
+
+          const id =
+            `note-${crypto.randomUUID()}`;
+
+
+          response =
+            await supabase
+              .from("field_notes")
+              .insert({
+                id,
+                slug:
+                  `${slugify(title)}-${crypto.randomUUID().slice(0, 6)}`,
+                ...payload
+              });
+
+        }
+
+
+        if (
+          response.error
+        ) {
+          throw response.error;
+        }
+
+
+        closeModal("field-note");
+        showToast(existingId ? "Field Note updated." : "Field Note created.");
+        await loadFieldNotes();
+        refreshCounts();
+        renderRecentContent();
+
+      }
+
+
+      /* =====================================================
+         RECAPS
+         ===================================================== */
+
+      function renderRecaps() {
+
+        const search =
+          $("#recaps-search")
+            ?.value
+            .trim()
+            .toLowerCase() || "";
+
+
+        const items =
+          state.recaps.filter(
+            (
+              item
+            ) =>
+              !search ||
+              [
+                item.title,
+                item.excerpt
+              ]
+                .filter(Boolean)
+                .some(
+                  (
+                    value
+                  ) =>
+                    String(value)
+                      .toLowerCase()
+                      .includes(search)
+                )
+          );
+
+
+        const container =
+          $("#recaps-list");
+
+
+        if (
+          items.length === 0
+        ) {
+
+          container.innerHTML =
+            `
+              <div class="empty-state">
+                <strong>No recaps yet</strong>
+                Create one here or wait for your existing event recaps to be migrated.
+              </div>
+            `;
+
+          return;
+        }
+
+
+        container.innerHTML =
+          items
+            .map(
+              (
+                item
+              ) => {
+
+                const event =
+                  state.events.find(
+                    (
+                      candidate
+                    ) =>
+                      candidate.id === item.event_id
+                  );
+
+
+                return `
+                  <div class="content-row">
+                    <div>
+                      <h3 class="row-title">
+                        ${escapeHtml(item.title)}
+                      </h3>
+                      <div class="row-meta">
+                        ${event ? `<span>${escapeHtml(event.title)}</span><span>•</span>` : ""}
+                        <span class="status-pill ${escapeHtml(item.status)}">
+                          ${escapeHtml(item.status)}
+                        </span>
+                      </div>
+                    </div>
+                    <div class="row-actions">
+                      <button
+                        class="secondary-button"
+                        type="button"
+                        data-edit-recap="${escapeHtml(item.id)}"
+                      >
+                        Edit
+                      </button>
+                    </div>
+                  </div>
+                `;
+
+              }
+            )
+            .join("");
+
+      }
+
+
+      function resetRecapForm() {
+
+        $("#recap-form").reset();
+        $("#recap-record-id").value = "";
+        $("#recap-status").value = "draft";
+        $("#recap-modal-title").textContent = "New Event Recap";
+
+      }
+
+
+      function openRecapModal(
+        id = ""
+      ) {
+
+        resetRecapForm();
+
+
+        if (
+          id
+        ) {
+
+          const item =
+            state.recaps.find(
+              (
+                recap
+              ) =>
+                recap.id === id
+            );
+
+
+          if (
+            !item
+          ) {
+            return;
+          }
+
+
+          $("#recap-modal-title").textContent = "Edit Event Recap";
+          $("#recap-record-id").value = item.id;
+          $("#recap-event-id").value = item.event_id || "";
+          $("#recap-title").value = item.title || "";
+          $("#recap-excerpt").value = item.excerpt || "";
+          $("#recap-content").value = item.content_markdown || "";
+          $("#recap-status").value = item.status || "draft";
+          $("#recap-published-at").value = toLocalDateTimeInput(item.published_at);
+          $("#recap-hero-media").value = item.hero_media_id || "";
+
+        }
+
+
+        $("#recap-modal").classList.remove("hidden");
+        document.body.style.overflow = "hidden";
+
+      }
+
+
+      async function saveRecap() {
+
+        const existingId =
+          $("#recap-record-id").value;
+
+        const title =
+          $("#recap-title").value.trim();
+
+        const status =
+          $("#recap-status").value;
+
+        let publishedAt =
+          $("#recap-published-at").value;
+
+
+        if (
+          status === "published" &&
+          !publishedAt
+        ) {
+          publishedAt =
+            new Date().toISOString();
+        } else if (
+          publishedAt
+        ) {
+          publishedAt =
+            new Date(publishedAt).toISOString();
+        } else {
+          publishedAt = null;
+        }
+
+
+        const payload = {
+          event_id:
+            $("#recap-event-id").value,
+          title,
+          excerpt:
+            $("#recap-excerpt").value.trim() || null,
+          content_markdown:
+            $("#recap-content").value,
+          hero_media_id:
+            $("#recap-hero-media").value || null,
+          published_at:
+            publishedAt,
+          status
+        };
+
+
+        let response;
+
+
+        if (
+          existingId
+        ) {
+
+          response =
+            await supabase
+              .from("event_recaps")
+              .update(payload)
+              .eq("id", existingId);
+
+        } else {
+
+          response =
+            await supabase
+              .from("event_recaps")
+              .insert({
+                slug:
+                  `${slugify(title)}-${crypto.randomUUID().slice(0, 6)}`,
+                ...payload
+              });
+
+        }
+
+
+        if (
+          response.error
+        ) {
+          throw response.error;
+        }
+
+
+        closeModal("recap");
+        showToast(existingId ? "Recap updated." : "Recap created.");
+        await loadRecaps();
+        refreshCounts();
+        renderRecentContent();
+
+      }
+
+
+      /* =====================================================
+         MEDIA
+         ===================================================== */
+
+      function renderMedia() {
+
+        const search =
+          $("#media-search")
+            ?.value
+            .trim()
+            .toLowerCase() || "";
+
+
+        const items =
+          state.media.filter(
+            (
+              item
+            ) =>
+              !search ||
+              [
+                item.file_name,
+                item.alt_text,
+                item.credit,
+                item.media_kind
+              ]
+                .filter(Boolean)
+                .some(
+                  (
+                    value
+                  ) =>
+                    String(value)
+                      .toLowerCase()
+                      .includes(search)
+                )
+          );
+
+
+        const container =
+          $("#media-grid");
+
+
+        if (
+          items.length === 0
+        ) {
+
+          container.innerHTML =
+            `
+              <div class="empty-state" style="grid-column: 1 / -1; border: 1px solid var(--border); background: white;">
+                <strong>No media yet</strong>
+                Upload a photo or logo to start your reusable media library.
+              </div>
+            `;
+
+          return;
+        }
+
+
+        container.innerHTML =
+          items
+            .map(
+              (
+                item
+              ) => `
+                <article class="media-card">
+                  <div class="media-preview">
+                    ${item.public_url ? `<img src="${escapeHtml(item.public_url)}" alt="${escapeHtml(item.alt_text || item.file_name)}" loading="lazy" />` : "Image"}
+                  </div>
+                  <div class="media-card-body">
+                    <p class="media-name" title="${escapeHtml(item.file_name)}">
+                      ${escapeHtml(item.file_name)}
+                    </p>
+                    <div class="media-meta">
+                      ${escapeHtml(item.media_kind || "image")}
+                    </div>
+                  </div>
+                </article>
+              `
+            )
+            .join("");
+
+      }
+
+
+      function safeFileName(
+        fileName
+      ) {
+
+        const extension =
+          fileName.includes(".")
+            ? fileName.split(".").pop().toLowerCase()
+            : "bin";
+
+        const basename =
+          fileName
+            .replace(/\.[^.]+$/, "")
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "")
+            .toLowerCase()
+            .replace(/[^a-z0-9]+/g, "-")
+            .replace(/^-+|-+$/g, "")
+            .slice(0, 80) || "media";
+
+
+        return `${basename}.${extension}`;
+
+      }
+
+
+      async function uploadSelectedMedia() {
+
+        const file =
+          state.selectedMediaFile;
+
+
+        if (
+          !file
+        ) {
+          return;
+        }
+
+
+        const button =
+          $("#upload-media-button");
+
+
+        setButtonLoading(
+          button,
+          true,
+          "Uploading...",
+          "Upload"
+        );
+
+
+        try {
+
+          const cleanName =
+            safeFileName(
+              file.name
+            );
+
+          const storagePath =
+            `uploads/${new Date().getFullYear()}/${crypto.randomUUID()}-${cleanName}`;
+
+
+          const {
+            error:
+              uploadError
+          } =
+            await supabase.storage
+              .from("cms-media")
+              .upload(
+                storagePath,
+                file,
+                {
+                  cacheControl:
+                    "3600",
+                  upsert:
+                    false
+                }
+              );
+
+
+          if (
+            uploadError
+          ) {
+            throw uploadError;
+          }
+
+
+          const {
+            data:
+              publicUrlData
+          } =
+            supabase.storage
+              .from("cms-media")
+              .getPublicUrl(
+                storagePath
+              );
+
+
+          const {
+            error:
+              recordError
+          } =
+            await supabase
+              .from("media")
+              .insert({
+                storage_path:
+                  storagePath,
+                public_url:
+                  publicUrlData.publicUrl,
+                file_name:
+                  file.name,
+                mime_type:
+                  file.type || null,
+                file_size:
+                  file.size,
+                alt_text:
+                  $("#media-alt-text").value.trim() || null,
+                credit:
+                  $("#media-credit").value.trim() || null,
+                media_kind:
+                  $("#media-kind").value,
+                status:
+                  "active",
+                created_by:
+                  state.user?.id || null
+              });
+
+
+          if (
+            recordError
+          ) {
+            throw recordError;
+          }
+
+
+          state.selectedMediaFile =
+            null;
+
+          $("#media-file-input").value = "";
+          $("#media-alt-text").value = "";
+          $("#media-credit").value = "";
+          $("#drop-zone").classList.remove("dragging");
+          $("#drop-zone strong").textContent = "Drop image here";
+          $("#drop-zone span").textContent = "PNG, JPG, WebP, SVG or AVIF";
+
+
+          showToast(
+            "Media uploaded."
+          );
+
+          await loadMedia();
+          refreshCounts();
+          refreshMediaSelectors();
+
+        } catch (
+          error
+        ) {
+
+          console.error(
+            error
+          );
+
+          showToast(
+            error?.message ||
+            "Upload failed.",
+            "error"
+          );
+
+        } finally {
+
+          setButtonLoading(
+            button,
+            false,
+            "Uploading...",
+            "Upload"
+          );
+
+          button.disabled =
+            !state.selectedMediaFile;
+
+        }
+
+      }
+
+
+      function setSelectedMediaFile(
+        file
+      ) {
+
+        if (
+          !file
+        ) {
+          return;
+        }
+
+
+        if (
+          !file.type.startsWith("image/")
+        ) {
+          showToast(
+            "Please select an image file.",
+            "error"
+          );
+          return;
+        }
+
+
+        state.selectedMediaFile =
+          file;
+
+        $("#drop-zone strong").textContent =
+          file.name;
+
+        $("#drop-zone span").textContent =
+          `${Math.round(file.size / 1024)} KB ready to upload`;
+
+        $("#upload-media-button").disabled =
+          false;
+
+      }
+
+
+      function refreshMediaSelectors() {
+
+        const selectors = [
+          $("#event-cover-media"),
+          $("#field-note-hero-media"),
+          $("#recap-hero-media")
+        ];
+
+
+        selectors.forEach(
+          (
+            select
+          ) => {
+
+            if (
+              !select
+            ) {
+              return;
+            }
+
+
+            const current =
+              select.value;
+
+            const emptyLabel =
+              select.id === "event-cover-media"
+                ? "No cover image"
+                : "No hero image";
+
+
+            select.innerHTML =
+              `<option value="">${emptyLabel}</option>` +
+              state.media
+                .filter(
+                  (
+                    item
+                  ) =>
+                    item.status === "active"
+                )
+                .map(
+                  (
+                    item
+                  ) =>
+                    `<option value="${escapeHtml(item.id)}">${escapeHtml(item.file_name)}</option>`
+                )
+                .join("");
+
+
+            select.value =
+              current;
+
+          }
+        );
+
+      }
+
+
+      function refreshRecapEventSelector() {
+
+        const select =
+          $("#recap-event-id");
+
+
+        if (
+          !select
+        ) {
+          return;
+        }
+
+
+        const current =
+          select.value;
+
+
+        select.innerHTML =
+          `<option value="">Select an event</option>` +
+          state.events
+            .map(
+              (
+                item
+              ) =>
+                `<option value="${escapeHtml(item.id)}">${escapeHtml(item.title)} — ${escapeHtml(formatDate(item.start_date))}</option>`
+            )
+            .join("");
+
+
+        select.value =
+          current;
+
+      }
+
+
+      /* =====================================================
+         NAVIGATION
+         ===================================================== */
+
+      const sectionCopy = {
+        dashboard: {
+          eyebrow:
+            "Overview",
+          title:
+            "Dashboard",
+          subtitle:
+            "Manage Soleil & Stone content from one place."
+        },
+        events: {
+          eyebrow:
+            "Content",
+          title:
+            "Events",
+          subtitle:
+            "Add, update and archive upcoming or past events."
+        },
+        "field-notes": {
+          eyebrow:
+            "Editorial",
+          title:
+            "Field Notes",
+          subtitle:
+            "Write, revise, feature and publish Field Notes."
+        },
+        recaps: {
+          eyebrow:
+            "Editorial",
+          title:
+            "Event Recaps",
+          subtitle:
+            "Attach recaps to events and keep them editable after publication."
+        },
+        media: {
+          eyebrow:
+            "Assets",
+          title:
+            "Media Library",
+          subtitle:
+            "Upload reusable photos and logos without managing filenames manually."
+        },
+        organizations: {
+          eyebrow:
+            "Relationships",
+          title:
+            "Sponsors & Logos",
+          subtitle:
+            "Manage reusable organizations, sponsor links and logos."
+        },
+        people: {
+          eyebrow:
+            "Relationships",
+          title:
+            "Speakers",
+          subtitle:
+            "Manage speaker profiles and reuse them across events."
+        }
+      };
+
+
+      function openSection(
+        section
+      ) {
+
+        $$(".admin-section").forEach(
+          (
+            element
+          ) =>
+            element.classList.toggle(
+              "hidden",
+              element.dataset.adminSection !== section
+            )
+        );
+
+
+        $$(".nav-button").forEach(
+          (
+            button
+          ) =>
+            button.classList.toggle(
+              "active",
+              button.dataset.section === section
+            )
+        );
+
+
+        const copy =
+          sectionCopy[
+            section
+          ] ||
+          sectionCopy.dashboard;
+
+
+        $("#page-eyebrow").textContent =
+          copy.eyebrow;
+
+        $("#page-title").textContent =
+          copy.title;
+
+        $("#page-subtitle").textContent =
+          copy.subtitle;
+
+        $("#sidebar").classList.remove("open");
+
+      }
+
+
+      function closeModal(
+        type
+      ) {
+
+        const map = {
+          event:
+            "#event-modal",
+          "field-note":
+            "#field-note-modal",
+          recap:
+            "#recap-modal"
+        };
+
+
+        const modal =
+          $(map[type]);
+
+
+        modal?.classList.add("hidden");
+        document.body.style.overflow = "";
+
+      }
+
+
+      /* =====================================================
+         EVENTS
+         ===================================================== */
+
+      $("#login-form").addEventListener(
+        "submit",
+        async (
+          event
+        ) => {
+
+          event.preventDefault();
+
+
+          const email =
+            $("#login-email")
+              .value
+              .trim();
+
+          const button =
+            $("#login-submit");
+
+          const message =
+            $("#login-message");
+
+
+          setButtonLoading(
+            button,
+            true,
+            "Sending...",
+            "Send secure login link"
+          );
+
+
+          try {
+
+            await sendLoginLink(
+              email
+            );
+
+            message.textContent =
+              "Check your inbox. Your secure login link is on the way.";
+
+            message.className =
+              "form-message success";
+
+          } catch (
+            error
+          ) {
+
+            message.textContent =
+              error?.message ||
+              "Could not send the login link.";
+
+            message.className =
+              "form-message error";
+
+          } finally {
+
+            setButtonLoading(
+              button,
+              false,
+              "Sending...",
+              "Send secure login link"
+            );
+
+          }
+
+        }
+      );
+
+
+      $("#signout-button").addEventListener(
+        "click",
+        async () => {
+
+          await supabase.auth.signOut();
+          window.location.href = "/admin/";
+
+        }
+      );
+
+
+      $$(".nav-button").forEach(
+        (
+          button
+        ) => {
+
+          button.addEventListener(
+            "click",
+            () =>
+              openSection(
+                button.dataset.section
+              )
+          );
+
+        }
+      );
+
+
+      $("#mobile-menu-button").addEventListener(
+        "click",
+        () => {
+          $("#sidebar").classList.toggle("open");
+        }
+      );
+
+
+      $$("[data-quick-action]").forEach(
+        (
+          button
+        ) => {
+
+          button.addEventListener(
+            "click",
+            () => {
+
+              const action =
+                button.dataset.quickAction;
+
+              if (
+                action === "event"
+              ) {
+                openEventModal();
+              }
+
+              if (
+                action === "field-note"
+              ) {
+                openFieldNoteModal();
+              }
+
+              if (
+                action === "recap"
+              ) {
+                openRecapModal();
+              }
+
+              if (
+                action === "media"
+              ) {
+                openSection("media");
+                $("#media-file-input").click();
+              }
+
+            }
+          );
+
+        }
+      );
+
+
+      $("#add-event-button").addEventListener(
+        "click",
+        () =>
+          openEventModal()
+      );
+
+
+      $("#add-field-note-button").addEventListener(
+        "click",
+        () =>
+          openFieldNoteModal()
+      );
+
+
+      $("#add-recap-button").addEventListener(
+        "click",
+        () =>
+          openRecapModal()
+      );
+
+
+      $("#events-search").addEventListener(
+        "input",
+        renderEvents
+      );
+
+
+      $("#field-notes-search").addEventListener(
+        "input",
+        renderFieldNotes
+      );
+
+
+      $("#recaps-search").addEventListener(
+        "input",
+        renderRecaps
+      );
+
+
+      $("#media-search").addEventListener(
+        "input",
+        renderMedia
+      );
+
+
+      $("#event-filters").addEventListener(
+        "click",
+        (
+          event
+        ) => {
+
+          const button =
+            event.target.closest(
+              "[data-filter]"
+            );
+
+
+          if (
+            !button
+          ) {
+            return;
+          }
+
+
+          state.eventFilter =
+            button.dataset.filter;
+
+
+          $$("#event-filters .filter-button").forEach(
+            (
+              item
+            ) =>
+              item.classList.toggle(
+                "active",
+                item === button
+              )
+          );
+
+
+          renderEvents();
+
+        }
+      );
+
+
+      document.addEventListener(
+        "click",
+        (
+          event
+        ) => {
+
+          const eventButton =
+            event.target.closest(
+              "[data-edit-event]"
+            );
+
+          if (
+            eventButton
+          ) {
+            openEventModal(
+              eventButton.dataset.editEvent
+            );
+          }
+
+
+          const noteButton =
+            event.target.closest(
+              "[data-edit-field-note]"
+            );
+
+          if (
+            noteButton
+          ) {
+            openFieldNoteModal(
+              noteButton.dataset.editFieldNote
+            );
+          }
+
+
+          const recapButton =
+            event.target.closest(
+              "[data-edit-recap]"
+            );
+
+          if (
+            recapButton
+          ) {
+            openRecapModal(
+              recapButton.dataset.editRecap
+            );
+          }
+
+
+          const recentButton =
+            event.target.closest(
+              "[data-recent-section]"
+            );
+
+          if (
+            recentButton
+          ) {
+            openSection(
+              recentButton.dataset.recentSection
+            );
+          }
+
+
+          const closeButton =
+            event.target.closest(
+              "[data-close-modal]"
+            );
+
+          if (
+            closeButton
+          ) {
+            closeModal(
+              closeButton.dataset.closeModal
+            );
+          }
+
+        }
+      );
+
+
+      $("#event-form").addEventListener(
+        "submit",
+        async (
+          event
+        ) => {
+
+          event.preventDefault();
+
+          const button =
+            $("#save-event-button");
+
+          setButtonLoading(
+            button,
+            true,
+            "Saving...",
+            "Save Event"
+          );
+
+
+          try {
+            await saveEvent();
+          } catch (
+            error
+          ) {
+            console.error(error);
+            showToast(
+              error?.message || "Could not save event.",
+              "error"
+            );
+          } finally {
+            setButtonLoading(
+              button,
+              false,
+              "Saving...",
+              "Save Event"
+            );
+          }
+
+        }
+      );
+
+
+      $("#archive-event-button").addEventListener(
+        "click",
+        async () => {
+
+          try {
+            await archiveCurrentEvent();
+          } catch (
+            error
+          ) {
+            console.error(error);
+            showToast(
+              error?.message || "Could not archive event.",
+              "error"
+            );
+          }
+
+        }
+      );
+
+
+      $("#field-note-form").addEventListener(
+        "submit",
+        async (
+          event
+        ) => {
+
+          event.preventDefault();
+
+          const button =
+            $("#save-field-note-button");
+
+          setButtonLoading(
+            button,
+            true,
+            "Saving...",
+            "Save Field Note"
+          );
+
+          try {
+            await saveFieldNote();
+          } catch (
+            error
+          ) {
+            console.error(error);
+            showToast(
+              error?.message || "Could not save Field Note.",
+              "error"
+            );
+          } finally {
+            setButtonLoading(
+              button,
+              false,
+              "Saving...",
+              "Save Field Note"
+            );
+          }
+
+        }
+      );
+
+
+      $("#recap-form").addEventListener(
+        "submit",
+        async (
+          event
+        ) => {
+
+          event.preventDefault();
+
+          const button =
+            $("#save-recap-button");
+
+          setButtonLoading(
+            button,
+            true,
+            "Saving...",
+            "Save Recap"
+          );
+
+          try {
+            await saveRecap();
+          } catch (
+            error
+          ) {
+            console.error(error);
+            showToast(
+              error?.message || "Could not save recap.",
+              "error"
+            );
+          } finally {
+            setButtonLoading(
+              button,
+              false,
+              "Saving...",
+              "Save Recap"
+            );
+          }
+
+        }
+      );
+
+
+      const dropZone =
+        $("#drop-zone");
+
+
+      $("#choose-media-button").addEventListener(
+        "click",
+        () =>
+          $("#media-file-input").click()
+      );
+
+
+      $("#media-file-input").addEventListener(
+        "change",
+        (
+          event
+        ) => {
+          setSelectedMediaFile(
+            event.target.files?.[0]
+          );
+        }
+      );
+
+
+      dropZone.addEventListener(
+        "dragover",
+        (
+          event
+        ) => {
+          event.preventDefault();
+          dropZone.classList.add("dragging");
+        }
+      );
+
+
+      dropZone.addEventListener(
+        "dragleave",
+        () =>
+          dropZone.classList.remove("dragging")
+      );
+
+
+      dropZone.addEventListener(
+        "drop",
+        (
+          event
+        ) => {
+          event.preventDefault();
+          dropZone.classList.remove("dragging");
+          setSelectedMediaFile(
+            event.dataTransfer?.files?.[0]
+          );
+        }
+      );
+
+
+      $("#upload-media-button").addEventListener(
+        "click",
+        uploadSelectedMedia
+      );
+
+
+      document.addEventListener(
+        "keydown",
+        (
+          event
+        ) => {
+
+          if (
+            event.key !== "Escape"
+          ) {
+            return;
+          }
+
+
+          [
+            "event",
+            "field-note",
+            "recap"
+          ].forEach(
+            closeModal
+          );
+
+          $("#sidebar").classList.remove("open");
+
+        }
+      );
+
+
+      /* =====================================================
+         INITIALIZE
+         ===================================================== */
+
+      const {
+        data: {
+          session
+        }
+      } =
+        await supabase.auth.getSession();
+
+
+      await handleSession(
+        session
+      );
+
+
+      supabase.auth.onAuthStateChange(
+        async (
+          event,
+          session
+        ) => {
+
+          if (
+            event === "SIGNED_IN" ||
+            event === "INITIAL_SESSION"
+          ) {
+            await handleSession(session);
+          }
+
+          if (
+            event === "SIGNED_OUT"
+          ) {
+            state.user = null;
+            showAuth();
+          }
+
+        }
+      );
+    </script>
+  </body>
+</html>
