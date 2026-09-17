@@ -1157,23 +1157,18 @@ const hardwareLogoGroups =
     /* =====================================================
        INDIVIDUAL LOGO AREA
 
-       Every logo receives the same footprint.
-
-       NO CARD.
-       NO WHITE SQUARE.
-       NO BORDER.
-       NO BACKGROUND.
+       Every logo receives the exact same footprint.
        ===================================================== */
 
     .hw-logo-link {
       width:
-        170px;
+        180px;
 
       height:
-        72px;
+        78px;
 
       flex:
-        0 0 170px;
+        0 0 180px;
 
       display:
         flex;
@@ -1185,7 +1180,7 @@ const hardwareLogoGroups =
         center;
 
       padding:
-        8px 10px;
+        10px;
 
       background:
         transparent;
@@ -1198,6 +1193,9 @@ const hardwareLogoGroups =
 
       outline-offset:
         5px;
+
+      overflow:
+        hidden;
     }
 
 
@@ -1212,7 +1210,11 @@ const hardwareLogoGroups =
     /* =====================================================
        LOGO IMAGE
 
-       Same visual footprint regardless of source dimensions.
+       All source images are rendered inside the exact
+       same 150 × 52 pixel visual area.
+
+       object-fit: contain keeps the complete logo visible
+       without stretching or cropping it.
        ===================================================== */
 
     .hw-logo-image {
@@ -1220,22 +1222,19 @@ const hardwareLogoGroups =
         block;
 
       width:
-        100%;
-
-      height:
-        100%;
-
-      max-width:
         150px;
 
-      max-height:
-        54px;
+      height:
+        52px;
 
       object-fit:
         contain;
 
       object-position:
         center;
+
+      flex-shrink:
+        0;
 
 
       /*
@@ -1401,25 +1400,25 @@ const hardwareLogoGroups =
 
       .hw-logo-link {
         width:
-          135px;
+          150px;
 
         height:
-          62px;
+          68px;
 
-        flex-basis:
-          135px;
+        flex:
+          0 0 150px;
 
         padding:
-          7px;
+          8px;
       }
 
 
       .hw-logo-image {
-        max-width:
-          120px;
+        width:
+          125px;
 
-        max-height:
-          46px;
+        height:
+          44px;
       }
 
 
