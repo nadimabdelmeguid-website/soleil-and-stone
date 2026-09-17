@@ -448,6 +448,81 @@ const supabasePublishableKey =
         display: none;
       }
 
+      async function loadCommunities() {
+        const { data, error } = await supabase
+          .from("communities")
+          .select("*")
+          .order("sort_order", { ascending: true });
+
+        if (error) {
+          showToast(`Could not load communities: ${error.message}`, "error");
+          return;
+        }
+
+        state.communities = data || [];
+      }
+
+
+      async function loadOrganizations() {
+        const { data, error } = await supabase
+          .from("organizations")
+          .select("*")
+          .order("name", { ascending: true });
+
+        if (error) {
+          showToast(`Could not load organizations: ${error.message}`, "error");
+          return;
+        }
+
+        state.organizations = data || [];
+      }
+
+
+      async function loadPeople() {
+        const { data, error } = await supabase
+          .from("people")
+          .select("*")
+          .order("name", { ascending: true });
+
+        if (error) {
+          showToast(`Could not load speakers: ${error.message}`, "error");
+          return;
+        }
+
+        state.people = data || [];
+      }
+
+
+      async function loadEventSpeakers() {
+        const { data, error } = await supabase
+          .from("event_speakers")
+          .select("*")
+          .order("sort_order", { ascending: true });
+
+        if (error) {
+          showToast(`Could not load speaker links: ${error.message}`, "error");
+          return;
+        }
+
+        state.eventSpeakers = data || [];
+      }
+
+
+      async function loadEventSponsors() {
+        const { data, error } = await supabase
+          .from("event_sponsors")
+          .select("*")
+          .order("sort_order", { ascending: true });
+
+        if (error) {
+          showToast(`Could not load sponsor links: ${error.message}`, "error");
+          return;
+        }
+
+        state.eventSponsors = data || [];
+      }
+
+
       /* =====================================================
          DASHBOARD
          ===================================================== */
@@ -547,6 +622,40 @@ const supabasePublishableKey =
         color: var(--slate);
         font-size: 11px;
         font-weight: 300;
+      }
+
+      .field-help {
+        margin: 7px 0 0;
+        color: var(--slate);
+        font-size: 10px;
+        line-height: 1.5;
+        font-weight: 300;
+      }
+
+      .markdown-toolbar {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-bottom: 8px;
+      }
+
+      .markdown-tool {
+        min-height: 30px;
+        padding: 0 9px;
+        border: 1px solid var(--border);
+        background: var(--cream);
+        color: var(--charcoal);
+        font: inherit;
+        font-size: 9px;
+        font-weight: 600;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        cursor: pointer;
+      }
+
+      .markdown-tool:hover {
+        border-color: var(--gold);
+        color: var(--gold);
       }
 
       .empty-state {
@@ -649,6 +758,15 @@ const supabasePublishableKey =
         font-size: 10px;
       }
 
+      .row-description {
+        max-width: 780px;
+        margin: 9px 0 0;
+        color: var(--slate);
+        font-size: 11px;
+        font-weight: 300;
+        line-height: 1.55;
+      }
+
       .status-pill {
         display: inline-flex;
         align-items: center;
@@ -675,7 +793,8 @@ const supabasePublishableKey =
         color: #80652f;
       }
 
-      .status-pill.archived {
+      .status-pill.archived,
+      .status-pill.inactive {
         opacity: 0.72;
       }
 
@@ -1227,9 +1346,19 @@ const supabasePublishableKey =
             <button
               class="nav-button"
               type="button"
+              data-section="communities"
+            >
+              <span>Communities</span>
+              <span id="nav-communities-count" class="nav-count">0</span>
+            </button>
+
+            <button
+              class="nav-button"
+              type="button"
               data-section="organizations"
             >
               <span>Sponsors & Logos</span>
+              <span id="nav-organizations-count" class="nav-count">0</span>
             </button>
 
             <button
@@ -1238,6 +1367,7 @@ const supabasePublishableKey =
               data-section="people"
             >
               <span>Speakers</span>
+              <span id="nav-people-count" class="nav-count">0</span>
             </button>
           </nav>
 
@@ -1300,7 +1430,7 @@ const supabasePublishableKey =
               </div>
 
               <div class="sync-note">
-                Admin CMS is live. Public pages will be connected after the existing content migration.
+                CMS migration complete. Edit the live content source here; public pages can be connected to Supabase next.
               </div>
             </div>
 
@@ -1705,6 +1835,38 @@ const supabasePublishableKey =
 
 
             <!-- =============================================
+                 COMMUNITIES
+                 ============================================= -->
+
+            <section
+              id="section-communities"
+              class="admin-section hidden"
+              data-admin-section="communities"
+            >
+              <div class="toolbar">
+                <div class="toolbar-left">
+                  <input
+                    id="communities-search"
+                    class="input search-input"
+                    type="search"
+                    placeholder="Search communities..."
+                  />
+                </div>
+
+                <button
+                  id="add-community-button"
+                  class="primary-button"
+                  type="button"
+                >
+                  + New Community
+                </button>
+              </div>
+
+              <div id="communities-list" class="content-list"></div>
+            </section>
+
+
+            <!-- =============================================
                  ORGANIZATIONS
                  ============================================= -->
 
@@ -1713,25 +1875,26 @@ const supabasePublishableKey =
               class="admin-section hidden"
               data-admin-section="organizations"
             >
-              <div class="panel">
-                <div class="panel-header">
-                  <div>
-                    <h2 class="panel-title">
-                      Sponsors & Organizations
-                    </h2>
-                    <p class="panel-copy">
-                      This manager will connect sponsor names, websites and logos to events.
-                    </p>
-                  </div>
+              <div class="toolbar">
+                <div class="toolbar-left">
+                  <input
+                    id="organizations-search"
+                    class="input search-input"
+                    type="search"
+                    placeholder="Search sponsors & organizations..."
+                  />
                 </div>
 
-                <div class="empty-state">
-                  <strong>
-                    Ready for migration
-                  </strong>
-                  Your existing Hardware Meetup logos will be imported here before the public site switches to the CMS.
-                </div>
+                <button
+                  id="add-organization-button"
+                  class="primary-button"
+                  type="button"
+                >
+                  + New Organization
+                </button>
               </div>
+
+              <div id="organizations-list" class="content-list"></div>
             </section>
 
 
@@ -1744,25 +1907,26 @@ const supabasePublishableKey =
               class="admin-section hidden"
               data-admin-section="people"
             >
-              <div class="panel">
-                <div class="panel-header">
-                  <div>
-                    <h2 class="panel-title">
-                      Speakers
-                    </h2>
-                    <p class="panel-copy">
-                      Reusable speaker profiles for Hardware Meetup and other programming.
-                    </p>
-                  </div>
+              <div class="toolbar">
+                <div class="toolbar-left">
+                  <input
+                    id="people-search"
+                    class="input search-input"
+                    type="search"
+                    placeholder="Search speakers..."
+                  />
                 </div>
 
-                <div class="empty-state">
-                  <strong>
-                    Ready for migration
-                  </strong>
-                  Speaker profiles from your current event data will be imported here in the migration phase.
-                </div>
+                <button
+                  id="add-person-button"
+                  class="primary-button"
+                  type="button"
+                >
+                  + New Speaker
+                </button>
               </div>
+
+              <div id="people-list" class="content-list"></div>
             </section>
           </div>
         </main>
@@ -1885,6 +2049,15 @@ const supabasePublishableKey =
                 </div>
 
                 <div class="form-field">
+                  <label class="label" for="event-community">
+                    Community
+                  </label>
+                  <select id="event-community" class="select">
+                    <option value="">No community</option>
+                  </select>
+                </div>
+
+                <div class="form-field">
                   <label
                     class="label"
                     for="event-participation"
@@ -1914,17 +2087,24 @@ const supabasePublishableKey =
                 </div>
 
                 <div class="form-field">
-                  <label
-                    class="label"
-                    for="event-role"
-                  >
-                    Role label
+                  <label class="label" for="event-role">
+                    Role
+                  </label>
+                  <select id="event-role" class="select">
+                    <option value="attending">Attending</option>
+                    <option value="hosted">Hosted</option>
+                  </select>
+                </div>
+
+                <div class="form-field">
+                  <label class="label" for="event-type-label">
+                    Display label
                   </label>
                   <input
-                    id="event-role"
+                    id="event-type-label"
                     class="input"
                     type="text"
-                    placeholder="Host, Co-organizer..."
+                    placeholder="Hosted Community Event"
                   />
                 </div>
 
@@ -2027,6 +2207,13 @@ const supabasePublishableKey =
                 </div>
 
                 <div class="form-field full">
+                  <label class="label" for="event-address">
+                    Address
+                  </label>
+                  <input id="event-address" class="input" type="text" />
+                </div>
+
+                <div class="form-field full">
                   <label
                     class="label"
                     for="event-url"
@@ -2040,9 +2227,55 @@ const supabasePublishableKey =
                     placeholder="https://..."
                   />
                 </div>
+
+                <div class="form-field">
+                  <label class="label" for="event-button-label">Button label</label>
+                  <input id="event-button-label" class="input" type="text" placeholder="View Event" />
+                </div>
+
+                <div class="form-field full">
+                  <label class="label" for="event-image-url">External / legacy image URL</label>
+                  <input id="event-image-url" class="input" type="url" placeholder="https://..." />
+                </div>
               </div>
             </div>
           </div>
+
+          <div class="form-section">
+            <div class="form-section-header">
+              <h3 class="form-section-title">Relationships</h3>
+              <p class="form-section-copy">
+                Attach reusable speakers and sponsor organizations to the event.
+              </p>
+            </div>
+
+            <div class="form-section-body">
+              <div class="form-grid">
+                <div class="form-field">
+                  <label class="label" for="event-speakers">Speakers</label>
+                  <select id="event-speakers" class="select" multiple size="8" style="height: 170px;"></select>
+                  <p class="field-help">Ctrl/Cmd-click to select multiple.</p>
+                </div>
+
+                <div class="form-field">
+                  <label class="label" for="event-sponsors">Sponsors</label>
+                  <select id="event-sponsors" class="select" multiple size="8" style="height: 170px;"></select>
+                  <p class="field-help">Ctrl/Cmd-click to select multiple.</p>
+                </div>
+
+                <div class="form-field">
+                  <label class="label" for="event-partners">Other partners</label>
+                  <textarea id="event-partners" class="textarea" style="min-height: 100px;" placeholder="One per line"></textarea>
+                </div>
+
+                <div class="form-field">
+                  <label class="label" for="event-organizers">Organizers</label>
+                  <textarea id="event-organizers" class="textarea" style="min-height: 100px;" placeholder="One per line"></textarea>
+                </div>
+              </div>
+            </div>
+          </div>
+
 
           <div class="form-section">
             <div class="form-section-header">
@@ -2250,14 +2483,23 @@ const supabasePublishableKey =
                   <label class="label" for="field-note-content">
                     Content
                   </label>
+                  <div class="markdown-toolbar" data-markdown-target="field-note-content">
+                    <button class="markdown-tool" type="button" data-markdown-action="h2">Heading</button>
+                    <button class="markdown-tool" type="button" data-markdown-action="bold">Bold</button>
+                    <button class="markdown-tool" type="button" data-markdown-action="italic">Italic</button>
+                    <button class="markdown-tool" type="button" data-markdown-action="link">Link</button>
+                    <button class="markdown-tool" type="button" data-markdown-action="quote">Quote</button>
+                    <button class="markdown-tool" type="button" data-markdown-action="bullet">Bullets</button>
+                    <button class="markdown-tool" type="button" data-markdown-action="number">Numbered</button>
+                  </div>
                   <textarea
                     id="field-note-content"
                     class="textarea"
                     style="min-height: 360px;"
                     placeholder="Write your Field Note here..."
                   ></textarea>
-                  <p class="panel-copy" style="margin-top: 8px;">
-                    This is the first editor version. A rich text toolbar and inline image insertion will be added before migration.
+                  <p class="field-help">
+                    Content is stored as Markdown. Use the toolbar for common formatting; image assets can be selected as the hero image from the Media Library.
                   </p>
                 </div>
 
@@ -2284,6 +2526,53 @@ const supabasePublishableKey =
                       No hero image
                     </option>
                   </select>
+                </div>
+
+                <div class="form-field">
+                  <label class="label" for="field-note-reading-minutes">
+                    Reading time (minutes)
+                  </label>
+                  <input
+                    id="field-note-reading-minutes"
+                    class="input"
+                    type="number"
+                    min="1"
+                    step="1"
+                  />
+                </div>
+
+                <div class="form-field">
+                  <label class="label" for="field-note-legacy-url">
+                    Legacy URL
+                  </label>
+                  <input
+                    id="field-note-legacy-url"
+                    class="input"
+                    type="text"
+                    placeholder="/blogs/article-name.html"
+                  />
+                </div>
+
+                <div class="form-field full">
+                  <label class="label" for="field-note-seo-title">
+                    SEO title
+                  </label>
+                  <input
+                    id="field-note-seo-title"
+                    class="input"
+                    type="text"
+                  />
+                </div>
+
+                <div class="form-field full">
+                  <label class="label" for="field-note-seo-description">
+                    SEO description
+                  </label>
+                  <textarea
+                    id="field-note-seo-description"
+                    class="textarea"
+                    style="min-height: 86px;"
+                  ></textarea>
                 </div>
 
                 <div class="form-field full">
@@ -2412,12 +2701,22 @@ const supabasePublishableKey =
                   <label class="label" for="recap-content">
                     Recap content
                   </label>
+                  <div class="markdown-toolbar" data-markdown-target="recap-content">
+                    <button class="markdown-tool" type="button" data-markdown-action="h2">Heading</button>
+                    <button class="markdown-tool" type="button" data-markdown-action="bold">Bold</button>
+                    <button class="markdown-tool" type="button" data-markdown-action="italic">Italic</button>
+                    <button class="markdown-tool" type="button" data-markdown-action="link">Link</button>
+                    <button class="markdown-tool" type="button" data-markdown-action="quote">Quote</button>
+                    <button class="markdown-tool" type="button" data-markdown-action="bullet">Bullets</button>
+                    <button class="markdown-tool" type="button" data-markdown-action="number">Numbered</button>
+                  </div>
                   <textarea
                     id="recap-content"
                     class="textarea"
                     style="min-height: 320px;"
                     placeholder="Write the event recap..."
                   ></textarea>
+                  <p class="field-help">Recaps are stored as Markdown and remain editable after publication.</p>
                 </div>
 
                 <div class="form-field">
@@ -2458,6 +2757,20 @@ const supabasePublishableKey =
                     </option>
                   </select>
                 </div>
+
+                <div class="form-field full">
+                  <label class="label" for="recap-seo-title">
+                    SEO title
+                  </label>
+                  <input id="recap-seo-title" class="input" type="text" />
+                </div>
+
+                <div class="form-field full">
+                  <label class="label" for="recap-seo-description">
+                    SEO description
+                  </label>
+                  <textarea id="recap-seo-description" class="textarea" style="min-height: 86px;"></textarea>
+                </div>
               </div>
             </div>
           </div>
@@ -2483,6 +2796,109 @@ const supabasePublishableKey =
             </button>
           </div>
         </div>
+      </form>
+    </div>
+
+
+    <!-- =====================================================
+         COMMUNITY MODAL
+         ===================================================== -->
+
+    <div id="community-modal" class="modal-backdrop hidden" role="dialog" aria-modal="true">
+      <form id="community-form" class="modal">
+        <div class="modal-header">
+          <div><p class="eyebrow">Community Editor</p><h2 id="community-modal-title" class="modal-title">New Community</h2></div>
+          <button class="quiet-button" type="button" data-close-modal="community">Close</button>
+        </div>
+        <div class="modal-body">
+          <input id="community-record-id" type="hidden" />
+          <div class="form-section">
+            <div class="form-section-header"><h3 class="form-section-title">Community Details</h3><p class="form-section-copy">Public-facing details, metrics and calls to action.</p></div>
+            <div class="form-section-body">
+              <div class="form-grid">
+                <div class="form-field full"><label class="label" for="community-name">Name</label><input id="community-name" class="input" type="text" required /></div>
+                <div class="form-field"><label class="label" for="community-id">ID</label><input id="community-id" class="input" type="text" placeholder="startup-mixer" /></div>
+                <div class="form-field"><label class="label" for="community-slug">Slug</label><input id="community-slug" class="input" type="text" /></div>
+                <div class="form-field full"><label class="label" for="community-role">Role label</label><input id="community-role" class="input" type="text" placeholder="Hosted Since March 2026" /></div>
+                <div class="form-field full"><label class="label" for="community-description">Description</label><textarea id="community-description" class="textarea"></textarea></div>
+                <div class="form-field"><label class="label" for="community-members">Members</label><input id="community-members" class="input" type="number" min="0" /></div>
+                <div class="form-field"><label class="label" for="community-followers">LinkedIn followers</label><input id="community-followers" class="input" type="number" min="0" /></div>
+                <div class="form-field full"><label class="label" for="community-linkedin-url">LinkedIn URL</label><input id="community-linkedin-url" class="input" type="url" /></div>
+              </div>
+            </div>
+          </div>
+          <div class="form-section">
+            <div class="form-section-header"><h3 class="form-section-title">Focus Pillars</h3><p class="form-section-copy">One per line: Title :: Description</p></div>
+            <div class="form-section-body">
+              <div class="form-grid">
+                <div class="form-field full"><label class="label" for="community-pillars-title">Section title</label><input id="community-pillars-title" class="input" type="text" /></div>
+                <div class="form-field full"><label class="label" for="community-focus">Pillars</label><textarea id="community-focus" class="textarea" style="min-height: 160px;"></textarea></div>
+              </div>
+            </div>
+          </div>
+          <div class="form-section">
+            <div class="form-section-header"><h3 class="form-section-title">Links & Publishing</h3></div>
+            <div class="form-section-body">
+              <div class="form-grid">
+                <div class="form-field"><label class="label" for="community-primary-label">Primary label</label><input id="community-primary-label" class="input" type="text" /></div>
+                <div class="form-field"><label class="label" for="community-primary-url">Primary URL</label><input id="community-primary-url" class="input" type="text" /></div>
+                <div class="form-field"><label class="label" for="community-secondary-label">Secondary label</label><input id="community-secondary-label" class="input" type="text" /></div>
+                <div class="form-field"><label class="label" for="community-secondary-url">Secondary URL</label><input id="community-secondary-url" class="input" type="text" /></div>
+                <div class="form-field"><label class="label" for="community-status">Status</label><select id="community-status" class="select"><option value="published">Published</option><option value="draft">Draft</option><option value="archived">Archived</option></select></div>
+                <div class="form-field"><label class="label" for="community-sort-order">Sort order</label><input id="community-sort-order" class="input" type="number" value="0" /></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer"><span></span><div class="modal-footer-right"><button class="secondary-button" type="button" data-close-modal="community">Cancel</button><button id="save-community-button" class="primary-button" type="submit">Save Community</button></div></div>
+      </form>
+    </div>
+
+
+    <!-- =====================================================
+         ORGANIZATION MODAL
+         ===================================================== -->
+
+    <div id="organization-modal" class="modal-backdrop hidden" role="dialog" aria-modal="true">
+      <form id="organization-form" class="modal">
+        <div class="modal-header"><div><p class="eyebrow">Organization Editor</p><h2 id="organization-modal-title" class="modal-title">New Organization</h2></div><button class="quiet-button" type="button" data-close-modal="organization">Close</button></div>
+        <div class="modal-body">
+          <input id="organization-record-id" type="hidden" />
+          <div class="form-section"><div class="form-section-header"><h3 class="form-section-title">Organization</h3></div><div class="form-section-body"><div class="form-grid">
+            <div class="form-field full"><label class="label" for="organization-name">Name</label><input id="organization-name" class="input" type="text" required /></div>
+            <div class="form-field full"><label class="label" for="organization-slug">Slug</label><input id="organization-slug" class="input" type="text" /></div>
+            <div class="form-field full"><label class="label" for="organization-website">Website</label><input id="organization-website" class="input" type="url" /></div>
+            <div class="form-field full"><label class="label" for="organization-description">Description</label><textarea id="organization-description" class="textarea"></textarea></div>
+            <div class="form-field"><label class="label" for="organization-logo-media">Logo</label><select id="organization-logo-media" class="select"><option value="">No logo</option></select></div>
+            <div class="form-field"><label class="label" for="organization-status">Status</label><select id="organization-status" class="select"><option value="active">Active</option><option value="inactive">Inactive</option></select></div>
+          </div></div></div>
+        </div>
+        <div class="modal-footer"><span></span><div class="modal-footer-right"><button class="secondary-button" type="button" data-close-modal="organization">Cancel</button><button id="save-organization-button" class="primary-button" type="submit">Save Organization</button></div></div>
+      </form>
+    </div>
+
+
+    <!-- =====================================================
+         PERSON MODAL
+         ===================================================== -->
+
+    <div id="person-modal" class="modal-backdrop hidden" role="dialog" aria-modal="true">
+      <form id="person-form" class="modal">
+        <div class="modal-header"><div><p class="eyebrow">Speaker Editor</p><h2 id="person-modal-title" class="modal-title">New Speaker</h2></div><button class="quiet-button" type="button" data-close-modal="person">Close</button></div>
+        <div class="modal-body">
+          <input id="person-record-id" type="hidden" />
+          <div class="form-section"><div class="form-section-header"><h3 class="form-section-title">Speaker Profile</h3></div><div class="form-section-body"><div class="form-grid">
+            <div class="form-field full"><label class="label" for="person-name">Name</label><input id="person-name" class="input" type="text" required /></div>
+            <div class="form-field"><label class="label" for="person-title">Title</label><input id="person-title" class="input" type="text" /></div>
+            <div class="form-field"><label class="label" for="person-company">Company</label><input id="person-company" class="input" type="text" /></div>
+            <div class="form-field full"><label class="label" for="person-linkedin">LinkedIn</label><input id="person-linkedin" class="input" type="url" /></div>
+            <div class="form-field full"><label class="label" for="person-website">Website</label><input id="person-website" class="input" type="url" /></div>
+            <div class="form-field full"><label class="label" for="person-bio">Bio</label><textarea id="person-bio" class="textarea"></textarea></div>
+            <div class="form-field"><label class="label" for="person-photo-media">Photo</label><select id="person-photo-media" class="select"><option value="">No photo</option></select></div>
+            <div class="form-field"><label class="label" for="person-status">Status</label><select id="person-status" class="select"><option value="active">Active</option><option value="inactive">Inactive</option></select></div>
+          </div></div></div>
+        </div>
+        <div class="modal-footer"><span></span><div class="modal-footer-right"><button class="secondary-button" type="button" data-close-modal="person">Cancel</button><button id="save-person-button" class="primary-button" type="submit">Save Speaker</button></div></div>
       </form>
     </div>
 
@@ -2544,6 +2960,21 @@ const supabasePublishableKey =
           [],
 
         media:
+          [],
+
+        communities:
+          [],
+
+        organizations:
+          [],
+
+        people:
+          [],
+
+        eventSpeakers:
+          [],
+
+        eventSponsors:
           [],
 
         eventFilter:
@@ -2637,6 +3068,193 @@ const supabasePublishableKey =
             90
           );
 
+      }
+
+
+      function linesToArray(
+        value
+      ) {
+        return String(value || "")
+          .split(/\n|,/)
+          .map((item) => item.trim())
+          .filter(Boolean)
+          .filter((item, index, array) =>
+            array.findIndex((candidate) => candidate.toLowerCase() === item.toLowerCase()) === index
+          );
+      }
+
+
+      function arrayToLines(
+        value
+      ) {
+        return Array.isArray(value)
+          ? value.filter(Boolean).join("\n")
+          : "";
+      }
+
+
+      function selectedValues(
+        select
+      ) {
+        return Array.from(select?.selectedOptions || [])
+          .map((option) => option.value)
+          .filter(Boolean);
+      }
+
+
+      function setSelectedValues(
+        select,
+        values = []
+      ) {
+        const selected = new Set(values || []);
+        Array.from(select?.options || []).forEach((option) => {
+          option.selected = selected.has(option.value);
+        });
+      }
+
+
+      function parseFocus(
+        value
+      ) {
+        return String(value || "")
+          .split("\n")
+          .map((line) => line.trim())
+          .filter(Boolean)
+          .map((line) => {
+            const separator = line.indexOf("::");
+            return separator === -1
+              ? { title: line, text: "" }
+              : {
+                  title: line.slice(0, separator).trim(),
+                  text: line.slice(separator + 2).trim()
+                };
+          })
+          .filter((item) => item.title);
+      }
+
+
+      function formatFocus(
+        value
+      ) {
+        return (Array.isArray(value) ? value : [])
+          .map((item) => `${item?.title || ""} :: ${item?.text || ""}`.trim())
+          .join("\n");
+      }
+
+
+      function applyMarkdown(
+        textarea,
+        action
+      ) {
+        if (!textarea) return;
+
+        const start = textarea.selectionStart ?? 0;
+        const end = textarea.selectionEnd ?? start;
+        const value = textarea.value || "";
+        const selected = value.slice(start, end);
+
+        const replaceSelection = (
+          replacement,
+          selectionStartOffset = 0,
+          selectionEndOffset = replacement.length
+        ) => {
+          textarea.setRangeText(replacement, start, end, "end");
+          const base = start;
+          textarea.focus();
+          textarea.setSelectionRange(
+            base + selectionStartOffset,
+            base + selectionEndOffset
+          );
+          textarea.dispatchEvent(new Event("input", { bubbles: true }));
+        };
+
+        const lineBlock = (
+          prefixer,
+          fallback
+        ) => {
+          const block = selected || fallback;
+          const output = block
+            .split("\n")
+            .map((line, index) => prefixer(line, index))
+            .join("\n");
+          replaceSelection(output, 0, output.length);
+        };
+
+        switch (action) {
+          case "bold": {
+            const content = selected || "bold text";
+            const output = `**${content}**`;
+            replaceSelection(output, 2, output.length - 2);
+            break;
+          }
+
+          case "italic": {
+            const content = selected || "italic text";
+            const output = `*${content}*`;
+            replaceSelection(output, 1, output.length - 1);
+            break;
+          }
+
+          case "link": {
+            const content = selected || "link text";
+            const output = `[${content}](https://)`;
+            replaceSelection(
+              output,
+              output.indexOf("https://"),
+              output.indexOf("https://") + 8
+            );
+            break;
+          }
+
+          case "h2":
+            lineBlock(
+              (line) => `## ${line.replace(/^#{1,6}\s+/, "")}`,
+              "Section heading"
+            );
+            break;
+
+          case "quote":
+            lineBlock(
+              (line) => `> ${line.replace(/^>\s?/, "")}`,
+              "Quoted text"
+            );
+            break;
+
+          case "bullet":
+            lineBlock(
+              (line) => `- ${line.replace(/^[-*+]\s+/, "")}`,
+              "List item"
+            );
+            break;
+
+          case "number":
+            lineBlock(
+              (line, index) =>
+                `${index + 1}. ${line.replace(/^\d+\.\s+/, "")}`,
+              "List item"
+            );
+            break;
+        }
+      }
+
+
+      function getEventSpeakerIds(
+        eventId
+      ) {
+        return state.eventSpeakers
+          .filter((link) => link.event_id === eventId)
+          .sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0))
+          .map((link) => link.person_id);
+      }
+
+
+      function getEventSponsorIds(
+        eventId
+      ) {
+        return state.eventSponsors
+          .filter((link) => link.event_id === eventId)
+          .sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0))
+          .map((link) => link.organization_id);
       }
 
 
@@ -3024,7 +3642,12 @@ const supabasePublishableKey =
             loadEvents(),
             loadFieldNotes(),
             loadRecaps(),
-            loadMedia()
+            loadMedia(),
+            loadCommunities(),
+            loadOrganizations(),
+            loadPeople(),
+            loadEventSpeakers(),
+            loadEventSponsors()
           ]
         );
 
@@ -3033,6 +3656,11 @@ const supabasePublishableKey =
         renderRecentContent();
         refreshMediaSelectors();
         refreshRecapEventSelector();
+        refreshRelationshipSelectors();
+        renderCommunities();
+        renderOrganizations();
+        renderPeople();
+        renderEvents();
 
       }
 
@@ -3226,7 +3854,16 @@ const supabasePublishableKey =
             state.recaps.length,
 
           media:
-            state.media.length
+            state.media.length,
+
+          communities:
+            state.communities.length,
+
+          organizations:
+            state.organizations.length,
+
+          people:
+            state.people.length
         };
 
 
@@ -3253,6 +3890,15 @@ const supabasePublishableKey =
 
         $("#nav-media-count").textContent =
           values.media;
+
+        $("#nav-communities-count").textContent =
+          values.communities;
+
+        $("#nav-organizations-count").textContent =
+          values.organizations;
+
+        $("#nav-people-count").textContent =
+          values.people;
 
       }
 
@@ -3330,7 +3976,7 @@ const supabasePublishableKey =
             `
               <div class="empty-state">
                 <strong>Your CMS is ready</strong>
-                Add your first item here, then we will migrate the existing website content into the same system.
+                Create a new content item here. Existing Soleil & Stone content is already stored in the CMS.
               </div>
             `;
 
@@ -3549,8 +4195,12 @@ const supabasePublishableKey =
         $("#event-record-id").value = "";
         $("#event-country").value = "USA";
         $("#event-status").value = "draft";
+        $("#event-role").value = "attending";
         $("#event-modal-title").textContent = "Add Event";
         $("#archive-event-button").classList.add("hidden");
+        refreshRelationshipSelectors();
+        setSelectedValues($("#event-speakers"), []);
+        setSelectedValues($("#event-sponsors"), []);
 
       }
 
@@ -3601,11 +4251,17 @@ const supabasePublishableKey =
           $("#event-type").value =
             event.event_type || "";
 
+          $("#event-community").value =
+            event.community_id || "";
+
           $("#event-participation").value =
             event.participation || "";
 
           $("#event-role").value =
-            event.role || "";
+            event.role || "attending";
+
+          $("#event-type-label").value =
+            event.type_label || "";
 
           $("#event-registrations").value =
             event.registrations ?? "";
@@ -3625,8 +4281,33 @@ const supabasePublishableKey =
           $("#event-country").value =
             event.country || "USA";
 
+          $("#event-address").value =
+            event.address || "";
+
           $("#event-url").value =
             event.url || "";
+
+          $("#event-button-label").value =
+            event.button_label || "";
+
+          $("#event-image-url").value =
+            event.image_url || "";
+
+          $("#event-partners").value =
+            arrayToLines(event.partners);
+
+          $("#event-organizers").value =
+            arrayToLines(event.organizers);
+
+          setSelectedValues(
+            $("#event-speakers"),
+            getEventSpeakerIds(event.id)
+          );
+
+          setSelectedValues(
+            $("#event-sponsors"),
+            getEventSponsorIds(event.id)
+          );
 
           $("#event-status").value =
             event.status || "draft";
@@ -3679,11 +4360,17 @@ const supabasePublishableKey =
           event_type:
             $("#event-type").value.trim() ||
             null,
+          community_id:
+            $("#event-community").value ||
+            null,
           participation:
             $("#event-participation").value ||
             null,
           role:
-            $("#event-role").value.trim() ||
+            $("#event-role").value ||
+            null,
+          type_label:
+            $("#event-type-label").value.trim() ||
             null,
           registrations:
             $("#event-registrations").value === ""
@@ -3706,9 +4393,22 @@ const supabasePublishableKey =
           country:
             $("#event-country").value.trim() ||
             "USA",
+          address:
+            $("#event-address").value.trim() ||
+            null,
           url:
             $("#event-url").value.trim() ||
             null,
+          button_label:
+            $("#event-button-label").value.trim() ||
+            null,
+          image_url:
+            $("#event-image-url").value.trim() ||
+            null,
+          partners:
+            linesToArray($("#event-partners").value),
+          organizers:
+            linesToArray($("#event-organizers").value),
           status:
             $("#event-status").value,
           cover_media_id:
@@ -3722,6 +4422,7 @@ const supabasePublishableKey =
 
 
         let response;
+        let savedEventId = existingId;
 
 
         if (
@@ -3745,6 +4446,8 @@ const supabasePublishableKey =
 
           const id =
             `evt-${crypto.randomUUID()}`;
+
+          savedEventId = id;
 
           const slugBase =
             slugify(
@@ -3784,6 +4487,57 @@ const supabasePublishableKey =
         }
 
 
+        const speakerIds =
+          selectedValues($("#event-speakers"));
+
+        const sponsorIds =
+          selectedValues($("#event-sponsors"));
+
+        const deleteSpeakers =
+          await supabase
+            .from("event_speakers")
+            .delete()
+            .eq("event_id", savedEventId);
+
+        if (deleteSpeakers.error) throw deleteSpeakers.error;
+
+        if (speakerIds.length) {
+          const addSpeakers =
+            await supabase
+              .from("event_speakers")
+              .insert(
+                speakerIds.map((personId, index) => ({
+                  event_id: savedEventId,
+                  person_id: personId,
+                  sort_order: index
+                }))
+              );
+          if (addSpeakers.error) throw addSpeakers.error;
+        }
+
+        const deleteSponsors =
+          await supabase
+            .from("event_sponsors")
+            .delete()
+            .eq("event_id", savedEventId);
+
+        if (deleteSponsors.error) throw deleteSponsors.error;
+
+        if (sponsorIds.length) {
+          const addSponsors =
+            await supabase
+              .from("event_sponsors")
+              .insert(
+                sponsorIds.map((organizationId, index) => ({
+                  event_id: savedEventId,
+                  organization_id: organizationId,
+                  sort_order: index
+                }))
+              );
+          if (addSponsors.error) throw addSponsors.error;
+        }
+
+
         closeModal(
           "event"
         );
@@ -3794,10 +4548,7 @@ const supabasePublishableKey =
             : "Event created."
         );
 
-        await loadEvents();
-        refreshCounts();
-        renderRecentContent();
-        refreshRecapEventSelector();
+        await loadAllContent();
 
       }
 
@@ -3923,7 +4674,7 @@ const supabasePublishableKey =
             `
               <div class="empty-state">
                 <strong>No Field Notes yet</strong>
-                Create a draft here or wait for the migration of your existing articles.
+                Create a new draft here. Published and scheduled Field Notes are managed from this section.
               </div>
             `;
 
@@ -4015,6 +4766,10 @@ const supabasePublishableKey =
           $("#field-note-content").value = item.content_markdown || "";
           $("#field-note-published-at").value = toLocalDateTimeInput(item.published_at);
           $("#field-note-hero-media").value = item.hero_media_id || "";
+          $("#field-note-reading-minutes").value = item.reading_minutes ?? "";
+          $("#field-note-legacy-url").value = item.legacy_url || "";
+          $("#field-note-seo-title").value = item.seo_title || "";
+          $("#field-note-seo-description").value = item.seo_description || "";
           $("#field-note-featured").checked = Boolean(item.featured);
 
         }
@@ -4072,6 +4827,16 @@ const supabasePublishableKey =
             $("#field-note-hero-media").value || null,
           featured:
             $("#field-note-featured").checked,
+          reading_minutes:
+            $("#field-note-reading-minutes").value
+              ? Number($("#field-note-reading-minutes").value)
+              : null,
+          legacy_url:
+            $("#field-note-legacy-url").value.trim() || null,
+          seo_title:
+            $("#field-note-seo-title").value.trim() || null,
+          seo_description:
+            $("#field-note-seo-description").value.trim() || null,
           published_at:
             publishedAt,
           status
@@ -4173,7 +4938,7 @@ const supabasePublishableKey =
             `
               <div class="empty-state">
                 <strong>No recaps yet</strong>
-                Create one here or wait for your existing event recaps to be migrated.
+                Create a recap here and attach it directly to one of your existing events.
               </div>
             `;
 
@@ -4275,6 +5040,8 @@ const supabasePublishableKey =
           $("#recap-status").value = item.status || "draft";
           $("#recap-published-at").value = toLocalDateTimeInput(item.published_at);
           $("#recap-hero-media").value = item.hero_media_id || "";
+          $("#recap-seo-title").value = item.seo_title || "";
+          $("#recap-seo-description").value = item.seo_description || "";
 
         }
 
@@ -4326,6 +5093,10 @@ const supabasePublishableKey =
             $("#recap-content").value,
           hero_media_id:
             $("#recap-hero-media").value || null,
+          seo_title:
+            $("#recap-seo-title").value.trim() || null,
+          seo_description:
+            $("#recap-seo-description").value.trim() || null,
           published_at:
             publishedAt,
           status
@@ -4448,6 +5219,13 @@ const supabasePublishableKey =
                     </p>
                     <div class="media-meta">
                       ${escapeHtml(item.media_kind || "image")}
+                      · ${escapeHtml(item.status || "active")}
+                    </div>
+                    <div class="row-actions" style="margin-top: 10px;">
+                      ${item.public_url ? `<button class="secondary-button" type="button" data-copy-media-url="${escapeHtml(item.public_url)}">Copy URL</button>` : ""}
+                      <button class="quiet-button" type="button" data-toggle-media="${escapeHtml(item.id)}">
+                        ${item.status === "active" ? "Archive" : "Restore"}
+                      </button>
                     </div>
                   </div>
                 </article>
@@ -4679,12 +5457,54 @@ const supabasePublishableKey =
       }
 
 
+      async function toggleMediaStatus(
+        mediaId
+      ) {
+        const item =
+          state.media.find(
+            (media) =>
+              media.id === mediaId
+          );
+
+        if (!item) return;
+
+        const nextStatus =
+          item.status === "active"
+            ? "archived"
+            : "active";
+
+        const response =
+          await supabase
+            .from("media")
+            .update({
+              status: nextStatus
+            })
+            .eq("id", mediaId);
+
+        if (response.error) {
+          throw response.error;
+        }
+
+        showToast(
+          nextStatus === "active"
+            ? "Media restored."
+            : "Media archived."
+        );
+
+        await loadMedia();
+        refreshCounts();
+        refreshMediaSelectors();
+      }
+
+
       function refreshMediaSelectors() {
 
         const selectors = [
           $("#event-cover-media"),
           $("#field-note-hero-media"),
-          $("#recap-hero-media")
+          $("#recap-hero-media"),
+          $("#organization-logo-media"),
+          $("#person-photo-media")
         ];
 
 
@@ -4706,7 +5526,11 @@ const supabasePublishableKey =
             const emptyLabel =
               select.id === "event-cover-media"
                 ? "No cover image"
-                : "No hero image";
+                : select.id === "organization-logo-media"
+                  ? "No logo"
+                  : select.id === "person-photo-media"
+                    ? "No photo"
+                    : "No hero image";
 
 
             select.innerHTML =
@@ -4771,6 +5595,310 @@ const supabasePublishableKey =
       }
 
 
+      function refreshRelationshipSelectors() {
+        const communitySelect = $("#event-community");
+        if (communitySelect) {
+          const current = communitySelect.value;
+          communitySelect.innerHTML =
+            `<option value="">No community</option>` +
+            state.communities
+              .map((item) => `<option value="${escapeHtml(item.id)}">${escapeHtml(item.name)}${item.status === "archived" ? " — archived" : ""}</option>`)
+              .join("");
+          communitySelect.value = current;
+        }
+
+        const speakerSelect = $("#event-speakers");
+        if (speakerSelect) {
+          const current = selectedValues(speakerSelect);
+          speakerSelect.innerHTML = state.people
+            .map((item) => `<option value="${escapeHtml(item.id)}">${escapeHtml(item.name)}${item.company ? ` — ${escapeHtml(item.company)}` : ""}${item.status !== "active" ? " — inactive" : ""}</option>`)
+            .join("");
+          setSelectedValues(speakerSelect, current);
+        }
+
+        const sponsorSelect = $("#event-sponsors");
+        if (sponsorSelect) {
+          const current = selectedValues(sponsorSelect);
+          sponsorSelect.innerHTML = state.organizations
+            .map((item) => `<option value="${escapeHtml(item.id)}">${escapeHtml(item.name)}${item.status !== "active" ? " — inactive" : ""}</option>`)
+            .join("");
+          setSelectedValues(sponsorSelect, current);
+        }
+      }
+
+
+      function renderCommunities() {
+        const search = $("#communities-search")?.value.trim().toLowerCase() || "";
+        const items = state.communities.filter((item) =>
+          !search || [item.name, item.role, item.description]
+            .filter(Boolean)
+            .some((value) => String(value).toLowerCase().includes(search))
+        );
+        const container = $("#communities-list");
+        if (!container) return;
+        if (!items.length) {
+          container.innerHTML = `<div class="empty-state"><strong>No communities found</strong>Add a community or change your search.</div>`;
+          return;
+        }
+        container.innerHTML = items.map((item) => {
+          const events = state.events.filter((event) => event.community_id === item.id);
+          const registrations = events.reduce((total, event) => total + (event.registrations || 0), 0);
+          return `
+            <div class="content-row">
+              <div>
+                <h3 class="row-title">${escapeHtml(item.name)}</h3>
+                <div class="row-meta">
+                  ${item.role ? `<span>${escapeHtml(item.role)}</span><span>•</span>` : ""}
+                  <span>${events.length} events</span><span>•</span>
+                  <span>${registrations} recorded registrations</span><span>•</span>
+                  <span class="status-pill ${escapeHtml(item.status || "published")}">${escapeHtml(item.status || "published")}</span>
+                </div>
+                ${item.description ? `<p class="row-description">${escapeHtml(item.description)}</p>` : ""}
+              </div>
+              <div class="row-actions"><button class="secondary-button" type="button" data-edit-community="${escapeHtml(item.id)}">Edit</button></div>
+            </div>`;
+        }).join("");
+      }
+
+
+      function renderOrganizations() {
+        const search = $("#organizations-search")?.value.trim().toLowerCase() || "";
+        const items = state.organizations.filter((item) =>
+          !search || [item.name, item.description, item.website_url]
+            .filter(Boolean)
+            .some((value) => String(value).toLowerCase().includes(search))
+        );
+        const container = $("#organizations-list");
+        if (!container) return;
+        if (!items.length) {
+          container.innerHTML = `<div class="empty-state"><strong>No organizations found</strong>Add a sponsor or partner organization.</div>`;
+          return;
+        }
+        container.innerHTML = items.map((item) => {
+          const linked = state.eventSponsors.filter((link) => link.organization_id === item.id).length;
+          return `
+            <div class="content-row">
+              <div>
+                <h3 class="row-title">${escapeHtml(item.name)}</h3>
+                <div class="row-meta">
+                  <span>${linked} sponsored event${linked === 1 ? "" : "s"}</span>
+                  ${item.website_url ? `<span>•</span><span>Website</span>` : ""}
+                  ${item.logo_media_id ? `<span>•</span><span>Logo</span>` : ""}
+                  <span>•</span><span class="status-pill ${escapeHtml(item.status || "active")}">${escapeHtml(item.status || "active")}</span>
+                </div>
+                ${item.description ? `<p class="row-description">${escapeHtml(item.description)}</p>` : ""}
+              </div>
+              <div class="row-actions"><button class="secondary-button" type="button" data-edit-organization="${escapeHtml(item.id)}">Edit</button></div>
+            </div>`;
+        }).join("");
+      }
+
+
+      function renderPeople() {
+        const search = $("#people-search")?.value.trim().toLowerCase() || "";
+        const items = state.people.filter((item) =>
+          !search || [item.name, item.title, item.company, item.bio]
+            .filter(Boolean)
+            .some((value) => String(value).toLowerCase().includes(search))
+        );
+        const container = $("#people-list");
+        if (!container) return;
+        if (!items.length) {
+          container.innerHTML = `<div class="empty-state"><strong>No speakers found</strong>Add a reusable speaker profile.</div>`;
+          return;
+        }
+        container.innerHTML = items.map((item) => {
+          const linked = state.eventSpeakers.filter((link) => link.person_id === item.id).length;
+          return `
+            <div class="content-row">
+              <div>
+                <h3 class="row-title">${escapeHtml(item.name)}</h3>
+                <div class="row-meta">
+                  ${item.title ? `<span>${escapeHtml(item.title)}</span>` : ""}
+                  ${item.company ? `<span>•</span><span>${escapeHtml(item.company)}</span>` : ""}
+                  <span>•</span><span>${linked} event${linked === 1 ? "" : "s"}</span>
+                  <span>•</span><span class="status-pill ${escapeHtml(item.status || "active")}">${escapeHtml(item.status || "active")}</span>
+                </div>
+                ${item.bio ? `<p class="row-description">${escapeHtml(item.bio)}</p>` : ""}
+              </div>
+              <div class="row-actions"><button class="secondary-button" type="button" data-edit-person="${escapeHtml(item.id)}">Edit</button></div>
+            </div>`;
+        }).join("");
+      }
+
+
+      function resetCommunityForm() {
+        $("#community-form").reset();
+        $("#community-record-id").value = "";
+        $("#community-modal-title").textContent = "New Community";
+        $("#community-id").disabled = false;
+        $("#community-status").value = "published";
+        $("#community-sort-order").value = "0";
+      }
+
+
+      function openCommunityModal(id = "") {
+        resetCommunityForm();
+        if (id) {
+          const item = state.communities.find((community) => community.id === id);
+          if (!item) return;
+          $("#community-record-id").value = item.id;
+          $("#community-modal-title").textContent = "Edit Community";
+          $("#community-id").value = item.id;
+          $("#community-id").disabled = true;
+          $("#community-name").value = item.name || "";
+          $("#community-slug").value = item.slug || "";
+          $("#community-role").value = item.role || "";
+          $("#community-description").value = item.description || "";
+          $("#community-members").value = item.members ?? 0;
+          $("#community-followers").value = item.linkedin_followers ?? "";
+          $("#community-linkedin-url").value = item.linkedin_url || "";
+          $("#community-pillars-title").value = item.pillars_title || "";
+          $("#community-focus").value = formatFocus(item.focus);
+          $("#community-primary-label").value = item.primary_label || "";
+          $("#community-primary-url").value = item.primary_url || "";
+          $("#community-secondary-label").value = item.secondary_label || "";
+          $("#community-secondary-url").value = item.secondary_url || "";
+          $("#community-status").value = item.status || "published";
+          $("#community-sort-order").value = item.sort_order ?? 0;
+        }
+        $("#community-modal").classList.remove("hidden");
+        document.body.style.overflow = "hidden";
+      }
+
+
+      async function saveCommunity() {
+        const existingId = $("#community-record-id").value;
+        const name = $("#community-name").value.trim();
+        const id = existingId || slugify($("#community-id").value || name) || `community-${crypto.randomUUID().slice(0, 8)}`;
+        const payload = {
+          slug: slugify($("#community-slug").value || name) || id,
+          name,
+          role: $("#community-role").value.trim() || null,
+          description: $("#community-description").value.trim() || null,
+          focus: parseFocus($("#community-focus").value),
+          members: $("#community-members").value === "" ? 0 : Number($("#community-members").value),
+          primary_url: $("#community-primary-url").value.trim() || null,
+          primary_label: $("#community-primary-label").value.trim() || null,
+          secondary_url: $("#community-secondary-url").value.trim() || null,
+          secondary_label: $("#community-secondary-label").value.trim() || null,
+          status: $("#community-status").value,
+          sort_order: Number($("#community-sort-order").value || 0),
+          linkedin_url: $("#community-linkedin-url").value.trim() || null,
+          linkedin_followers: $("#community-followers").value === "" ? null : Number($("#community-followers").value),
+          pillars_title: $("#community-pillars-title").value.trim() || null
+        };
+        const response = existingId
+          ? await supabase.from("communities").update(payload).eq("id", existingId)
+          : await supabase.from("communities").insert({ id, ...payload });
+        if (response.error) throw response.error;
+        closeModal("community");
+        showToast(existingId ? "Community updated." : "Community created.");
+        await loadAllContent();
+      }
+
+
+      function resetOrganizationForm() {
+        $("#organization-form").reset();
+        $("#organization-record-id").value = "";
+        $("#organization-modal-title").textContent = "New Organization";
+        $("#organization-status").value = "active";
+        refreshMediaSelectors();
+      }
+
+
+      function openOrganizationModal(id = "") {
+        resetOrganizationForm();
+        if (id) {
+          const item = state.organizations.find((organization) => organization.id === id);
+          if (!item) return;
+          $("#organization-record-id").value = item.id;
+          $("#organization-modal-title").textContent = "Edit Organization";
+          $("#organization-name").value = item.name || "";
+          $("#organization-slug").value = item.slug || "";
+          $("#organization-website").value = item.website_url || "";
+          $("#organization-description").value = item.description || "";
+          $("#organization-logo-media").value = item.logo_media_id || "";
+          $("#organization-status").value = item.status || "active";
+        }
+        $("#organization-modal").classList.remove("hidden");
+        document.body.style.overflow = "hidden";
+      }
+
+
+      async function saveOrganization() {
+        const existingId = $("#organization-record-id").value;
+        const name = $("#organization-name").value.trim();
+        const payload = {
+          name,
+          slug: slugify($("#organization-slug").value || name),
+          website_url: $("#organization-website").value.trim() || null,
+          description: $("#organization-description").value.trim() || null,
+          logo_media_id: $("#organization-logo-media").value || null,
+          status: $("#organization-status").value
+        };
+        const response = existingId
+          ? await supabase.from("organizations").update(payload).eq("id", existingId)
+          : await supabase.from("organizations").insert(payload);
+        if (response.error) throw response.error;
+        closeModal("organization");
+        showToast(existingId ? "Organization updated." : "Organization created.");
+        await loadAllContent();
+      }
+
+
+      function resetPersonForm() {
+        $("#person-form").reset();
+        $("#person-record-id").value = "";
+        $("#person-modal-title").textContent = "New Speaker";
+        $("#person-status").value = "active";
+        refreshMediaSelectors();
+      }
+
+
+      function openPersonModal(id = "") {
+        resetPersonForm();
+        if (id) {
+          const item = state.people.find((person) => person.id === id);
+          if (!item) return;
+          $("#person-record-id").value = item.id;
+          $("#person-modal-title").textContent = "Edit Speaker";
+          $("#person-name").value = item.name || "";
+          $("#person-title").value = item.title || "";
+          $("#person-company").value = item.company || "";
+          $("#person-linkedin").value = item.linkedin_url || "";
+          $("#person-website").value = item.website_url || "";
+          $("#person-bio").value = item.bio || "";
+          $("#person-photo-media").value = item.photo_media_id || "";
+          $("#person-status").value = item.status || "active";
+        }
+        $("#person-modal").classList.remove("hidden");
+        document.body.style.overflow = "hidden";
+      }
+
+
+      async function savePerson() {
+        const existingId = $("#person-record-id").value;
+        const payload = {
+          name: $("#person-name").value.trim(),
+          company: $("#person-company").value.trim() || null,
+          title: $("#person-title").value.trim() || null,
+          linkedin_url: $("#person-linkedin").value.trim() || null,
+          website_url: $("#person-website").value.trim() || null,
+          bio: $("#person-bio").value.trim() || null,
+          photo_media_id: $("#person-photo-media").value || null,
+          status: $("#person-status").value
+        };
+        const response = existingId
+          ? await supabase.from("people").update(payload).eq("id", existingId)
+          : await supabase.from("people").insert(payload);
+        if (response.error) throw response.error;
+        closeModal("person");
+        showToast(existingId ? "Speaker updated." : "Speaker created.");
+        await loadAllContent();
+      }
+
+
       /* =====================================================
          NAVIGATION
          ===================================================== */
@@ -4815,6 +5943,14 @@ const supabasePublishableKey =
             "Media Library",
           subtitle:
             "Upload reusable photos and logos without managing filenames manually."
+        },
+        communities: {
+          eyebrow:
+            "Community",
+          title:
+            "Communities",
+          subtitle:
+            "Manage community profiles, metrics and calls to action."
         },
         organizations: {
           eyebrow:
@@ -4892,7 +6028,13 @@ const supabasePublishableKey =
           "field-note":
             "#field-note-modal",
           recap:
-            "#recap-modal"
+            "#recap-modal",
+          community:
+            "#community-modal",
+          organization:
+            "#organization-modal",
+          person:
+            "#person-modal"
         };
 
 
@@ -5078,6 +6220,27 @@ const supabasePublishableKey =
       );
 
 
+      $("#add-community-button").addEventListener(
+        "click",
+        () =>
+          openCommunityModal()
+      );
+
+
+      $("#add-organization-button").addEventListener(
+        "click",
+        () =>
+          openOrganizationModal()
+      );
+
+
+      $("#add-person-button").addEventListener(
+        "click",
+        () =>
+          openPersonModal()
+      );
+
+
       $("#events-search").addEventListener(
         "input",
         renderEvents
@@ -5099,6 +6262,24 @@ const supabasePublishableKey =
       $("#media-search").addEventListener(
         "input",
         renderMedia
+      );
+
+
+      $("#communities-search").addEventListener(
+        "input",
+        renderCommunities
+      );
+
+
+      $("#organizations-search").addEventListener(
+        "input",
+        renderOrganizations
+      );
+
+
+      $("#people-search").addEventListener(
+        "input",
+        renderPeople
       );
 
 
@@ -5148,6 +6329,30 @@ const supabasePublishableKey =
           event
         ) => {
 
+          const markdownButton =
+            event.target.closest(
+              "[data-markdown-action]"
+            );
+
+          if (
+            markdownButton
+          ) {
+            const toolbar =
+              markdownButton.closest(
+                "[data-markdown-target]"
+              );
+
+            applyMarkdown(
+              document.getElementById(
+                toolbar?.dataset.markdownTarget || ""
+              ),
+              markdownButton.dataset.markdownAction
+            );
+
+            return;
+          }
+
+
           const eventButton =
             event.target.closest(
               "[data-edit-event]"
@@ -5187,6 +6392,94 @@ const supabasePublishableKey =
             openRecapModal(
               recapButton.dataset.editRecap
             );
+          }
+
+
+          const communityButton =
+            event.target.closest(
+              "[data-edit-community]"
+            );
+
+          if (
+            communityButton
+          ) {
+            openCommunityModal(
+              communityButton.dataset.editCommunity
+            );
+          }
+
+
+          const organizationButton =
+            event.target.closest(
+              "[data-edit-organization]"
+            );
+
+          if (
+            organizationButton
+          ) {
+            openOrganizationModal(
+              organizationButton.dataset.editOrganization
+            );
+          }
+
+
+          const personButton =
+            event.target.closest(
+              "[data-edit-person]"
+            );
+
+          if (
+            personButton
+          ) {
+            openPersonModal(
+              personButton.dataset.editPerson
+            );
+          }
+
+
+          const copyMediaButton =
+            event.target.closest(
+              "[data-copy-media-url]"
+            );
+
+          if (
+            copyMediaButton
+          ) {
+            const url =
+              copyMediaButton.dataset.copyMediaUrl || "";
+
+            navigator.clipboard
+              .writeText(url)
+              .then(() => {
+                showToast("Media URL copied.");
+              })
+              .catch(() => {
+                window.prompt("Copy this media URL:", url);
+              });
+
+            return;
+          }
+
+
+          const toggleMediaButton =
+            event.target.closest(
+              "[data-toggle-media]"
+            );
+
+          if (
+            toggleMediaButton
+          ) {
+            toggleMediaStatus(
+              toggleMediaButton.dataset.toggleMedia
+            ).catch((error) => {
+              console.error(error);
+              showToast(
+                error?.message || "Could not update media.",
+                "error"
+              );
+            });
+
+            return;
           }
 
 
@@ -5365,6 +6658,60 @@ const supabasePublishableKey =
       );
 
 
+      $("#community-form").addEventListener(
+        "submit",
+        async (event) => {
+          event.preventDefault();
+          const button = $("#save-community-button");
+          setButtonLoading(button, true, "Saving...", "Save Community");
+          try {
+            await saveCommunity();
+          } catch (error) {
+            console.error(error);
+            showToast(error?.message || "Could not save community.", "error");
+          } finally {
+            setButtonLoading(button, false, "Saving...", "Save Community");
+          }
+        }
+      );
+
+
+      $("#organization-form").addEventListener(
+        "submit",
+        async (event) => {
+          event.preventDefault();
+          const button = $("#save-organization-button");
+          setButtonLoading(button, true, "Saving...", "Save Organization");
+          try {
+            await saveOrganization();
+          } catch (error) {
+            console.error(error);
+            showToast(error?.message || "Could not save organization.", "error");
+          } finally {
+            setButtonLoading(button, false, "Saving...", "Save Organization");
+          }
+        }
+      );
+
+
+      $("#person-form").addEventListener(
+        "submit",
+        async (event) => {
+          event.preventDefault();
+          const button = $("#save-person-button");
+          setButtonLoading(button, true, "Saving...", "Save Speaker");
+          try {
+            await savePerson();
+          } catch (error) {
+            console.error(error);
+            showToast(error?.message || "Could not save speaker.", "error");
+          } finally {
+            setButtonLoading(button, false, "Saving...", "Save Speaker");
+          }
+        }
+      );
+
+
       const dropZone =
         $("#drop-zone");
 
@@ -5442,7 +6789,10 @@ const supabasePublishableKey =
           [
             "event",
             "field-note",
-            "recap"
+            "recap",
+            "community",
+            "organization",
+            "person"
           ].forEach(
             closeModal
           );
