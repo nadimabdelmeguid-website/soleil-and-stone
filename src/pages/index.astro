@@ -172,11 +172,20 @@ const featuredNotes =
         "
       >
 
+        <!--
+          MOBILE:
+          Free horizontal swipe.
+          No forced snapping.
+
+          DESKTOP:
+          Returns to the existing 3-column grid.
+        -->
+
         <div
           class="
-            grid
+            home-pillars-scroll
+            md:grid
             md:grid-cols-3
-            gap-8
             md:gap-0
           "
         >
@@ -185,6 +194,7 @@ const featuredNotes =
 
           <div
             class="
+              home-pillar
               md:pr-8
             "
           >
@@ -247,6 +257,7 @@ const featuredNotes =
 
           <div
             class="
+              home-pillar
               md:px-8
               md:border-l
               md:border-brand-border
@@ -310,6 +321,7 @@ const featuredNotes =
 
           <div
             class="
+              home-pillar
               md:pl-8
               md:border-l
               md:border-brand-border
@@ -368,6 +380,34 @@ const featuredNotes =
           </div>
 
         </div>
+
+
+
+        <!-- =================================================
+             MOBILE PILLAR HINT
+             ================================================= -->
+
+        <p
+          class="
+            md:hidden
+            mt-5
+            text-[9px]
+            uppercase
+            tracking-[0.14em]
+            text-brand-slate
+            text-center
+          "
+        >
+          Swipe to explore
+
+          <span
+            class="
+              ml-1
+            "
+          >
+            →
+          </span>
+        </p>
 
 
 
@@ -532,23 +572,42 @@ const featuredNotes =
 
 
 
-      <!-- FEATURED NOTES -->
+      <!-- =================================================
+           FEATURED NOTES
+
+           MOBILE:
+           exactly one full card at a time.
+           hard snap to the next card.
+
+           DESKTOP:
+           existing 2-column layout.
+           ================================================= -->
 
       <div
         class="
-          grid
+          home-field-notes-scroll
+          md:grid
           md:grid-cols-2
-          gap-5
+          md:gap-5
         "
+        aria-label="Featured field notes"
       >
 
         {
           featuredNotes.map(
             (post) => (
 
-              <ArticleCard
-                post={post}
-              />
+              <div
+                class="
+                  home-field-note-slide
+                "
+              >
+
+                <ArticleCard
+                  post={post}
+                />
+
+              </div>
 
             )
           )
@@ -556,8 +615,312 @@ const featuredNotes =
 
       </div>
 
+
+
+      <!-- MOBILE SWIPE HINT -->
+
+      {
+        featuredNotes.length > 1 && (
+
+          <p
+            class="
+              md:hidden
+              mt-5
+              text-[9px]
+              uppercase
+              tracking-[0.14em]
+              text-brand-slate
+              text-center
+            "
+          >
+            Swipe for next note
+
+            <span
+              class="
+                ml-1
+              "
+            >
+              →
+            </span>
+          </p>
+
+        )
+      }
+
     </div>
 
   </section>
+
+
+
+  <!-- =====================================================
+       HOMEPAGE MOBILE INTERACTION STYLES
+       ===================================================== -->
+
+  <style>
+
+    /* =====================================================
+       THREE VALUES / PILLARS
+
+       MOBILE:
+       - natural swipe
+       - deliberately no snap
+       - next pillar remains partially visible
+       - user controls exactly where the row stops
+
+       DESKTOP:
+       - standard 3-column grid
+       ===================================================== */
+
+    .home-pillars-scroll {
+      display:
+        flex;
+
+      flex-wrap:
+        nowrap;
+
+      gap:
+        18px;
+
+      overflow-x:
+        auto;
+
+      overflow-y:
+        visible;
+
+      padding-bottom:
+        8px;
+
+      overscroll-behavior-inline:
+        contain;
+
+      scroll-behavior:
+        smooth;
+
+      -webkit-overflow-scrolling:
+        touch;
+
+      touch-action:
+        pan-x pan-y;
+
+      scrollbar-width:
+        none;
+    }
+
+
+    .home-pillars-scroll::-webkit-scrollbar {
+      display:
+        none;
+    }
+
+
+    .home-pillar {
+      flex:
+        0 0 86%;
+
+      min-width:
+        0;
+    }
+
+
+
+    /* =====================================================
+       FEATURED FIELD NOTES
+
+       MOBILE:
+       - 1 complete card per viewport
+       - mandatory snap
+       - scroll-snap-stop prevents a normal swipe from
+         casually passing over multiple cards
+
+       DESKTOP:
+       - returns to the existing two-column grid
+       ===================================================== */
+
+    .home-field-notes-scroll {
+      display:
+        flex;
+
+      flex-wrap:
+        nowrap;
+
+      gap:
+        0;
+
+      width:
+        100%;
+
+      overflow-x:
+        auto;
+
+      overflow-y:
+        visible;
+
+      overscroll-behavior-inline:
+        contain;
+
+      scroll-behavior:
+        smooth;
+
+      scroll-snap-type:
+        x mandatory;
+
+      -webkit-overflow-scrolling:
+        touch;
+
+      touch-action:
+        pan-x pan-y;
+
+      scrollbar-width:
+        none;
+    }
+
+
+    .home-field-notes-scroll::-webkit-scrollbar {
+      display:
+        none;
+    }
+
+
+    .home-field-note-slide {
+      width:
+        100%;
+
+      min-width:
+        100%;
+
+      flex:
+        0 0 100%;
+
+      scroll-snap-align:
+        start;
+
+      scroll-snap-stop:
+        always;
+    }
+
+
+
+    /* =====================================================
+       DESKTOP RESTORATION
+
+       From md upward, the existing homepage layout is
+       restored exactly:
+       - 3 pillars
+       - 2 featured Field Notes
+       ===================================================== */
+
+    @media (
+      min-width: 768px
+    ) {
+
+      .home-pillars-scroll {
+        display:
+          grid;
+
+        grid-template-columns:
+          repeat(
+            3,
+            minmax(
+              0,
+              1fr
+            )
+          );
+
+        gap:
+          0;
+
+        overflow:
+          visible;
+
+        padding-bottom:
+          0;
+
+        scroll-behavior:
+          auto;
+
+        touch-action:
+          auto;
+      }
+
+
+      .home-pillar {
+        flex:
+          initial;
+
+        min-width:
+          0;
+      }
+
+
+      .home-field-notes-scroll {
+        display:
+          grid;
+
+        grid-template-columns:
+          repeat(
+            2,
+            minmax(
+              0,
+              1fr
+            )
+          );
+
+        gap:
+          1.25rem;
+
+        overflow:
+          visible;
+
+        scroll-snap-type:
+          none;
+
+        scroll-behavior:
+          auto;
+
+        touch-action:
+          auto;
+      }
+
+
+      .home-field-note-slide {
+        width:
+          auto;
+
+        min-width:
+          0;
+
+        flex:
+          initial;
+
+        scroll-snap-align:
+          none;
+
+        scroll-snap-stop:
+          normal;
+      }
+
+    }
+
+
+
+    /* =====================================================
+       REDUCED MOTION
+       ===================================================== */
+
+    @media (
+      prefers-reduced-motion:
+        reduce
+    ) {
+
+      .home-pillars-scroll,
+      .home-field-notes-scroll {
+        scroll-behavior:
+          auto;
+      }
+
+    }
+
+  </style>
 
 </BaseLayout>
