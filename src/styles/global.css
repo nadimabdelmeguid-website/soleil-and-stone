@@ -18,6 +18,82 @@
 
 
 /* =========================================================
+   GLOBAL DOCUMENT BEHAVIOR
+   ========================================================= */
+
+html {
+  width: 100%;
+
+  max-width: 100%;
+
+  overflow-x: hidden;
+
+  -webkit-text-size-adjust: 100%;
+
+  text-size-adjust: 100%;
+}
+
+
+body {
+  width: 100%;
+
+  max-width: 100%;
+
+  overflow-x: hidden;
+}
+
+
+
+/*
+ * Prevent normal media from accidentally expanding
+ * beyond the viewport.
+ *
+ * Individual components can still override these values.
+ */
+
+img,
+video,
+canvas {
+  max-width: 100%;
+}
+
+
+
+/*
+ * Improves touch responsiveness on mobile browsers
+ * without removing normal keyboard behavior.
+ */
+
+a,
+button,
+input,
+select,
+textarea {
+  touch-action: manipulation;
+}
+
+
+
+/*
+ * Avoid iOS automatically zooming into form controls
+ * with very small font sizes.
+ */
+
+@media (
+  max-width: 639px
+) {
+
+  input,
+  select,
+  textarea {
+    font-size: 16px;
+  }
+
+}
+
+
+
+/* =========================================================
    FIELD NOTE BODY
    ========================================================= */
 
