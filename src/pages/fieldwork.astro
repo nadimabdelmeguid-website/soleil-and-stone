@@ -12,7 +12,7 @@ import path from "node:path";
 import BaseLayout from "../layouts/BaseLayout.astro";
 
 import {
-  events
+  eventSeeds
 } from "../data/events";
 
 import {
@@ -28,6 +28,17 @@ import {
 
 const now =
   new Date();
+
+
+/*
+ * FIELDWORK USES THE MANUALLY CURATED EVENT DATA FROM events.ts.
+ *
+ * This deliberately uses eventSeeds rather than the merged `events`
+ * export, so dates shown on this page always come directly from the
+ * startDate / endDate values you maintain in src/data/events.ts.
+ */
+const events =
+  eventSeeds;
 
 
 /* =========================================================
@@ -866,6 +877,25 @@ const completedTradeShows =
  * This guarantees that the logo link always stays synchronized
  * with the URL stored in events.ts.
  */
+/*
+ * Build the featured logo list from the completed trade shows.
+ *
+ * completedTradeShows is already sorted newest → oldest, so when the
+ * same organization / trade-show logo exists for multiple years we
+ * keep the newest occurrence only.
+ *
+ * normalizeTradeShowKey() removes the year from the filename, which
+ * means files such as:
+ *
+ *   ces-2025.png
+ *   ces-2026.png
+ *
+ * are treated as the same featured logo.
+ */
+const seenTradeShowLogoKeys =
+  new Set<string>();
+
+
 const tradeShowLogos =
   completedTradeShows
     .map(
@@ -907,7 +937,41 @@ const tradeShowLogos =
       }
     )
     .filter(
-      Boolean
+      (
+        logo
+      ): logo is NonNullable<
+        typeof logo
+      > =>
+        logo !== null
+    )
+    .filter(
+      (logo) => {
+
+        const key =
+          normalizeTradeShowKey(
+            logo.file
+          );
+
+
+        if (
+          seenTradeShowLogoKeys.has(
+            key
+          )
+        ) {
+
+          return false;
+
+        }
+
+
+        seenTradeShowLogoKeys.add(
+          key
+        );
+
+
+        return true;
+
+      }
     );
 
 
