@@ -298,6 +298,32 @@ const supabasePublishableKey =
         color: var(--danger);
       }
 
+      .auth-divider {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        margin: 24px 0;
+        color: #8b8f95;
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.16em;
+      }
+
+      .auth-divider::before,
+      .auth-divider::after {
+        content: "";
+        flex: 1;
+        height: 1px;
+        background: #ddd8cb;
+      }
+
+      .auth-code-help {
+        margin: -2px 0 12px;
+        color: #6b7078;
+        font-size: 13px;
+        line-height: 1.55;
+      }
+
       /* =====================================================
          APP SHELL
          ===================================================== */
@@ -1381,10 +1407,13 @@ const supabasePublishableKey =
           </button>
         </form>
 
+        <div class="auth-divider" aria-hidden="true">
+          <span>then</span>
+        </div>
+
         <form
           id="otp-form"
-          class="hidden"
-          style="margin-top: 22px;"
+          style="margin-top: 0;"
         >
           <label
             class="label"
@@ -1392,6 +1421,10 @@ const supabasePublishableKey =
           >
             Verification code
           </label>
+
+          <p class="auth-code-help">
+            After requesting the sign-in email, enter the code you received here. If the email contains a clickable sign-in link instead, you can use that too.
+          </p>
 
           <input
             id="login-otp"
@@ -7730,7 +7763,7 @@ const supabasePublishableKey =
             $("#login-otp").focus();
 
             message.textContent =
-              "Check your inbox. Enter the verification code below. If your email also contains a secure sign-in link, that link will work too.";
+              "Email sent. Enter the verification code above, or use the secure sign-in link if your email contains one.";
 
             message.className =
               "form-message success";
