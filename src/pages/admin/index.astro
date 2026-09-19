@@ -4216,6 +4216,94 @@ const supabasePublishableKey =
 
                 <details class="form-field full seo-settings">
                   <summary>
+                    Recap details (optional)
+                  </summary>
+                  <div class="seo-settings-body">
+                    <p class="field-help" style="margin-bottom: 14px;">
+                      Optional public-facing details used on the recap page. Stats use one line per item in the format Value :: Label.
+                    </p>
+
+                    <div class="form-grid">
+                      <div class="form-field">
+                        <label class="label" for="recap-eyebrow">
+                          Eyebrow
+                        </label>
+                        <input
+                          id="recap-eyebrow"
+                          class="input"
+                          type="text"
+                          placeholder="Event Recap"
+                        />
+                      </div>
+
+                      <div class="form-field">
+                        <label class="label" for="recap-tags">
+                          Tags
+                        </label>
+                        <input
+                          id="recap-tags"
+                          class="input"
+                          type="text"
+                          placeholder="San Diego, Startup Community, Community Building"
+                        />
+                        <p class="field-help">
+                          Separate tags with commas.
+                        </p>
+                      </div>
+
+                      <div class="form-field full">
+                        <label class="label" for="recap-stats">
+                          Highlight stats
+                        </label>
+                        <textarea
+                          id="recap-stats"
+                          class="textarea"
+                          style="min-height: 116px;"
+                          placeholder="127 :: Registrations&#10;80+ :: Attendees&#10;San Diego :: Community"
+                        ></textarea>
+                      </div>
+
+                      <div class="form-field">
+                        <label class="label" for="recap-photo-credit-label">
+                          Photo credit label
+                        </label>
+                        <input
+                          id="recap-photo-credit-label"
+                          class="input"
+                          type="text"
+                          placeholder="Photography"
+                        />
+                      </div>
+
+                      <div class="form-field">
+                        <label class="label" for="recap-photo-credit-name">
+                          Photographer / credit name
+                        </label>
+                        <input
+                          id="recap-photo-credit-name"
+                          class="input"
+                          type="text"
+                          placeholder="Berg"
+                        />
+                      </div>
+
+                      <div class="form-field full">
+                        <label class="label" for="recap-photo-credit-url">
+                          Photo credit URL
+                        </label>
+                        <input
+                          id="recap-photo-credit-url"
+                          class="input"
+                          type="url"
+                          placeholder="https://..."
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </details>
+
+                <details class="form-field full seo-settings">
+                  <summary>
                     Advanced & SEO settings (optional)
                   </summary>
                   <div class="seo-settings-body">
@@ -8522,12 +8610,100 @@ const supabasePublishableKey =
       }
 
 
+      function parseRecapTags(
+        value = ""
+      ) {
+        return [...new Set(
+          String(value || "")
+            .split(/,|\n/)
+            .map((item) => item.trim())
+            .filter(Boolean)
+        )];
+      }
+
+
+      function formatRecapTags(
+        value
+      ) {
+        return (Array.isArray(value) ? value : [])
+          .filter(Boolean)
+          .join(", ");
+      }
+
+
+      function parseRecapStats(
+        value = ""
+      ) {
+        return String(value || "")
+          .split("\n")
+          .map((line) => line.trim())
+          .filter(Boolean)
+          .map((line) => {
+            const separator = line.indexOf("::");
+
+            if (separator === -1) {
+              return {
+                value: line,
+                label: ""
+              };
+            }
+
+            return {
+              value: line.slice(0, separator).trim(),
+              label: line.slice(separator + 2).trim()
+            };
+          })
+          .filter((item) => item.value);
+      }
+
+
+      function formatRecapStats(
+        value
+      ) {
+        return (Array.isArray(value) ? value : [])
+          .map((item) =>
+            item?.label
+              ? `${item.value || ""} :: ${item.label}`
+              : String(item?.value || "")
+          )
+          .filter(Boolean)
+          .join("\n");
+      }
+
+
+      function getRecapPhotoCreditFromForm() {
+        const name =
+          $("#recap-photo-credit-name").value.trim();
+
+        const label =
+          $("#recap-photo-credit-label").value.trim();
+
+        const url =
+          $("#recap-photo-credit-url").value.trim();
+
+        if (!name && !label && !url) {
+          return null;
+        }
+
+        return {
+          label:
+            label || "Photography",
+          name:
+            name || "",
+          url:
+            url || undefined
+        };
+      }
+
+
       function resetRecapForm() {
 
         $("#recap-form").reset();
         $("#recap-record-id").value = "";
         $("#recap-status").value = "draft";
         $("#recap-published-at").value = "";
+        $("#recap-eyebrow").value = "Event Recap";
+        $("#recap-photo-credit-label").value = "Photography";
         $("#recap-modal-title").textContent = "New Event Recap";
         updateRecapPublishingUI();
         renderRecapPictureUploaders();
@@ -8573,6 +8749,12 @@ const supabasePublishableKey =
           $("#recap-published-at").value = toLocalDateTimeInput(item.published_at);
           $("#recap-hero-media").value = item.hero_media_id || "";
           $("#recap-reading-minutes").value = item.reading_minutes ?? "";
+          $("#recap-eyebrow").value = item.eyebrow || "Event Recap";
+          $("#recap-tags").value = formatRecapTags(item.tags);
+          $("#recap-stats").value = formatRecapStats(item.stats);
+          $("#recap-photo-credit-label").value = item.photo_credit?.label || "Photography";
+          $("#recap-photo-credit-name").value = item.photo_credit?.name || "";
+          $("#recap-photo-credit-url").value = item.photo_credit?.url || "";
           $("#recap-seo-title").value = item.seo_title || "";
           $("#recap-seo-description").value = item.seo_description || "";
 
@@ -8668,6 +8850,14 @@ const supabasePublishableKey =
             $("#recap-reading-minutes").value
               ? Number($("#recap-reading-minutes").value)
               : null,
+          eyebrow:
+            $("#recap-eyebrow").value.trim() || "Event Recap",
+          tags:
+            parseRecapTags($("#recap-tags").value),
+          stats:
+            parseRecapStats($("#recap-stats").value),
+          photo_credit:
+            getRecapPhotoCreditFromForm(),
           seo_title:
             $("#recap-seo-title").value.trim() || title,
           seo_description:
