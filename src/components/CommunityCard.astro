@@ -1,14 +1,7 @@
 ---
 import {
-  readdir
-} from "node:fs/promises";
-
-import path
-  from "node:path";
-
-import {
   events
-} from "../data/events";
+} from "../data/events.cms";
 
 import {
   getCommunityMetricsById
@@ -52,70 +45,6 @@ const sponsors =
 
 
 /* =========================================================
-   COMMUNITY CARD IMAGES
-
-   Folder:
-
-   public/community-card-images/
-
-   File naming:
-
-   event-id.jpg
-   event-id.png
-   event-id.webp
-   etc.
-
-   Examples:
-
-   startup-mixer-sep-2026.jpg
-   hardware-meetup-jun-2026.jpg
-
-   If no matching image exists, nothing is rendered.
-   ========================================================= */
-
-const communityCardImageDirectory =
-  path.join(
-    process.cwd(),
-    "public",
-    "community-card-images"
-  );
-
-
-let communityCardImageFiles:
-  string[] = [];
-
-
-try {
-
-  communityCardImageFiles =
-    (
-      await readdir(
-        communityCardImageDirectory
-      )
-    )
-      .filter(
-        (file) =>
-          /\.(png|jpe?g|webp|avif|svg)$/i
-            .test(
-              file
-            )
-      )
-      .sort(
-        (a, b) =>
-          a.localeCompare(
-            b
-          )
-      );
-
-} catch {
-
-  communityCardImageFiles =
-    [];
-
-}
-
-
-/* =========================================================
    DISPLAY HELPERS
    ========================================================= */
 
@@ -143,24 +72,22 @@ function findCommunityCardImage(
   eventId: string
 ) {
 
-  const file =
-    communityCardImageFiles.find(
+  const event =
+    events.find(
       (candidate) =>
-        path
-          .parse(
-            candidate
-          )
-          .name
-          .toLowerCase() ===
-        eventId.toLowerCase()
+        candidate.id ===
+        eventId
     );
 
 
-  return file
-    ? `/community-card-images/${encodeURIComponent(file)}`
-    : undefined;
+  return (
+    event?.communityImage ||
+    event?.image ||
+    undefined
+  );
 
 }
+
 ---
 
 <section
