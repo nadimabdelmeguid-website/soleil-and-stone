@@ -3100,24 +3100,70 @@ const supabasePublishableKey =
                   >
                     Event type
                   </label>
-                  <input
+                  <select
                     id="event-type"
-                    class="input"
-                    type="text"
-                    placeholder="meetup, trade-show, conference..."
-                  />
+                    class="select"
+                  >
+                    <option value="">
+                      Select event type
+                    </option>
+                    <option value="meetup">Meetup</option>
+                    <option value="mixer">Mixer</option>
+                    <option value="networking">Networking</option>
+                    <option value="trade-show">Trade Show</option>
+                    <option value="conference">Conference</option>
+                    <option value="workshop">Workshop / Panel</option>
+                    <option value="demo-day">Demo Day / Pitch Event</option>
+                    <option value="industry-event">Industry Event</option>
+                    <option value="community-event">Community Event</option>
+                    <option value="professional-event">Professional Event</option>
+                    <option value="other">Other</option>
+                  </select>
+                  <p class="field-help">
+                    Standardized event format used across the website.
+                  </p>
                 </div>
 
                 <div class="form-field">
                   <label class="label" for="event-type-label">
                     Display label
                   </label>
-                  <input
+                  <select
                     id="event-type-label"
-                    class="input"
-                    type="text"
-                    placeholder="Hosted Community Event"
-                  />
+                    class="select"
+                  >
+                    <option value="">
+                      Select display label
+                    </option>
+
+                    <optgroup label="Hosted / organized">
+                      <option value="Hosted Community Event">Hosted Community Event</option>
+                      <option value="Hosted Industry Event">Hosted Industry Event</option>
+                      <option value="Hosted Event">Hosted Event</option>
+                      <option value="Co-Organized Hardware Event">Co-Organized Hardware Event</option>
+                      <option value="Co-Organized Event">Co-Organized Event</option>
+                      <option value="Exhibitor">Exhibitor</option>
+                    </optgroup>
+
+                    <optgroup label="Attending">
+                      <option value="Attending Trade Show">Attending Trade Show</option>
+                      <option value="Attending Startup Event">Attending Startup Event</option>
+                      <option value="Attending Hardware Event">Attending Hardware Event</option>
+                      <option value="Attending Hardtech Event">Attending Hardtech Event</option>
+                      <option value="Attending Engineering Event">Attending Engineering Event</option>
+                      <option value="Attending Builder Event">Attending Builder Event</option>
+                      <option value="Attending Founder Event">Attending Founder Event</option>
+                      <option value="Attending Ecosystem Event">Attending Ecosystem Event</option>
+                      <option value="Attending Innovation Event">Attending Innovation Event</option>
+                      <option value="Attending Medtech Event">Attending Medtech Event</option>
+                      <option value="Attending Life Sciences Event">Attending Life Sciences Event</option>
+                      <option value="Attending Professional Event">Attending Professional Event</option>
+                      <option value="Attending Event">Attending Event</option>
+                    </optgroup>
+                  </select>
+                  <p class="field-help">
+                    Public-facing label shown consistently on event cards and pages.
+                  </p>
                 </div>
 
                 <div
@@ -5921,7 +5967,7 @@ const supabasePublishableKey =
 
       function isTradeShowEventContext() {
         const eventType =
-          ($("#event-type")?.value || "").trim().toLowerCase();
+          ($("#event-type")?.value || "").toLowerCase();
         const typeLabel =
           ($("#event-type-label")?.value || "").trim().toLowerCase();
         const participation =
@@ -5949,8 +5995,19 @@ const supabasePublishableKey =
         $("#hardware-community-image-field")?.classList.toggle("hidden", !communityLogoEvent);
         $("#industry-event-logo-field")?.classList.toggle("hidden", !industry);
 
+        const eventTypeField = $("#event-type");
+        const communityValue = $("#event-community")?.value || "";
+
+        if (eventTypeField && !eventTypeField.value) {
+          if (communityValue === "hardware-meetup") {
+            eventTypeField.value = "meetup";
+          } else if (communityValue === "startup-mixer") {
+            eventTypeField.value = "mixer";
+          }
+        }
+
         const typeLabel = $("#event-type-label");
-        if (typeLabel && !typeLabel.value.trim()) {
+        if (typeLabel && !typeLabel.value) {
           const eventType = ($("#event-type")?.value || "").toLowerCase();
 
           if ($("#event-participation")?.value === "hosted") {
@@ -6000,6 +6057,38 @@ const supabasePublishableKey =
       }
 
 
+      function normalizeEventType(value = "") {
+        const normalized = String(value)
+          .trim()
+          .toLowerCase()
+          .replace(/[_\s]+/g, "-");
+
+        const aliases = {
+          "meet-up": "meetup",
+          "meetup": "meetup",
+          "mixer": "mixer",
+          "networking-event": "networking",
+          "networking": "networking",
+          "trade-show": "trade-show",
+          "tradeshow": "trade-show",
+          "expo": "trade-show",
+          "exhibition": "trade-show",
+          "conference": "conference",
+          "convention": "conference",
+          "workshop": "workshop",
+          "panel": "workshop",
+          "demo-day": "demo-day",
+          "pitch-event": "demo-day",
+          "industry-event": "industry-event",
+          "community-event": "community-event",
+          "professional-event": "professional-event",
+          "other": "other"
+        };
+
+        return aliases[normalized] || "";
+      }
+
+
       function inferEventContext(imported = {}) {
         const title = String(imported.title || "").toLowerCase();
         const url = String($("#event-url")?.value || "").toLowerCase();
@@ -6010,12 +6099,20 @@ const supabasePublishableKey =
         ) {
           $("#event-community").value = "hardware-meetup";
           $("#event-participation").value = "co-organized";
+
+          if (!$("#event-type").value) {
+            $("#event-type").value = "meetup";
+          }
         } else if (
           title.includes("san diego county startup mixer") &&
           !title.includes("north county")
         ) {
           $("#event-community").value = "startup-mixer";
           $("#event-participation").value = "hosted";
+
+          if (!$("#event-type").value) {
+            $("#event-type").value = "mixer";
+          }
         }
 
         if (!$("#event-button-label").value.trim()) {
@@ -6110,7 +6207,14 @@ const supabasePublishableKey =
           applyImportedField("#event-region", imported.region);
           applyImportedField("#event-country", imported.country);
           applyImportedField("#event-address", imported.address);
-          applyImportedField("#event-type", imported.eventType);
+
+          const normalizedImportedEventType =
+            normalizeEventType(imported.eventType);
+
+          if (normalizedImportedEventType) {
+            $("#event-type").value =
+              normalizedImportedEventType;
+          }
 
           if (
             imported.registrations !== undefined &&
@@ -7203,7 +7307,7 @@ const supabasePublishableKey =
             $("#event-end-date").value ||
             null,
           event_type:
-            $("#event-type").value.trim() ||
+            $("#event-type").value ||
             null,
           community_id:
             communityId,
@@ -7213,7 +7317,7 @@ const supabasePublishableKey =
               ? "hosted"
               : "attending",
           type_label:
-            $("#event-type-label").value.trim() ||
+            $("#event-type-label").value ||
             null,
           registrations:
             led &&
