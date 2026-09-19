@@ -3319,7 +3319,7 @@ const supabasePublishableKey =
               </h3>
               <p class="form-section-copy">
                 The Fieldwork cover is the image used for this event in Fieldwork.
-                Hardware Meetup events also get a separate Community Track Record image.
+                Community events can use a separate Community Track Record image.
               </p>
             </div>
 
@@ -3438,7 +3438,7 @@ const supabasePublishableKey =
                     class="label"
                     for="event-community-track-media"
                   >
-                    Hardware Meetup Community Track Record image
+                    Community Track Record image
                   </label>
                   <select
                     id="event-community-track-media"
@@ -3464,7 +3464,7 @@ const supabasePublishableKey =
                     accept="image/png,image/jpeg,image/webp,image/svg+xml,image/avif"
                   />
                   <p class="field-help">
-                    This image is separate from the Fieldwork cover and is reserved for the Hardware Meetup Track Record on the Community page.
+                    This image is separate from the Fieldwork cover and is used for this event's Track Record card on the relevant Community page.
                   </p>
                 </div>
 
@@ -5941,11 +5941,12 @@ const supabasePublishableKey =
       function syncEventConditionalFields() {
         const led = isLedParticipation();
         const hardware = isHardwareMeetupEvent();
+        const communityLogoEvent = isCommunityLogoEvent();
         const industry = isTradeShowEventContext();
 
         $("#event-registrations-field")?.classList.toggle("hidden", !led);
         $("#hosted-event-section")?.classList.toggle("hidden", !led);
-        $("#hardware-community-image-field")?.classList.toggle("hidden", !hardware);
+        $("#hardware-community-image-field")?.classList.toggle("hidden", !communityLogoEvent);
         $("#industry-event-logo-field")?.classList.toggle("hidden", !industry);
 
         const typeLabel = $("#event-type-label");
@@ -7266,7 +7267,7 @@ const supabasePublishableKey =
             $("#event-cover-media").value ||
             null,
           community_track_media_id:
-            hardware
+            communityLogoEvent
               ? $("#event-community-track-media").value ||
                 null
               : null,
@@ -7380,7 +7381,7 @@ const supabasePublishableKey =
         );
 
         if (
-          hardware &&
+          communityLogoEvent &&
           payload.community_track_media_id
         ) {
           await ensureMediaTargets(
