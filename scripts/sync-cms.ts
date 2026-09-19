@@ -728,6 +728,15 @@ export const fieldworkIndustryLogos =
   );
 
 
+  await fs.writeFile(
+    path.join(
+      DATA_DIR,
+      "eventRecapLinks.cms.ts"
+    ),
+    `export const eventRecapLinks =\n  ${JSON.stringify(\n    Object.fromEntries(\n      eventRecaps.map(\n        (recap: any) => [\n          recap.event_id,\n          `/event-recaps/${recap.slug}/`\n        ]\n      )\n    ),\n    null,\n    2\n  )};\n`,
+    "utf8"
+  );
+
   await cleanDirectory(
     FIELD_NOTES_DIR
   );
