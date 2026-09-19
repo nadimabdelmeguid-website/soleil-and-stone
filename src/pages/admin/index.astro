@@ -1168,6 +1168,156 @@ const supabasePublishableKey =
           grid-template-columns: 1fr;
         }
       }
+
+      /* =====================================================
+         SMART EVENT EDITOR
+         ===================================================== */
+
+      .import-section {
+        border-color: rgba(197, 160, 89, 0.55);
+        background: rgba(197, 160, 89, 0.035);
+      }
+
+      .import-url-row {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 12px;
+        align-items: center;
+      }
+
+      .import-status {
+        margin-top: 12px;
+        padding: 12px 14px;
+        border: 1px solid var(--border);
+        background: #fff;
+        color: var(--slate);
+        font-size: 12px;
+        line-height: 1.6;
+      }
+
+      .import-status.success {
+        border-color: rgba(71, 122, 90, 0.35);
+        color: var(--success);
+      }
+
+      .import-status.error {
+        border-color: rgba(169, 75, 75, 0.35);
+        color: var(--danger);
+      }
+
+      .repeater-block + .repeater-block {
+        margin-top: 28px;
+        padding-top: 28px;
+        border-top: 1px solid var(--border);
+      }
+
+      .repeater-heading {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 18px;
+        margin-bottom: 14px;
+      }
+
+      .repeater-title {
+        margin: 0 0 4px;
+        font-family: "Cinzel", Georgia, serif;
+        font-size: 16px;
+        font-weight: 500;
+        letter-spacing: 0.04em;
+      }
+
+      .repeat-list {
+        display: grid;
+        gap: 12px;
+      }
+
+      .repeat-empty {
+        padding: 18px;
+        border: 1px dashed var(--border);
+        color: var(--slate);
+        font-size: 12px;
+        background: rgba(255, 255, 255, 0.5);
+      }
+
+      .repeat-card {
+        border: 1px solid var(--border);
+        background: #fff;
+        padding: 18px;
+      }
+
+      .repeat-card-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 14px;
+      }
+
+      .repeat-card-title {
+        margin: 0;
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.14em;
+        font-weight: 600;
+        color: var(--charcoal);
+      }
+
+      .repeat-card-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+      }
+
+      .repeat-card-grid .full {
+        grid-column: 1 / -1;
+      }
+
+      .logo-control {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 8px;
+        align-items: center;
+      }
+
+      .logo-preview {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-top: 8px;
+        min-height: 34px;
+        color: var(--slate);
+        font-size: 11px;
+      }
+
+      .logo-preview img {
+        width: 54px;
+        height: 34px;
+        object-fit: contain;
+        background: #fff;
+        border: 1px solid var(--border);
+        padding: 4px;
+      }
+
+      .hosted-secondary-fields {
+        margin-top: 26px;
+        padding-top: 24px;
+        border-top: 1px solid var(--border);
+      }
+
+      @media (max-width: 720px) {
+        .import-url-row,
+        .repeat-card-grid,
+        .logo-control {
+          grid-template-columns: 1fr;
+        }
+
+        .repeater-heading {
+          align-items: stretch;
+          flex-direction: column;
+        }
+      }
+
     </style>
   </head>
 
@@ -1991,13 +2141,50 @@ const supabasePublishableKey =
             type="hidden"
           />
 
+          <div class="form-section import-section">
+            <div class="form-section-header">
+              <h3 class="form-section-title">
+                Import From Event URL
+              </h3>
+              <p class="form-section-copy">
+                Paste the public event page first. We will use it to prefill as much as possible.
+                Nothing is saved until you click Save Event, and once saved the event record no longer
+                depends on the source page.
+              </p>
+            </div>
+
+            <div class="form-section-body">
+              <div class="import-url-row">
+                <input
+                  id="event-url"
+                  class="input"
+                  type="url"
+                  placeholder="https://luma.com/...  ·  https://eventship.com/...  ·  https://meetup.com/..."
+                />
+                <button
+                  id="import-event-url-button"
+                  class="primary-button"
+                  type="button"
+                >
+                  Import details
+                </button>
+              </div>
+
+              <div
+                id="event-import-status"
+                class="import-status hidden"
+              ></div>
+            </div>
+          </div>
+
+
           <div class="form-section">
             <div class="form-section-header">
               <h3 class="form-section-title">
                 Event Details
               </h3>
               <p class="form-section-copy">
-                Past events remain fully editable forever.
+                Review the imported information and edit anything before saving.
               </p>
             </div>
 
@@ -2050,33 +2237,9 @@ const supabasePublishableKey =
                 <div class="form-field">
                   <label
                     class="label"
-                    for="event-type"
-                  >
-                    Event type
-                  </label>
-                  <input
-                    id="event-type"
-                    class="input"
-                    type="text"
-                    placeholder="meetup, trade-show..."
-                  />
-                </div>
-
-                <div class="form-field">
-                  <label class="label" for="event-community">
-                    Community
-                  </label>
-                  <select id="event-community" class="select">
-                    <option value="">No community</option>
-                  </select>
-                </div>
-
-                <div class="form-field">
-                  <label
-                    class="label"
                     for="event-participation"
                   >
-                    Participation
+                    My participation
                   </label>
                   <select
                     id="event-participation"
@@ -2098,16 +2261,33 @@ const supabasePublishableKey =
                       Exhibitor
                     </option>
                   </select>
+                  <p class="field-help">
+                    Hosted and co-organized events unlock registration, speaker, sponsor and community-track-record fields.
+                  </p>
                 </div>
 
                 <div class="form-field">
-                  <label class="label" for="event-role">
-                    Role
+                  <label class="label" for="event-community">
+                    Community
                   </label>
-                  <select id="event-role" class="select">
-                    <option value="attending">Attending</option>
-                    <option value="hosted">Hosted</option>
+                  <select id="event-community" class="select">
+                    <option value="">No community</option>
                   </select>
+                </div>
+
+                <div class="form-field">
+                  <label
+                    class="label"
+                    for="event-type"
+                  >
+                    Event type
+                  </label>
+                  <input
+                    id="event-type"
+                    class="input"
+                    type="text"
+                    placeholder="meetup, trade-show, conference..."
+                  />
                 </div>
 
                 <div class="form-field">
@@ -2122,7 +2302,10 @@ const supabasePublishableKey =
                   />
                 </div>
 
-                <div class="form-field">
+                <div
+                  id="event-registrations-field"
+                  class="form-field conditional-field hidden"
+                >
                   <label
                     class="label"
                     for="event-registrations"
@@ -2136,6 +2319,9 @@ const supabasePublishableKey =
                     min="0"
                     step="1"
                   />
+                  <p class="field-help">
+                    Shown only for events you hosted or co-organized.
+                  </p>
                 </div>
 
                 <div class="form-field full">
@@ -2154,10 +2340,11 @@ const supabasePublishableKey =
             </div>
           </div>
 
+
           <div class="form-section">
             <div class="form-section-header">
               <h3 class="form-section-title">
-                Location & Link
+                Location
               </h3>
             </div>
 
@@ -2226,57 +2413,73 @@ const supabasePublishableKey =
                   </label>
                   <input id="event-address" class="input" type="text" />
                 </div>
-
-                <div class="form-field full">
-                  <label
-                    class="label"
-                    for="event-url"
-                  >
-                    Event URL
-                  </label>
-                  <input
-                    id="event-url"
-                    class="input"
-                    type="url"
-                    placeholder="https://..."
-                  />
-                </div>
-
-                <div class="form-field">
-                  <label class="label" for="event-button-label">Button label</label>
-                  <input id="event-button-label" class="input" type="text" placeholder="View Event" />
-                </div>
-
-                <div class="form-field full">
-                  <label class="label" for="event-image-url">External / legacy image URL</label>
-                  <input id="event-image-url" class="input" type="url" placeholder="https://..." />
-                </div>
               </div>
             </div>
           </div>
 
-          <div class="form-section">
+
+          <div
+            id="hosted-event-section"
+            class="form-section hidden"
+          >
             <div class="form-section-header">
-              <h3 class="form-section-title">Relationships</h3>
+              <h3 class="form-section-title">
+                Hosted Event Details
+              </h3>
               <p class="form-section-copy">
-                Attach reusable speakers and sponsor organizations to the event.
+                These fields appear only for events you hosted or co-organized.
+                Speakers and sponsors are saved as reusable CMS records.
               </p>
             </div>
 
             <div class="form-section-body">
-              <div class="form-grid">
-                <div class="form-field">
-                  <label class="label" for="event-speakers">Speakers</label>
-                  <select id="event-speakers" class="select" multiple size="8" style="height: 170px;"></select>
-                  <p class="field-help">Ctrl/Cmd-click to select multiple.</p>
+              <div class="repeater-block">
+                <div class="repeater-heading">
+                  <div>
+                    <h4 class="repeater-title">Speakers</h4>
+                    <p class="field-help">
+                      Add each speaker manually. Their company URL and company logo are stored with the speaker profile.
+                    </p>
+                  </div>
+                  <button
+                    id="add-event-speaker-button"
+                    class="secondary-button"
+                    type="button"
+                  >
+                    + Add speaker
+                  </button>
                 </div>
 
-                <div class="form-field">
-                  <label class="label" for="event-sponsors">Sponsors</label>
-                  <select id="event-sponsors" class="select" multiple size="8" style="height: 170px;"></select>
-                  <p class="field-help">Ctrl/Cmd-click to select multiple.</p>
+                <div
+                  id="event-speaker-list"
+                  class="repeat-list"
+                ></div>
+              </div>
+
+              <div class="repeater-block">
+                <div class="repeater-heading">
+                  <div>
+                    <h4 class="repeater-title">Sponsors</h4>
+                    <p class="field-help">
+                      Add each sponsor company, website and logo. Hardware Meetup sponsor logos can later feed the Hardware Meetup community section automatically.
+                    </p>
+                  </div>
+                  <button
+                    id="add-event-sponsor-button"
+                    class="secondary-button"
+                    type="button"
+                  >
+                    + Add sponsor
+                  </button>
                 </div>
 
+                <div
+                  id="event-sponsor-list"
+                  class="repeat-list"
+                ></div>
+              </div>
+
+              <div class="form-grid hosted-secondary-fields">
                 <div class="form-field">
                   <label class="label" for="event-partners">Other partners</label>
                   <textarea id="event-partners" class="textarea" style="min-height: 100px;" placeholder="One per line"></textarea>
@@ -2294,10 +2497,11 @@ const supabasePublishableKey =
           <div class="form-section">
             <div class="form-section-header">
               <h3 class="form-section-title">
-                Publishing
+                Images & Publishing
               </h3>
               <p class="form-section-copy">
-                Drafts stay private. Published content can later feed the public website automatically.
+                The Fieldwork cover is the image used for this event in Fieldwork.
+                Hardware Meetup events also get a separate Community Track Record image.
               </p>
             </div>
 
@@ -2327,11 +2531,23 @@ const supabasePublishableKey =
                 </div>
 
                 <div class="form-field">
+                  <label class="label" for="event-button-label">
+                    Public button label
+                  </label>
+                  <input
+                    id="event-button-label"
+                    class="input"
+                    type="text"
+                    placeholder="View Event"
+                  />
+                </div>
+
+                <div class="form-field full">
                   <label
                     class="label"
                     for="event-cover-media"
                   >
-                    Cover image
+                    Fieldwork cover image
                   </label>
                   <select
                     id="event-cover-media"
@@ -2341,8 +2557,74 @@ const supabasePublishableKey =
                       No cover image
                     </option>
                   </select>
-                  <button class="quiet-button" type="button" data-cover-upload="event-cover-media" data-cover-target="events,fieldwork" style="margin-top: 8px;">Upload new cover image</button>
-                  <input id="event-cover-upload" class="hidden" type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml,image/avif" />
+                  <button
+                    class="quiet-button"
+                    type="button"
+                    data-cover-upload="event-cover-media"
+                    data-cover-target="events,fieldwork"
+                    style="margin-top: 8px;"
+                  >
+                    Upload Fieldwork cover
+                  </button>
+                  <input
+                    id="event-cover-upload"
+                    class="hidden"
+                    type="file"
+                    accept="image/png,image/jpeg,image/webp,image/svg+xml,image/avif"
+                  />
+                </div>
+
+                <div
+                  id="hardware-community-image-field"
+                  class="form-field full hidden"
+                >
+                  <label
+                    class="label"
+                    for="event-community-track-media"
+                  >
+                    Hardware Meetup Community Track Record image
+                  </label>
+                  <select
+                    id="event-community-track-media"
+                    class="select"
+                  >
+                    <option value="">
+                      No Community Track Record image
+                    </option>
+                  </select>
+                  <button
+                    class="quiet-button"
+                    type="button"
+                    data-cover-upload="event-community-track-media"
+                    data-cover-target="community"
+                    style="margin-top: 8px;"
+                  >
+                    Upload Community Track Record image
+                  </button>
+                  <input
+                    id="event-community-track-upload"
+                    class="hidden"
+                    type="file"
+                    accept="image/png,image/jpeg,image/webp,image/svg+xml,image/avif"
+                  />
+                  <p class="field-help">
+                    This image is separate from the Fieldwork cover and is reserved for the Hardware Meetup Track Record on the Community page.
+                  </p>
+                </div>
+
+                <div class="form-field full">
+                  <label class="label" for="event-image-url">
+                    Imported source image URL
+                  </label>
+                  <input
+                    id="event-image-url"
+                    class="input"
+                    type="url"
+                    placeholder="Automatically filled when available"
+                  />
+                  <p class="field-help">
+                    Kept as reference only. Your uploaded CMS images above are the durable public assets.
+                  </p>
                 </div>
 
                 <div class="form-field full">
@@ -2927,6 +3209,8 @@ const supabasePublishableKey =
             <div class="form-field full"><label class="label" for="person-name">Name</label><input id="person-name" class="input" type="text" required /></div>
             <div class="form-field"><label class="label" for="person-title">Title</label><input id="person-title" class="input" type="text" /></div>
             <div class="form-field"><label class="label" for="person-company">Company</label><input id="person-company" class="input" type="text" /></div>
+            <div class="form-field"><label class="label" for="person-company-url">Company URL</label><input id="person-company-url" class="input" type="url" /></div>
+            <div class="form-field full"><label class="label" for="person-company-logo-media">Company logo</label><select id="person-company-logo-media" class="select"><option value="">No company logo</option></select></div>
             <div class="form-field full"><label class="label" for="person-linkedin">LinkedIn</label><input id="person-linkedin" class="input" type="url" /></div>
             <div class="form-field full"><label class="label" for="person-website">Website</label><input id="person-website" class="input" type="url" /></div>
             <div class="form-field full"><label class="label" for="person-bio">Bio</label><textarea id="person-bio" class="textarea"></textarea></div>
@@ -4351,49 +4635,1110 @@ const supabasePublishableKey =
       }
 
 
-      function resetEventForm() {
+      function isLedParticipation(
+        participation = $("#event-participation")?.value || ""
+      ) {
+        return participation === "hosted" || participation === "co-organized";
+      }
 
+
+      function isHardwareMeetupEvent() {
+        return (
+          isLedParticipation() &&
+          $("#event-community")?.value === "hardware-meetup"
+        );
+      }
+
+
+      function syncEventConditionalFields() {
+        const led = isLedParticipation();
+        const hardware = isHardwareMeetupEvent();
+
+        $("#event-registrations-field")?.classList.toggle("hidden", !led);
+        $("#hosted-event-section")?.classList.toggle("hidden", !led);
+        $("#hardware-community-image-field")?.classList.toggle("hidden", !hardware);
+
+        const typeLabel = $("#event-type-label");
+        if (typeLabel && !typeLabel.value.trim()) {
+          const eventType = ($("#event-type")?.value || "").toLowerCase();
+
+          if ($("#event-participation")?.value === "hosted") {
+            typeLabel.value =
+              $("#event-community")?.value
+                ? "Hosted Community Event"
+                : "Hosted Event";
+          } else if ($("#event-participation")?.value === "co-organized") {
+            typeLabel.value =
+              $("#event-community")?.value === "hardware-meetup"
+                ? "Co-Organized Hardware Event"
+                : "Co-Organized Event";
+          } else if ($("#event-participation")?.value === "exhibitor") {
+            typeLabel.value = "Exhibitor";
+          } else if ($("#event-participation")?.value === "attending") {
+            typeLabel.value =
+              eventType === "trade-show"
+                ? "Attending Trade Show"
+                : "Attending Event";
+          }
+        }
+      }
+
+
+      function showEventImportStatus(message = "", type = "") {
+        const box = $("#event-import-status");
+        if (!box) return;
+
+        if (!message) {
+          box.textContent = "";
+          box.className = "import-status hidden";
+          return;
+        }
+
+        box.textContent = message;
+        box.className = `import-status ${type}`.trim();
+      }
+
+
+      function applyImportedField(selector, value) {
+        const field = $(selector);
+        if (!field || value === undefined || value === null || value === "") {
+          return;
+        }
+
+        field.value = String(value);
+      }
+
+
+      function inferEventContext(imported = {}) {
+        const title = String(imported.title || "").toLowerCase();
+        const url = String($("#event-url")?.value || "").toLowerCase();
+
+        if (
+          title.includes("san diego hardware meetup") ||
+          title.includes("sd hardware meetup")
+        ) {
+          $("#event-community").value = "hardware-meetup";
+          $("#event-participation").value = "co-organized";
+        } else if (
+          title.includes("san diego county startup mixer") &&
+          !title.includes("north county")
+        ) {
+          $("#event-community").value = "startup-mixer";
+          $("#event-participation").value = "hosted";
+        }
+
+        if (!$("#event-button-label").value.trim()) {
+          $("#event-button-label").value =
+            imported.eventType === "trade-show"
+              ? "View Show"
+              : "View Event";
+        }
+
+        if (
+          url.includes("ces.tech") ||
+          title.includes("ces ")
+        ) {
+          if (!$("#event-type").value.trim()) {
+            $("#event-type").value = "trade-show";
+          }
+        }
+
+        syncEventConditionalFields();
+      }
+
+
+      async function importEventFromUrl() {
+        const url = $("#event-url").value.trim();
+        const button = $("#import-event-url-button");
+
+        if (!url) {
+          showEventImportStatus("Add the event URL first.", "error");
+          return;
+        }
+
+        setButtonLoading(
+          button,
+          true,
+          "Importing...",
+          "Import details"
+        );
+
+        showEventImportStatus(
+          "Reading the public event page and extracting available details..."
+        );
+
+        try {
+          const {
+            data: {
+              session
+            }
+          } = await supabase.auth.getSession();
+
+          if (!session?.access_token) {
+            throw new Error("Your admin session expired. Sign in again.");
+          }
+
+          const response = await fetch(
+            "/api/admin/import-event",
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${session.access_token}`
+              },
+              body: JSON.stringify({ url })
+            }
+          );
+
+          const payload = await response.json();
+
+          if (!response.ok) {
+            throw new Error(
+              payload?.error ||
+              "Could not import this event."
+            );
+          }
+
+          const imported = payload.event || {};
+
+          applyImportedField("#event-title", imported.title);
+          applyImportedField("#event-start-date", imported.startDate);
+          applyImportedField("#event-end-date", imported.endDate);
+          applyImportedField("#event-description", imported.description);
+          applyImportedField("#event-venue", imported.venue);
+          applyImportedField("#event-city", imported.city);
+          applyImportedField("#event-region", imported.region);
+          applyImportedField("#event-country", imported.country);
+          applyImportedField("#event-address", imported.address);
+          applyImportedField("#event-image-url", imported.imageUrl);
+          applyImportedField("#event-type", imported.eventType);
+
+          if (
+            imported.registrations !== undefined &&
+            imported.registrations !== null
+          ) {
+            $("#event-registrations").value =
+              String(imported.registrations);
+          }
+
+          if (
+            Array.isArray(imported.organizers) &&
+            imported.organizers.length
+          ) {
+            $("#event-organizers").value =
+              imported.organizers.join("\n");
+          }
+
+          if (
+            Array.isArray(imported.speakers) &&
+            imported.speakers.length
+          ) {
+            $("#event-speaker-list").innerHTML = "";
+
+            imported.speakers.forEach(
+              (speaker) =>
+                addEventSpeakerEntry(
+                  {
+                    name: speaker.name || "",
+                    title: speaker.title || "",
+                    company: speaker.company || "",
+                    company_url: speaker.companyUrl || ""
+                  }
+                )
+            );
+          }
+
+          if (
+            Array.isArray(imported.sponsors) &&
+            imported.sponsors.length
+          ) {
+            $("#event-sponsor-list").innerHTML = "";
+
+            imported.sponsors.forEach(
+              (sponsor) =>
+                addEventSponsorEntry(
+                  {
+                    name:
+                      typeof sponsor === "string"
+                        ? sponsor
+                        : sponsor.name || "",
+                    website_url:
+                      typeof sponsor === "string"
+                        ? ""
+                        : sponsor.url || ""
+                  }
+                )
+            );
+          }
+
+          inferEventContext(imported);
+          ensureRepeaterEmptyStates();
+
+          const importedPieces = [
+            imported.title ? "title" : "",
+            imported.startDate ? "date" : "",
+            imported.venue || imported.city ? "location" : "",
+            imported.description ? "description" : "",
+            imported.imageUrl ? "source image" : "",
+            imported.speakers?.length
+              ? `${imported.speakers.length} speaker${imported.speakers.length === 1 ? "" : "s"}`
+              : "",
+            imported.sponsors?.length
+              ? `${imported.sponsors.length} sponsor${imported.sponsors.length === 1 ? "" : "s"}`
+              : ""
+          ].filter(Boolean);
+
+          showEventImportStatus(
+            importedPieces.length
+              ? `Imported ${importedPieces.join(", ")}. Review the fields below, add your CMS images/logos, then save the event.`
+              : "The page was reachable, but it did not expose much structured event data. You can still complete the event manually.",
+            "success"
+          );
+
+        } catch (error) {
+          console.error(error);
+
+          showEventImportStatus(
+            error?.message ||
+            "Could not import this event URL.",
+            "error"
+          );
+
+        } finally {
+          setButtonLoading(
+            button,
+            false,
+            "Importing...",
+            "Import details"
+          );
+        }
+      }
+
+
+      function repeaterLogoOptions(
+        selectedId = ""
+      ) {
+        const options =
+          state.media
+            .filter((item) => item.status === "active")
+            .map(
+              (item) =>
+                `<option value="${escapeHtml(item.id)}" ${
+                  String(item.id) === String(selectedId)
+                    ? "selected"
+                    : ""
+                }>${escapeHtml(item.file_name)}</option>`
+            )
+            .join("");
+
+        return `<option value="">No logo</option>${options}`;
+      }
+
+
+      function logoPreviewMarkup(mediaId) {
+        const media = mediaById(mediaId);
+
+        if (!media?.public_url) {
+          return `<span>No logo selected</span>`;
+        }
+
+        return `
+          <img
+            src="${escapeHtml(media.public_url)}"
+            alt=""
+          />
+          <span>${escapeHtml(media.file_name || "Selected logo")}</span>
+        `;
+      }
+
+
+      function speakerCardMarkup(data = {}, index = 0) {
+        return `
+          <article
+            class="repeat-card event-speaker-card"
+            data-record-id="${escapeHtml(data.id || "")}"
+          >
+            <div class="repeat-card-header">
+              <h5 class="repeat-card-title">
+                Speaker ${index + 1}
+              </h5>
+
+              <button
+                class="quiet-button"
+                type="button"
+                data-remove-repeat-card
+              >
+                Remove
+              </button>
+            </div>
+
+            <div class="repeat-card-grid">
+              <div class="form-field">
+                <label class="label">
+                  Speaker name
+                </label>
+                <input
+                  class="input speaker-name"
+                  type="text"
+                  value="${escapeHtml(data.name || "")}"
+                  placeholder="Full name"
+                />
+              </div>
+
+              <div class="form-field">
+                <label class="label">
+                  Speaker title
+                </label>
+                <input
+                  class="input speaker-title"
+                  type="text"
+                  value="${escapeHtml(data.title || "")}"
+                  placeholder="Founder, VP Sales..."
+                />
+              </div>
+
+              <div class="form-field">
+                <label class="label">
+                  Company
+                </label>
+                <input
+                  class="input speaker-company"
+                  type="text"
+                  value="${escapeHtml(data.company || "")}"
+                  placeholder="Company name"
+                />
+              </div>
+
+              <div class="form-field">
+                <label class="label">
+                  Company URL
+                </label>
+                <input
+                  class="input speaker-company-url"
+                  type="url"
+                  value="${escapeHtml(data.company_url || "")}"
+                  placeholder="https://..."
+                />
+              </div>
+
+              <div class="form-field full">
+                <label class="label">
+                  Company logo
+                </label>
+
+                <div class="logo-control">
+                  <select
+                    class="select event-logo-media speaker-company-logo"
+                    data-logo-target="speaker"
+                  >
+                    ${repeaterLogoOptions(data.company_logo_media_id || "")}
+                  </select>
+
+                  <button
+                    class="secondary-button"
+                    type="button"
+                    data-upload-repeat-logo="speaker"
+                  >
+                    Upload logo
+                  </button>
+
+                  <input
+                    class="hidden repeat-logo-file"
+                    type="file"
+                    accept="image/png,image/jpeg,image/webp,image/svg+xml,image/avif"
+                  />
+                </div>
+
+                <div class="logo-preview">
+                  ${logoPreviewMarkup(data.company_logo_media_id || "")}
+                </div>
+              </div>
+            </div>
+          </article>
+        `;
+      }
+
+
+      function sponsorCardMarkup(data = {}, index = 0) {
+        return `
+          <article
+            class="repeat-card event-sponsor-card"
+            data-record-id="${escapeHtml(data.id || "")}"
+          >
+            <div class="repeat-card-header">
+              <h5 class="repeat-card-title">
+                Sponsor ${index + 1}
+              </h5>
+
+              <button
+                class="quiet-button"
+                type="button"
+                data-remove-repeat-card
+              >
+                Remove
+              </button>
+            </div>
+
+            <div class="repeat-card-grid">
+              <div class="form-field">
+                <label class="label">
+                  Company name
+                </label>
+                <input
+                  class="input sponsor-name"
+                  type="text"
+                  value="${escapeHtml(data.name || "")}"
+                  placeholder="Sponsor name"
+                />
+              </div>
+
+              <div class="form-field">
+                <label class="label">
+                  Company URL
+                </label>
+                <input
+                  class="input sponsor-url"
+                  type="url"
+                  value="${escapeHtml(data.website_url || "")}"
+                  placeholder="https://..."
+                />
+              </div>
+
+              <div class="form-field full">
+                <label class="label">
+                  Company logo
+                </label>
+
+                <div class="logo-control">
+                  <select
+                    class="select event-logo-media sponsor-logo"
+                    data-logo-target="sponsor"
+                  >
+                    ${repeaterLogoOptions(data.logo_media_id || "")}
+                  </select>
+
+                  <button
+                    class="secondary-button"
+                    type="button"
+                    data-upload-repeat-logo="sponsor"
+                  >
+                    Upload logo
+                  </button>
+
+                  <input
+                    class="hidden repeat-logo-file"
+                    type="file"
+                    accept="image/png,image/jpeg,image/webp,image/svg+xml,image/avif"
+                  />
+                </div>
+
+                <div class="logo-preview">
+                  ${logoPreviewMarkup(data.logo_media_id || "")}
+                </div>
+              </div>
+            </div>
+          </article>
+        `;
+      }
+
+
+      function renumberRepeatCards() {
+        $$("#event-speaker-list .event-speaker-card").forEach(
+          (card, index) => {
+            const title = card.querySelector(".repeat-card-title");
+            if (title) title.textContent = `Speaker ${index + 1}`;
+          }
+        );
+
+        $$("#event-sponsor-list .event-sponsor-card").forEach(
+          (card, index) => {
+            const title = card.querySelector(".repeat-card-title");
+            if (title) title.textContent = `Sponsor ${index + 1}`;
+          }
+        );
+      }
+
+
+      function ensureRepeaterEmptyStates() {
+        const speakerList = $("#event-speaker-list");
+        const sponsorList = $("#event-sponsor-list");
+
+        if (
+          speakerList &&
+          !speakerList.querySelector(".event-speaker-card")
+        ) {
+          speakerList.innerHTML =
+            `<div class="repeat-empty">No speakers added yet.</div>`;
+        }
+
+        if (
+          sponsorList &&
+          !sponsorList.querySelector(".event-sponsor-card")
+        ) {
+          sponsorList.innerHTML =
+            `<div class="repeat-empty">No sponsors added yet.</div>`;
+        }
+      }
+
+
+      function addEventSpeakerEntry(
+        data = {}
+      ) {
+        const list = $("#event-speaker-list");
+        if (!list) return;
+
+        list.querySelector(".repeat-empty")?.remove();
+
+        const wrapper = document.createElement("div");
+        const index =
+          list.querySelectorAll(".event-speaker-card").length;
+
+        wrapper.innerHTML =
+          speakerCardMarkup(
+            data,
+            index
+          );
+
+        list.appendChild(
+          wrapper.firstElementChild
+        );
+
+        renumberRepeatCards();
+      }
+
+
+      function addEventSponsorEntry(
+        data = {}
+      ) {
+        const list = $("#event-sponsor-list");
+        if (!list) return;
+
+        list.querySelector(".repeat-empty")?.remove();
+
+        const wrapper = document.createElement("div");
+        const index =
+          list.querySelectorAll(".event-sponsor-card").length;
+
+        wrapper.innerHTML =
+          sponsorCardMarkup(
+            data,
+            index
+          );
+
+        list.appendChild(
+          wrapper.firstElementChild
+        );
+
+        renumberRepeatCards();
+      }
+
+
+      function loadEventRelationshipCards(
+        eventId
+      ) {
+        $("#event-speaker-list").innerHTML = "";
+        $("#event-sponsor-list").innerHTML = "";
+
+        getEventSpeakerIds(eventId).forEach(
+          (personId) => {
+            const person =
+              state.people.find(
+                (item) =>
+                  String(item.id) ===
+                  String(personId)
+              );
+
+            if (person) {
+              addEventSpeakerEntry(person);
+            }
+          }
+        );
+
+        getEventSponsorIds(eventId).forEach(
+          (organizationId) => {
+            const organization =
+              state.organizations.find(
+                (item) =>
+                  String(item.id) ===
+                  String(organizationId)
+              );
+
+            if (organization) {
+              addEventSponsorEntry(organization);
+            }
+          }
+        );
+
+        ensureRepeaterEmptyStates();
+      }
+
+
+      function refreshEventRepeaterMediaSelectors() {
+        $$(".event-logo-media").forEach(
+          (select) => {
+            const current = select.value;
+
+            select.innerHTML =
+              repeaterLogoOptions(current);
+
+            select.value = current;
+
+            const preview =
+              select.closest(".form-field")
+                ?.querySelector(".logo-preview");
+
+            if (preview) {
+              preview.innerHTML =
+                logoPreviewMarkup(current);
+            }
+          }
+        );
+      }
+
+
+      async function uploadRepeatLogo(
+        card,
+        file,
+        kind
+      ) {
+        if (!file || !card) return;
+
+        try {
+          const hardware =
+            $("#event-community").value === "hardware-meetup";
+
+          const targets =
+            kind === "sponsor"
+              ? hardware
+                ? ["sponsors", "community", "global"]
+                : ["sponsors", "global"]
+              : hardware
+                ? ["community", "global"]
+                : ["global"];
+
+          const media =
+            await uploadMediaFile(
+              file,
+              {
+                targets,
+                mediaKind: "logo",
+                altText:
+                  file.name.replace(
+                    /\.[^.]+$/,
+                    ""
+                  )
+              }
+            );
+
+          await loadMedia();
+          refreshMediaSelectors();
+          refreshEventRepeaterMediaSelectors();
+
+          const select =
+            card.querySelector(
+              kind === "sponsor"
+                ? ".sponsor-logo"
+                : ".speaker-company-logo"
+            );
+
+          if (select) {
+            select.value = media.id;
+
+            const preview =
+              select.closest(".form-field")
+                ?.querySelector(".logo-preview");
+
+            if (preview) {
+              preview.innerHTML =
+                logoPreviewMarkup(media.id);
+            }
+          }
+
+          showToast("Logo uploaded and selected.");
+
+        } catch (error) {
+          console.error(error);
+          showToast(
+            error?.message ||
+            "Could not upload logo.",
+            "error"
+          );
+        }
+      }
+
+
+      async function ensureMediaTargets(
+        mediaId,
+        targets = []
+      ) {
+        if (!mediaId || !targets.length) return;
+
+        const media =
+          state.media.find(
+            (item) =>
+              String(item.id) ===
+              String(mediaId)
+          );
+
+        if (!media) return;
+
+        const current =
+          Array.isArray(media.publish_targets)
+            ? media.publish_targets
+            : [];
+
+        const next =
+          Array.from(
+            new Set([
+              ...current,
+              ...targets
+            ])
+          );
+
+        if (
+          next.length === current.length &&
+          next.every(
+            (value) =>
+              current.includes(value)
+          )
+        ) {
+          return;
+        }
+
+        const {
+          error
+        } =
+          await supabase
+            .from("media")
+            .update({
+              publish_targets: next
+            })
+            .eq(
+              "id",
+              mediaId
+            );
+
+        if (error) throw error;
+      }
+
+
+      async function saveSpeakerCard(
+        card,
+        hardware
+      ) {
+        const name =
+          card.querySelector(".speaker-name")
+            ?.value.trim() ||
+          "";
+
+        if (!name) {
+          return null;
+        }
+
+        const company =
+          card.querySelector(".speaker-company")
+            ?.value.trim() ||
+          null;
+
+        const payload = {
+          name,
+          title:
+            card.querySelector(".speaker-title")
+              ?.value.trim() ||
+            null,
+          company,
+          company_url:
+            card.querySelector(".speaker-company-url")
+              ?.value.trim() ||
+            null,
+          company_logo_media_id:
+            card.querySelector(".speaker-company-logo")
+              ?.value ||
+            null,
+          status:
+            "active"
+        };
+
+        let id =
+          card.dataset.recordId ||
+          "";
+
+        if (!id) {
+          const existing =
+            state.people.find(
+              (person) =>
+                String(person.name || "")
+                  .trim()
+                  .toLowerCase() ===
+                  name.toLowerCase() &&
+                String(person.company || "")
+                  .trim()
+                  .toLowerCase() ===
+                  String(company || "")
+                    .trim()
+                    .toLowerCase()
+            );
+
+          id = existing?.id || "";
+        }
+
+        if (id) {
+          const {
+            error
+          } =
+            await supabase
+              .from("people")
+              .update(payload)
+              .eq("id", id);
+
+          if (error) throw error;
+
+        } else {
+          const {
+            data,
+            error
+          } =
+            await supabase
+              .from("people")
+              .insert(payload)
+              .select("id")
+              .single();
+
+          if (error) throw error;
+
+          id = data.id;
+        }
+
+        if (
+          hardware &&
+          payload.company_logo_media_id
+        ) {
+          await ensureMediaTargets(
+            payload.company_logo_media_id,
+            ["community"]
+          );
+        }
+
+        return id;
+      }
+
+
+      async function saveSponsorCard(
+        card,
+        hardware
+      ) {
+        const name =
+          card.querySelector(".sponsor-name")
+            ?.value.trim() ||
+          "";
+
+        if (!name) {
+          return null;
+        }
+
+        const payload = {
+          name,
+          website_url:
+            card.querySelector(".sponsor-url")
+              ?.value.trim() ||
+            null,
+          logo_media_id:
+            card.querySelector(".sponsor-logo")
+              ?.value ||
+            null,
+          status:
+            "active"
+        };
+
+        let id =
+          card.dataset.recordId ||
+          "";
+
+        if (!id) {
+          const existing =
+            state.organizations.find(
+              (organization) =>
+                String(organization.name || "")
+                  .trim()
+                  .toLowerCase() ===
+                name.toLowerCase()
+            );
+
+          id = existing?.id || "";
+        }
+
+        if (id) {
+          const {
+            error
+          } =
+            await supabase
+              .from("organizations")
+              .update(payload)
+              .eq("id", id);
+
+          if (error) throw error;
+
+        } else {
+          let insertPayload = {
+            ...payload,
+            slug: slugify(name)
+          };
+
+          let {
+            data,
+            error
+          } =
+            await supabase
+              .from("organizations")
+              .insert(insertPayload)
+              .select("id")
+              .single();
+
+          if (
+            error?.code === "23505"
+          ) {
+            insertPayload.slug =
+              `${slugify(name)}-${crypto.randomUUID().slice(0, 6)}`;
+
+            const retry =
+              await supabase
+                .from("organizations")
+                .insert(insertPayload)
+                .select("id")
+                .single();
+
+            data = retry.data;
+            error = retry.error;
+          }
+
+          if (error) throw error;
+
+          id = data.id;
+        }
+
+        if (payload.logo_media_id) {
+          await ensureMediaTargets(
+            payload.logo_media_id,
+            hardware
+              ? ["sponsors", "community"]
+              : ["sponsors"]
+          );
+        }
+
+        return id;
+      }
+
+
+      async function replaceEventRelationshipLinks(
+        eventId,
+        speakerIds,
+        sponsorIds
+      ) {
+        const deleteSpeakers =
+          await supabase
+            .from("event_speakers")
+            .delete()
+            .eq("event_id", eventId);
+
+        if (deleteSpeakers.error) {
+          throw deleteSpeakers.error;
+        }
+
+        if (speakerIds.length) {
+          const addSpeakers =
+            await supabase
+              .from("event_speakers")
+              .insert(
+                speakerIds.map(
+                  (personId, index) => ({
+                    event_id:
+                      eventId,
+                    person_id:
+                      personId,
+                    sort_order:
+                      index
+                  })
+                )
+              );
+
+          if (addSpeakers.error) {
+            throw addSpeakers.error;
+          }
+        }
+
+        const deleteSponsors =
+          await supabase
+            .from("event_sponsors")
+            .delete()
+            .eq("event_id", eventId);
+
+        if (deleteSponsors.error) {
+          throw deleteSponsors.error;
+        }
+
+        if (sponsorIds.length) {
+          const addSponsors =
+            await supabase
+              .from("event_sponsors")
+              .insert(
+                sponsorIds.map(
+                  (
+                    organizationId,
+                    index
+                  ) => ({
+                    event_id:
+                      eventId,
+                    organization_id:
+                      organizationId,
+                    sort_order:
+                      index
+                  })
+                )
+              );
+
+          if (addSponsors.error) {
+            throw addSponsors.error;
+          }
+        }
+      }
+
+
+      function resetEventForm() {
         $("#event-form").reset();
         $("#event-record-id").value = "";
         $("#event-country").value = "USA";
         $("#event-status").value = "draft";
-        $("#event-role").value = "attending";
         $("#event-modal-title").textContent = "Add Event";
         $("#archive-event-button").classList.add("hidden");
+        $("#event-speaker-list").innerHTML = "";
+        $("#event-sponsor-list").innerHTML = "";
+        $("#event-community-track-media").value = "";
+        showEventImportStatus();
         refreshRelationshipSelectors();
-        setSelectedValues($("#event-speakers"), []);
-        setSelectedValues($("#event-sponsors"), []);
-
+        refreshMediaSelectors();
+        ensureRepeaterEmptyStates();
+        syncEventConditionalFields();
       }
 
 
       function openEventModal(
         eventId = ""
       ) {
-
         resetEventForm();
-
 
         if (
           eventId
         ) {
-
           const event =
             state.events.find(
-              (
-                item
-              ) =>
+              (item) =>
                 item.id ===
                 eventId
             );
 
-
-          if (
-            !event
-          ) {
+          if (!event) {
             return;
           }
-
 
           $("#event-modal-title").textContent =
             "Edit Event";
@@ -4417,10 +5762,12 @@ const supabasePublishableKey =
             event.community_id || "";
 
           $("#event-participation").value =
-            event.participation || "";
-
-          $("#event-role").value =
-            event.role || "attending";
+            event.participation ||
+            (
+              event.role === "hosted"
+                ? "hosted"
+                : "attending"
+            );
 
           $("#event-type-label").value =
             event.type_label || "";
@@ -4461,21 +5808,15 @@ const supabasePublishableKey =
           $("#event-organizers").value =
             arrayToLines(event.organizers);
 
-          setSelectedValues(
-            $("#event-speakers"),
-            getEventSpeakerIds(event.id)
-          );
-
-          setSelectedValues(
-            $("#event-sponsors"),
-            getEventSponsorIds(event.id)
-          );
-
           $("#event-status").value =
             event.status || "draft";
 
           $("#event-cover-media").value =
             event.cover_media_id || "";
+
+          $("#event-community-track-media").value =
+            event.community_track_media_id ||
+            "";
 
           $("#event-show-home").checked =
             Boolean(
@@ -4487,19 +5828,26 @@ const supabasePublishableKey =
               event.featured
             );
 
-          $("#archive-event-button").classList.remove("hidden");
+          loadEventRelationshipCards(
+            event.id
+          );
 
+          $("#archive-event-button")
+            .classList.remove("hidden");
         }
 
+        syncEventConditionalFields();
+        refreshEventRepeaterMediaSelectors();
 
-        $("#event-modal").classList.remove("hidden");
-        document.body.style.overflow = "hidden";
+        $("#event-modal")
+          .classList.remove("hidden");
 
+        document.body.style.overflow =
+          "hidden";
       }
 
 
       async function saveEvent() {
-
         const existingId =
           $("#event-record-id").value;
 
@@ -4511,6 +5859,24 @@ const supabasePublishableKey =
         const startDate =
           $("#event-start-date").value;
 
+        const participation =
+          $("#event-participation").value ||
+          null;
+
+        const led =
+          isLedParticipation(
+            participation ||
+            ""
+          );
+
+        const communityId =
+          $("#event-community").value ||
+          null;
+
+        const hardware =
+          led &&
+          communityId ===
+            "hardware-meetup";
 
         const payload = {
           title,
@@ -4523,23 +5889,22 @@ const supabasePublishableKey =
             $("#event-type").value.trim() ||
             null,
           community_id:
-            $("#event-community").value ||
-            null,
-          participation:
-            $("#event-participation").value ||
-            null,
+            communityId,
+          participation,
           role:
-            $("#event-role").value ||
-            null,
+            led
+              ? "hosted"
+              : "attending",
           type_label:
             $("#event-type-label").value.trim() ||
             null,
           registrations:
-            $("#event-registrations").value === ""
-              ? null
-              : Number(
+            led &&
+            $("#event-registrations").value !== ""
+              ? Number(
                   $("#event-registrations").value
-                ),
+                )
+              : null,
           description:
             $("#event-description").value.trim() ||
             null,
@@ -4568,79 +5933,74 @@ const supabasePublishableKey =
             $("#event-image-url").value.trim() ||
             null,
           partners:
-            linesToArray($("#event-partners").value),
+            led
+              ? linesToArray(
+                  $("#event-partners").value
+                )
+              : [],
           organizers:
-            linesToArray($("#event-organizers").value),
+            led
+              ? linesToArray(
+                  $("#event-organizers").value
+                )
+              : [],
           status:
             $("#event-status").value,
           cover_media_id:
             $("#event-cover-media").value ||
             null,
+          community_track_media_id:
+            hardware
+              ? $("#event-community-track-media").value ||
+                null
+              : null,
           show_on_home:
             $("#event-show-home").checked,
           featured:
             $("#event-featured").checked
         };
 
-
         let response;
-        let savedEventId = existingId;
-
+        let savedEventId =
+          existingId;
 
         if (
           existingId
         ) {
-
           response =
             await supabase
-              .from(
-                "events"
-              )
-              .update(
-                payload
-              )
+              .from("events")
+              .update(payload)
               .eq(
                 "id",
                 existingId
               );
 
         } else {
-
           const id =
             `evt-${crypto.randomUUID()}`;
 
-          savedEventId = id;
+          savedEventId =
+            id;
 
           const slugBase =
-            slugify(
-              title
-            );
+            slugify(title);
 
           const year =
             startDate
-              ? startDate.slice(
-                  0,
-                  4
-                )
+              ? startDate.slice(0, 4)
               : new Date().getFullYear();
-
 
           response =
             await supabase
-              .from(
-                "events"
-              )
-              .insert(
-                {
-                  id,
-                  slug:
-                    `${slugBase}-${year}-${crypto.randomUUID().slice(0, 6)}`,
-                  ...payload
-                }
-              );
-
+              .from("events")
+              .insert({
+                id,
+                slug:
+                  `${slugBase}-${year}-${crypto.randomUUID().slice(0, 6)}`,
+                ...payload
+              });
         }
-
 
         if (
           response.error
@@ -4648,61 +6008,60 @@ const supabasePublishableKey =
           throw response.error;
         }
 
+        let speakerIds = [];
+        let sponsorIds = [];
 
-        const speakerIds =
-          selectedValues($("#event-speakers"));
-
-        const sponsorIds =
-          selectedValues($("#event-sponsors"));
-
-        const deleteSpeakers =
-          await supabase
-            .from("event_speakers")
-            .delete()
-            .eq("event_id", savedEventId);
-
-        if (deleteSpeakers.error) throw deleteSpeakers.error;
-
-        if (speakerIds.length) {
-          const addSpeakers =
-            await supabase
-              .from("event_speakers")
-              .insert(
-                speakerIds.map((personId, index) => ({
-                  event_id: savedEventId,
-                  person_id: personId,
-                  sort_order: index
-                }))
+        if (
+          led
+        ) {
+          for (
+            const card of
+              $$("#event-speaker-list .event-speaker-card")
+          ) {
+            const id =
+              await saveSpeakerCard(
+                card,
+                hardware
               );
-          if (addSpeakers.error) throw addSpeakers.error;
+
+            if (id) {
+              speakerIds.push(id);
+            }
+          }
+
+          for (
+            const card of
+              $$("#event-sponsor-list .event-sponsor-card")
+          ) {
+            const id =
+              await saveSponsorCard(
+                card,
+                hardware
+              );
+
+            if (id) {
+              sponsorIds.push(id);
+            }
+          }
         }
 
-        const deleteSponsors =
-          await supabase
-            .from("event_sponsors")
-            .delete()
-            .eq("event_id", savedEventId);
-
-        if (deleteSponsors.error) throw deleteSponsors.error;
-
-        if (sponsorIds.length) {
-          const addSponsors =
-            await supabase
-              .from("event_sponsors")
-              .insert(
-                sponsorIds.map((organizationId, index) => ({
-                  event_id: savedEventId,
-                  organization_id: organizationId,
-                  sort_order: index
-                }))
-              );
-          if (addSponsors.error) throw addSponsors.error;
-        }
-
-
-        closeModal(
-          "event"
+        await replaceEventRelationshipLinks(
+          savedEventId,
+          speakerIds,
+          sponsorIds
         );
+
+        if (
+          hardware &&
+          payload.community_track_media_id
+        ) {
+          await ensureMediaTargets(
+            payload.community_track_media_id,
+            ["community"]
+          );
+        }
+
+        closeModal("event");
 
         showToast(
           existingId
@@ -4711,65 +6070,45 @@ const supabasePublishableKey =
         );
 
         await loadAllContent();
-
       }
 
 
       async function archiveCurrentEvent() {
-
         const eventId =
           $("#event-record-id").value;
 
-
-        if (
-          !eventId
-        ) {
+        if (!eventId) {
           return;
         }
-
 
         const confirmed =
           window.confirm(
             "Archive this event? It will remain editable and can be restored later."
           );
 
-
-        if (
-          !confirmed
-        ) {
+        if (!confirmed) {
           return;
         }
-
 
         const {
           error
         } =
           await supabase
-            .from(
-              "events"
-            )
-            .update(
-              {
-                status:
-                  "archived"
-              }
-            )
+            .from("events")
+            .update({
+              status:
+                "archived"
+            })
             .eq(
               "id",
               eventId
             );
 
-
-        if (
-          error
-        ) {
+        if (error) {
           throw error;
         }
 
-
-        closeModal(
-          "event"
-        );
+        closeModal("event");
 
         showToast(
           "Event archived. You can still edit or restore it later."
@@ -4777,7 +6116,6 @@ const supabasePublishableKey =
 
         await loadEvents();
         refreshCounts();
-
       }
 
 
@@ -5660,10 +6998,12 @@ const supabasePublishableKey =
 
         const selectors = [
           $("#event-cover-media"),
+          $("#event-community-track-media"),
           $("#field-note-hero-media"),
           $("#recap-hero-media"),
           $("#organization-logo-media"),
           $("#person-photo-media"),
+          $("#person-company-logo-media"),
           $("#field-note-inline-media"),
           $("#recap-inline-media")
         ];
@@ -5686,23 +7026,30 @@ const supabasePublishableKey =
 
             const emptyLabel =
               select.id === "event-cover-media"
-                ? "No cover image"
-                : select.id === "organization-logo-media"
-                  ? "No logo"
-                  : select.id === "person-photo-media"
-                    ? "No photo"
-                    : select.id.endsWith("inline-media")
-                      ? "Insert existing image..."
-                      : "No hero image";
+                ? "No Fieldwork cover"
+                : select.id === "event-community-track-media"
+                  ? "No Community Track Record image"
+                  : select.id === "organization-logo-media" ||
+                    select.id === "person-company-logo-media"
+                    ? "No logo"
+                    : select.id === "person-photo-media"
+                      ? "No photo"
+                      : select.id.endsWith("inline-media")
+                        ? "Insert existing image..."
+                        : "No hero image";
 
             const target =
-              select.id.startsWith("field-note")
-                ? "field-notes"
-                : select.id.startsWith("recap")
-                  ? "event-recaps"
-                  : select.id === "organization-logo-media"
-                    ? "sponsors"
-                    : "events";
+              select.id === "event-community-track-media"
+                ? "community"
+                : select.id.startsWith("field-note")
+                  ? "field-notes"
+                  : select.id.startsWith("recap")
+                    ? "event-recaps"
+                    : select.id === "organization-logo-media"
+                      ? "sponsors"
+                      : select.id === "person-company-logo-media"
+                        ? "community"
+                        : "events";
 
             select.innerHTML =
               `<option value="">${emptyLabel}</option>` +
@@ -5719,6 +7066,8 @@ const supabasePublishableKey =
 
           }
         );
+
+        refreshEventRepeaterMediaSelectors();
 
       }
 
@@ -5760,33 +7109,27 @@ const supabasePublishableKey =
 
       function refreshRelationshipSelectors() {
         const communitySelect = $("#event-community");
-        if (communitySelect) {
-          const current = communitySelect.value;
-          communitySelect.innerHTML =
-            `<option value="">No community</option>` +
-            state.communities
-              .map((item) => `<option value="${escapeHtml(item.id)}">${escapeHtml(item.name)}${item.status === "archived" ? " — archived" : ""}</option>`)
-              .join("");
-          communitySelect.value = current;
+
+        if (!communitySelect) {
+          return;
         }
 
-        const speakerSelect = $("#event-speakers");
-        if (speakerSelect) {
-          const current = selectedValues(speakerSelect);
-          speakerSelect.innerHTML = state.people
-            .map((item) => `<option value="${escapeHtml(item.id)}">${escapeHtml(item.name)}${item.company ? ` — ${escapeHtml(item.company)}` : ""}${item.status !== "active" ? " — inactive" : ""}</option>`)
-            .join("");
-          setSelectedValues(speakerSelect, current);
-        }
+        const current =
+          communitySelect.value;
 
-        const sponsorSelect = $("#event-sponsors");
-        if (sponsorSelect) {
-          const current = selectedValues(sponsorSelect);
-          sponsorSelect.innerHTML = state.organizations
-            .map((item) => `<option value="${escapeHtml(item.id)}">${escapeHtml(item.name)}${item.status !== "active" ? " — inactive" : ""}</option>`)
+        communitySelect.innerHTML =
+          `<option value="">No community</option>` +
+          state.communities
+            .map(
+              (item) =>
+                `<option value="${escapeHtml(item.id)}">${escapeHtml(item.name)}${item.status === "archived" ? " — archived" : ""}</option>`
+            )
             .join("");
-          setSelectedValues(sponsorSelect, current);
-        }
+
+        communitySelect.value =
+          current;
+
+        syncEventConditionalFields();
       }
 
 
@@ -6029,6 +7372,8 @@ const supabasePublishableKey =
           $("#person-name").value = item.name || "";
           $("#person-title").value = item.title || "";
           $("#person-company").value = item.company || "";
+          $("#person-company-url").value = item.company_url || "";
+          $("#person-company-logo-media").value = item.company_logo_media_id || "";
           $("#person-linkedin").value = item.linkedin_url || "";
           $("#person-website").value = item.website_url || "";
           $("#person-bio").value = item.bio || "";
@@ -6045,6 +7390,8 @@ const supabasePublishableKey =
         const payload = {
           name: $("#person-name").value.trim(),
           company: $("#person-company").value.trim() || null,
+          company_url: $("#person-company-url").value.trim() || null,
+          company_logo_media_id: $("#person-company-logo-media").value || null,
           title: $("#person-title").value.trim() || null,
           linkedin_url: $("#person-linkedin").value.trim() || null,
           website_url: $("#person-website").value.trim() || null,
@@ -6735,6 +8082,162 @@ const supabasePublishableKey =
       );
 
 
+
+      $("#import-event-url-button").addEventListener(
+        "click",
+        importEventFromUrl
+      );
+
+
+      $("#event-participation").addEventListener(
+        "change",
+        () => {
+          syncEventConditionalFields();
+        }
+      );
+
+
+      $("#event-community").addEventListener(
+        "change",
+        () => {
+          syncEventConditionalFields();
+        }
+      );
+
+
+      $("#event-type").addEventListener(
+        "input",
+        () => {
+          const label =
+            $("#event-type-label");
+
+          if (
+            label &&
+            !label.value.trim()
+          ) {
+            syncEventConditionalFields();
+          }
+        }
+      );
+
+
+      $("#add-event-speaker-button").addEventListener(
+        "click",
+        () => {
+          addEventSpeakerEntry();
+        }
+      );
+
+
+      $("#add-event-sponsor-button").addEventListener(
+        "click",
+        () => {
+          addEventSponsorEntry();
+        }
+      );
+
+
+      $("#event-modal").addEventListener(
+        "click",
+        (event) => {
+          const removeButton =
+            event.target.closest(
+              "[data-remove-repeat-card]"
+            );
+
+          if (removeButton) {
+            removeButton
+              .closest(".repeat-card")
+              ?.remove();
+
+            renumberRepeatCards();
+            ensureRepeaterEmptyStates();
+            return;
+          }
+
+
+          const uploadButton =
+            event.target.closest(
+              "[data-upload-repeat-logo]"
+            );
+
+          if (uploadButton) {
+            const card =
+              uploadButton.closest(
+                ".repeat-card"
+              );
+
+            const input =
+              card?.querySelector(
+                ".repeat-logo-file"
+              );
+
+            if (input) {
+              input.value = "";
+              input.click();
+            }
+
+            return;
+          }
+        }
+      );
+
+
+      $("#event-modal").addEventListener(
+        "change",
+        async (event) => {
+          const fileInput =
+            event.target.closest(
+              ".repeat-logo-file"
+            );
+
+          if (fileInput) {
+            const card =
+              fileInput.closest(
+                ".repeat-card"
+              );
+
+            const kind =
+              card?.classList.contains(
+                "event-sponsor-card"
+              )
+                ? "sponsor"
+                : "speaker";
+
+            await uploadRepeatLogo(
+              card,
+              fileInput.files?.[0],
+              kind
+            );
+
+            return;
+          }
+
+
+          const logoSelect =
+            event.target.closest(
+              ".event-logo-media"
+            );
+
+          if (logoSelect) {
+            const preview =
+              logoSelect
+                .closest(".form-field")
+                ?.querySelector(
+                  ".logo-preview"
+                );
+
+            if (preview) {
+              preview.innerHTML =
+                logoPreviewMarkup(
+                  logoSelect.value
+                );
+            }
+          }
+        }
+      );
+
+
       $("#event-form").addEventListener(
         "submit",
         async (
@@ -7038,6 +8541,7 @@ const supabasePublishableKey =
           const target = button.dataset.coverTarget;
           const inputMap = {
             "event-cover-media": "#event-cover-upload",
+            "event-community-track-media": "#event-community-track-upload",
             "field-note-hero-media": "#field-note-hero-upload",
             "recap-hero-media": "#recap-hero-upload"
           };
@@ -7051,10 +8555,11 @@ const supabasePublishableKey =
 
       [
         $("#event-cover-upload"),
+        $("#event-community-track-upload"),
         $("#field-note-hero-upload"),
         $("#recap-hero-upload")
       ].forEach((input) => {
-        input.addEventListener("change", async (event) => {
+        input?.addEventListener("change", async (event) => {
           const pending = state.pendingCoverUpload;
           if (pending) await uploadAndSelectCover(event.target.files?.[0], pending.selectId, pending.target);
           state.pendingCoverUpload = null;
@@ -7140,4 +8645,3 @@ const supabasePublishableKey =
     </script>
   </body>
 </html>
-
