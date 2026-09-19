@@ -47,7 +47,7 @@ const supabasePublishableKey =
       rel="stylesheet"
     />
 
-    <style>
+    <style is:global>
       :root {
         --cream: #f4f1e8;
         --card: #ffffff;
@@ -1325,6 +1325,211 @@ const supabasePublishableKey =
         padding: 4px;
       }
 
+      /* =====================================================
+         DYNAMIC ADMIN CONTENT
+         These elements are injected with JavaScript, so the
+         admin stylesheet is intentionally global on this page.
+         ===================================================== */
+
+      .recent-content-panel {
+        overflow: hidden;
+      }
+
+      .recent-content-header {
+        align-items: flex-end;
+        gap: 24px;
+      }
+
+      .recent-content-filters {
+        margin: 0;
+        justify-content: flex-end;
+      }
+
+      .recent-content-list {
+        border: 0;
+        border-top: 1px solid var(--border);
+      }
+
+      .recent-content-row {
+        min-height: 94px;
+        padding: 18px 24px;
+      }
+
+      .recent-content-main {
+        min-width: 0;
+      }
+
+      .recent-content-topline {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 9px;
+        margin-bottom: 8px;
+      }
+
+      .content-type-pill {
+        display: inline-flex;
+        align-items: center;
+        min-height: 23px;
+        padding: 0 8px;
+        background: var(--cream);
+        border: 1px solid var(--border);
+        color: var(--charcoal);
+        font-size: 8px;
+        font-weight: 700;
+        letter-spacing: 0.13em;
+        text-transform: uppercase;
+      }
+
+      .recent-content-date {
+        color: var(--slate);
+        font-size: 9px;
+      }
+
+      .recent-edit-button {
+        min-width: 82px;
+      }
+
+      .repeater-block {
+        padding: 22px 0;
+        border-bottom: 1px solid var(--border);
+      }
+
+      .repeater-block:first-child {
+        padding-top: 0;
+      }
+
+      .repeater-block:last-of-type {
+        border-bottom: 0;
+      }
+
+      .repeater-heading {
+        align-items: center;
+        margin-bottom: 16px;
+      }
+
+      .repeater-heading .secondary-button {
+        flex: 0 0 auto;
+      }
+
+      .repeat-list {
+        gap: 14px;
+      }
+
+      .repeat-card {
+        position: relative;
+        padding: 0;
+        overflow: hidden;
+        border: 1px solid var(--border);
+        background: #fff;
+        box-shadow: 0 8px 24px rgba(31, 35, 40, 0.035);
+      }
+
+      .repeat-card-header {
+        min-height: 50px;
+        padding: 0 16px 0 18px;
+        margin: 0;
+        border-bottom: 1px solid var(--border);
+        background: rgba(244, 241, 232, 0.46);
+      }
+
+      .repeat-card-title {
+        font-family: "Cinzel", Georgia, serif;
+        font-size: 12px;
+        font-weight: 500;
+        letter-spacing: 0.08em;
+      }
+
+      .repeat-remove-button {
+        min-height: 30px;
+        border: 0;
+        background: transparent;
+        padding: 0 4px;
+        color: #9a4d43;
+        cursor: pointer;
+        font-family: inherit;
+        font-size: 9px;
+        font-weight: 700;
+        letter-spacing: 0.11em;
+        text-transform: uppercase;
+      }
+
+      .repeat-remove-button:hover {
+        color: #6f2e27;
+        text-decoration: underline;
+        text-underline-offset: 3px;
+      }
+
+      .repeat-card-grid {
+        padding: 18px;
+        gap: 14px 16px;
+      }
+
+      .repeat-card .form-field {
+        gap: 6px;
+      }
+
+      .repeat-card .label {
+        font-size: 8px;
+        letter-spacing: 0.13em;
+      }
+
+      .repeat-card .input,
+      .repeat-card .select {
+        width: 100%;
+        min-height: 42px;
+      }
+
+      .logo-control {
+        grid-template-columns: minmax(220px, 1fr) auto;
+        max-width: 760px;
+      }
+
+      .logo-preview {
+        width: fit-content;
+        min-width: 180px;
+        min-height: 44px;
+        padding: 6px 9px;
+        border: 1px solid var(--border);
+        background: var(--cream);
+      }
+
+      .logo-preview img {
+        width: 64px;
+        height: 38px;
+        border: 0;
+        padding: 0;
+        background: transparent;
+      }
+
+      .repeat-empty {
+        border-radius: 0;
+        background: rgba(244, 241, 232, 0.38);
+        text-align: center;
+      }
+
+      @media (max-width: 760px) {
+        .recent-content-header {
+          align-items: stretch;
+        }
+
+        .recent-content-filters {
+          justify-content: flex-start;
+        }
+
+        .repeat-card-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .repeat-card-grid .full {
+          grid-column: auto;
+        }
+
+        .logo-control {
+          grid-template-columns: 1fr;
+        }
+      }
+
       .hosted-secondary-fields {
         margin-top: 26px;
         padding-top: 24px;
@@ -1734,8 +1939,8 @@ const supabasePublishableKey =
                 </div>
               </div>
 
-              <div class="panel">
-                <div class="panel-header">
+              <div class="panel recent-content-panel">
+                <div class="panel-header recent-content-header">
                   <div>
                     <h2 class="panel-title">
                       Recent Content
@@ -1744,9 +1949,47 @@ const supabasePublishableKey =
                       Your most recently updated CMS items.
                     </p>
                   </div>
+
+                  <div
+                    id="recent-content-filters"
+                    class="filters recent-content-filters"
+                    aria-label="Filter recent content"
+                  >
+                    <button
+                      class="filter-button active"
+                      type="button"
+                      data-recent-filter="all"
+                    >
+                      All
+                    </button>
+                    <button
+                      class="filter-button"
+                      type="button"
+                      data-recent-filter="events"
+                    >
+                      Events
+                    </button>
+                    <button
+                      class="filter-button"
+                      type="button"
+                      data-recent-filter="field-notes"
+                    >
+                      Field Notes
+                    </button>
+                    <button
+                      class="filter-button"
+                      type="button"
+                      data-recent-filter="recaps"
+                    >
+                      Recaps
+                    </button>
+                  </div>
                 </div>
 
-                <div id="recent-content-list"></div>
+                <div
+                  id="recent-content-list"
+                  class="content-list recent-content-list"
+                ></div>
               </div>
             </section>
 
@@ -3364,6 +3607,9 @@ const supabasePublishableKey =
         eventFilter:
           "all",
 
+        recentFilter:
+          "all",
+
         selectedMediaFile:
           null,
 
@@ -4454,7 +4700,7 @@ const supabasePublishableKey =
 
       function renderRecentContent() {
 
-        const items = [
+        const allItems = [
           ...state.events.map(
             (
               item
@@ -4490,27 +4736,43 @@ const supabasePublishableKey =
                 "recaps"
             })
           )
-        ]
-          .sort(
-            (
-              a,
-              b
-            ) =>
-              new Date(
-                b.updated_at ||
-                b.created_at ||
-                0
-              ).getTime() -
-              new Date(
-                a.updated_at ||
-                a.created_at ||
-                0
-              ).getTime()
-          )
-          .slice(
-            0,
-            6
-          );
+        ];
+
+
+        const filteredItems =
+          state.recentFilter === "all"
+            ? allItems
+            : allItems.filter(
+                (
+                  item
+                ) =>
+                  item.contentSection ===
+                  state.recentFilter
+              );
+
+
+        const items =
+          filteredItems
+            .sort(
+              (
+                a,
+                b
+              ) =>
+                new Date(
+                  b.updated_at ||
+                  b.created_at ||
+                  0
+                ).getTime() -
+                new Date(
+                  a.updated_at ||
+                  a.created_at ||
+                  0
+                ).getTime()
+            )
+            .slice(
+              0,
+              8
+            );
 
 
         const container =
@@ -4524,8 +4786,8 @@ const supabasePublishableKey =
           container.innerHTML =
             `
               <div class="empty-state">
-                <strong>Your CMS is ready</strong>
-                Create a new content item here. Existing Soleil & Stone content is already stored in the CMS.
+                <strong>No matching recent content</strong>
+                Try another filter or create a new item.
               </div>
             `;
 
@@ -4538,31 +4800,57 @@ const supabasePublishableKey =
             .map(
               (
                 item
-              ) => `
-                <div class="content-row">
-                  <div>
-                    <h3 class="row-title">
-                      ${escapeHtml(item.title || item.file_name || "Untitled")}
-                    </h3>
-                    <div class="row-meta">
-                      <span>${escapeHtml(item.contentType)}</span>
-                      <span>•</span>
-                      <span class="status-pill ${escapeHtml(item.status || "published")}">
-                        ${escapeHtml(item.status || "published")}
-                      </span>
+              ) => {
+                const itemDate =
+                  item.updated_at ||
+                  item.created_at;
+
+                const dateLabel =
+                  itemDate
+                    ? formatDate(
+                        itemDate
+                      )
+                    : "";
+
+                return `
+                  <div class="content-row recent-content-row">
+                    <div class="recent-content-main">
+                      <div class="recent-content-topline">
+                        <span class="content-type-pill">
+                          ${escapeHtml(item.contentType)}
+                        </span>
+
+                        ${
+                          dateLabel
+                            ? `<span class="recent-content-date">${escapeHtml(dateLabel)}</span>`
+                            : ""
+                        }
+                      </div>
+
+                      <h3 class="row-title">
+                        ${escapeHtml(item.title || item.file_name || "Untitled")}
+                      </h3>
+
+                      <div class="row-meta">
+                        <span class="status-pill ${escapeHtml(item.status || "published")}">
+                          ${escapeHtml(item.status || "published")}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div class="row-actions">
+                      <button
+                        class="secondary-button recent-edit-button"
+                        type="button"
+                        data-recent-edit-section="${escapeHtml(item.contentSection)}"
+                        data-recent-edit-id="${escapeHtml(item.id)}"
+                      >
+                        Edit
+                      </button>
                     </div>
                   </div>
-                  <div class="row-actions">
-                    <button
-                      class="secondary-button"
-                      type="button"
-                      data-recent-section="${escapeHtml(item.contentSection)}"
-                    >
-                      Open
-                    </button>
-                  </div>
-                </div>
-              `
+                `;
+              }
             )
             .join(
               ""
@@ -5076,9 +5364,10 @@ const supabasePublishableKey =
               </h5>
 
               <button
-                class="quiet-button"
+                class="repeat-remove-button"
                 type="button"
                 data-remove-repeat-card
+                aria-label="Remove this entry"
               >
                 Remove
               </button>
@@ -5183,9 +5472,10 @@ const supabasePublishableKey =
               </h5>
 
               <button
-                class="quiet-button"
+                class="repeat-remove-button"
                 type="button"
                 data-remove-repeat-card
+                aria-label="Remove this entry"
               >
                 Remove
               </button>
@@ -8256,17 +8546,41 @@ const supabasePublishableKey =
           }
 
 
-          const recentButton =
+          const recentEditButton =
             event.target.closest(
-              "[data-recent-section]"
+              "[data-recent-edit-section]"
             );
 
           if (
-            recentButton
+            recentEditButton
           ) {
-            openSection(
-              recentButton.dataset.recentSection
-            );
+            const section =
+              recentEditButton.dataset.recentEditSection;
+
+            const id =
+              recentEditButton.dataset.recentEditId || "";
+
+            if (
+              section === "events"
+            ) {
+              openEventModal(
+                id
+              );
+            } else if (
+              section === "field-notes"
+            ) {
+              openFieldNoteModal(
+                id
+              );
+            } else if (
+              section === "recaps"
+            ) {
+              openRecapModal(
+                id
+              );
+            }
+
+            return;
           }
 
 
@@ -8286,6 +8600,42 @@ const supabasePublishableKey =
         }
       );
 
+
+
+      $("#recent-content-filters").addEventListener(
+        "click",
+        (
+          event
+        ) => {
+          const button =
+            event.target.closest(
+              "[data-recent-filter]"
+            );
+
+          if (
+            !button
+          ) {
+            return;
+          }
+
+          state.recentFilter =
+            button.dataset.recentFilter ||
+            "all";
+
+          $$("#recent-content-filters [data-recent-filter]").forEach(
+            (
+              candidate
+            ) => {
+              candidate.classList.toggle(
+                "active",
+                candidate === button
+              );
+            }
+          );
+
+          renderRecentContent();
+        }
+      );
 
 
       $("#import-event-url-button").addEventListener(
