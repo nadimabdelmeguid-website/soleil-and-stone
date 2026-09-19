@@ -35,6 +35,7 @@ const publishedDate =
 
 
 const readTime =
+  post.data.readingMinutes ??
   readingTime(
     post.body ??
     ""
