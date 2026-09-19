@@ -3227,16 +3227,12 @@ const supabasePublishableKey =
                     <option value="">
                       Select event type
                     </option>
-                    <option value="meetup">Meetup</option>
-                    <option value="mixer">Mixer</option>
-                    <option value="networking">Networking</option>
-                    <option value="trade-show">Trade Show</option>
-                    <option value="conference">Conference</option>
+                    <option value="meetup">Meetup / Community Event</option>
+                    <option value="mixer">Mixer / Networking Event</option>
+                    <option value="trade-show">Trade Show / Expo</option>
+                    <option value="conference">Conference / Summit</option>
                     <option value="workshop">Workshop / Panel</option>
                     <option value="demo-day">Demo Day / Pitch Event</option>
-                    <option value="industry-event">Industry Event</option>
-                    <option value="community-event">Community Event</option>
-                    <option value="professional-event">Professional Event</option>
                     <option value="other">Other</option>
                   </select>
                   <p class="field-help">
@@ -6581,22 +6577,23 @@ const supabasePublishableKey =
         const aliases = {
           "meet-up": "meetup",
           "meetup": "meetup",
+          "community-event": "meetup",
           "mixer": "mixer",
-          "networking-event": "networking",
-          "networking": "networking",
+          "networking-event": "mixer",
+          "networking": "mixer",
           "trade-show": "trade-show",
           "tradeshow": "trade-show",
           "expo": "trade-show",
           "exhibition": "trade-show",
+          "industry-event": "trade-show",
           "conference": "conference",
           "convention": "conference",
+          "summit": "conference",
+          "professional-event": "conference",
           "workshop": "workshop",
           "panel": "workshop",
           "demo-day": "demo-day",
           "pitch-event": "demo-day",
-          "industry-event": "industry-event",
-          "community-event": "community-event",
-          "professional-event": "professional-event",
           "other": "other"
         };
 
