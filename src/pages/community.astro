@@ -1,10 +1,4 @@
 ---
-import fs
-  from "node:fs/promises";
-
-import path
-  from "node:path";
-
 import BaseLayout
   from "../layouts/BaseLayout.astro";
 
@@ -13,11 +7,15 @@ import CommunityCard
 
 import {
   communities
-} from "../data/communities";
+} from "../data/communities.cms";
 
 import {
   events
-} from "../data/events";
+} from "../data/events.cms";
+
+import {
+  communityLogos
+} from "../data/logos.cms";
 
 import {
   getCommunityMetrics
@@ -67,314 +65,37 @@ const communitySpeakerCount =
 
 /* =========================================================
    HARDWARE MEETUP LOGOS
-
-   Logos live in:
-
-   public/hw-meetups-logos/
-
-   Simple filenames are supported:
-
-   seacomp.png
-   velavu.png
-   dexcom.png
-
-   You can also add future logos using:
-
-   Company Name__domain.com.png
-
-   Example:
-
-   New Company__newcompany.com.png
-
-   In that case the website link is created automatically.
+   CMS-generated from published Hardware Meetup
+   speakers + sponsors, already deduplicated.
    ========================================================= */
 
-const hardwareLogoDirectory =
-  path.resolve(
-    "public/hw-meetups-logos"
-  );
-
-
-const supportedLogoExtensions =
-  new Set(
-    [
-      ".png",
-      ".jpg",
-      ".jpeg",
-      ".webp",
-      ".svg",
-      ".avif"
-    ]
-  );
-
-
-type HardwareLogo = {
-  name: string;
-  image: string;
-  url?: string;
-};
-
-
-/* =========================================================
-   WEBSITE LINKS
-
-   Keys correspond to normalized filenames.
-
-   Example:
-
-   expertise-engineering.png
-   becomes
-   "expertise engineering"
-   ========================================================= */
-
-const hardwareLogoWebsites:
-  Record<
-    string,
-    string
-  > = {
-
-  "seacomp":
-    "https://www.seacomp.com/",
-
-  "velavu":
-    "https://www.velavu.com/",
-
-  "downtown works":
-    "https://www.downtownworks.com/",
-
-  "qhr":
-    "https://goqhr.com/",
-
-  "flyband":
-    "https://flyband.com/",
-
-  "informal":
-    "https://www.informal.com/",
-
-  "expertise engineering":
-    "https://expertiseengineering.com/",
-
-  "the disabled soloist":
-    "https://www.disabledsoloist.com/",
-
-  "dexcom":
-    "https://www.dexcom.com/",
-
-  "element biosciences":
-    "https://www.elementbiosciences.com/",
-
-  "dip":
-    "https://www.dip.studio/",
-
-  "dronekyll":
-    "https://www.dronekyll.com/"
-};
-
-
-/* =========================================================
-   NORMALIZE LOGO NAME
-   ========================================================= */
-
-function normalizeLogoName(
-  value: string
-) {
-
-  return value
-    .toLowerCase()
-    .replace(
-      /[-_]+/g,
-      " "
+const hardwareLogos =
+  communityLogos
+    .filter(
+      (logo) =>
+        logo.communityId ===
+        "hardware-meetup"
     )
-    .replace(
-      /\s+/g,
-      " "
-    )
-    .trim();
+    .map(
+      (logo) => ({
+        name:
+          logo.name,
 
-}
+        image:
+          logo.image,
 
-
-/* =========================================================
-   PARSE LOGO FILE
-   ========================================================= */
-
-function parseHardwareLogo(
-  filename: string
-):
-  HardwareLogo | null {
-
-  const extension =
-    path
-      .extname(
-        filename
-      )
-      .toLowerCase();
-
-
-  if (
-    !supportedLogoExtensions.has(
-      extension
-    )
-  ) {
-
-    return null;
-
-  }
-
-
-  const basename =
-    path.basename(
-      filename,
-      extension
+        url:
+          logo.url
+      })
     );
 
-
-  /*
-   * Supports:
-   *
-   * seacomp.png
-   *
-   * and:
-   *
-   * SEACOMP__seacomp.com.png
-   */
-
-  const [
-    rawName,
-    rawDomain
-  ] =
-    basename.split(
-      "__"
-    );
-
-
-  const name =
-    rawName
-      ?.replace(
-        /[-_]+/g,
-        " "
-      )
-      .replace(
-        /\s+/g,
-        " "
-      )
-      .trim();
-
-
-  if (!name) {
-
-    return null;
-
-  }
-
-
-  const normalizedName =
-    normalizeLogoName(
-      name
-    );
-
-
-  /*
-   * If the filename includes a domain,
-   * that domain takes priority.
-   */
-
-  const filenameDomain =
-    rawDomain
-      ?.trim()
-      .replace(
-        /^https?:\/\//i,
-        ""
-      )
-      .replace(
-        /\/+$/,
-        ""
-      );
-
-
-  const url =
-    filenameDomain
-      ? `https://${filenameDomain}`
-      : hardwareLogoWebsites[
-          normalizedName
-        ];
-
-
-  return {
-
-    name,
-
-    image:
-      `/hw-meetups-logos/${encodeURIComponent(filename)}`,
-
-    url
-
-  };
-
-}
-
-
-/* =========================================================
-   READ LOGOS FROM PUBLIC FOLDER
-   ========================================================= */
-
-let hardwareLogos:
-  HardwareLogo[] = [];
-
-
-try {
-
-  const files =
-    await fs.readdir(
-      hardwareLogoDirectory
-    );
-
-
-  hardwareLogos =
-    files
-      .map(
-        parseHardwareLogo
-      )
-      .filter(
-        (
-          logo
-        ): logo is HardwareLogo =>
-          logo !== null
-      )
-      .sort(
-        (
-          a,
-          b
-        ) =>
-          a.name.localeCompare(
-            b.name
-          )
-      );
-
-} catch {
-
-  /*
-   * The Community page still builds if the
-   * logo directory doesn't exist yet.
-   */
-
-  hardwareLogos =
-    [];
-
-}
-
-
-/* =========================================================
-   TWO IDENTICAL GROUPS
-
-   Required to create the seamless continuous marquee.
-   ========================================================= */
 
 const hardwareLogoGroups =
   [
     hardwareLogos,
     hardwareLogos
   ];
+
 ---
 
 <BaseLayout
