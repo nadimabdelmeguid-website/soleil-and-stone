@@ -1396,6 +1396,101 @@ const supabasePublishableKey =
         min-width: 82px;
       }
 
+      .content-completeness-alert {
+        display: inline-flex;
+        align-items: flex-start;
+        gap: 7px;
+        max-width: 100%;
+        margin-top: 9px;
+        padding: 7px 10px;
+        border: 1px solid rgba(182, 132, 48, 0.32);
+        background: rgba(196, 151, 72, 0.09);
+        color: #76551f;
+        font-size: 9px;
+        line-height: 1.45;
+      }
+
+      .content-completeness-alert::before {
+        content: "!";
+        display: inline-flex;
+        width: 16px;
+        height: 16px;
+        flex: 0 0 16px;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid currentColor;
+        border-radius: 50%;
+        font-size: 9px;
+        font-weight: 700;
+        line-height: 1;
+      }
+
+      .content-completeness-alert strong {
+        font-weight: 700;
+      }
+
+      .recent-content-pagination {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 18px;
+        padding: 16px 24px;
+        border-top: 1px solid var(--border);
+        background: rgba(244, 241, 232, 0.34);
+      }
+
+      .recent-content-page-summary {
+        color: var(--slate);
+        font-size: 9px;
+        letter-spacing: 0.04em;
+      }
+
+      .recent-content-page-buttons {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 6px;
+      }
+
+      .recent-page-button {
+        min-width: 34px;
+        min-height: 34px;
+        padding: 0 10px;
+        border: 1px solid var(--border);
+        background: #fff;
+        color: var(--charcoal);
+        cursor: pointer;
+        font-family: inherit;
+        font-size: 9px;
+      }
+
+      .recent-page-button:hover:not(:disabled),
+      .recent-page-button.active {
+        border-color: var(--gold);
+        background: var(--cream);
+      }
+
+      .recent-page-button.active {
+        color: var(--charcoal);
+        font-weight: 700;
+      }
+
+      .recent-page-button:disabled {
+        opacity: 0.42;
+        cursor: default;
+      }
+
+      .recent-page-ellipsis {
+        display: inline-flex;
+        min-width: 24px;
+        min-height: 34px;
+        align-items: center;
+        justify-content: center;
+        color: var(--slate);
+        font-size: 10px;
+      }
+
       .repeater-block {
         padding: 22px 0;
         border-bottom: 1px solid var(--border);
@@ -1520,6 +1615,15 @@ const supabasePublishableKey =
         }
 
         .recent-content-filters {
+          justify-content: flex-start;
+        }
+
+        .recent-content-pagination {
+          align-items: flex-start;
+          flex-direction: column;
+        }
+
+        .recent-content-page-buttons {
           justify-content: flex-start;
         }
 
@@ -2416,6 +2520,22 @@ const supabasePublishableKey =
                   id="recent-content-list"
                   class="content-list recent-content-list"
                 ></div>
+
+                <div
+                  id="recent-content-pagination"
+                  class="recent-content-pagination hidden"
+                  aria-label="Recent content pagination"
+                >
+                  <div
+                    id="recent-content-page-summary"
+                    class="recent-content-page-summary"
+                  ></div>
+
+                  <div
+                    id="recent-content-page-buttons"
+                    class="recent-content-page-buttons"
+                  ></div>
+                </div>
               </div>
             </section>
 
@@ -4360,6 +4480,12 @@ const supabasePublishableKey =
         recentFilter:
           "all",
 
+        recentPage:
+          1,
+
+        recentPageSize:
+          25,
+
         selectedMediaFile:
           null,
 
@@ -5604,6 +5730,243 @@ const supabasePublishableKey =
       }
 
 
+      function getContentMissingFields(item) {
+
+        const missing = [];
+
+        const blank =
+          (value) =>
+            value === null ||
+            value === undefined ||
+            String(value).trim() === "";
+
+
+        if (
+          item.contentSection === "events"
+        ) {
+
+          if (blank(item.start_date)) {
+            missing.push("Date");
+          }
+
+          if (blank(item.event_type)) {
+            missing.push("Event type");
+          }
+
+          if (blank(item.type_label)) {
+            missing.push("Display label");
+          }
+
+          if (blank(item.description)) {
+            missing.push("Description");
+          }
+
+          if (
+            blank(item.venue) &&
+            blank(item.city)
+          ) {
+            missing.push("Location");
+          }
+
+          if (!item.cover_media_id) {
+            missing.push("Primary image");
+          }
+
+          const led =
+            item.participation === "hosted" ||
+            item.participation === "co-organized";
+
+          if (
+            led &&
+            (
+              item.registrations === null ||
+              item.registrations === undefined
+            )
+          ) {
+            missing.push("Registrations");
+          }
+
+          if (
+            led &&
+            ["hardware-meetup", "startup-mixer"].includes(
+              item.community_id || ""
+            ) &&
+            !item.community_track_media_id
+          ) {
+            missing.push("Community image");
+          }
+
+          const isIndustryEvent =
+            item.event_type === "trade-show" ||
+            item.participation === "exhibitor" ||
+            String(item.type_label || "")
+              .toLowerCase()
+              .includes("trade show");
+
+          if (
+            isIndustryEvent &&
+            !item.industry_logo_media_id
+          ) {
+            missing.push("Industry event logo");
+          }
+
+        } else if (
+          item.contentSection === "field-notes"
+        ) {
+
+          if (blank(item.category)) {
+            missing.push("Category");
+          }
+
+          if (blank(item.excerpt)) {
+            missing.push("Short description");
+          }
+
+          if (blank(item.content_markdown)) {
+            missing.push("Article content");
+          }
+
+          if (!item.hero_media_id) {
+            missing.push("Hero image");
+          }
+
+          if (
+            item.reading_minutes === null ||
+            item.reading_minutes === undefined ||
+            Number(item.reading_minutes) <= 0
+          ) {
+            missing.push("Reading time");
+          }
+
+          if (
+            item.status === "published" &&
+            !item.published_at
+          ) {
+            missing.push("Publication date");
+          }
+
+        } else if (
+          item.contentSection === "recaps"
+        ) {
+
+          if (!item.event_id) {
+            missing.push("Linked event");
+          }
+
+          if (blank(item.excerpt)) {
+            missing.push("Short description");
+          }
+
+          if (blank(item.content_markdown)) {
+            missing.push("Recap content");
+          }
+
+          if (!item.hero_media_id) {
+            missing.push("Hero image");
+          }
+
+          if (
+            item.reading_minutes === null ||
+            item.reading_minutes === undefined ||
+            Number(item.reading_minutes) <= 0
+          ) {
+            missing.push("Reading time");
+          }
+
+          if (
+            item.status === "published" &&
+            !item.published_at
+          ) {
+            missing.push("Publication date");
+          }
+
+        }
+
+
+        return missing;
+
+      }
+
+
+      function recentPaginationTokens(
+        currentPage,
+        totalPages
+      ) {
+
+        if (
+          totalPages <= 7
+        ) {
+          return Array.from(
+            {
+              length:
+                totalPages
+            },
+            (
+              _,
+              index
+            ) =>
+              index + 1
+          );
+        }
+
+
+        const tokens = [
+          1
+        ];
+
+        const start =
+          Math.max(
+            2,
+            currentPage - 1
+          );
+
+        const end =
+          Math.min(
+            totalPages - 1,
+            currentPage + 1
+          );
+
+
+        if (
+          start > 2
+        ) {
+          tokens.push(
+            "ellipsis-start"
+          );
+        }
+
+
+        for (
+          let page = start;
+          page <= end;
+          page += 1
+        ) {
+          tokens.push(
+            page
+          );
+        }
+
+
+        if (
+          end <
+          totalPages - 1
+        ) {
+          tokens.push(
+            "ellipsis-end"
+          );
+        }
+
+
+        tokens.push(
+          totalPages
+        );
+
+
+        return tokens;
+
+      }
+
+
       function renderRecentContent() {
 
         const allItems = [
@@ -5646,19 +6009,17 @@ const supabasePublishableKey =
 
 
         const filteredItems =
-          state.recentFilter === "all"
-            ? allItems
-            : allItems.filter(
-                (
-                  item
-                ) =>
-                  item.contentSection ===
-                  state.recentFilter
-              );
-
-
-        const items =
-          filteredItems
+          (
+            state.recentFilter === "all"
+              ? allItems
+              : allItems.filter(
+                  (
+                    item
+                  ) =>
+                    item.contentSection ===
+                    state.recentFilter
+                )
+          )
             .sort(
               (
                 a,
@@ -5674,15 +6035,69 @@ const supabasePublishableKey =
                   a.created_at ||
                   0
                 ).getTime()
-            )
-            .slice(
-              0,
-              8
             );
+
+
+        const pageSize =
+          state.recentPageSize ||
+          25;
+
+        const totalItems =
+          filteredItems.length;
+
+        const totalPages =
+          Math.max(
+            1,
+            Math.ceil(
+              totalItems /
+              pageSize
+            )
+          );
+
+
+        state.recentPage =
+          Math.min(
+            Math.max(
+              1,
+              state.recentPage ||
+              1
+            ),
+            totalPages
+          );
+
+
+        const pageStart =
+          (
+            state.recentPage -
+            1
+          ) *
+          pageSize;
+
+        const pageEnd =
+          Math.min(
+            pageStart +
+            pageSize,
+            totalItems
+          );
+
+        const items =
+          filteredItems.slice(
+            pageStart,
+            pageEnd
+          );
 
 
         const container =
           $("#recent-content-list");
+
+        const pagination =
+          $("#recent-content-pagination");
+
+        const pageSummary =
+          $("#recent-content-page-summary");
+
+        const pageButtons =
+          $("#recent-content-page-buttons");
 
 
         if (
@@ -5696,6 +6111,10 @@ const supabasePublishableKey =
                 Try another filter or create a new item.
               </div>
             `;
+
+          pagination?.classList.add(
+            "hidden"
+          );
 
           return;
         }
@@ -5726,6 +6145,26 @@ const supabasePublishableKey =
                         label: item.status || "published"
                       };
 
+                const missingFields =
+                  getContentMissingFields(
+                    item
+                  );
+
+                const missingAlert =
+                  missingFields.length
+                    ? `
+                        <div
+                          class="content-completeness-alert"
+                          title="This is a soft content-quality reminder. It does not block publishing."
+                        >
+                          <span>
+                            <strong>Missing information:</strong>
+                            ${escapeHtml(missingFields.join(", "))}
+                          </span>
+                        </div>
+                      `
+                    : "";
+
                 return `
                   <div class="content-row recent-content-row">
                     <div class="recent-content-main">
@@ -5750,6 +6189,8 @@ const supabasePublishableKey =
                           ${escapeHtml(displayStatus.label)}
                         </span>
                       </div>
+
+                      ${missingAlert}
                     </div>
 
                     <div class="row-actions">
@@ -5769,6 +6210,80 @@ const supabasePublishableKey =
             .join(
               ""
             );
+
+
+        if (
+          pagination &&
+          pageSummary &&
+          pageButtons
+        ) {
+
+          pagination.classList.remove(
+            "hidden"
+          );
+
+          pageSummary.textContent =
+            totalItems === 1
+              ? "Showing 1 of 1 item"
+              : `Showing ${pageStart + 1}–${pageEnd} of ${totalItems} items · Page ${state.recentPage} of ${totalPages}`;
+
+
+          const tokens =
+            recentPaginationTokens(
+              state.recentPage,
+              totalPages
+            );
+
+
+          pageButtons.innerHTML =
+            `
+              <button
+                class="recent-page-button"
+                type="button"
+                data-recent-page="${state.recentPage - 1}"
+                ${state.recentPage <= 1 ? "disabled" : ""}
+              >
+                Previous
+              </button>
+
+              ${
+                tokens
+                  .map(
+                    (
+                      token
+                    ) =>
+                      typeof token === "number"
+                        ? `
+                            <button
+                              class="recent-page-button ${token === state.recentPage ? "active" : ""}"
+                              type="button"
+                              data-recent-page="${token}"
+                              aria-label="Go to recent content page ${token}"
+                              ${token === state.recentPage ? 'aria-current="page"' : ""}
+                            >
+                              ${token}
+                            </button>
+                          `
+                        : `
+                            <span class="recent-page-ellipsis" aria-hidden="true">
+                              …
+                            </span>
+                          `
+                  )
+                  .join("")
+              }
+
+              <button
+                class="recent-page-button"
+                type="button"
+                data-recent-page="${state.recentPage + 1}"
+                ${state.recentPage >= totalPages ? "disabled" : ""}
+              >
+                Next
+              </button>
+            `;
+
+        }
 
       }
 
@@ -10541,7 +11056,10 @@ const supabasePublishableKey =
             button.dataset.recentFilter ||
             "all";
 
-          $$("#recent-content-filters [data-recent-filter]").forEach(
+          state.recentPage =
+            1;
+
+          $("#recent-content-filters [data-recent-filter]").forEach(
             (
               candidate
             ) => {
@@ -10553,6 +11071,55 @@ const supabasePublishableKey =
           );
 
           renderRecentContent();
+        }
+      );
+
+
+      $("#recent-content-pagination").addEventListener(
+        "click",
+        (
+          event
+        ) => {
+          const button =
+            event.target.closest(
+              "[data-recent-page]"
+            );
+
+          if (
+            !button ||
+            button.disabled
+          ) {
+            return;
+          }
+
+          const nextPage =
+            Number(
+              button.dataset.recentPage
+            );
+
+          if (
+            !Number.isFinite(
+              nextPage
+            ) ||
+            nextPage < 1
+          ) {
+            return;
+          }
+
+          state.recentPage =
+            nextPage;
+
+          renderRecentContent();
+
+          $("#recent-content-list")
+            ?.scrollIntoView(
+              {
+                behavior:
+                  "smooth",
+                block:
+                  "start"
+              }
+            );
         }
       );
 
