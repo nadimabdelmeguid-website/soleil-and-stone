@@ -20,7 +20,7 @@ const fieldNotes =
           "**/*.md",
 
         base:
-          "./src/content/field-notes"
+          "./src/content/cms-field-notes"
       }),
 
     schema:
@@ -36,18 +36,10 @@ const fieldNotes =
           z.coerce.date(),
 
         category:
-          z.enum([
-            "Ecosystems & Community",
-            "Trade Shows",
-            "Hardware & Manufacturing"
-          ]),
+          z.string(),
 
         categorySlug:
-          z.enum([
-            "ecosystem",
-            "tradeshows",
-            "hardware"
-          ]),
+          z.string(),
 
         featured:
           z.boolean()
@@ -63,12 +55,20 @@ const fieldNotes =
               "Nadim Abdel Meguid"
             ),
 
-        /*
-         * Optional connection between a
-         * Field Note and one or more events.
-         *
-         * Use event IDs from events.ts.
-         */
+        readingMinutes:
+          z.number()
+            .int()
+            .positive()
+            .optional(),
+
+        heroImage:
+          z.string()
+            .default(""),
+
+        legacyUrl:
+          z.string()
+            .default(""),
+
         relatedEvents:
           z.array(
             z.string()
@@ -80,6 +80,101 @@ const fieldNotes =
   });
 
 
+const eventRecaps =
+  defineCollection({
+
+    loader:
+      glob({
+        pattern:
+          "**/*.md",
+
+        base:
+          "./src/content/cms-event-recaps"
+      }),
+
+    schema:
+      z.object({
+
+        title:
+          z.string(),
+
+        eventId:
+          z.string(),
+
+        eyebrow:
+          z.string()
+            .default(
+              "Event Recap"
+            ),
+
+        published:
+          z.coerce.date(),
+
+        excerpt:
+          z.string(),
+
+        readingMinutes:
+          z.number()
+            .int()
+            .positive()
+            .default(1),
+
+        tags:
+          z.array(
+            z.string()
+          )
+            .default([]),
+
+        stats:
+          z.array(
+            z.object({
+              value:
+                z.string(),
+
+              label:
+                z.string()
+            })
+          )
+            .default([]),
+
+        photoCredit:
+          z.object({
+            label:
+              z.string()
+                .optional(),
+
+            name:
+              z.string(),
+
+            url:
+              z.string()
+                .optional()
+          })
+            .nullable()
+            .optional(),
+
+        heroImage:
+          z.string()
+            .default(""),
+
+        seoTitle:
+          z.string()
+            .default(""),
+
+        seoDescription:
+          z.string()
+            .default(""),
+
+        draft:
+          z.boolean()
+            .default(false)
+
+      })
+
+  });
+
+
 export const collections = {
-  fieldNotes
+  fieldNotes,
+  eventRecaps
 };
