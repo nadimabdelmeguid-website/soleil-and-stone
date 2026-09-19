@@ -40,6 +40,30 @@ const posts =
    FILTERS
    ========================================================= */
 
+const categoryFilters =
+  Array.from(
+    new Map(
+      posts.map(
+        (post) => [
+          post.data.categorySlug,
+          post.data.category
+        ]
+      )
+    )
+  )
+    .map(
+      (
+        [
+          value,
+          label
+        ]
+      ) => ({
+        label,
+        value
+      })
+    );
+
+
 const filters = [
   {
     label:
@@ -49,30 +73,8 @@ const filters = [
       "all"
   },
 
-  {
-    label:
-      "Ecosystems & Community",
-
-    value:
-      "ecosystem"
-  },
-
-  {
-    label:
-      "Trade Shows",
-
-    value:
-      "tradeshows"
-  },
-
-  {
-    label:
-      "Hardware & Manufacturing",
-
-    value:
-      "hardware"
-  }
-];
+  ...categoryFilters
+]
 ---
 
 <BaseLayout
