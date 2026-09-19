@@ -1377,7 +1377,38 @@ const supabasePublishableKey =
             class="primary-button auth-submit"
             type="submit"
           >
-            Send secure login link
+            Send secure sign-in email
+          </button>
+        </form>
+
+        <form
+          id="otp-form"
+          class="hidden"
+          style="margin-top: 22px;"
+        >
+          <label
+            class="label"
+            for="login-otp"
+          >
+            Verification code
+          </label>
+
+          <input
+            id="login-otp"
+            class="input"
+            type="text"
+            inputmode="numeric"
+            autocomplete="one-time-code"
+            placeholder="Enter the code from your email"
+            maxlength="8"
+          />
+
+          <button
+            id="otp-submit"
+            class="primary-button auth-submit"
+            type="submit"
+          >
+            Verify code
           </button>
         </form>
 
@@ -3820,6 +3851,45 @@ const supabasePublishableKey =
         ) {
           throw error;
         }
+
+      }
+
+
+      async function verifyLoginCode(
+        email,
+        token
+      ) {
+
+        const {
+          data,
+          error
+        } =
+          await supabase.auth.verifyOtp(
+            {
+              email,
+              token,
+              type: "email"
+            }
+          );
+
+
+        if (
+          error
+        ) {
+          throw error;
+        }
+
+
+        if (
+          !data?.session
+        ) {
+          throw new Error(
+            "The code was accepted, but no session was created. Please request a new code."
+          );
+        }
+
+
+        return data.session;
 
       }
 
@@ -7645,7 +7715,7 @@ const supabasePublishableKey =
             button,
             true,
             "Sending...",
-            "Send secure login link"
+            "Send secure sign-in email"
           );
 
 
@@ -7655,8 +7725,12 @@ const supabasePublishableKey =
               email
             );
 
+            $("#otp-form").classList.remove("hidden");
+            $("#login-otp").value = "";
+            $("#login-otp").focus();
+
             message.textContent =
-              "Check your inbox. Your secure login link is on the way.";
+              "Check your inbox. Enter the verification code below. If your email also contains a secure sign-in link, that link will work too.";
 
             message.className =
               "form-message success";
@@ -7678,7 +7752,96 @@ const supabasePublishableKey =
               button,
               false,
               "Sending...",
-              "Send secure login link"
+              "Send secure sign-in email"
+            );
+
+          }
+
+        }
+      );
+
+
+      $("#otp-form").addEventListener(
+        "submit",
+        async (
+          event
+        ) => {
+
+          event.preventDefault();
+
+
+          const email =
+            $("#login-email")
+              .value
+              .trim();
+
+          const token =
+            $("#login-otp")
+              .value
+              .replace(/\s+/g, "")
+              .trim();
+
+          const button =
+            $("#otp-submit");
+
+          const message =
+            $("#login-message");
+
+
+          if (
+            !email ||
+            !token
+          ) {
+            message.textContent =
+              "Enter the email address and verification code from your inbox.";
+            message.className =
+              "form-message error";
+            return;
+          }
+
+
+          setButtonLoading(
+            button,
+            true,
+            "Verifying...",
+            "Verify code"
+          );
+
+
+          try {
+
+            const session =
+              await verifyLoginCode(
+                email,
+                token
+              );
+
+            message.textContent =
+              "Code verified. Opening the Content Manager...";
+            message.className =
+              "form-message success";
+
+            await handleSession(
+              session
+            );
+
+          } catch (
+            error
+          ) {
+
+            message.textContent =
+              error?.message ||
+              "The verification code is invalid or has expired. Request a new sign-in email and try again.";
+            message.className =
+              "form-message error";
+
+          } finally {
+
+            setButtonLoading(
+              button,
+              false,
+              "Verifying...",
+              "Verify code"
             );
 
           }
