@@ -1351,6 +1351,31 @@ const supabasePublishableKey =
         justify-content: flex-end;
       }
 
+      .recent-content-secondary-filters {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: flex-start;
+        gap: 18px 28px;
+        padding: 14px 24px;
+        border-top: 1px solid var(--border);
+        background: rgba(244, 241, 232, 0.34);
+      }
+
+      .recent-filter-group {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .recent-filter-label {
+        color: var(--slate);
+        font-size: 8px;
+        font-weight: 700;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+      }
+
       .recent-content-list {
         border: 0;
         border-top: 1px solid var(--border);
@@ -2052,6 +2077,16 @@ const supabasePublishableKey =
       }
 
       @media (max-width: 640px) {
+        .recent-content-secondary-filters {
+          padding: 14px 18px;
+        }
+
+        .recent-filter-group {
+          width: 100%;
+          align-items: flex-start;
+          flex-direction: column;
+        }
+
         .feature-card {
           grid-template-columns: 1fr;
         }
@@ -2513,6 +2548,96 @@ const supabasePublishableKey =
                     >
                       Recaps
                     </button>
+                  </div>
+                </div>
+
+                <div class="recent-content-secondary-filters">
+                  <div class="recent-filter-group">
+                    <span class="recent-filter-label">
+                      Completeness
+                    </span>
+
+                    <div
+                      id="recent-completeness-filters"
+                      class="filters recent-content-filters"
+                      aria-label="Filter recent content by completeness"
+                    >
+                      <button
+                        class="filter-button active"
+                        type="button"
+                        data-recent-completeness="all"
+                      >
+                        All
+                      </button>
+
+                      <button
+                        class="filter-button"
+                        type="button"
+                        data-recent-completeness="missing"
+                      >
+                        Missing info
+                      </button>
+
+                      <button
+                        class="filter-button"
+                        type="button"
+                        data-recent-completeness="complete"
+                      >
+                        Complete
+                      </button>
+                    </div>
+                  </div>
+
+                  <div class="recent-filter-group">
+                    <span class="recent-filter-label">
+                      Publishing
+                    </span>
+
+                    <div
+                      id="recent-status-filters"
+                      class="filters recent-content-filters"
+                      aria-label="Filter recent content by publishing status"
+                    >
+                      <button
+                        class="filter-button active"
+                        type="button"
+                        data-recent-status="all"
+                      >
+                        All
+                      </button>
+
+                      <button
+                        class="filter-button"
+                        type="button"
+                        data-recent-status="published"
+                      >
+                        Published
+                      </button>
+
+                      <button
+                        class="filter-button"
+                        type="button"
+                        data-recent-status="scheduled"
+                      >
+                        Scheduled
+                      </button>
+
+                      <button
+                        class="filter-button"
+                        type="button"
+                        data-recent-status="draft"
+                      >
+                        Draft
+                      </button>
+
+                      <button
+                        class="filter-button"
+                        type="button"
+                        data-recent-status="archived"
+                      >
+                        Archived
+                      </button>
+                    </div>
                   </div>
                 </div>
 
@@ -4564,6 +4689,12 @@ const supabasePublishableKey =
         recentFilter:
           "all",
 
+        recentCompletenessFilter:
+          "all",
+
+        recentStatusFilter:
+          "all",
+
         recentPage:
           1,
 
@@ -5814,6 +5945,51 @@ const supabasePublishableKey =
       }
 
 
+      function getRecentContentDisplayStatus(
+        item
+      ) {
+
+        if (
+          item.contentSection === "field-notes"
+        ) {
+          return fieldNoteDisplayStatus(
+            item
+          );
+        }
+
+
+        if (
+          item.contentSection === "recaps"
+        ) {
+          return recapDisplayStatus(
+            item
+          );
+        }
+
+
+        const mode =
+          item.status ||
+          "published";
+
+
+        return {
+          mode,
+
+          label:
+            mode === "published"
+              ? "Published"
+              : mode === "scheduled"
+                ? "Scheduled"
+                : mode === "archived"
+                  ? "Archived"
+                  : mode === "draft"
+                    ? "Draft"
+                    : mode
+        };
+
+      }
+
+
       function getContentMissingFields(item) {
 
         const missing = [];
@@ -6093,17 +6269,64 @@ const supabasePublishableKey =
 
 
         const filteredItems =
-          (
-            state.recentFilter === "all"
-              ? allItems
-              : allItems.filter(
-                  (
+          allItems
+            .filter(
+              (
+                item
+              ) => {
+
+                const matchesType =
+                  state.recentFilter === "all" ||
+                  item.contentSection ===
+                    state.recentFilter;
+
+
+                if (
+                  !matchesType
+                ) {
+                  return false;
+                }
+
+
+                const missingFields =
+                  getContentMissingFields(
                     item
-                  ) =>
-                    item.contentSection ===
-                    state.recentFilter
-                )
-          )
+                  );
+
+                const matchesCompleteness =
+                  state.recentCompletenessFilter === "all" ||
+                  (
+                    state.recentCompletenessFilter === "missing" &&
+                    missingFields.length > 0
+                  ) ||
+                  (
+                    state.recentCompletenessFilter === "complete" &&
+                    missingFields.length === 0
+                  );
+
+
+                if (
+                  !matchesCompleteness
+                ) {
+                  return false;
+                }
+
+
+                const displayStatus =
+                  getRecentContentDisplayStatus(
+                    item
+                  );
+
+                const matchesStatus =
+                  state.recentStatusFilter === "all" ||
+                  displayStatus.mode ===
+                    state.recentStatusFilter;
+
+
+                return matchesStatus;
+
+              }
+            )
             .sort(
               (
                 a,
@@ -6222,12 +6445,9 @@ const supabasePublishableKey =
                     : "";
 
                 const displayStatus =
-                  item.contentSection === "field-notes"
-                    ? fieldNoteDisplayStatus(item)
-                    : {
-                        mode: item.status || "published",
-                        label: item.status || "published"
-                      };
+                  getRecentContentDisplayStatus(
+                    item
+                  );
 
                 const missingFields =
                   getContentMissingFields(
@@ -11256,6 +11476,90 @@ const supabasePublishableKey =
               );
             }
           );
+
+          renderRecentContent();
+        }
+      );
+
+
+      $("#recent-completeness-filters").addEventListener(
+        "click",
+        (
+          event
+        ) => {
+          const button =
+            event.target.closest(
+              "[data-recent-completeness]"
+            );
+
+          if (
+            !button
+          ) {
+            return;
+          }
+
+
+          state.recentCompletenessFilter =
+            button.dataset.recentCompleteness ||
+            "all";
+
+          state.recentPage =
+            1;
+
+
+          $("#recent-completeness-filters [data-recent-completeness]").forEach(
+            (
+              candidate
+            ) => {
+              candidate.classList.toggle(
+                "active",
+                candidate === button
+              );
+            }
+          );
+
+
+          renderRecentContent();
+        }
+      );
+
+
+      $("#recent-status-filters").addEventListener(
+        "click",
+        (
+          event
+        ) => {
+          const button =
+            event.target.closest(
+              "[data-recent-status]"
+            );
+
+          if (
+            !button
+          ) {
+            return;
+          }
+
+
+          state.recentStatusFilter =
+            button.dataset.recentStatus ||
+            "all";
+
+          state.recentPage =
+            1;
+
+
+          $("#recent-status-filters [data-recent-status]").forEach(
+            (
+              candidate
+            ) => {
+              candidate.classList.toggle(
+                "active",
+                candidate === button
+              );
+            }
+          );
+
 
           renderRecentContent();
         }
