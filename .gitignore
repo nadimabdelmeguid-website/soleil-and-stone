@@ -147,5 +147,6 @@ src/data/events.cms.ts
 src/data/communities.cms.ts
 src/data/logos.cms.ts
 src/data/featured.cms.ts
+src/data/eventRecapLinks.cms.ts
 src/content/cms-field-notes/
 src/content/cms-event-recaps/
