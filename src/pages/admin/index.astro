@@ -4872,37 +4872,46 @@ const supabasePublishableKey =
 
         try {
           const {
-            data: {
-              session
-            }
-          } = await supabase.auth.getSession();
-
-          if (!session?.access_token) {
-            throw new Error("Your admin session expired. Sign in again.");
-          }
-
-          const response = await fetch(
-            "/api/admin/import-event",
+            data,
+            error
+          } = await supabase.functions.invoke(
+            "import-event",
             {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${session.access_token}`
-              },
-              body: JSON.stringify({ url })
+              body: {
+                url
+              }
             }
           );
 
-          const payload = await response.json();
+          if (error) {
+            let message =
+              error.message ||
+              "Could not import this event.";
 
-          if (!response.ok) {
-            throw new Error(
-              payload?.error ||
-              "Could not import this event."
-            );
+            try {
+              const context =
+                error.context;
+
+              if (context?.json) {
+                const details =
+                  await context.json();
+
+                message =
+                  details?.error ||
+                  message;
+              }
+            } catch {
+              // Keep the original function error message.
+            }
+
+            throw new Error(message);
           }
 
-          const imported = payload.event || {};
+          if (data?.error) {
+            throw new Error(data.error);
+          }
+
+          const imported = data?.event || {};
 
           applyImportedField("#event-title", imported.title);
           applyImportedField("#event-start-date", imported.startDate);
