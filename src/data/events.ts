@@ -6,6 +6,19 @@ export interface EventSpeaker {
   company: string;
 }
 
+export interface EventSpeakerDetail extends EventSpeaker {
+  website?: string;
+  companyUrl?: string;
+  bio?: string;
+}
+
+export interface EventSponsorDetail {
+  name: string;
+  website?: string;
+  description?: string;
+  logo?: string;
+}
+
 export interface SiteEvent {
   id: string;
 
@@ -55,13 +68,17 @@ export interface SiteEvent {
 
   image?: string;
 
-  eventType?:
-    | "trade-show"
-    | "community"
-    | "startup"
-    | "technical"
-    | "professional"
-    | "industry";
+  additionalImage?: string;
+
+  communityImage?: string;
+
+  industryLogo?: string;
+
+  speakerDetails?: EventSpeakerDetail[];
+
+  sponsorDetails?: EventSponsorDetail[];
+
+  eventType?: string;
 }
 
 export type SyncedEventPatch = Partial<
