@@ -799,12 +799,6 @@ const supabasePublishableKey =
         color: #80652f;
       }
 
-      .status-pill.scheduled {
-        border-color: rgba(58, 92, 132, 0.28);
-        background: rgba(58, 92, 132, 0.07);
-        color: #3a5c84;
-      }
-
       .status-pill.archived,
       .status-pill.inactive {
         opacity: 0.72;
@@ -1701,266 +1695,6 @@ const supabasePublishableKey =
         }
       }
 
-
-
-      /* =====================================================
-         FEATURES MANAGER
-         ===================================================== */
-
-      .feature-intro {
-        margin-bottom: 26px;
-      }
-
-      .feature-intro-header {
-        align-items: flex-start;
-        gap: 24px;
-      }
-
-      .feature-total-badge {
-        min-width: 120px;
-        border: 1px solid var(--border);
-        background: var(--cream);
-        padding: 14px 18px;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        gap: 2px;
-        text-align: center;
-      }
-
-      .feature-total-badge strong {
-        font-family: Georgia, 'Times New Roman', serif;
-        font-size: 34px;
-        line-height: 1;
-        font-weight: 400;
-        color: var(--gold-dark);
-      }
-
-      .feature-total-badge span {
-        font-size: 11px;
-        letter-spacing: .11em;
-        text-transform: uppercase;
-        color: var(--muted);
-      }
-
-      .feature-placement-tabs {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 8px;
-        padding: 0 24px 18px;
-      }
-
-      .feature-placement-tab {
-        appearance: none;
-        border: 1px solid var(--border);
-        background: #fff;
-        color: var(--ink);
-        padding: 10px 14px;
-        font: inherit;
-        font-size: 13px;
-        cursor: pointer;
-        transition: border-color .18s ease, background .18s ease, color .18s ease;
-      }
-
-      .feature-placement-tab:hover {
-        border-color: var(--gold);
-      }
-
-      .feature-placement-tab.active {
-        background: var(--ink);
-        border-color: var(--ink);
-        color: #fff;
-      }
-
-      .feature-placement-copy {
-        border-top: 1px solid var(--border);
-        padding: 16px 24px 18px;
-        display: flex;
-        align-items: baseline;
-        gap: 12px;
-        flex-wrap: wrap;
-      }
-
-      .feature-placement-copy strong {
-        font-family: Georgia, 'Times New Roman', serif;
-        font-size: 20px;
-        font-weight: 400;
-      }
-
-      .feature-placement-copy span {
-        color: var(--muted);
-        font-size: 14px;
-      }
-
-      .feature-manager-grid {
-        display: grid;
-        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-        gap: 24px;
-        align-items: start;
-      }
-
-      .feature-column {
-        min-width: 0;
-      }
-
-      .feature-column-header {
-        padding: 22px 24px;
-        border-bottom: 1px solid var(--border);
-      }
-
-      .feature-library-toolbar {
-        padding: 18px 24px;
-        border-bottom: 1px solid var(--border);
-        display: grid;
-        gap: 12px;
-      }
-
-      .feature-type-filters {
-        margin: 0;
-      }
-
-      .feature-list {
-        display: grid;
-      }
-
-      .feature-card {
-        padding: 18px 20px;
-        border-bottom: 1px solid var(--border);
-        display: grid;
-        grid-template-columns: minmax(0, 1fr) auto;
-        gap: 18px;
-        align-items: center;
-        background: #fff;
-      }
-
-      .feature-card:last-child {
-        border-bottom: 0;
-      }
-
-      .feature-card-main {
-        min-width: 0;
-      }
-
-      .feature-card-kicker {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        flex-wrap: wrap;
-        margin-bottom: 6px;
-      }
-
-      .feature-position {
-        width: 26px;
-        height: 26px;
-        border-radius: 50%;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        border: 1px solid var(--gold);
-        color: var(--gold-dark);
-        font-size: 12px;
-        font-weight: 700;
-        flex: 0 0 auto;
-      }
-
-      .feature-type-badge,
-      .feature-status-badge {
-        display: inline-flex;
-        align-items: center;
-        min-height: 24px;
-        padding: 4px 8px;
-        border: 1px solid var(--border);
-        font-size: 10px;
-        letter-spacing: .09em;
-        text-transform: uppercase;
-      }
-
-      .feature-status-badge {
-        color: var(--muted);
-        background: var(--cream);
-      }
-
-      .feature-card-title {
-        margin: 0;
-        font-size: 16px;
-        line-height: 1.35;
-        font-weight: 600;
-        color: var(--ink);
-      }
-
-      .feature-card-meta {
-        margin-top: 6px;
-        color: var(--muted);
-        font-size: 12px;
-        line-height: 1.45;
-      }
-
-      .feature-card-actions {
-        display: flex;
-        align-items: center;
-        justify-content: flex-end;
-        gap: 7px;
-        flex-wrap: wrap;
-      }
-
-      .feature-icon-button {
-        min-width: 34px;
-        height: 34px;
-        border: 1px solid var(--border);
-        background: #fff;
-        color: var(--ink);
-        cursor: pointer;
-        font: inherit;
-        font-size: 14px;
-      }
-
-      .feature-icon-button:hover:not(:disabled) {
-        border-color: var(--gold);
-      }
-
-      .feature-icon-button:disabled {
-        opacity: .3;
-        cursor: default;
-      }
-
-      .feature-add-button {
-        min-width: 82px;
-      }
-
-      .compact-button {
-        min-height: 34px;
-        padding: 7px 11px;
-        font-size: 11px;
-      }
-
-      .feature-empty {
-        padding: 34px 24px;
-        text-align: center;
-        color: var(--muted);
-        font-size: 14px;
-      }
-
-      @media (max-width: 1040px) {
-        .feature-manager-grid {
-          grid-template-columns: 1fr;
-        }
-      }
-
-      @media (max-width: 640px) {
-        .feature-card {
-          grid-template-columns: 1fr;
-        }
-
-        .feature-card-actions {
-          justify-content: flex-start;
-        }
-
-        .feature-total-badge {
-          display: none;
-        }
-      }
-
     </style>
   </head>
 
@@ -2104,20 +1838,6 @@ const supabasePublishableKey =
               data-section="dashboard"
             >
               <span>Dashboard</span>
-            </button>
-
-            <button
-              class="nav-button"
-              type="button"
-              data-section="features"
-            >
-              <span>Features</span>
-              <span
-                id="nav-features-count"
-                class="nav-count"
-              >
-                0
-              </span>
             </button>
 
             <button
@@ -2416,91 +2136,6 @@ const supabasePublishableKey =
                   id="recent-content-list"
                   class="content-list recent-content-list"
                 ></div>
-              </div>
-            </section>
-
-
-            <!-- =============================================
-                 FEATURES
-                 ============================================= -->
-
-            <section
-              id="section-features"
-              class="admin-section hidden"
-              data-admin-section="features"
-            >
-              <div class="feature-intro panel">
-                <div class="panel-header feature-intro-header">
-                  <div>
-                    <p class="eyebrow">Placement manager</p>
-                    <h2 class="panel-title">Featured Content</h2>
-                    <p class="panel-copy">
-                      Control what gets highlighted across Soleil & Stone without reopening each content editor.
-                      Changes are saved immediately.
-                    </p>
-                  </div>
-                  <div class="feature-total-badge">
-                    <strong id="feature-placement-count">0</strong>
-                    <span>featured here</span>
-                  </div>
-                </div>
-
-                <div
-                  id="feature-placement-tabs"
-                  class="feature-placement-tabs"
-                  aria-label="Feature placement"
-                >
-                  <button class="feature-placement-tab active" type="button" data-feature-placement="home">Homepage</button>
-                  <button class="feature-placement-tab" type="button" data-feature-placement="fieldwork">Fieldwork</button>
-                  <button class="feature-placement-tab" type="button" data-feature-placement="field-notes">Field Notes</button>
-                  <button class="feature-placement-tab" type="button" data-feature-placement="community-startup-mixer">Startup Mixer</button>
-                  <button class="feature-placement-tab" type="button" data-feature-placement="community-hardware-meetup">Hardware Meetup</button>
-                </div>
-
-                <div class="feature-placement-copy">
-                  <strong id="feature-placement-title">Homepage</strong>
-                  <span id="feature-placement-description">Choose the content you want to highlight on the homepage.</span>
-                </div>
-              </div>
-
-              <div class="feature-manager-grid">
-                <div class="panel feature-column">
-                  <div class="feature-column-header">
-                    <div>
-                      <p class="eyebrow">Live selection</p>
-                      <h2 class="panel-title">Currently featured</h2>
-                      <p class="panel-copy">Use the arrows to change the display order. Remove only removes the feature placement — it never deletes the content.</p>
-                    </div>
-                  </div>
-                  <div id="feature-current-list" class="feature-list"></div>
-                </div>
-
-                <div class="panel feature-column">
-                  <div class="feature-column-header">
-                    <div>
-                      <p class="eyebrow">Content library</p>
-                      <h2 class="panel-title">Add featured content</h2>
-                      <p class="panel-copy">Only content relevant to the selected page appears here.</p>
-                    </div>
-                  </div>
-
-                  <div class="feature-library-toolbar">
-                    <input
-                      id="feature-search"
-                      class="input"
-                      type="search"
-                      placeholder="Search available content..."
-                    />
-                    <div id="feature-type-filters" class="filters feature-type-filters">
-                      <button class="filter-button active" type="button" data-feature-type="all">All</button>
-                      <button class="filter-button" type="button" data-feature-type="event">Events</button>
-                      <button class="filter-button" type="button" data-feature-type="field_note">Field Notes</button>
-                      <button class="filter-button" type="button" data-feature-type="event_recap">Recaps</button>
-                    </div>
-                  </div>
-
-                  <div id="feature-available-list" class="feature-list"></div>
-                </div>
               </div>
             </section>
 
@@ -3590,36 +3225,26 @@ const supabasePublishableKey =
                   <label class="label" for="field-note-category">
                     Category
                   </label>
-                  <select
+                  <input
                     id="field-note-category"
-                    class="select"
-                  >
-                    <option value="">Select a category</option>
-                    <option value="Ecosystems & Community">Ecosystems & Community</option>
-                    <option value="Hardware & Product Development">Hardware & Product Development</option>
-                    <option value="Commercialization & Manufacturing">Commercialization & Manufacturing</option>
-                    <option value="Fieldwork & Trade Shows">Fieldwork & Trade Shows</option>
-                    <option value="Startups & Entrepreneurship">Startups & Entrepreneurship</option>
-                    <option value="Technology & Innovation">Technology & Innovation</option>
-                  </select>
+                    class="input"
+                    type="text"
+                    placeholder="Ecosystems & Community"
+                  />
                 </div>
 
                 <div class="form-field">
                   <label class="label" for="field-note-status">
-                    Publishing
+                    Status
                   </label>
                   <select
                     id="field-note-status"
                     class="select"
                   >
-                    <option value="draft">Save as draft</option>
-                    <option value="published">Publish now</option>
-                    <option value="scheduled">Schedule for later</option>
+                    <option value="draft">Draft</option>
+                    <option value="published">Published</option>
                     <option value="archived">Archived</option>
                   </select>
-                  <p id="field-note-publishing-help" class="field-help">
-                    Drafts stay private until you choose to publish or schedule them.
-                  </p>
                 </div>
 
                 <div class="form-field full">
@@ -3683,18 +3308,15 @@ const supabasePublishableKey =
                   />
                 </div>
 
-                <div id="field-note-publish-date-field" class="form-field hidden">
+                <div class="form-field">
                   <label class="label" for="field-note-published-at">
-                    Scheduled publication date & time
+                    Publish date
                   </label>
                   <input
                     id="field-note-published-at"
                     class="input"
                     type="datetime-local"
                   />
-                  <p class="field-help">
-                    The note stays private until this exact date and time, then becomes public automatically.
-                  </p>
                 </div>
 
                 <div class="form-field">
@@ -3726,30 +3348,27 @@ const supabasePublishableKey =
                   />
                 </div>
 
+                <div class="form-field">
+                  <label class="label" for="field-note-legacy-url">
+                    Legacy URL
+                  </label>
+                  <input
+                    id="field-note-legacy-url"
+                    class="input"
+                    type="text"
+                    placeholder="/blogs/article-name.html"
+                  />
+                </div>
+
                 <details class="form-field full seo-settings">
                   <summary>
-                    Advanced & SEO settings (optional)
+                    SEO settings (optional)
                   </summary>
                   <div class="seo-settings-body">
                     <p class="field-help" style="margin-bottom: 14px;">
                       These control how the Field Note can appear in Google and link previews. Leave them blank and the CMS will automatically use the article title and short description.
                     </p>
                     <div class="form-grid">
-                      <div class="form-field full">
-                        <label class="label" for="field-note-legacy-url">
-                          Previous URL (optional)
-                        </label>
-                        <input
-                          id="field-note-legacy-url"
-                          class="input"
-                          type="text"
-                          placeholder="/blogs/old-article-url.html"
-                        />
-                        <p class="field-help">
-                          Only use this for an article that previously lived at another URL. New Field Notes can leave it blank.
-                        </p>
-                      </div>
-
                       <div class="form-field full">
                         <label class="label" for="field-note-seo-title">
                           SEO title
@@ -4195,15 +3814,6 @@ const supabasePublishableKey =
         eventSponsors:
           [],
 
-        featuredContent:
-          [],
-
-        featurePlacement:
-          "home",
-
-        featureTypeFilter:
-          "all",
-
         eventFilter:
           "all",
 
@@ -4607,71 +4217,6 @@ const supabasePublishableKey =
             16
           );
 
-      }
-
-
-      function fieldNotePublishingMode(item) {
-        if (!item) return "draft";
-
-        if (item.status === "published" && item.published_at) {
-          const publishTime = new Date(item.published_at).getTime();
-
-          if (Number.isFinite(publishTime) && publishTime > Date.now()) {
-            return "scheduled";
-          }
-        }
-
-        return item.status || "draft";
-      }
-
-
-      function fieldNoteDisplayStatus(item) {
-        const mode = fieldNotePublishingMode(item);
-
-        return {
-          mode,
-          label:
-            mode === "scheduled"
-              ? "Scheduled"
-              : mode === "published"
-                ? "Published"
-                : mode === "archived"
-                  ? "Archived"
-                  : "Draft"
-        };
-      }
-
-
-      function updateFieldNotePublishingUI() {
-        const mode = $("#field-note-status")?.value || "draft";
-        const dateField = $("#field-note-publish-date-field");
-        const dateInput = $("#field-note-published-at");
-        const help = $("#field-note-publishing-help");
-
-        if (!dateField || !dateInput || !help) return;
-
-        dateField.classList.toggle("hidden", mode !== "scheduled");
-        dateInput.required = mode === "scheduled";
-
-        if (mode === "scheduled") {
-          dateInput.min = toLocalDateTimeInput(
-            new Date(Date.now() + 60_000).toISOString()
-          );
-          help.textContent =
-            "Choose a future date and time. The note will remain private until then and publish automatically.";
-        } else if (mode === "published") {
-          dateInput.min = "";
-          help.textContent =
-            "The note will become public immediately when you save it.";
-        } else if (mode === "archived") {
-          dateInput.min = "";
-          help.textContent =
-            "Archived notes remain in the CMS but are not public.";
-        } else {
-          dateInput.min = "";
-          help.textContent =
-            "Drafts stay private until you choose to publish or schedule them.";
-        }
       }
 
 
@@ -5090,23 +4635,6 @@ const supabasePublishableKey =
 
 
 
-      async function loadFeaturedContent() {
-        const { data, error } = await supabase
-          .from("featured_content")
-          .select("*")
-          .eq("active", true)
-          .order("placement", { ascending: true })
-          .order("sort_order", { ascending: true });
-
-        if (error) {
-          showToast(`Could not load featured content: ${error.message}`, "error");
-          return;
-        }
-
-        state.featuredContent = data || [];
-      }
-
-
 
       /* =====================================================
          DATA LOADING
@@ -5124,8 +4652,7 @@ const supabasePublishableKey =
             loadOrganizations(),
             loadPeople(),
             loadEventSpeakers(),
-            loadEventSponsors(),
-            loadFeaturedContent()
+            loadEventSponsors()
           ]
         );
 
@@ -5139,7 +4666,6 @@ const supabasePublishableKey =
         renderOrganizations();
         renderPeople();
         renderEvents();
-        renderFeatures();
 
       }
 
@@ -5342,10 +4868,7 @@ const supabasePublishableKey =
             state.organizations.length,
 
           people:
-            state.people.length,
-
-          features:
-            state.featuredContent.filter((item) => item.active !== false).length
+            state.people.length
         };
 
 
@@ -5381,9 +4904,6 @@ const supabasePublishableKey =
 
         $("#nav-people-count").textContent =
           values.people;
-
-        $("#nav-features-count").textContent =
-          values.features;
 
       }
 
@@ -5502,14 +5022,6 @@ const supabasePublishableKey =
                       )
                     : "";
 
-                const displayStatus =
-                  item.contentSection === "field-notes"
-                    ? fieldNoteDisplayStatus(item)
-                    : {
-                        mode: item.status || "published",
-                        label: item.status || "published"
-                      };
-
                 return `
                   <div class="content-row recent-content-row">
                     <div class="recent-content-main">
@@ -5530,8 +5042,8 @@ const supabasePublishableKey =
                       </h3>
 
                       <div class="row-meta">
-                        <span class="status-pill ${escapeHtml(displayStatus.mode)}">
-                          ${escapeHtml(displayStatus.label)}
+                        <span class="status-pill ${escapeHtml(item.status || "published")}">
+                          ${escapeHtml(item.status || "published")}
                         </span>
                       </div>
                     </div>
@@ -7109,13 +6621,6 @@ const supabasePublishableKey =
           throw response.error;
         }
 
-        await syncEditorFeaturePlacement(
-          "fieldwork",
-          "event",
-          savedEventId,
-          payload.featured
-        );
-
         let speakerIds = [];
         let sponsorIds = [];
 
@@ -7295,10 +6800,7 @@ const supabasePublishableKey =
             .map(
               (
                 item
-              ) => {
-                const displayStatus = fieldNoteDisplayStatus(item);
-
-                return `
+              ) => `
                 <div class="content-row">
                   <div>
                     <h3 class="row-title">
@@ -7306,8 +6808,8 @@ const supabasePublishableKey =
                     </h3>
                     <div class="row-meta">
                       ${item.category ? `<span>${escapeHtml(item.category)}</span><span>•</span>` : ""}
-                      <span class="status-pill ${escapeHtml(displayStatus.mode)}">
-                        ${escapeHtml(displayStatus.label)}
+                      <span class="status-pill ${escapeHtml(item.status)}">
+                        ${escapeHtml(item.status)}
                       </span>
                     </div>
                   </div>
@@ -7321,8 +6823,7 @@ const supabasePublishableKey =
                     </button>
                   </div>
                 </div>
-              `;
-              }
+              `
             )
             .join(
               ""
@@ -7336,9 +6837,7 @@ const supabasePublishableKey =
         $("#field-note-form").reset();
         $("#field-note-record-id").value = "";
         $("#field-note-status").value = "draft";
-        $("#field-note-published-at").value = "";
         $("#field-note-modal-title").textContent = "New Field Note";
-        updateFieldNotePublishingUI();
         renderFieldNotePictureUploaders();
         updateFieldNoteSeoCounters();
 
@@ -7376,24 +6875,8 @@ const supabasePublishableKey =
           $("#field-note-modal-title").textContent = "Edit Field Note";
           $("#field-note-record-id").value = item.id;
           $("#field-note-title").value = item.title || "";
-
-          const categorySelect = $("#field-note-category");
-          const categoryValue = item.category || "";
-
-          if (
-            categoryValue &&
-            !Array.from(categorySelect.options).some(
-              (option) => option.value === categoryValue
-            )
-          ) {
-            const option = document.createElement("option");
-            option.value = categoryValue;
-            option.textContent = categoryValue;
-            categorySelect.appendChild(option);
-          }
-
-          categorySelect.value = categoryValue;
-          $("#field-note-status").value = fieldNotePublishingMode(item);
+          $("#field-note-category").value = item.category || "";
+          $("#field-note-status").value = item.status || "draft";
           $("#field-note-excerpt").value = item.excerpt || "";
           $("#field-note-content").value = item.content_markdown || "";
           $("#field-note-published-at").value = toLocalDateTimeInput(item.published_at);
@@ -7406,7 +6889,6 @@ const supabasePublishableKey =
 
         }
 
-        updateFieldNotePublishingUI();
         renderFieldNotePictureUploaders();
         updateFieldNoteSeoCounters();
 
@@ -7424,61 +6906,29 @@ const supabasePublishableKey =
         const title =
           $("#field-note-title").value.trim();
 
-        const publishingMode =
+        const status =
           $("#field-note-status").value;
 
-        const publicationInput =
+        let publishedAt =
           $("#field-note-published-at").value;
 
-        let status = publishingMode;
-        let publishedAt = null;
 
-        if (publishingMode === "scheduled") {
-          if (!publicationInput) {
-            throw new Error("Choose a future publication date and time.");
-          }
-
-          const scheduledDate = new Date(publicationInput);
-
-          if (
-            Number.isNaN(scheduledDate.getTime()) ||
-            scheduledDate.getTime() <= Date.now()
-          ) {
-            throw new Error("The scheduled publication date must be in the future.");
-          }
-
-          // Store scheduled content as published with a future timestamp.
-          // Supabase RLS keeps it private until published_at <= now().
-          status = "published";
-          publishedAt = scheduledDate.toISOString();
-        } else if (publishingMode === "published") {
-          status = "published";
-
-          const existingItem = existingId
-            ? state.fieldNotes.find((item) => item.id === existingId)
-            : null;
-
-          const existingPublishTime = existingItem?.published_at
-            ? new Date(existingItem.published_at)
-            : null;
-
+        if (
+          status === "published" &&
+          !publishedAt
+        ) {
           publishedAt =
-            existingPublishTime &&
-            Number.isFinite(existingPublishTime.getTime()) &&
-            existingPublishTime.getTime() <= Date.now()
-              ? existingPublishTime.toISOString()
-              : new Date().toISOString();
-        } else if (publishingMode === "archived") {
-          status = "archived";
-
-          const existingItem = existingId
-            ? state.fieldNotes.find((item) => item.id === existingId)
-            : null;
-
-          publishedAt = existingItem?.published_at || null;
+            new Date().toISOString();
+        } else if (
+          publishedAt
+        ) {
+          publishedAt =
+            new Date(
+              publishedAt
+            ).toISOString();
         } else {
-          status = "draft";
-          publishedAt = null;
+          publishedAt =
+            null;
         }
 
 
@@ -7513,7 +6963,6 @@ const supabasePublishableKey =
 
 
         let response;
-        let savedFieldNoteId = existingId;
 
 
         if (
@@ -7530,8 +6979,6 @@ const supabasePublishableKey =
 
           const id =
             `note-${crypto.randomUUID()}`;
-
-          savedFieldNoteId = id;
 
 
           response =
@@ -7552,13 +6999,6 @@ const supabasePublishableKey =
         ) {
           throw response.error;
         }
-
-        await syncEditorFeaturePlacement(
-          "home",
-          "field_note",
-          savedFieldNoteId,
-          payload.featured
-        );
 
 
         closeModal("field-note");
@@ -8805,14 +8245,6 @@ const supabasePublishableKey =
           subtitle:
             "Manage Soleil & Stone content from one place."
         },
-        features: {
-          eyebrow:
-            "Publishing",
-          title:
-            "Features",
-          subtitle:
-            "Control highlighted content across the website from one place."
-        },
         events: {
           eyebrow:
             "Content",
@@ -8916,10 +8348,6 @@ const supabasePublishableKey =
 
         $("#sidebar").classList.remove("open");
 
-        if (section === "features") {
-          renderFeatures();
-        }
-
       }
 
 
@@ -8950,471 +8378,6 @@ const supabasePublishableKey =
         modal?.classList.add("hidden");
         document.body.style.overflow = "";
 
-      }
-
-
-      /* =====================================================
-         FEATURES
-         ===================================================== */
-
-      const featurePlacementConfig = {
-        home: {
-          title: "Homepage",
-          description: "Choose the strongest cross-site content to highlight on the homepage.",
-          allowedTypes: ["event", "field_note", "event_recap"]
-        },
-        fieldwork: {
-          title: "Fieldwork",
-          description: "Highlight selected events and event recaps on the Fieldwork page.",
-          allowedTypes: ["event", "event_recap"]
-        },
-        "field-notes": {
-          title: "Field Notes",
-          description: "Choose which published or scheduled Field Notes receive featured treatment on the Field Notes page.",
-          allowedTypes: ["field_note"]
-        },
-        "community-startup-mixer": {
-          title: "Startup Mixer Community",
-          description: "Highlight Startup Mixer events and recaps on the community page.",
-          allowedTypes: ["event", "event_recap"],
-          communityId: "startup-mixer"
-        },
-        "community-hardware-meetup": {
-          title: "Hardware Meetup Community",
-          description: "Highlight Hardware Meetup events and recaps on the community page and Track Record area.",
-          allowedTypes: ["event", "event_recap"],
-          communityId: "hardware-meetup"
-        }
-      };
-
-
-      function featureTypeLabel(type) {
-        return ({
-          event: "Event",
-          field_note: "Field Note",
-          event_recap: "Recap"
-        })[type] || type;
-      }
-
-
-      function featureRecord(type, id) {
-        if (type === "event") {
-          return state.events.find((item) => String(item.id) === String(id));
-        }
-
-        if (type === "field_note") {
-          return state.fieldNotes.find((item) => String(item.id) === String(id));
-        }
-
-        if (type === "event_recap") {
-          return state.recaps.find((item) => String(item.id) === String(id));
-        }
-
-        return null;
-      }
-
-
-      function featureContentSection(type) {
-        return ({
-          event: "events",
-          field_note: "field-notes",
-          event_recap: "recaps"
-        })[type] || "dashboard";
-      }
-
-
-      function featureRecordStatus(type, item) {
-        if (!item) return "Missing";
-
-        if (type === "field_note" && typeof fieldNotePublishingMode === "function") {
-          const mode = fieldNotePublishingMode(item);
-          if (mode === "scheduled") return "Scheduled";
-          if (mode === "published") return "Published";
-          if (mode === "draft") return "Draft";
-          if (mode === "archived") return "Archived";
-        }
-
-        return String(item.status || "published")
-          .replaceAll("_", " ")
-          .replace(/\b\w/g, (letter) => letter.toUpperCase());
-      }
-
-
-      function featureRecordMeta(type, item) {
-        if (!item) return "The underlying content record could not be found.";
-
-        if (type === "event") {
-          const location = [item.venue, item.city].filter(Boolean).join(" · ");
-          return [formatDate(item.start_date), location].filter(Boolean).join(" · ");
-        }
-
-        if (type === "field_note") {
-          return [
-            item.category,
-            item.published_at ? formatDate(item.published_at) : "No publish date"
-          ].filter(Boolean).join(" · ");
-        }
-
-        if (type === "event_recap") {
-          const event = state.events.find((candidate) => String(candidate.id) === String(item.event_id));
-          return [event?.title, item.published_at ? formatDate(item.published_at) : "No publish date"].filter(Boolean).join(" · ");
-        }
-
-        return "";
-      }
-
-
-      function featureCandidatesForPlacement(placement) {
-        const config = featurePlacementConfig[placement] || featurePlacementConfig.home;
-        const output = [];
-
-        if (config.allowedTypes.includes("event")) {
-          state.events
-            .filter((item) => item.status === "published")
-            .filter((item) => !config.communityId || item.community_id === config.communityId)
-            .forEach((item) => output.push({ type: "event", item }));
-        }
-
-        if (config.allowedTypes.includes("field_note")) {
-          state.fieldNotes
-            .filter((item) => item.status === "published")
-            .forEach((item) => output.push({ type: "field_note", item }));
-        }
-
-        if (config.allowedTypes.includes("event_recap")) {
-          state.recaps
-            .filter((item) => item.status === "published")
-            .filter((item) => {
-              if (!config.communityId) return true;
-              const event = state.events.find((candidate) => String(candidate.id) === String(item.event_id));
-              return event?.community_id === config.communityId;
-            })
-            .forEach((item) => output.push({ type: "event_recap", item }));
-        }
-
-        return output;
-      }
-
-
-      function currentFeatureAssignments(placement = state.featurePlacement) {
-        return state.featuredContent
-          .filter((item) => item.active !== false && item.placement === placement)
-          .sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0));
-      }
-
-
-      function featureCardMarkup(assignment, index, total) {
-        const item = featureRecord(assignment.content_type, assignment.content_id);
-        const title = item?.title || "Missing content";
-        const status = featureRecordStatus(assignment.content_type, item);
-        const meta = featureRecordMeta(assignment.content_type, item);
-
-        return `
-          <article class="feature-card">
-            <div class="feature-card-main">
-              <div class="feature-card-kicker">
-                <span class="feature-position">${index + 1}</span>
-                <span class="feature-type-badge">${escapeHtml(featureTypeLabel(assignment.content_type))}</span>
-                <span class="feature-status-badge">${escapeHtml(status)}</span>
-              </div>
-              <h3 class="feature-card-title">${escapeHtml(title)}</h3>
-              ${meta ? `<div class="feature-card-meta">${escapeHtml(meta)}</div>` : ""}
-            </div>
-            <div class="feature-card-actions">
-              <button
-                class="feature-icon-button"
-                type="button"
-                data-feature-move="up"
-                data-feature-id="${escapeHtml(assignment.id)}"
-                aria-label="Move up"
-                ${index === 0 ? "disabled" : ""}
-              >↑</button>
-              <button
-                class="feature-icon-button"
-                type="button"
-                data-feature-move="down"
-                data-feature-id="${escapeHtml(assignment.id)}"
-                aria-label="Move down"
-                ${index === total - 1 ? "disabled" : ""}
-              >↓</button>
-              ${item ? `
-                <button
-                  class="secondary-button compact-button"
-                  type="button"
-                  data-feature-edit-type="${escapeHtml(assignment.content_type)}"
-                  data-feature-edit-id="${escapeHtml(assignment.content_id)}"
-                >Edit</button>
-              ` : ""}
-              <button
-                class="repeat-remove-button"
-                type="button"
-                data-feature-remove="${escapeHtml(assignment.id)}"
-              >Remove</button>
-            </div>
-          </article>
-        `;
-      }
-
-
-      function availableFeatureCardMarkup(type, item) {
-        return `
-          <article class="feature-card">
-            <div class="feature-card-main">
-              <div class="feature-card-kicker">
-                <span class="feature-type-badge">${escapeHtml(featureTypeLabel(type))}</span>
-                <span class="feature-status-badge">${escapeHtml(featureRecordStatus(type, item))}</span>
-              </div>
-              <h3 class="feature-card-title">${escapeHtml(item.title || "Untitled")}</h3>
-              <div class="feature-card-meta">${escapeHtml(featureRecordMeta(type, item))}</div>
-            </div>
-            <div class="feature-card-actions">
-              <button
-                class="primary-button compact-button feature-add-button"
-                type="button"
-                data-feature-add-type="${escapeHtml(type)}"
-                data-feature-add-id="${escapeHtml(item.id)}"
-              >+ Feature</button>
-            </div>
-          </article>
-        `;
-      }
-
-
-      function updateFeatureTypeFilterVisibility() {
-        const config = featurePlacementConfig[state.featurePlacement] || featurePlacementConfig.home;
-        const allowed = new Set(config.allowedTypes);
-
-        $$("[data-feature-type]").forEach((button) => {
-          const type = button.dataset.featureType;
-          const visible = type === "all" || allowed.has(type);
-          button.classList.toggle("hidden", !visible);
-        });
-
-        if (state.featureTypeFilter !== "all" && !allowed.has(state.featureTypeFilter)) {
-          state.featureTypeFilter = "all";
-        }
-
-        $$("[data-feature-type]").forEach((button) => {
-          button.classList.toggle("active", button.dataset.featureType === state.featureTypeFilter);
-        });
-      }
-
-
-      function renderFeatures() {
-        const placement = state.featurePlacement;
-        const config = featurePlacementConfig[placement] || featurePlacementConfig.home;
-        const assignments = currentFeatureAssignments(placement);
-        const currentIds = new Set(assignments.map((item) => `${item.content_type}:${item.content_id}`));
-        const search = $("#feature-search")?.value?.trim().toLowerCase() || "";
-
-        $$("[data-feature-placement]").forEach((button) => {
-          button.classList.toggle("active", button.dataset.featurePlacement === placement);
-        });
-
-        $("#feature-placement-title").textContent = config.title;
-        $("#feature-placement-description").textContent = config.description;
-        $("#feature-placement-count").textContent = assignments.length;
-
-        updateFeatureTypeFilterVisibility();
-
-        const currentContainer = $("#feature-current-list");
-        currentContainer.innerHTML = assignments.length
-          ? assignments.map((assignment, index) => featureCardMarkup(assignment, index, assignments.length)).join("")
-          : `<div class="feature-empty"><strong>Nothing featured here yet.</strong><br />Add content from the library on the right.</div>`;
-
-        const available = featureCandidatesForPlacement(placement)
-          .filter(({ type, item }) => !currentIds.has(`${type}:${item.id}`))
-          .filter(({ type }) => state.featureTypeFilter === "all" || type === state.featureTypeFilter)
-          .filter(({ item }) => {
-            if (!search) return true;
-            return [item.title, item.excerpt, item.description, item.category]
-              .filter(Boolean)
-              .some((value) => String(value).toLowerCase().includes(search));
-          })
-          .sort((a, b) => {
-            const aDate = a.item.start_date || a.item.published_at || a.item.updated_at || 0;
-            const bDate = b.item.start_date || b.item.published_at || b.item.updated_at || 0;
-            return new Date(bDate).getTime() - new Date(aDate).getTime();
-          });
-
-        const availableContainer = $("#feature-available-list");
-        availableContainer.innerHTML = available.length
-          ? available.map(({ type, item }) => availableFeatureCardMarkup(type, item)).join("")
-          : `<div class="feature-empty">No matching content is available for this placement.</div>`;
-      }
-
-
-      async function syncLegacyFeatureFlag(placement, contentType, contentId, enabled) {
-        if (placement === "home" && contentType === "field_note") {
-          const { error } = await supabase
-            .from("field_notes")
-            .update({ featured: enabled })
-            .eq("id", contentId);
-          if (error) throw error;
-          return;
-        }
-
-        if (placement === "fieldwork" && contentType === "event") {
-          const { error } = await supabase
-            .from("events")
-            .update({ featured: enabled })
-            .eq("id", contentId);
-          if (error) throw error;
-        }
-      }
-
-
-      async function setFeaturePlacement(placement, contentType, contentId, enabled) {
-        const existing = state.featuredContent.find((item) =>
-          item.placement === placement &&
-          item.content_type === contentType &&
-          String(item.content_id) === String(contentId)
-        );
-
-        if (enabled) {
-          if (!existing) {
-            const current = currentFeatureAssignments(placement);
-            const nextOrder = current.length
-              ? Math.max(...current.map((item) => Number(item.sort_order) || 0)) + 10
-              : 10;
-
-            const { error } = await supabase
-              .from("featured_content")
-              .insert({
-                placement,
-                content_type: contentType,
-                content_id: String(contentId),
-                sort_order: nextOrder,
-                active: true
-              });
-            if (error) throw error;
-          } else if (existing.active === false) {
-            const { error } = await supabase
-              .from("featured_content")
-              .update({ active: true, updated_at: new Date().toISOString() })
-              .eq("id", existing.id);
-            if (error) throw error;
-          }
-        } else if (existing) {
-          const { error } = await supabase
-            .from("featured_content")
-            .delete()
-            .eq("id", existing.id);
-          if (error) throw error;
-        }
-
-        await syncLegacyFeatureFlag(placement, contentType, contentId, enabled);
-        await Promise.all([loadFeaturedContent(), loadEvents(), loadFieldNotes()]);
-        refreshCounts();
-        renderFeatures();
-      }
-
-
-      async function addFeature(contentType, contentId) {
-        await setFeaturePlacement(state.featurePlacement, contentType, contentId, true);
-        showToast(`Featured on ${featurePlacementConfig[state.featurePlacement]?.title || "this page"}.`);
-      }
-
-
-      async function removeFeature(assignmentId) {
-        const assignment = state.featuredContent.find((item) => item.id === assignmentId);
-        if (!assignment) return;
-
-        const { error } = await supabase
-          .from("featured_content")
-          .delete()
-          .eq("id", assignmentId);
-        if (error) throw error;
-
-        await syncLegacyFeatureFlag(assignment.placement, assignment.content_type, assignment.content_id, false);
-        await Promise.all([loadFeaturedContent(), loadEvents(), loadFieldNotes()]);
-        refreshCounts();
-        renderFeatures();
-        showToast("Feature removed. The content itself was not changed.");
-      }
-
-
-      async function moveFeature(assignmentId, direction) {
-        const items = currentFeatureAssignments();
-        const index = items.findIndex((item) => item.id === assignmentId);
-        if (index < 0) return;
-
-        const targetIndex = direction === "up" ? index - 1 : index + 1;
-        if (targetIndex < 0 || targetIndex >= items.length) return;
-
-        [items[index], items[targetIndex]] = [items[targetIndex], items[index]];
-
-        const updates = items.map((item, itemIndex) =>
-          supabase
-            .from("featured_content")
-            .update({
-              sort_order: (itemIndex + 1) * 10,
-              updated_at: new Date().toISOString()
-            })
-            .eq("id", item.id)
-        );
-
-        const results = await Promise.all(updates);
-        const failed = results.find((result) => result.error);
-        if (failed?.error) throw failed.error;
-
-        await loadFeaturedContent();
-        renderFeatures();
-      }
-
-
-      function editFeaturedContent(type, id) {
-        if (type === "event") {
-          openEventModal(id);
-          return;
-        }
-
-        if (type === "field_note") {
-          openFieldNoteModal(id);
-          return;
-        }
-
-        if (type === "event_recap") {
-          openRecapModal(id);
-        }
-      }
-
-
-      async function syncEditorFeaturePlacement(placement, contentType, contentId, enabled) {
-        const existing = state.featuredContent.some((item) =>
-          item.placement === placement &&
-          item.content_type === contentType &&
-          String(item.content_id) === String(contentId)
-        );
-
-        if (Boolean(enabled) === existing) return;
-
-        if (enabled) {
-          const current = currentFeatureAssignments(placement);
-          const nextOrder = current.length
-            ? Math.max(...current.map((item) => Number(item.sort_order) || 0)) + 10
-            : 10;
-          const { error } = await supabase.from("featured_content").insert({
-            placement,
-            content_type: contentType,
-            content_id: String(contentId),
-            sort_order: nextOrder,
-            active: true
-          });
-          if (error) throw error;
-        } else {
-          const match = state.featuredContent.find((item) =>
-            item.placement === placement &&
-            item.content_type === contentType &&
-            String(item.content_id) === String(contentId)
-          );
-          if (match) {
-            const { error } = await supabase.from("featured_content").delete().eq("id", match.id);
-            if (error) throw error;
-          }
-        }
-
-        await loadFeaturedContent();
       }
 
 
@@ -9591,58 +8554,6 @@ const supabasePublishableKey =
 
         }
       );
-
-
-      $("#feature-placement-tabs")?.addEventListener("click", (event) => {
-        const button = event.target.closest("[data-feature-placement]");
-        if (!button) return;
-        state.featurePlacement = button.dataset.featurePlacement;
-        state.featureTypeFilter = "all";
-        if ($("#feature-search")) $("#feature-search").value = "";
-        renderFeatures();
-      });
-
-
-      $("#feature-type-filters")?.addEventListener("click", (event) => {
-        const button = event.target.closest("[data-feature-type]");
-        if (!button || button.classList.contains("hidden")) return;
-        state.featureTypeFilter = button.dataset.featureType;
-        renderFeatures();
-      });
-
-
-      $("#feature-search")?.addEventListener("input", renderFeatures);
-
-
-      $("#section-features")?.addEventListener("click", async (event) => {
-        try {
-          const add = event.target.closest("[data-feature-add-type]");
-          if (add) {
-            await addFeature(add.dataset.featureAddType, add.dataset.featureAddId);
-            return;
-          }
-
-          const remove = event.target.closest("[data-feature-remove]");
-          if (remove) {
-            await removeFeature(remove.dataset.featureRemove);
-            return;
-          }
-
-          const move = event.target.closest("[data-feature-move]");
-          if (move) {
-            await moveFeature(move.dataset.featureId, move.dataset.featureMove);
-            return;
-          }
-
-          const edit = event.target.closest("[data-feature-edit-type]");
-          if (edit) {
-            editFeaturedContent(edit.dataset.featureEditType, edit.dataset.featureEditId);
-          }
-        } catch (error) {
-          console.error(error);
-          showToast(error?.message || "Could not update featured content.", "error");
-        }
-      });
 
 
       $$(".nav-button").forEach(
@@ -10303,14 +9214,6 @@ const supabasePublishableKey =
             );
           }
 
-        }
-      );
-
-
-      $("#field-note-status").addEventListener(
-        "change",
-        () => {
-          updateFieldNotePublishingUI();
         }
       );
 
