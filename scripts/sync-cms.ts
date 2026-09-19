@@ -728,12 +728,25 @@ export const fieldworkIndustryLogos =
   );
 
 
+  const eventRecapLinks =
+    Object.fromEntries(
+      eventRecaps.map(
+        (recap: any) => [
+          recap.event_id,
+          "/event-recaps/" + recap.slug + "/"
+        ]
+      )
+    );
+
+
   await fs.writeFile(
     path.join(
       DATA_DIR,
       "eventRecapLinks.cms.ts"
     ),
-    `export const eventRecapLinks =\n  ${JSON.stringify(\n    Object.fromEntries(\n      eventRecaps.map(\n        (recap: any) => [\n          recap.event_id,\n          `/event-recaps/${recap.slug}/`\n        ]\n      )\n    ),\n    null,\n    2\n  )};\n`,
+    `export const eventRecapLinks =
+  ${JSON.stringify(eventRecapLinks, null, 2)};
+`,
     "utf8"
   );
 
