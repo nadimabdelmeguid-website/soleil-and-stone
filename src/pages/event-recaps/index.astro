@@ -1,14 +1,10 @@
 ---
+import {
+  getCollection
+} from "astro:content";
+
 import BaseLayout
   from "../../layouts/BaseLayout.astro";
-
-import {
-  publishedEventRecaps
-} from "../../data/eventRecaps";
-
-import {
-  getEventRecapImages
-} from "../../utils/eventRecapImages";
 
 
 function formatDate(
@@ -35,33 +31,56 @@ function formatDate(
 }
 
 
-/*
- * =========================================================
- * AUTOMATIC IMAGE DISCOVERY
- * =========================================================
- */
+const posts =
+  (
+    await getCollection(
+      "eventRecaps"
+    )
+  )
+    .filter(
+      (post) =>
+        !post.data.draft
+    )
+    .sort(
+      (a, b) =>
+        b.data.published.getTime() -
+        a.data.published.getTime()
+    );
+
 
 const recapsWithImages =
-  await Promise.all(
-    publishedEventRecaps.map(
-      async (
-        recap
-      ) => {
+  posts.map(
+    (post) => ({
+      recap: {
+        slug:
+          post.id,
 
-        const images =
-          await getEventRecapImages(
-            recap.slug
-          );
+        title:
+          post.data.title,
 
+        published:
+          post.data.published
+            .toISOString()
+            .slice(0, 10),
 
-        return {
-          recap,
-          images
-        };
+        excerpt:
+          post.data.excerpt,
 
+        readingMinutes:
+          post.data.readingMinutes,
+
+        tags:
+          post.data.tags
+      },
+
+      images: {
+        cover:
+          post.data.heroImage ||
+          null
       }
-    )
+    })
   );
+
 ---
 
 <BaseLayout
