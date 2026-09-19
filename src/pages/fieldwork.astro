@@ -13,7 +13,11 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 
 import {
   eventSeeds
-} from "../data/events";
+} from "../data/events.cms";
+
+import {
+  fieldworkIndustryLogos
+} from "../data/logos.cms";
 
 import {
   isCompletedEvent,
@@ -335,6 +339,21 @@ try {
 function findFieldworkEventImage(
   eventId: string
 ) {
+
+  const event =
+    events.find(
+      (candidate) =>
+        candidate.id ===
+        eventId
+    );
+
+
+  if (
+    event?.image
+  ) {
+    return event.image;
+  }
+
 
   const file =
     fieldworkEventImageFiles.find(
@@ -976,7 +995,24 @@ const tradeShowLogos =
 
 
 const tradeShowLogoLoop =
-  tradeShowLogos;
+  fieldworkIndustryLogos.map(
+    (logo) => ({
+      file:
+        logo.identityKey,
+
+      src:
+        logo.image,
+
+      name:
+        logo.title,
+
+      url:
+        logo.url,
+
+      eventId:
+        logo.eventId
+    })
+  );
 ---
 
 <BaseLayout
