@@ -3480,8 +3480,8 @@ const supabasePublishableKey =
                 Images & Publishing
               </h3>
               <p class="form-section-copy">
-                The Fieldwork cover is the image used for this event in Fieldwork.
-                Community events can use a separate Community Track Record image.
+                The Primary Event Image is the default image for this event across the website.
+                Community events can use a separate Community Track Record image as an override.
               </p>
             </div>
 
@@ -3527,14 +3527,14 @@ const supabasePublishableKey =
                     class="label"
                     for="event-cover-media"
                   >
-                    Fieldwork cover image
+                    Primary Event Image
                   </label>
                   <select
                     id="event-cover-media"
                     class="select"
                   >
                     <option value="">
-                      No cover image
+                      No primary image
                     </option>
                   </select>
                   <button
@@ -3544,7 +3544,7 @@ const supabasePublishableKey =
                     data-cover-target="events,fieldwork"
                     style="margin-top: 8px;"
                   >
-                    Upload Fieldwork cover
+                    Upload Primary Event Image
                   </button>
                   <input
                     id="event-cover-upload"
@@ -3626,7 +3626,7 @@ const supabasePublishableKey =
                     accept="image/png,image/jpeg,image/webp,image/svg+xml,image/avif"
                   />
                   <p class="field-help">
-                    This image is separate from the Fieldwork cover and is used for this event's Track Record card on the relevant Community page.
+                    This image overrides the Primary Event Image for this event's Track Record card on the relevant Community page.
                   </p>
                 </div>
 
@@ -3669,7 +3669,7 @@ const supabasePublishableKey =
                     />
                   </div>
                   <p class="field-help">
-                    Optional additional image saved permanently in the CMS. This is separate from the Fieldwork cover and, for Hardware Meetup events, the Community Track Record image.
+                    Optional additional image saved permanently in the CMS. This is separate from the Primary Event Image and the optional Community Track Record image.
                   </p>
                 </div>
 
