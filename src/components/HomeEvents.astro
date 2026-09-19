@@ -637,7 +637,12 @@ const visibleEvents =
 
 
       if (
-        !end
+        !end ||
+        (
+          start.getFullYear() === end.getFullYear() &&
+          start.getMonth() === end.getMonth() &&
+          start.getDate() === end.getDate()
+        )
       ) {
 
         return start.toLocaleDateString(
