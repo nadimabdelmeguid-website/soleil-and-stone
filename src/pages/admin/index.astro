@@ -1549,6 +1549,152 @@ const supabasePublishableKey =
         }
       }
 
+      .standalone-image-control {
+        display: grid;
+        gap: 12px;
+      }
+
+      .standalone-image-preview {
+        display: flex;
+        min-height: 126px;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        border: 1px dashed var(--border);
+        background: rgba(244, 241, 232, 0.36);
+        color: var(--slate);
+        font-size: 11px;
+      }
+
+      .standalone-image-preview.has-image {
+        justify-content: flex-start;
+        padding: 10px;
+        border-style: solid;
+        background: #fff;
+      }
+
+      .standalone-image-preview img {
+        display: block;
+        width: min(340px, 100%);
+        max-height: 210px;
+        object-fit: cover;
+        border: 1px solid var(--border);
+      }
+
+      .image-action-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        align-items: center;
+      }
+
+      .article-picture-list {
+        display: grid;
+        gap: 12px;
+      }
+
+      .article-picture-card {
+        display: grid;
+        grid-template-columns: 110px minmax(0, 1fr) auto;
+        gap: 14px;
+        align-items: center;
+        padding: 12px;
+        border: 1px solid var(--border);
+        background: #fff;
+      }
+
+      .article-picture-thumb {
+        width: 110px;
+        height: 76px;
+        object-fit: cover;
+        border: 1px solid var(--border);
+        background: var(--cream);
+      }
+
+      .article-picture-copy strong {
+        display: block;
+        margin-bottom: 4px;
+        font-size: 11px;
+        font-weight: 600;
+        color: var(--charcoal);
+      }
+
+      .article-picture-copy span {
+        display: block;
+        overflow: hidden;
+        color: var(--slate);
+        font-size: 10px;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .article-picture-add {
+        display: flex;
+        min-height: 62px;
+        align-items: center;
+        justify-content: flex-start;
+        padding: 10px 0 0;
+      }
+
+      .seo-settings {
+        border: 1px solid var(--border);
+        background: rgba(244, 241, 232, 0.28);
+      }
+
+      .seo-settings summary {
+        padding: 16px 18px;
+        cursor: pointer;
+        list-style: none;
+        color: var(--charcoal);
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+      }
+
+      .seo-settings summary::-webkit-details-marker {
+        display: none;
+      }
+
+      .seo-settings summary::after {
+        content: "+";
+        float: right;
+        color: var(--gold);
+        font-size: 16px;
+        line-height: 1;
+      }
+
+      .seo-settings[open] summary::after {
+        content: "−";
+      }
+
+      .seo-settings-body {
+        padding: 0 18px 18px;
+      }
+
+      .seo-counter {
+        margin-top: 5px;
+        color: var(--slate);
+        font-size: 9px;
+        text-align: right;
+      }
+
+      @media (max-width: 720px) {
+        .article-picture-card {
+          grid-template-columns: 82px minmax(0, 1fr);
+        }
+
+        .article-picture-thumb {
+          width: 82px;
+          height: 62px;
+        }
+
+        .article-picture-card .repeat-remove-button {
+          grid-column: 1 / -1;
+          justify-self: start;
+        }
+      }
+
     </style>
   </head>
 
@@ -2920,17 +3066,45 @@ const supabasePublishableKey =
                 </div>
 
                 <div class="form-field full">
-                  <label class="label" for="event-image-url">
-                    Imported source image URL
+                  <label class="label">
+                    Additional event image
                   </label>
                   <input
                     id="event-image-url"
-                    class="input"
-                    type="url"
-                    placeholder="Automatically filled when available"
+                    type="hidden"
                   />
+                  <div class="standalone-image-control">
+                    <div
+                      id="event-additional-image-preview"
+                      class="standalone-image-preview"
+                    >
+                      No additional event image
+                    </div>
+                    <div class="image-action-row">
+                      <button
+                        id="event-additional-image-button"
+                        class="secondary-button"
+                        type="button"
+                      >
+                        Upload event image
+                      </button>
+                      <button
+                        id="event-additional-image-remove"
+                        class="quiet-button hidden"
+                        type="button"
+                      >
+                        Remove image
+                      </button>
+                    </div>
+                    <input
+                      id="event-additional-image-upload"
+                      class="hidden"
+                      type="file"
+                      accept="image/png,image/jpeg,image/webp,image/svg+xml,image/avif"
+                    />
+                  </div>
                   <p class="field-help">
-                    Kept as reference only. Your uploaded CMS images above are the durable public assets.
+                    Optional additional image saved permanently in the CMS. This is separate from the Fieldwork cover and, for Hardware Meetup events, the Community Track Record image.
                   </p>
                 </div>
 
@@ -3096,7 +3270,6 @@ const supabasePublishableKey =
                     <button class="markdown-tool" type="button" data-markdown-action="quote">Quote</button>
                     <button class="markdown-tool" type="button" data-markdown-action="bullet">Bullets</button>
                     <button class="markdown-tool" type="button" data-markdown-action="number">Numbered</button>
-                    <button class="markdown-tool" type="button" data-editor-upload="field-note-content" data-editor-target="field-notes">Upload Image</button>
                   </div>
                   <div class="editor-media-row">
                     <select id="field-note-inline-media" class="select">
@@ -3112,8 +3285,27 @@ const supabasePublishableKey =
                     placeholder="Write your Field Note here..."
                   ></textarea>
                   <p class="field-help">
-                    Content is stored as Markdown. Upload an image here to insert it exactly where your cursor is, or reuse an existing Media Library image.
+                    Content is stored as Markdown. Select an existing Media Library image above when you want to insert one manually at your cursor.
                   </p>
+                </div>
+
+                <div class="form-field full">
+                  <label class="label">
+                    Article pictures
+                  </label>
+                  <p class="field-help" style="margin-bottom: 10px;">
+                    Click inside the article where you want the next picture, then upload it below. After each upload, another picture button appears automatically.
+                  </p>
+                  <div
+                    id="field-note-picture-list"
+                    class="article-picture-list"
+                  ></div>
+                  <input
+                    id="field-note-picture-upload"
+                    class="hidden"
+                    type="file"
+                    accept="image/png,image/jpeg,image/webp,image/svg+xml,image/avif"
+                  />
                 </div>
 
                 <div class="form-field">
@@ -3168,27 +3360,45 @@ const supabasePublishableKey =
                   />
                 </div>
 
-                <div class="form-field full">
-                  <label class="label" for="field-note-seo-title">
-                    SEO title
-                  </label>
-                  <input
-                    id="field-note-seo-title"
-                    class="input"
-                    type="text"
-                  />
-                </div>
+                <details class="form-field full seo-settings">
+                  <summary>
+                    SEO settings (optional)
+                  </summary>
+                  <div class="seo-settings-body">
+                    <p class="field-help" style="margin-bottom: 14px;">
+                      These control how the Field Note can appear in Google and link previews. Leave them blank and the CMS will automatically use the article title and short description.
+                    </p>
+                    <div class="form-grid">
+                      <div class="form-field full">
+                        <label class="label" for="field-note-seo-title">
+                          SEO title
+                        </label>
+                        <input
+                          id="field-note-seo-title"
+                          class="input"
+                          type="text"
+                          maxlength="70"
+                          placeholder="Defaults to the Field Note title"
+                        />
+                        <div id="field-note-seo-title-count" class="seo-counter">0 / 60 recommended</div>
+                      </div>
 
-                <div class="form-field full">
-                  <label class="label" for="field-note-seo-description">
-                    SEO description
-                  </label>
-                  <textarea
-                    id="field-note-seo-description"
-                    class="textarea"
-                    style="min-height: 86px;"
-                  ></textarea>
-                </div>
+                      <div class="form-field full">
+                        <label class="label" for="field-note-seo-description">
+                          SEO description
+                        </label>
+                        <textarea
+                          id="field-note-seo-description"
+                          class="textarea"
+                          maxlength="180"
+                          style="min-height: 86px;"
+                          placeholder="Defaults to the short description"
+                        ></textarea>
+                        <div id="field-note-seo-description-count" class="seo-counter">0 / 160 recommended</div>
+                      </div>
+                    </div>
+                  </div>
+                </details>
 
                 <div class="form-field full">
                   <label class="checkbox-label">
@@ -5210,7 +5420,6 @@ const supabasePublishableKey =
           applyImportedField("#event-region", imported.region);
           applyImportedField("#event-country", imported.country);
           applyImportedField("#event-address", imported.address);
-          applyImportedField("#event-image-url", imported.imageUrl);
           applyImportedField("#event-type", imported.eventType);
 
           if (
@@ -5279,7 +5488,6 @@ const supabasePublishableKey =
             imported.startDate ? "date" : "",
             imported.venue || imported.city ? "location" : "",
             imported.description ? "description" : "",
-            imported.imageUrl ? "source image" : "",
             imported.speakers?.length
               ? `${imported.speakers.length} speaker${imported.speakers.length === 1 ? "" : "s"}`
               : "",
@@ -6115,6 +6323,8 @@ const supabasePublishableKey =
         $("#event-speaker-list").innerHTML = "";
         $("#event-sponsor-list").innerHTML = "";
         $("#event-community-track-media").value = "";
+        $("#event-image-url").value = "";
+        renderEventAdditionalImage();
         showEventImportStatus();
         refreshRelationshipSelectors();
         refreshMediaSelectors();
@@ -6203,6 +6413,7 @@ const supabasePublishableKey =
 
           $("#event-image-url").value =
             event.image_url || "";
+          renderEventAdditionalImage();
 
           $("#event-partners").value =
             arrayToLines(event.partners);
@@ -6627,6 +6838,8 @@ const supabasePublishableKey =
         $("#field-note-record-id").value = "";
         $("#field-note-status").value = "draft";
         $("#field-note-modal-title").textContent = "New Field Note";
+        renderFieldNotePictureUploaders();
+        updateFieldNoteSeoCounters();
 
       }
 
@@ -6676,6 +6889,8 @@ const supabasePublishableKey =
 
         }
 
+        renderFieldNotePictureUploaders();
+        updateFieldNoteSeoCounters();
 
         $("#field-note-modal").classList.remove("hidden");
         document.body.style.overflow = "hidden";
@@ -6736,9 +6951,11 @@ const supabasePublishableKey =
           legacy_url:
             $("#field-note-legacy-url").value.trim() || null,
           seo_title:
-            $("#field-note-seo-title").value.trim() || null,
+            $("#field-note-seo-title").value.trim() || title,
           seo_description:
-            $("#field-note-seo-description").value.trim() || null,
+            $("#field-note-seo-description").value.trim() ||
+            $("#field-note-excerpt").value.trim() ||
+            null,
           published_at:
             publishedAt,
           status
@@ -7816,6 +8033,149 @@ const supabasePublishableKey =
       }
 
 
+      function renderEventAdditionalImage() {
+        const url = $("#event-image-url")?.value?.trim() || "";
+        const preview = $("#event-additional-image-preview");
+        const button = $("#event-additional-image-button");
+        const remove = $("#event-additional-image-remove");
+
+        if (!preview || !button || !remove) return;
+
+        if (!url) {
+          preview.classList.remove("has-image");
+          preview.innerHTML = "No additional event image";
+          button.textContent = "Upload event image";
+          remove.classList.add("hidden");
+          return;
+        }
+
+        preview.classList.add("has-image");
+        preview.innerHTML = `<img src="${escapeHtml(url)}" alt="Event image preview" />`;
+        button.textContent = "Replace event image";
+        remove.classList.remove("hidden");
+      }
+
+
+      async function uploadEventAdditionalImage(file) {
+        if (!file) return;
+
+        const button = $("#event-additional-image-button");
+        setButtonLoading(button, true, "Uploading...", "Upload event image");
+
+        try {
+          const media = await uploadMediaFile(file, {
+            targets: ["events"],
+            mediaKind: "image",
+            altText: file.name.replace(/\.[^.]+$/, "")
+          });
+
+          await loadMedia();
+          refreshMediaSelectors();
+          refreshCounts();
+
+          $("#event-image-url").value = media.public_url || "";
+          renderEventAdditionalImage();
+          showToast("Event image uploaded.");
+        } catch (error) {
+          console.error(error);
+          showToast(error?.message || "Could not upload event image.", "error");
+        } finally {
+          button.disabled = false;
+          renderEventAdditionalImage();
+        }
+      }
+
+
+      function markdownImagesFromContent(value = "") {
+        const images = [];
+        const regex = /!\[([^\]]*)\]\((https?:\/\/[^)\s]+)(?:\s+\"[^\"]*\")?\)/g;
+        let match;
+
+        while ((match = regex.exec(String(value || "")))) {
+          images.push({
+            markdown: match[0],
+            alt: match[1] || "Article picture",
+            url: match[2]
+          });
+        }
+
+        return images;
+      }
+
+
+      function renderFieldNotePictureUploaders() {
+        const container = $("#field-note-picture-list");
+        const textarea = $("#field-note-content");
+        if (!container || !textarea) return;
+
+        const images = markdownImagesFromContent(textarea.value);
+
+        container.innerHTML =
+          images.map((image, index) => `
+            <article class="article-picture-card">
+              <img
+                class="article-picture-thumb"
+                src="${escapeHtml(image.url)}"
+                alt="${escapeHtml(image.alt)}"
+              />
+              <div class="article-picture-copy">
+                <strong>Picture ${index + 1}</strong>
+                <span>${escapeHtml(image.alt || image.url)}</span>
+              </div>
+              <button
+                class="repeat-remove-button"
+                type="button"
+                data-remove-field-note-picture="${index}"
+              >
+                Remove
+              </button>
+            </article>
+          `).join("") + `
+            <div class="article-picture-add">
+              <button
+                class="secondary-button"
+                type="button"
+                data-upload-next-field-note-picture
+              >
+                + Upload picture ${images.length + 1}
+              </button>
+            </div>
+          `;
+      }
+
+
+      function removeFieldNotePicture(index) {
+        const textarea = $("#field-note-content");
+        if (!textarea) return;
+
+        const images = markdownImagesFromContent(textarea.value);
+        const image = images[index];
+        if (!image) return;
+
+        textarea.value = textarea.value
+          .replace(image.markdown, "")
+          .replace(/\n{3,}/g, "\n\n")
+          .trim();
+        textarea.dispatchEvent(new Event("input", { bubbles: true }));
+        renderFieldNotePictureUploaders();
+      }
+
+
+      function updateFieldNoteSeoCounters() {
+        const title = $("#field-note-seo-title")?.value || "";
+        const description = $("#field-note-seo-description")?.value || "";
+        const titleCounter = $("#field-note-seo-title-count");
+        const descriptionCounter = $("#field-note-seo-description-count");
+
+        if (titleCounter) {
+          titleCounter.textContent = `${title.length} / 60 recommended`;
+        }
+        if (descriptionCounter) {
+          descriptionCounter.textContent = `${description.length} / 160 recommended`;
+        }
+      }
+
+
       async function uploadAndInsertEditorImage(file, textareaId, target) {
         if (!file) return;
         const textarea = $(`#${textareaId}`);
@@ -7829,6 +8189,9 @@ const supabasePublishableKey =
           refreshMediaSelectors();
           refreshCounts();
           insertMarkdownImage(textarea, media);
+          if (textareaId === "field-note-content") {
+            renderFieldNotePictureUploaders();
+          }
           showToast("Image uploaded and inserted into the content.");
         } catch (error) {
           console.error(error);
@@ -9080,14 +9443,67 @@ const supabasePublishableKey =
       });
 
 
-      $("#field-note-insert-media").addEventListener("click", () =>
-        insertSelectedLibraryImage("field-note-inline-media", "field-note-content")
-      );
+      $("#field-note-insert-media").addEventListener("click", () => {
+        insertSelectedLibraryImage("field-note-inline-media", "field-note-content");
+        renderFieldNotePictureUploaders();
+      });
 
       $("#recap-insert-media").addEventListener("click", () =>
         insertSelectedLibraryImage("recap-inline-media", "recap-content")
       );
 
+
+
+      $("#event-additional-image-button")?.addEventListener("click", () => {
+        const input = $("#event-additional-image-upload");
+        input.value = "";
+        input.click();
+      });
+
+
+      $("#event-additional-image-upload")?.addEventListener("change", async (event) => {
+        await uploadEventAdditionalImage(event.target.files?.[0]);
+        event.target.value = "";
+      });
+
+
+      $("#event-additional-image-remove")?.addEventListener("click", () => {
+        $("#event-image-url").value = "";
+        renderEventAdditionalImage();
+        showToast("Event image removed from this event. The original file remains in the Media Library.");
+      });
+
+
+      $("#field-note-picture-list")?.addEventListener("click", (event) => {
+        const uploadButton = event.target.closest("[data-upload-next-field-note-picture]");
+        if (uploadButton) {
+          const input = $("#field-note-picture-upload");
+          input.value = "";
+          input.click();
+          return;
+        }
+
+        const removeButton = event.target.closest("[data-remove-field-note-picture]");
+        if (removeButton) {
+          removeFieldNotePicture(Number(removeButton.dataset.removeFieldNotePicture));
+        }
+      });
+
+
+      $("#field-note-picture-upload")?.addEventListener("change", async (event) => {
+        await uploadAndInsertEditorImage(
+          event.target.files?.[0],
+          "field-note-content",
+          "field-notes"
+        );
+        event.target.value = "";
+        renderFieldNotePictureUploaders();
+      });
+
+
+      $("#field-note-content")?.addEventListener("input", renderFieldNotePictureUploaders);
+      $("#field-note-seo-title")?.addEventListener("input", updateFieldNoteSeoCounters);
+      $("#field-note-seo-description")?.addEventListener("input", updateFieldNoteSeoCounters);
 
 
       $$("[data-cover-upload]").forEach((button) => {
