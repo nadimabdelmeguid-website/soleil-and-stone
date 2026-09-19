@@ -11,6 +11,10 @@ export interface Community {
 
   linkedinFollowers?: number;
 
+  linkedinUrl?: string;
+
+  pillarsTitle?: string;
+
   primaryUrl: string;
 
   primaryLabel: string;
