@@ -799,6 +799,12 @@ const supabasePublishableKey =
         color: #80652f;
       }
 
+      .status-pill.scheduled {
+        border-color: rgba(58, 92, 132, 0.28);
+        background: rgba(58, 92, 132, 0.07);
+        color: #3a5c84;
+      }
+
       .status-pill.archived,
       .status-pill.inactive {
         opacity: 0.72;
@@ -3225,26 +3231,36 @@ const supabasePublishableKey =
                   <label class="label" for="field-note-category">
                     Category
                   </label>
-                  <input
+                  <select
                     id="field-note-category"
-                    class="input"
-                    type="text"
-                    placeholder="Ecosystems & Community"
-                  />
+                    class="select"
+                  >
+                    <option value="">Select a category</option>
+                    <option value="Ecosystems & Community">Ecosystems & Community</option>
+                    <option value="Hardware & Product Development">Hardware & Product Development</option>
+                    <option value="Commercialization & Manufacturing">Commercialization & Manufacturing</option>
+                    <option value="Fieldwork & Trade Shows">Fieldwork & Trade Shows</option>
+                    <option value="Startups & Entrepreneurship">Startups & Entrepreneurship</option>
+                    <option value="Technology & Innovation">Technology & Innovation</option>
+                  </select>
                 </div>
 
                 <div class="form-field">
                   <label class="label" for="field-note-status">
-                    Status
+                    Publishing
                   </label>
                   <select
                     id="field-note-status"
                     class="select"
                   >
-                    <option value="draft">Draft</option>
-                    <option value="published">Published</option>
+                    <option value="draft">Save as draft</option>
+                    <option value="published">Publish now</option>
+                    <option value="scheduled">Schedule for later</option>
                     <option value="archived">Archived</option>
                   </select>
+                  <p id="field-note-publishing-help" class="field-help">
+                    Drafts stay private until you choose to publish or schedule them.
+                  </p>
                 </div>
 
                 <div class="form-field full">
@@ -3308,15 +3324,18 @@ const supabasePublishableKey =
                   />
                 </div>
 
-                <div class="form-field">
+                <div id="field-note-publish-date-field" class="form-field hidden">
                   <label class="label" for="field-note-published-at">
-                    Publish date
+                    Scheduled publication date & time
                   </label>
                   <input
                     id="field-note-published-at"
                     class="input"
                     type="datetime-local"
                   />
+                  <p class="field-help">
+                    The note stays private until this exact date and time, then becomes public automatically.
+                  </p>
                 </div>
 
                 <div class="form-field">
@@ -3348,27 +3367,30 @@ const supabasePublishableKey =
                   />
                 </div>
 
-                <div class="form-field">
-                  <label class="label" for="field-note-legacy-url">
-                    Legacy URL
-                  </label>
-                  <input
-                    id="field-note-legacy-url"
-                    class="input"
-                    type="text"
-                    placeholder="/blogs/article-name.html"
-                  />
-                </div>
-
                 <details class="form-field full seo-settings">
                   <summary>
-                    SEO settings (optional)
+                    Advanced & SEO settings (optional)
                   </summary>
                   <div class="seo-settings-body">
                     <p class="field-help" style="margin-bottom: 14px;">
                       These control how the Field Note can appear in Google and link previews. Leave them blank and the CMS will automatically use the article title and short description.
                     </p>
                     <div class="form-grid">
+                      <div class="form-field full">
+                        <label class="label" for="field-note-legacy-url">
+                          Previous URL (optional)
+                        </label>
+                        <input
+                          id="field-note-legacy-url"
+                          class="input"
+                          type="text"
+                          placeholder="/blogs/old-article-url.html"
+                        />
+                        <p class="field-help">
+                          Only use this for an article that previously lived at another URL. New Field Notes can leave it blank.
+                        </p>
+                      </div>
+
                       <div class="form-field full">
                         <label class="label" for="field-note-seo-title">
                           SEO title
@@ -4220,6 +4242,71 @@ const supabasePublishableKey =
       }
 
 
+      function fieldNotePublishingMode(item) {
+        if (!item) return "draft";
+
+        if (item.status === "published" && item.published_at) {
+          const publishTime = new Date(item.published_at).getTime();
+
+          if (Number.isFinite(publishTime) && publishTime > Date.now()) {
+            return "scheduled";
+          }
+        }
+
+        return item.status || "draft";
+      }
+
+
+      function fieldNoteDisplayStatus(item) {
+        const mode = fieldNotePublishingMode(item);
+
+        return {
+          mode,
+          label:
+            mode === "scheduled"
+              ? "Scheduled"
+              : mode === "published"
+                ? "Published"
+                : mode === "archived"
+                  ? "Archived"
+                  : "Draft"
+        };
+      }
+
+
+      function updateFieldNotePublishingUI() {
+        const mode = $("#field-note-status")?.value || "draft";
+        const dateField = $("#field-note-publish-date-field");
+        const dateInput = $("#field-note-published-at");
+        const help = $("#field-note-publishing-help");
+
+        if (!dateField || !dateInput || !help) return;
+
+        dateField.classList.toggle("hidden", mode !== "scheduled");
+        dateInput.required = mode === "scheduled";
+
+        if (mode === "scheduled") {
+          dateInput.min = toLocalDateTimeInput(
+            new Date(Date.now() + 60_000).toISOString()
+          );
+          help.textContent =
+            "Choose a future date and time. The note will remain private until then and publish automatically.";
+        } else if (mode === "published") {
+          dateInput.min = "";
+          help.textContent =
+            "The note will become public immediately when you save it.";
+        } else if (mode === "archived") {
+          dateInput.min = "";
+          help.textContent =
+            "Archived notes remain in the CMS but are not public.";
+        } else {
+          dateInput.min = "";
+          help.textContent =
+            "Drafts stay private until you choose to publish or schedule them.";
+        }
+      }
+
+
       function showToast(
         message,
         type = "success"
@@ -5022,6 +5109,14 @@ const supabasePublishableKey =
                       )
                     : "";
 
+                const displayStatus =
+                  item.contentSection === "field-notes"
+                    ? fieldNoteDisplayStatus(item)
+                    : {
+                        mode: item.status || "published",
+                        label: item.status || "published"
+                      };
+
                 return `
                   <div class="content-row recent-content-row">
                     <div class="recent-content-main">
@@ -5042,8 +5137,8 @@ const supabasePublishableKey =
                       </h3>
 
                       <div class="row-meta">
-                        <span class="status-pill ${escapeHtml(item.status || "published")}">
-                          ${escapeHtml(item.status || "published")}
+                        <span class="status-pill ${escapeHtml(displayStatus.mode)}">
+                          ${escapeHtml(displayStatus.label)}
                         </span>
                       </div>
                     </div>
@@ -6800,7 +6895,10 @@ const supabasePublishableKey =
             .map(
               (
                 item
-              ) => `
+              ) => {
+                const displayStatus = fieldNoteDisplayStatus(item);
+
+                return `
                 <div class="content-row">
                   <div>
                     <h3 class="row-title">
@@ -6808,8 +6906,8 @@ const supabasePublishableKey =
                     </h3>
                     <div class="row-meta">
                       ${item.category ? `<span>${escapeHtml(item.category)}</span><span>•</span>` : ""}
-                      <span class="status-pill ${escapeHtml(item.status)}">
-                        ${escapeHtml(item.status)}
+                      <span class="status-pill ${escapeHtml(displayStatus.mode)}">
+                        ${escapeHtml(displayStatus.label)}
                       </span>
                     </div>
                   </div>
@@ -6823,7 +6921,8 @@ const supabasePublishableKey =
                     </button>
                   </div>
                 </div>
-              `
+              `;
+              }
             )
             .join(
               ""
@@ -6837,7 +6936,9 @@ const supabasePublishableKey =
         $("#field-note-form").reset();
         $("#field-note-record-id").value = "";
         $("#field-note-status").value = "draft";
+        $("#field-note-published-at").value = "";
         $("#field-note-modal-title").textContent = "New Field Note";
+        updateFieldNotePublishingUI();
         renderFieldNotePictureUploaders();
         updateFieldNoteSeoCounters();
 
@@ -6875,8 +6976,24 @@ const supabasePublishableKey =
           $("#field-note-modal-title").textContent = "Edit Field Note";
           $("#field-note-record-id").value = item.id;
           $("#field-note-title").value = item.title || "";
-          $("#field-note-category").value = item.category || "";
-          $("#field-note-status").value = item.status || "draft";
+
+          const categorySelect = $("#field-note-category");
+          const categoryValue = item.category || "";
+
+          if (
+            categoryValue &&
+            !Array.from(categorySelect.options).some(
+              (option) => option.value === categoryValue
+            )
+          ) {
+            const option = document.createElement("option");
+            option.value = categoryValue;
+            option.textContent = categoryValue;
+            categorySelect.appendChild(option);
+          }
+
+          categorySelect.value = categoryValue;
+          $("#field-note-status").value = fieldNotePublishingMode(item);
           $("#field-note-excerpt").value = item.excerpt || "";
           $("#field-note-content").value = item.content_markdown || "";
           $("#field-note-published-at").value = toLocalDateTimeInput(item.published_at);
@@ -6889,6 +7006,7 @@ const supabasePublishableKey =
 
         }
 
+        updateFieldNotePublishingUI();
         renderFieldNotePictureUploaders();
         updateFieldNoteSeoCounters();
 
@@ -6906,29 +7024,61 @@ const supabasePublishableKey =
         const title =
           $("#field-note-title").value.trim();
 
-        const status =
+        const publishingMode =
           $("#field-note-status").value;
 
-        let publishedAt =
+        const publicationInput =
           $("#field-note-published-at").value;
 
+        let status = publishingMode;
+        let publishedAt = null;
 
-        if (
-          status === "published" &&
-          !publishedAt
-        ) {
+        if (publishingMode === "scheduled") {
+          if (!publicationInput) {
+            throw new Error("Choose a future publication date and time.");
+          }
+
+          const scheduledDate = new Date(publicationInput);
+
+          if (
+            Number.isNaN(scheduledDate.getTime()) ||
+            scheduledDate.getTime() <= Date.now()
+          ) {
+            throw new Error("The scheduled publication date must be in the future.");
+          }
+
+          // Store scheduled content as published with a future timestamp.
+          // Supabase RLS keeps it private until published_at <= now().
+          status = "published";
+          publishedAt = scheduledDate.toISOString();
+        } else if (publishingMode === "published") {
+          status = "published";
+
+          const existingItem = existingId
+            ? state.fieldNotes.find((item) => item.id === existingId)
+            : null;
+
+          const existingPublishTime = existingItem?.published_at
+            ? new Date(existingItem.published_at)
+            : null;
+
           publishedAt =
-            new Date().toISOString();
-        } else if (
-          publishedAt
-        ) {
-          publishedAt =
-            new Date(
-              publishedAt
-            ).toISOString();
+            existingPublishTime &&
+            Number.isFinite(existingPublishTime.getTime()) &&
+            existingPublishTime.getTime() <= Date.now()
+              ? existingPublishTime.toISOString()
+              : new Date().toISOString();
+        } else if (publishingMode === "archived") {
+          status = "archived";
+
+          const existingItem = existingId
+            ? state.fieldNotes.find((item) => item.id === existingId)
+            : null;
+
+          publishedAt = existingItem?.published_at || null;
         } else {
-          publishedAt =
-            null;
+          status = "draft";
+          publishedAt = null;
         }
 
 
@@ -9214,6 +9364,14 @@ const supabasePublishableKey =
             );
           }
 
+        }
+      );
+
+
+      $("#field-note-status").addEventListener(
+        "change",
+        () => {
+          updateFieldNotePublishingUI();
         }
       );
 
