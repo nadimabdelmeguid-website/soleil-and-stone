@@ -1,0 +1,91 @@
+name: CMS Rebuild Watch
+
+on:
+  schedule:
+    - cron: "*/15 * * * *"
+
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: cms-rebuild-watch
+  cancel-in-progress: true
+
+jobs:
+  check-and-rebuild:
+    name: Check CMS and rebuild when needed
+    runs-on: ubuntu-latest
+
+    env:
+      SUPABASE_URL: https://szdhkttphzvtmljuhcqs.supabase.co
+      SUPABASE_PUBLISHABLE_KEY: sb_publishable_iN7aDql5whleXHRCRVNS-w_Awl-iQez
+      VERCEL_DEPLOY_HOOK: ${{ secrets.VERCEL_DEPLOY_HOOK }}
+
+    steps:
+      - name: Check for public CMS changes
+        id: cms
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          if [ -z "$VERCEL_DEPLOY_HOOK" ]; then
+            echo "VERCEL_DEPLOY_HOOK secret is missing."
+            exit 1
+          fi
+
+          NOW="$(date -u +"%Y-%m-%dT%H:%M:%SZ")"
+          CUTOFF="$(date -u -d "20 minutes ago" +"%Y-%m-%dT%H:%M:%SZ")"
+          SHOULD_REBUILD="false"
+
+          if [ "${GITHUB_EVENT_NAME}" = "workflow_dispatch" ]; then
+            SHOULD_REBUILD="true"
+            echo "Manual run requested."
+          fi
+
+          STATE_JSON="$(
+            curl               --silent               --show-error               --fail               --get               "$SUPABASE_URL/rest/v1/cms_publication_state"               --header "apikey: $SUPABASE_PUBLISHABLE_KEY"               --header "Authorization: Bearer $SUPABASE_PUBLISHABLE_KEY"               --data-urlencode "select=updated_at"               --data-urlencode "id=eq.1"
+          )"
+
+          LAST_CHANGE="$(echo "$STATE_JSON" | jq -r '.[0].updated_at // empty')"
+
+          if [ -n "$LAST_CHANGE" ]; then
+            LAST_CHANGE_EPOCH="$(date -u -d "$LAST_CHANGE" +%s)"
+            CUTOFF_EPOCH="$(date -u -d "$CUTOFF" +%s)"
+
+            if [ "$LAST_CHANGE_EPOCH" -ge "$CUTOFF_EPOCH" ]; then
+              SHOULD_REBUILD="true"
+              echo "Recent CMS edit detected at $LAST_CHANGE."
+            fi
+          fi
+
+          for TABLE in field_notes event_recaps; do
+            RELEASES="$(
+              curl                 --silent                 --show-error                 --fail                 --get                 "$SUPABASE_URL/rest/v1/$TABLE"                 --header "apikey: $SUPABASE_PUBLISHABLE_KEY"                 --header "Authorization: Bearer $SUPABASE_PUBLISHABLE_KEY"                 --data-urlencode "select=id,published_at"                 --data-urlencode "published_at=gte.$CUTOFF"                 --data-urlencode "published_at=lte.$NOW"                 --data-urlencode "limit=1"
+            )"
+
+            if echo "$RELEASES" | jq -e 'length > 0' >/dev/null; then
+              SHOULD_REBUILD="true"
+              echo "Newly publishable content detected in $TABLE."
+            fi
+          done
+
+          echo "rebuild=$SHOULD_REBUILD" >> "$GITHUB_OUTPUT"
+
+      - name: Trigger Vercel production rebuild
+        if: steps.cms.outputs.rebuild == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          echo "Triggering Soleil & Stone production rebuild..."
+
+          curl             --silent             --show-error             --fail             --request POST             "$VERCEL_DEPLOY_HOOK"
+
+          echo
+          echo "Deployment triggered successfully."
+
+      - name: No rebuild needed
+        if: steps.cms.outputs.rebuild != 'true'
+        run: echo "No public CMS changes detected in the current window."
