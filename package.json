@@ -3,11 +3,12 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "dev": "astro dev",
-    "start": "astro dev",
+    "dev": "npm run sync-cms && astro dev",
+    "start": "npm run sync-cms && astro dev",
     "sync-events": "tsx scripts/sync-events.ts",
-    "build": "npm run sync-events && astro build",
-    "preview": "astro preview"
+    "build": "npm run sync-cms && astro build",
+    "preview": "astro preview",
+    "sync-cms": "tsx scripts/sync-cms.ts"
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.6.0",
