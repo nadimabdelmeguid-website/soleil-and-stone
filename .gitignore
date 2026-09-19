@@ -141,3 +141,11 @@ dist
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 .vite/
+
+# CMS build snapshots
+src/data/events.cms.ts
+src/data/communities.cms.ts
+src/data/logos.cms.ts
+src/data/featured.cms.ts
+src/content/cms-field-notes/
+src/content/cms-event-recaps/
