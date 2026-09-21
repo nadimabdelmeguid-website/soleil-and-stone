@@ -1,25 +1,33 @@
 ---
 const {
-  eyebrow = "Community Contributors",
-  title = "Speakers & Sponsors",
+  eyebrow = "Event Partners",
+  title = "Sponsors",
   description = "",
   logos = [],
-  emptyMessage = "Contributor logos will appear here as sponsors and speakers are linked in the CMS.",
+  emptyMessage = "Sponsor logos will appear here as sponsors are linked in the CMS.",
   background = "cream"
 } = Astro.props;
+
+
+const logoGroups =
+  [
+    logos,
+    logos
+  ];
 ---
 
 <section
   class:list={[
     "border-b",
     "border-brand-border",
+    "overflow-hidden",
     background === "white"
       ? "bg-white"
       : "bg-brand-cream"
   ]}
 >
   <div class="max-w-6xl w-full mx-auto px-6 pt-5 pb-16">
-    <div class="mb-8">
+    <div class="mb-9">
       <span class="text-[10px] uppercase tracking-[0.2em] text-brand-gold font-semibold">
         {eyebrow}
       </span>
@@ -39,93 +47,244 @@ const {
 
     {
       logos.length > 0 ? (
-        <div class="contributor-logo-grid">
-          {
-            logos.map((logo) => (
-              logo.url ? (
-                <a
-                  href={logo.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="contributor-logo-card"
-                  aria-label={`Visit ${logo.name}`}
-                  title={logo.name}
-                >
-                  <img
-                    src={logo.image}
-                    alt={`${logo.name} logo`}
-                    loading="lazy"
-                    decoding="async"
-                  />
-                </a>
-              ) : (
-                <div
-                  class="contributor-logo-card"
-                  title={logo.name}
-                >
-                  <img
-                    src={logo.image}
-                    alt={`${logo.name} logo`}
-                    loading="lazy"
-                    decoding="async"
-                  />
-                </div>
-              )
-            ))
-          }
-        </div>
+        <>
+          <div
+            class:list={[
+              "contributor-logo-marquee",
+              "relative",
+              "overflow-hidden",
+              "border-y",
+              "border-brand-border",
+              background === "white"
+                ? "contributor-bg-white"
+                : "contributor-bg-cream"
+            ]}
+          >
+            <div class="contributor-logo-fade contributor-logo-fade-left"></div>
+            <div class="contributor-logo-fade contributor-logo-fade-right"></div>
+
+            <div class="contributor-logo-track">
+              {
+                logoGroups.map(
+                  (
+                    group,
+                    groupIndex
+                  ) => (
+                    <div
+                      class="contributor-logo-group"
+                      aria-hidden={
+                        groupIndex === 1
+                          ? "true"
+                          : undefined
+                      }
+                    >
+                      {
+                        group.map(
+                          (logo) => (
+                            logo.url ? (
+                              <a
+                                href={logo.url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                aria-label={
+                                  groupIndex === 0
+                                    ? `Visit ${logo.name}`
+                                    : undefined
+                                }
+                                title={
+                                  groupIndex === 0
+                                    ? `Visit ${logo.name}`
+                                    : undefined
+                                }
+                                tabindex={
+                                  groupIndex === 1
+                                    ? "-1"
+                                    : undefined
+                                }
+                                class="contributor-logo-link"
+                              >
+                                <img
+                                  src={logo.image}
+                                  alt={
+                                    groupIndex === 0
+                                      ? `${logo.name} logo`
+                                      : ""
+                                  }
+                                  loading="lazy"
+                                  decoding="async"
+                                  class="contributor-logo-image"
+                                />
+                              </a>
+                            ) : (
+                              <div
+                                title={logo.name}
+                                class="contributor-logo-link"
+                              >
+                                <img
+                                  src={logo.image}
+                                  alt={
+                                    groupIndex === 0
+                                      ? `${logo.name} logo`
+                                      : ""
+                                  }
+                                  loading="lazy"
+                                  decoding="async"
+                                  class="contributor-logo-image"
+                                />
+                              </div>
+                            )
+                          )
+                        )
+                      }
+                    </div>
+                  )
+                )
+              }
+            </div>
+          </div>
+
+          <p class="mt-4 text-[10px] uppercase tracking-[0.15em] text-brand-slate">
+            Select a logo to visit the organization's website.
+          </p>
+        </>
       ) : (
         <div class="contributor-empty">
           <span class="contributor-empty-mark">+</span>
+
           <div>
-            <strong>Contributor logos</strong>
+            <strong>Sponsor logos</strong>
             <p>{emptyMessage}</p>
           </div>
         </div>
-      )
-    }
-
-    {
-      logos.length > 0 && (
-        <p class="mt-4 text-[10px] uppercase tracking-[0.15em] text-brand-slate">
-          Select a logo to visit the organization's website.
-        </p>
       )
     }
   </div>
 </section>
 
 <style>
-  .contributor-logo-grid {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 1px;
-    border: 1px solid #DDD8CB;
-    background: #DDD8CB;
+  .contributor-logo-marquee {
+    width: 100%;
+    padding-top: 28px;
+    padding-bottom: 28px;
   }
 
-  .contributor-logo-card {
-    min-height: 110px;
+  .contributor-logo-track {
+    display: flex;
+    align-items: center;
+    width: max-content;
+    will-change: transform;
+    animation: contributor-logo-scroll 36s linear infinite;
+  }
+
+  .contributor-logo-marquee:hover .contributor-logo-track {
+    animation-play-state: paused;
+  }
+
+  .contributor-logo-group {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+    gap: 46px;
+    padding-right: 46px;
+  }
+
+  .contributor-logo-link {
+    width: 180px;
+    height: 78px;
+    flex: 0 0 180px;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 22px;
-    background: #fff;
-    transition:
-      background-color 160ms ease,
-      box-shadow 160ms ease;
+    padding: 10px;
+    background: transparent;
+    border: none;
+    text-decoration: none;
+    outline-offset: 5px;
+    overflow: hidden;
   }
 
-  .contributor-logo-card:hover {
-    background: #F8F6F0;
+  .contributor-logo-link:focus-visible {
+    outline: 1px solid #C5A059;
   }
 
-  .contributor-logo-card img {
+  .contributor-logo-image {
     display: block;
-    width: 100%;
-    max-width: 160px;
-    max-height: 62px;
+    width: 150px;
+    height: 52px;
     object-fit: contain;
+    object-position: center;
+    flex-shrink: 0;
+    filter:
+      brightness(0)
+      saturate(100%)
+      invert(69%)
+      sepia(18%)
+      saturate(560%)
+      hue-rotate(4deg)
+      brightness(88%)
+      contrast(88%);
+    opacity: 1;
+    transition:
+      opacity 180ms ease,
+      transform 180ms ease;
+  }
+
+  .contributor-logo-link:hover .contributor-logo-image {
+    opacity: .78;
+    transform: scale(1.04);
+  }
+
+  .contributor-logo-fade {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 72px;
+    z-index: 3;
+    pointer-events: none;
+  }
+
+  .contributor-logo-fade-left {
+    left: 0;
+  }
+
+  .contributor-logo-fade-right {
+    right: 0;
+  }
+
+  .contributor-bg-cream .contributor-logo-fade-left {
+    background:
+      linear-gradient(
+        to right,
+        #F4F1E8,
+        rgba(244, 241, 232, 0)
+      );
+  }
+
+  .contributor-bg-cream .contributor-logo-fade-right {
+    background:
+      linear-gradient(
+        to left,
+        #F4F1E8,
+        rgba(244, 241, 232, 0)
+      );
+  }
+
+  .contributor-bg-white .contributor-logo-fade-left {
+    background:
+      linear-gradient(
+        to right,
+        #fff,
+        rgba(255, 255, 255, 0)
+      );
+  }
+
+  .contributor-bg-white .contributor-logo-fade-right {
+    background:
+      linear-gradient(
+        to left,
+        #fff,
+        rgba(255, 255, 255, 0)
+      );
   }
 
   .contributor-empty {
@@ -167,15 +326,60 @@ const {
     font-weight: 300;
   }
 
-  @media (min-width: 640px) {
-    .contributor-logo-grid {
-      grid-template-columns: repeat(3, minmax(0, 1fr));
+  @keyframes contributor-logo-scroll {
+    from {
+      transform: translate3d(0, 0, 0);
+    }
+
+    to {
+      transform: translate3d(-50%, 0, 0);
     }
   }
 
-  @media (min-width: 900px) {
-    .contributor-logo-grid {
-      grid-template-columns: repeat(5, minmax(0, 1fr));
+  @media (max-width: 640px) {
+    .contributor-logo-marquee {
+      padding-top: 22px;
+      padding-bottom: 22px;
+    }
+
+    .contributor-logo-track {
+      animation-duration: 28s;
+    }
+
+    .contributor-logo-group {
+      gap: 28px;
+      padding-right: 28px;
+    }
+
+    .contributor-logo-link {
+      width: 150px;
+      height: 68px;
+      flex: 0 0 150px;
+      padding: 8px;
+    }
+
+    .contributor-logo-image {
+      width: 125px;
+      height: 44px;
+    }
+
+    .contributor-logo-fade {
+      width: 32px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .contributor-logo-track {
+      animation: none;
+      transform: none;
+    }
+
+    .contributor-logo-marquee {
+      overflow-x: auto;
+    }
+
+    .contributor-logo-group:nth-child(2) {
+      display: none;
     }
   }
 </style>
