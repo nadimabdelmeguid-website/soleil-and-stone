@@ -5,6 +5,12 @@ import BaseLayout
 import CommunityCard
   from "../components/CommunityCard.astro";
 
+import ContributorLogoStrip
+  from "../components/ContributorLogoStrip.astro";
+
+import OtherHostedEvents
+  from "../components/OtherHostedEvents.astro";
+
 import {
   communities
 } from "../data/communities.cms";
@@ -18,7 +24,8 @@ import {
 } from "../data/logos.cms";
 
 import {
-  getCommunityMetrics
+  getCommunityMetrics,
+  isCompletedEvent
 } from "../utils/eventMetrics";
 
 
@@ -61,6 +68,130 @@ const communityRegistrations =
 
 const communitySpeakerCount =
   communityMetrics.speakerCount;
+
+
+/* =========================================================
+   STARTUP MIXER CONTRIBUTORS
+   ========================================================= */
+
+const startupMixerLogos =
+  communityLogos
+    .filter(
+      (logo) =>
+        logo.communityId ===
+        "startup-mixer"
+    )
+    .map(
+      (logo) => ({
+        name:
+          logo.name,
+
+        image:
+          logo.image,
+
+        url:
+          logo.url
+      })
+    );
+
+
+/* =========================================================
+   OTHER HOSTED / CO-ORGANIZED EVENTS
+
+   Any completed event led outside the two recurring
+   communities appears here automatically.
+   ========================================================= */
+
+const otherHostedEvents =
+  events
+    .filter(
+      (event) =>
+        (
+          event.participation ===
+            "hosted" ||
+          event.participation ===
+            "co-organized"
+        ) &&
+        ![
+          "startup-mixer",
+          "hardware-meetup"
+        ].includes(
+          event.communityId ||
+          ""
+        ) &&
+        isCompletedEvent(
+          event
+        )
+    )
+    .sort(
+      (
+        a,
+        b
+      ) =>
+        new Date(
+          `${b.startDate}T12:00:00`
+        ).getTime() -
+        new Date(
+          `${a.startDate}T12:00:00`
+        ).getTime()
+    );
+
+
+const otherHostedLogoMap =
+  new Map();
+
+
+otherHostedEvents
+  .flatMap(
+    (event) =>
+      event.sponsorDetails ??
+      []
+  )
+  .forEach(
+    (sponsor) => {
+
+      if (
+        !sponsor?.name ||
+        !sponsor?.logo
+      ) {
+        return;
+      }
+
+
+      const key =
+        sponsor.name
+          .trim()
+          .toLowerCase();
+
+
+      if (
+        !otherHostedLogoMap.has(
+          key
+        )
+      ) {
+        otherHostedLogoMap.set(
+          key,
+          {
+            name:
+              sponsor.name,
+
+            image:
+              sponsor.logo,
+
+            url:
+              sponsor.website
+          }
+        );
+      }
+
+    }
+  );
+
+
+const otherHostedLogos =
+  Array.from(
+    otherHostedLogoMap.values()
+  );
 
 
 /* =========================================================
@@ -429,6 +560,23 @@ const hardwareLogoGroups =
 
           {
             community.id ===
+              "startup-mixer" && (
+
+              <ContributorLogoStrip
+                eyebrow="Community Contributors"
+                title="Sponsors & Speakers"
+                description="Organizations supporting the Startup Mixer through sponsorship, participation and speaker contributions."
+                logos={startupMixerLogos}
+                emptyMessage="Sponsor and speaker-company logos will appear here automatically as contributors are linked to Startup Mixer events in the CMS."
+                background="cream"
+              />
+
+            )
+          }
+
+
+          {
+            community.id ===
               "hardware-meetup" &&
             hardwareLogos.length >
               0 && (
@@ -687,6 +835,19 @@ const hardwareLogoGroups =
         </>
 
       )
+    )
+  }
+
+
+
+  {
+    otherHostedEvents.length > 0 && (
+
+      <OtherHostedEvents
+        events={otherHostedEvents}
+        logos={otherHostedLogos}
+      />
+
     )
   }
 
