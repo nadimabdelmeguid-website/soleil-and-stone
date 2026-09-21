@@ -79,7 +79,9 @@ const startupMixerLogos =
     .filter(
       (logo) =>
         logo.communityId ===
-        "startup-mixer"
+          "startup-mixer" &&
+        logo.sourceType ===
+          "sponsor"
     )
     .map(
       (logo) => ({
@@ -563,11 +565,11 @@ const hardwareLogoGroups =
               "startup-mixer" && (
 
               <ContributorLogoStrip
-                eyebrow="Community Contributors"
-                title="Sponsors & Speakers"
-                description="Organizations supporting the Startup Mixer through sponsorship, participation and speaker contributions."
+                eyebrow="Event Partners"
+                title="Sponsors"
+                description="Organizations supporting the Startup Mixer through sponsorship."
                 logos={startupMixerLogos}
-                emptyMessage="Sponsor and speaker-company logos will appear here automatically as contributors are linked to Startup Mixer events in the CMS."
+                emptyMessage="Sponsor logos will appear here automatically as sponsors are linked to Startup Mixer events in the CMS."
                 background="cream"
               />
 
