@@ -25,6 +25,8 @@ import {
 
 import {
   getCommunityMetrics,
+  getCompletedLedEvents,
+  getUniqueSpeakers,
   isCompletedEvent
 } from "../utils/eventMetrics";
 
@@ -66,8 +68,31 @@ const communityRegistrations =
   communityMetrics.registrations;
 
 
-const communitySpeakerCount =
-  communityMetrics.speakerCount;
+const completedLedEvents =
+  getCompletedLedEvents(
+    events
+  );
+
+
+const allLedRegistrations =
+  completedLedEvents.reduce(
+    (
+      total,
+      event
+    ) =>
+      total +
+      (
+        event.registrations ??
+        0
+      ),
+    0
+  );
+
+
+const allLedSpeakerCount =
+  getUniqueSpeakers(
+    completedLedEvents
+  ).length;
 
 
 /* =========================================================
@@ -439,7 +464,7 @@ const hardwareLogos =
               mb-2
             "
           >
-            {communityEvents.length}
+            {completedLedEvents.length}
           </div>
 
 
@@ -476,7 +501,7 @@ const hardwareLogos =
               mb-2
             "
           >
-            {communityRegistrations}
+            {allLedRegistrations}
           </div>
 
 
@@ -513,7 +538,7 @@ const hardwareLogos =
               mb-2
             "
           >
-            {communitySpeakerCount}
+            {allLedSpeakerCount}
           </div>
 
 
