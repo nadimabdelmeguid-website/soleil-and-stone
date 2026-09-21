@@ -186,7 +186,7 @@ function formatDate(
             </p>
           </div>
 
-          <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
+          <div class="flex flex-wrap justify-center gap-5">
             {
               events.map(
                 (event) => {
@@ -196,7 +196,7 @@ function formatDate(
                     );
 
                   return (
-                    <article class="group bg-brand-cream border border-brand-border overflow-hidden flex flex-col hover:border-brand-gold transition-colors">
+                    <article class="group w-full max-w-[360px] bg-brand-cream border border-brand-border overflow-hidden flex flex-col hover:border-brand-gold transition-colors">
                       {
                         event.image && (
                           <a
@@ -236,6 +236,20 @@ function formatDate(
                             <p class="text-xs text-brand-slate leading-relaxed font-light mt-3">
                               {event.description}
                             </p>
+                          )
+                        }
+
+                        {
+                          event.sponsors?.length > 0 && (
+                            <div class="mt-5 p-3 bg-white border border-brand-border">
+                              <div class="text-[8px] uppercase tracking-[0.15em] text-brand-slate mb-1">
+                                Sponsors
+                              </div>
+
+                              <div class="text-xs font-semibold text-brand-charcoal leading-relaxed">
+                                {event.sponsors.join(", ")}
+                              </div>
+                            </div>
                           )
                         }
 
