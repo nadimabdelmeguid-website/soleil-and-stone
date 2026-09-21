@@ -1,0 +1,283 @@
+---
+import {
+  getEventRecapUrl
+} from "../utils/eventRecaps";
+
+import ContributorLogoStrip
+  from "./ContributorLogoStrip.astro";
+
+
+const {
+  events = [],
+  logos = []
+} = Astro.props;
+
+
+const registrations =
+  events.reduce(
+    (
+      total,
+      event
+    ) =>
+      total +
+      (
+        event.registrations ??
+        0
+      ),
+    0
+  );
+
+
+const organizations =
+  Array.from(
+    new Set(
+      events.flatMap(
+        (event) => [
+          ...(
+            event.sponsors ??
+            []
+          ),
+
+          ...(
+            event.speakers ??
+            []
+          ).map(
+            (speaker) =>
+              speaker.company
+          )
+        ]
+      )
+        .filter(Boolean)
+        .map(
+          (value) =>
+            value.trim()
+        )
+    )
+  );
+
+
+function formatDate(
+  value
+) {
+
+  return new Date(
+    `${value}T12:00:00`
+  ).toLocaleDateString(
+    "en-US",
+    {
+      month:
+        "short",
+
+      day:
+        "numeric",
+
+      year:
+        "numeric"
+    }
+  );
+
+}
+---
+
+<section
+  id="other-hosted-events"
+  class="bg-white border-b border-brand-border"
+>
+  <div class="max-w-6xl w-full mx-auto px-6 py-16">
+    <div class="grid lg:grid-cols-12 gap-10 items-start">
+      <div class="lg:col-span-5">
+        <span class="text-[10px] uppercase tracking-[0.18em] text-brand-gold font-semibold">
+          Hosted & Co-Organized
+        </span>
+
+        <h2 class="font-serif text-3xl sm:text-4xl text-brand-charcoal mt-2 mb-5">
+          Other Events & Collaborations
+        </h2>
+
+        <p class="text-sm sm:text-base text-brand-slate leading-relaxed font-light mb-7">
+          Selected events I host or co-organize outside the recurring Startup Mixer and Hardware Meetup communities, often in partnership with companies, operators and technical organizations.
+        </p>
+
+        <a
+          href="/contact/?reason=event-collaboration"
+          class="inline-flex items-center gap-2 px-5 py-3 border border-brand-border text-brand-charcoal text-[10px] uppercase tracking-[0.16em] font-semibold hover:border-brand-gold hover:text-brand-gold transition-colors"
+        >
+          Collaborate on an Event
+          <span>→</span>
+        </a>
+      </div>
+
+      <div class="lg:col-span-7 border border-brand-border p-6 sm:p-7 bg-brand-cream">
+        <div class="text-[9px] uppercase tracking-[0.18em] text-brand-gold font-semibold mb-5">
+          Event Snapshot
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div class="bg-white border border-brand-border px-5 py-5">
+            <div class="font-serif text-3xl text-brand-charcoal">
+              {events.length}
+            </div>
+            <div class="text-[9px] uppercase tracking-[0.15em] text-brand-slate mt-2">
+              Events Led
+            </div>
+          </div>
+
+          <div class="bg-white border border-brand-gold/40 px-5 py-5">
+            <div class="font-serif text-3xl text-brand-gold">
+              {registrations > 0 ? registrations : "—"}
+            </div>
+            <div class="text-[9px] uppercase tracking-[0.15em] text-brand-slate mt-2">
+              Registrations
+            </div>
+          </div>
+
+          <div class="bg-white border border-brand-border px-5 py-5">
+            <div class="font-serif text-3xl text-brand-charcoal">
+              {organizations.length}
+            </div>
+            <div class="text-[9px] uppercase tracking-[0.15em] text-brand-slate mt-2">
+              Organizations
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-7 pt-6 border-t border-brand-border">
+          <div class="text-[9px] uppercase tracking-[0.18em] text-brand-gold font-semibold mb-4">
+            Focus
+          </div>
+
+          <div class="grid sm:grid-cols-2 gap-x-8 gap-y-3">
+            {
+              [
+                "Industry networking",
+                "Partner-led programming",
+                "Technical community building",
+                "Cross-ecosystem collaboration"
+              ].map(
+                (item) => (
+                  <div class="flex items-start gap-3 text-xs text-brand-slate leading-relaxed">
+                    <span class="text-brand-gold mt-[1px]">—</span>
+                    <span>{item}</span>
+                  </div>
+                )
+              )
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {
+      events.length > 0 && (
+        <div class="mt-12">
+          <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-3 mb-6">
+            <div>
+              <span class="text-[9px] uppercase tracking-[0.18em] text-brand-gold font-semibold">
+                Track Record
+              </span>
+
+              <h3 class="font-serif text-2xl text-brand-charcoal mt-1">
+                Other Hosted & Co-Organized Events
+              </h3>
+            </div>
+
+            <p class="text-xs text-brand-slate font-light max-w-md sm:text-right">
+              One-off collaborations and partner-led programs outside the recurring communities above.
+            </p>
+          </div>
+
+          <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
+            {
+              events.map(
+                (event) => {
+                  const recapUrl =
+                    getEventRecapUrl(
+                      event.id
+                    );
+
+                  return (
+                    <article class="group bg-brand-cream border border-brand-border overflow-hidden flex flex-col hover:border-brand-gold transition-colors">
+                      {
+                        event.image && (
+                          <a
+                            href={event.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="block overflow-hidden border-b border-brand-border"
+                          >
+                            <img
+                              src={event.image}
+                              alt={`${event.title} event`}
+                              loading="lazy"
+                              decoding="async"
+                              class="block w-full aspect-[16/9] object-cover transition-transform duration-300 group-hover:scale-[1.02]"
+                            />
+                          </a>
+                        )
+                      }
+
+                      <div class="p-5 flex flex-col flex-1">
+                        <div class="flex flex-wrap items-center gap-2 mb-3">
+                          <span class="text-[9px] uppercase tracking-[0.14em] text-brand-gold font-semibold">
+                            {event.typeLabel || "Hosted Event"}
+                          </span>
+
+                          <span class="text-[9px] text-brand-slate">
+                            {formatDate(event.startDate)}
+                          </span>
+                        </div>
+
+                        <h4 class="font-serif text-lg sm:text-xl text-brand-charcoal leading-snug">
+                          {event.title}
+                        </h4>
+
+                        {
+                          event.description && (
+                            <p class="text-xs text-brand-slate leading-relaxed font-light mt-3">
+                              {event.description}
+                            </p>
+                          )
+                        }
+
+                        <div class="mt-auto pt-5 flex flex-wrap gap-4">
+                          <a
+                            href={event.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="text-[10px] uppercase tracking-[0.14em] text-brand-charcoal hover:text-brand-gold"
+                          >
+                            View Event ↗
+                          </a>
+
+                          {
+                            recapUrl && (
+                              <a
+                                href={recapUrl}
+                                class="text-[10px] uppercase tracking-[0.14em] text-brand-gold"
+                              >
+                                Event Recap →
+                              </a>
+                            )
+                          }
+                        </div>
+                      </div>
+                    </article>
+                  );
+                }
+              )
+            }
+          </div>
+        </div>
+      )
+    }
+  </div>
+</section>
+
+<ContributorLogoStrip
+  eyebrow="Event Partners"
+  title="Sponsors"
+  description="Organizations that supported these hosted and co-organized events."
+  logos={logos}
+  emptyMessage="Sponsor logos will appear here as organizations are linked to qualifying events in the CMS."
+  background="cream"
+/>
