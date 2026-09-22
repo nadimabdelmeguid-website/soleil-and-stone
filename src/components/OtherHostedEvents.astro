@@ -181,12 +181,36 @@ function formatDate(
               </h3>
             </div>
 
-            <p class="text-xs text-brand-slate font-light max-w-md sm:text-right">
-              One-off collaborations and partner-led programs outside the recurring communities above.
-            </p>
+            <div class="sm:text-right">
+              <p class="text-xs text-brand-slate font-light max-w-md">
+                One-off collaborations and partner-led programs outside the recurring communities above.
+              </p>
+
+              {
+                events.length > 1 && (
+                  <p class="mt-2 text-[9px] uppercase tracking-[0.14em] text-brand-slate">
+                    Swipe or scroll to explore →
+                  </p>
+                )
+              }
+            </div>
           </div>
 
-          <div class="flex flex-wrap justify-center gap-5">
+          <div
+            class:list={[
+              "other-events-scroll",
+              "flex",
+              "flex-nowrap",
+              "gap-5",
+              "overflow-x-auto",
+              "snap-x",
+              "snap-mandatory",
+              "pb-4",
+              events.length === 1
+                ? "justify-center"
+                : "justify-start"
+            ]}
+          >
             {
               events.map(
                 (event) => {
@@ -196,7 +220,7 @@ function formatDate(
                     );
 
                   return (
-                    <article class="group w-full max-w-[360px] bg-brand-cream border border-brand-border overflow-hidden flex flex-col hover:border-brand-gold transition-colors">
+                    <article class="other-event-card group bg-brand-cream border border-brand-border overflow-hidden flex flex-col snap-start hover:border-brand-gold transition-colors">
                       {
                         event.image && (
                           <a
@@ -295,3 +319,56 @@ function formatDate(
   emptyMessage="Sponsor logos will appear here as organizations are linked to qualifying events in the CMS."
   background="white"
 />
+
+
+<style>
+  .other-events-scroll {
+    overscroll-behavior-inline: contain;
+    scroll-behavior: smooth;
+    scrollbar-width: thin;
+    scrollbar-color: #C5A059 #E8E5DA;
+    -webkit-overflow-scrolling: touch;
+    touch-action: pan-x pan-y;
+  }
+
+  .other-events-scroll::-webkit-scrollbar {
+    height: 5px;
+  }
+
+  .other-events-scroll::-webkit-scrollbar-track {
+    background: #E8E5DA;
+  }
+
+  .other-events-scroll::-webkit-scrollbar-thumb {
+    background: #C5A059;
+  }
+
+  .other-event-card {
+    width: min(86vw, 360px);
+    min-width: min(86vw, 360px);
+    flex: 0 0 min(86vw, 360px);
+    scroll-snap-stop: always;
+  }
+
+  @media (min-width: 640px) {
+    .other-event-card {
+      width: 330px;
+      min-width: 330px;
+      flex-basis: 330px;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .other-event-card {
+      width: 350px;
+      min-width: 350px;
+      flex-basis: 350px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .other-events-scroll {
+      scroll-behavior: auto;
+    }
+  }
+</style>
