@@ -35,11 +35,9 @@ const now =
 
 
 /*
- * FIELDWORK USES THE MANUALLY CURATED EVENT DATA FROM events.ts.
- *
- * This deliberately uses eventSeeds rather than the merged `events`
- * export, so dates shown on this page always come directly from the
- * startDate / endDate values you maintain in src/data/events.ts.
+ * Fieldwork uses the CMS-generated event snapshot.
+ * Every published event entered in Admin is included automatically
+ * after the next site rebuild.
  */
 const events =
   eventSeeds;
