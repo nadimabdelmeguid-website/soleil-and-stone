@@ -3954,8 +3954,17 @@ const supabasePublishableKey =
                   <textarea
                     id="field-note-excerpt"
                     class="textarea"
+                    rows="4"
+                    maxlength="320"
                     style="min-height: 90px;"
+                    aria-describedby="field-note-excerpt-help"
                   ></textarea>
+                  <p
+                    id="field-note-excerpt-help"
+                    class="field-help"
+                  >
+                    Maximum 4 lines. Keep the description concise; the public card is clamped to four lines.
+                  </p>
                 </div>
 
                 <div class="form-field full">
@@ -8582,6 +8591,15 @@ const supabasePublishableKey =
         const publishingMode =
           $("#field-note-status").value;
 
+        const excerpt =
+          $("#field-note-excerpt").value.trim();
+
+        if (
+          excerpt.split(/\r?\n/).length > 4
+        ) {
+          throw new Error("Short description cannot contain more than 4 lines.");
+        }
+
         const publicationInput =
           $("#field-note-published-at").value;
 
@@ -8640,7 +8658,7 @@ const supabasePublishableKey =
         const payload = {
           title,
           excerpt:
-            $("#field-note-excerpt").value.trim() || null,
+            excerpt || null,
           category:
             $("#field-note-category").value.trim() || null,
           content_markdown:
@@ -8659,7 +8677,7 @@ const supabasePublishableKey =
             $("#field-note-seo-title").value.trim() || title,
           seo_description:
             $("#field-note-seo-description").value.trim() ||
-            $("#field-note-excerpt").value.trim() ||
+            excerpt ||
             null,
           published_at:
             publishedAt,
