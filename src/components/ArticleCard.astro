@@ -36,6 +36,7 @@ const minutes =
 <article
   class="
     group
+    h-full
     bg-white
     border
     border-brand-border
@@ -47,7 +48,9 @@ const minutes =
   <a
     href={`/field-notes/${post.id}/`}
     class="
-      block
+      flex
+      h-full
+      flex-col
       p-5
     "
   >
@@ -108,6 +111,7 @@ const minutes =
         group-hover:text-brand-gold
         transition-colors
         mb-3
+        min-h-[3.5rem]
       "
     >
       {post.data.title}
@@ -124,6 +128,8 @@ const minutes =
         leading-relaxed
         font-light
         mb-4
+        line-clamp-4
+        min-h-[5.5rem]
       "
     >
       {post.data.description}
@@ -138,6 +144,7 @@ const minutes =
         items-center
         justify-between
         gap-4
+        mt-auto
         pt-3
         border-t
         border-brand-border
