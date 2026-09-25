@@ -29,8 +29,10 @@ function isActive(
 <header
   id="site-header"
   class="
-    sticky
+    fixed
     top-0
+    left-0
+    right-0
     z-50
     w-full
     bg-brand-cream
@@ -349,9 +351,19 @@ function isActive(
 
 </header>
 
+<div
+  id="site-header-spacer"
+  aria-hidden="true"
+></div>
+
 
 
 <style>
+
+  #site-header-spacer {
+    height: var(--site-header-height, 0px);
+  }
+
 
   /* =====================================================
      SCROLLED HEADER
@@ -487,6 +499,37 @@ function isActive(
        HEADER SCROLL STATE
        ===================================================== */
 
+    const headerSpacer =
+      document.getElementById(
+        "site-header-spacer"
+      );
+
+
+    const syncHeaderHeight =
+      () => {
+
+        if (
+          !header ||
+          !headerSpacer
+        ) {
+
+          return;
+
+        }
+
+
+        const height =
+          header.getBoundingClientRect().height;
+
+
+        document.documentElement.style.setProperty(
+          "--site-header-height",
+          `${height}px`
+        );
+
+      };
+
+
     const updateHeader =
       () => {
 
@@ -516,6 +559,11 @@ function isActive(
 
         }
 
+
+        window.requestAnimationFrame(
+          syncHeaderHeight
+        );
+
       };
 
 
@@ -525,6 +573,16 @@ function isActive(
     window.addEventListener(
       "scroll",
       updateHeader,
+      {
+        passive:
+          true
+      }
+    );
+
+
+    window.addEventListener(
+      "resize",
+      syncHeaderHeight,
       {
         passive:
           true
