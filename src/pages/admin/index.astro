@@ -12096,7 +12096,7 @@ const supabasePublishableKey =
 
         const payload = {
           name,
-          slug: slugify(name),
+          slug: name.trim().toLowerCase() === "soleil & stone" ? "soleil-and-stone" : slugify(name),
           tagline: $("#venture-tagline").value.trim() || null,
           description: $("#venture-description").value.trim() || null,
           venture_status: $("#venture-status").value,
@@ -12663,9 +12663,19 @@ const supabasePublishableKey =
       }
 
 
+      function isSoleilAndStoneVenture(venture) {
+        if (!venture) return false;
+        const slug = String(venture.slug || "").trim().toLowerCase();
+        const name = String(venture.name || "").trim().toLowerCase();
+        return slug === "soleil-and-stone" || slug === "soleil-stone" || name === "soleil & stone";
+      }
+
+
       function workspaceConfigFor(venture = currentVenture()) {
         if (!venture) return { subtitle: "Venture workspace", modules: [] };
-        const configured = ventureWorkspaceConfig[venture.slug];
+        const configured = isSoleilAndStoneVenture(venture)
+          ? ventureWorkspaceConfig["soleil-and-stone"]
+          : ventureWorkspaceConfig[venture.slug];
         if (configured) return configured;
 
         const dynamicModules = [...new Set(
@@ -12703,7 +12713,7 @@ const supabasePublishableKey =
         $("#sidebar-venture-name").textContent = venture.name;
         $("#sidebar-venture-subtitle").textContent = workspaceConfigFor(venture).subtitle;
 
-        const isSoleil = venture.slug === "soleil-and-stone";
+        const isSoleil = isSoleilAndStoneVenture(venture);
         $("#website-sidebar-nav").classList.toggle("hidden", !isSoleil);
         $("#venture-sidebar-nav").classList.toggle("hidden", isSoleil);
 
@@ -12773,7 +12783,7 @@ const supabasePublishableKey =
         portfolioMode(false);
         renderVentureSidebar();
 
-        if (venture.slug === "soleil-and-stone") {
+        if (isSoleilAndStoneVenture(venture)) {
           openSection("dashboard");
           return;
         }
@@ -12789,7 +12799,7 @@ const supabasePublishableKey =
         const venture = currentVenture();
         if (!venture) return;
 
-        if (venture.slug === "soleil-and-stone") {
+        if (isSoleilAndStoneVenture(venture)) {
           renderVentureSidebar();
           return;
         }
@@ -12818,7 +12828,7 @@ const supabasePublishableKey =
 
         let moduleCards = "";
 
-        if (venture.slug === "soleil-and-stone") {
+        if (isSoleilAndStoneVenture(venture)) {
           moduleCards = `
             <button class="venture-module-card" type="button" data-context-section="dashboard">
               <span class="eyebrow">Website</span>
@@ -12898,7 +12908,7 @@ const supabasePublishableKey =
           </div>
 
           <div class="venture-section-heading">
-            <div><p class="eyebrow">Workspace</p><h2>${venture.slug === "soleil-and-stone" ? "Soleil & Stone Systems" : "Business Modules"}</h2></div>
+            <div><p class="eyebrow">Workspace</p><h2>${isSoleilAndStoneVenture(venture) ? "Soleil & Stone Systems" : "Business Modules"}</h2></div>
           </div>
           <div class="venture-module-grid">${moduleCards || '<div class="empty-state" style="grid-column:1/-1;"><strong>No business modules yet</strong>This venture can be expanded with tailored modules as it develops.</div>'}</div>
 
@@ -13383,7 +13393,7 @@ const supabasePublishableKey =
         ];
 
         const showSyncNote =
-          venture?.slug === "soleil-and-stone" &&
+          isSoleilAndStoneVenture(venture) &&
           soleilCmsSections.includes(section);
 
         $("#sync-note").classList.toggle("hidden", !showSyncNote);
