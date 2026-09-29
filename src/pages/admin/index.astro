@@ -3258,7 +3258,8 @@ const supabasePublishableKey =
 
             <section id="section-evidence" class="admin-section hidden" data-admin-section="evidence">
               <div class="toolbar">
-                <div class="toolbar-left"><input id="evidence-search" class="input search-input" type="search" placeholder="Search evidence..." /></div>
+                <div class="toolbar-left"><input id="evidence-search" class="input search-input" type="search" placeholder="Search evidence..." />
+                  <select id="evidence-status-filter" class="select" style="max-width:180px;"><option value="all">All statuses</option><option value="verified">Verified</option><option value="to-review">To review</option><option value="archived">Archived</option></select></div>
                 <button id="add-evidence-button" class="primary-button" type="button">+ Add Evidence</button>
               </div>
               <div class="panel" style="margin-bottom: 24px;">
@@ -8308,6 +8309,15 @@ const supabasePublishableKey =
             event.id
           );
 
+          $("#event-evidence-quick")?.remove();
+          const quickEvidence = document.createElement("button");
+          quickEvidence.id = "event-evidence-quick";
+          quickEvidence.type = "button";
+          quickEvidence.className = "secondary-button";
+          quickEvidence.textContent = "Add Evidence";
+          quickEvidence.addEventListener("click", () => { closeModal("event"); openEvidenceModal("", "event", event.id); });
+          $("#archive-event-button")?.parentElement?.prepend(quickEvidence);
+
           $("#archive-event-button")
             .classList.remove("hidden");
         }
@@ -9985,11 +9995,28 @@ const supabasePublishableKey =
         renderEvidence();
       }
 
+      function evidenceFor(contentType, contentId) {
+        return state.evidence.filter((item) => item.content_type === contentType && String(item.content_id || "") === String(contentId || ""));
+      }
+
+      function eventEvidenceGaps(event) {
+        if (!["hosted","co-organized"].includes(event.participation)) return [];
+        const evidence = evidenceFor("event", event.id);
+        const types = new Set(evidence.filter((item) => item.status !== "archived").map((item) => item.evidence_type));
+        const gaps = [];
+        if (!event.url && !types.has("event-page")) gaps.push("event page");
+        if (!event.cover_media_id && !event.image_url && !types.has("photo")) gaps.push("photos");
+        if (event.registrations == null && !types.has("metric")) gaps.push("registration/attendance proof");
+        if (!types.has("confirmation") && !types.has("document")) gaps.push("supporting confirmation");
+        return gaps;
+      }
+
       function renderEvidence() {
         const container = $("#evidence-list");
         if (!container) return;
         const search = $("#evidence-search")?.value.trim().toLowerCase() || "";
-        const items = state.evidence.filter((item) => !search || [item.title,item.evidence_type,item.content_type,item.content_id,item.notes].filter(Boolean).some((value) => String(value).toLowerCase().includes(search)));
+        const statusFilter = $("#evidence-status-filter")?.value || "all";
+        const items = state.evidence.filter((item) => (statusFilter === "all" || item.status === statusFilter) && (!search || [item.title,item.evidence_type,item.content_type,item.content_id,item.notes].filter(Boolean).some((value) => String(value).toLowerCase().includes(search))));
         container.innerHTML = items.length ? items.map((item) => `
           <div class="content-row"><div>
             <h3 class="row-title">${escapeHtml(item.title)}</h3>
@@ -10003,8 +10030,10 @@ const supabasePublishableKey =
         $("#evidence-form").reset(); $("#evidence-record-id").value = ""; $("#evidence-modal-title").textContent = "Add Evidence"; $("#evidence-status").value = "verified"; $("#evidence-type").value = "photo"; $("#evidence-content-type").value = "event";
       }
 
-      function openEvidenceModal(id = "") {
+      function openEvidenceModal(id = "", contentType = "", contentId = "") {
         resetEvidenceForm();
+        if (!id && contentType) $("#evidence-content-type").value = contentType;
+        if (!id && contentId) $("#evidence-content-id").value = contentId;
         if (id) {
           const item = state.evidence.find((entry) => String(entry.id) === String(id)); if (!item) return;
           $("#evidence-record-id").value=item.id; $("#evidence-modal-title").textContent="Edit Evidence"; $("#evidence-title").value=item.title||""; $("#evidence-type").value=item.evidence_type||"other"; $("#evidence-status").value=item.status||"verified"; $("#evidence-content-type").value=item.content_type||"general"; $("#evidence-content-id").value=item.content_id||""; $("#evidence-date").value=item.evidence_date||""; $("#evidence-url").value=item.source_url||""; $("#evidence-storage-path").value=item.storage_path||""; $("#evidence-notes").value=item.notes||"";
@@ -10350,7 +10379,7 @@ const supabasePublishableKey =
         $("#venture-form").reset();
         $("#venture-record-id").value = "";
         $("#venture-modal-title").textContent = "New Venture";
-        $("#venture-status").value = "idea";
+        $("#venture-status").value = "idea"; $("#venture-public-ready").checked = false; $("#venture-last-update").value = ""; $("#venture-last-update-at").value = "";
         $("#venture-sort-order").value = "0";
       }
 
@@ -11853,6 +11882,7 @@ const supabasePublishableKey =
 
       $("#add-evidence-button").addEventListener("click", () => openEvidenceModal());
       $("#evidence-search").addEventListener("input", renderEvidence);
+      $("#evidence-status-filter").addEventListener("change", renderEvidence);
 
 
       $("#add-venture-button").addEventListener(
