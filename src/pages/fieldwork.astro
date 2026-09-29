@@ -3197,6 +3197,24 @@ const tradeShowLogoLoop =
       );
 
 
+      const params = new URLSearchParams(window.location.search);
+      const filterMap = { year: yearSelect, month: monthSelect, participation: participationSelect, type: typeSelect, city: citySelect };
+      Object.entries(filterMap).forEach(([key, select]) => {
+        const value = params.get(key);
+        if (value && Array.from(select.options).some((option) => option.value === value)) select.value = value;
+      });
+      if (searchInput && params.get("q")) searchInput.value = params.get("q");
+
+      function syncFilterUrl() {
+        const next = new URLSearchParams();
+        Object.entries(filterMap).forEach(([key, select]) => { if (select.value !== "all") next.set(key, select.value); });
+        if (searchInput?.value.trim()) next.set("q", searchInput.value.trim());
+        history.replaceState(null, "", `${window.location.pathname}${next.toString() ? `?${next.toString()}` : ""}`);
+      }
+
+      [...Object.values(filterMap)].forEach((select) => select.addEventListener("change", syncFilterUrl));
+      searchInput?.addEventListener("input", syncFilterUrl);
+
       applyFilters();
 
 
