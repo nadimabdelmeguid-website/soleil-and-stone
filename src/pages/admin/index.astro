@@ -2997,6 +2997,46 @@ const supabasePublishableKey =
         .venture-file-actions { grid-column:2; justify-content:flex-start; }
       }
 
+      .venture-admin-tools { margin-bottom:20px; overflow:visible; }
+      .venture-admin-tools-inner { padding:16px; display:grid; grid-template-columns:minmax(260px,1fr) auto; gap:12px; align-items:start; }
+      .venture-universal-search-wrap { position:relative; }
+      .venture-universal-results { position:absolute; z-index:30; top:calc(100% + 6px); left:0; right:0; max-height:420px; overflow:auto; background:white; border:1px solid var(--border); box-shadow:0 18px 40px rgba(20,28,38,.12); }
+      .venture-search-result { width:100%; display:grid; grid-template-columns:minmax(0,1fr) auto; gap:12px; text-align:left; padding:12px 14px; border:0; border-bottom:1px solid var(--border); background:white; cursor:pointer; }
+      .venture-search-result:hover,.venture-search-result:focus { background:rgba(197,160,89,.08); outline:none; }
+      .venture-search-result:last-child { border-bottom:0; }
+      .venture-search-result-title { font-size:12px; font-weight:700; color:var(--ink); }
+      .venture-search-result-meta { margin-top:3px; font-size:10px; color:var(--slate); }
+      .venture-search-type { align-self:start; font-size:9px; text-transform:uppercase; letter-spacing:.12em; color:var(--gold-dark); }
+      .venture-ops-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:16px; margin-bottom:20px; }
+      .venture-admin-two-col { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:16px; margin-bottom:20px; }
+      .venture-document-toolbar { display:flex; gap:8px; flex-wrap:wrap; padding:14px 16px 0; }
+      .venture-document-list,.venture-activity-list { padding:0 16px 16px; display:grid; gap:8px; }
+      .venture-document-row,.venture-activity-row { display:grid; grid-template-columns:minmax(0,1fr) auto; gap:10px; align-items:center; padding:11px 0; border-bottom:1px solid var(--border); }
+      .venture-document-row:last-child,.venture-activity-row:last-child { border-bottom:0; }
+      .venture-attention-chip { display:inline-flex; align-items:center; gap:5px; padding:3px 7px; border:1px solid var(--border); font-size:9px; text-transform:uppercase; letter-spacing:.08em; }
+      .venture-command-palette { width:min(760px,calc(100vw - 32px)); max-height:min(720px,calc(100vh - 40px)); }
+      .venture-command-results { display:grid; gap:4px; max-height:480px; overflow:auto; margin-top:12px; }
+      .venture-command-result { width:100%; padding:12px 14px; border:1px solid var(--border); background:white; text-align:left; cursor:pointer; }
+      .venture-command-result:hover,.venture-command-result:focus { border-color:var(--gold); background:rgba(197,160,89,.06); outline:none; }
+      .venture-public-compare { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-top:16px; }
+      .venture-public-compare-card { border:1px solid var(--border); padding:14px; background:rgba(244,241,232,.36); }
+      .venture-public-preview-card { border:1px solid var(--border); padding:18px; background:white; min-height:180px; }
+      .venture-file-upload.dragging,[data-file-drop].dragging { outline:2px dashed var(--gold); outline-offset:3px; background:rgba(197,160,89,.08); }
+      .venture-checklist-preview { display:flex; gap:6px; flex-wrap:wrap; margin-top:8px; }
+      .venture-checklist-chip { border:1px solid var(--border); background:white; padding:4px 7px; font-size:9px; cursor:pointer; }
+      .venture-checklist-chip.done { text-decoration:line-through; opacity:.6; }
+      .venture-mobile-actions { display:none; position:fixed; z-index:45; left:12px; right:12px; bottom:12px; grid-template-columns:repeat(3,1fr); gap:7px; padding:8px; border:1px solid var(--border); background:rgba(255,255,255,.96); box-shadow:0 14px 35px rgba(20,28,38,.15); }
+      .venture-mobile-actions button { min-height:42px; }
+      @media (max-width:900px) {
+        .venture-ops-grid,.venture-admin-two-col { grid-template-columns:1fr; }
+        .venture-public-compare { grid-template-columns:1fr; }
+      }
+      @media (max-width:720px) {
+        .venture-admin-tools-inner { grid-template-columns:1fr; }
+        .venture-mobile-actions { display:grid; }
+        body { padding-bottom:72px; }
+      }
+
     </style>
   </head>
 
@@ -4059,29 +4099,89 @@ const supabasePublishableKey =
               <div id="ventures-dashboard">
                 <div id="ventures-dashboard-stats" class="stats-grid"></div>
 
-                <div class="venture-focus-grid">
+                <div class="panel venture-admin-tools">
+                  <div class="venture-admin-tools-inner">
+                    <div class="venture-universal-search-wrap">
+                      <input id="venture-universal-search" class="input" type="search" autocomplete="off" placeholder="Search every venture, task, card, milestone or private file…  /" />
+                      <div id="venture-universal-results" class="venture-universal-results hidden"></div>
+                    </div>
+                    <div class="row-actions">
+                      <button id="open-command-palette-button" class="secondary-button" type="button">⌘K Command</button>
+                      <button id="export-venture-portfolio-button" class="secondary-button" type="button">Export Portfolio</button>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="venture-ops-grid">
+                  <section class="venture-focus-panel">
+                    <div class="panel-header">
+                      <div>
+                        <p class="eyebrow">Execution</p>
+                        <h3 class="panel-title">This Week</h3>
+                        <p class="panel-copy">Actionable priorities for the next seven days.</p>
+                      </div>
+                    </div>
+                    <div id="ventures-this-week-list" class="venture-focus-list"></div>
+                  </section>
+
+                  <section class="venture-focus-panel">
+                    <div class="panel-header">
+                      <div>
+                        <p class="eyebrow">Dependencies</p>
+                        <h3 class="panel-title">Waiting / Blockers</h3>
+                        <p class="panel-copy">Work that cannot move until something changes.</p>
+                      </div>
+                    </div>
+                    <div id="ventures-blockers-list" class="venture-focus-list"></div>
+                  </section>
+
                   <section class="venture-focus-panel">
                     <div class="panel-header">
                       <div>
                         <p class="eyebrow">Attention</p>
-                        <h3 class="panel-title">Needs Attention</h3>
-                        <p class="panel-copy">Overdue open tasks across all ventures.</p>
+                        <h3 class="panel-title">Stale / Missing Next Action</h3>
+                        <p class="panel-copy">Dormant ventures, overdue work and missing next steps.</p>
                       </div>
                     </div>
-                    <div id="ventures-overdue-list" class="venture-focus-list"></div>
+                    <div id="ventures-attention-list" class="venture-focus-list"></div>
                   </section>
+                </div>
 
-                  <section class="venture-focus-panel">
+                <div class="venture-admin-two-col">
+                  <section class="panel">
                     <div class="panel-header">
                       <div>
-                        <p class="eyebrow">Next 14 Days</p>
-                        <h3 class="panel-title">Upcoming Work</h3>
-                        <p class="panel-copy">The deadlines closest to you.</p>
+                        <p class="eyebrow">History</p>
+                        <h3 class="panel-title">Recent Activity</h3>
+                        <p class="panel-copy">Latest meaningful changes across the portfolio.</p>
                       </div>
                     </div>
-                    <div id="ventures-upcoming-list" class="venture-focus-list"></div>
+                    <div id="ventures-activity-list" class="venture-activity-list"></div>
                   </section>
 
+                  <section class="panel">
+                    <div class="panel-header">
+                      <div>
+                        <p class="eyebrow">Private Library</p>
+                        <h3 class="panel-title">Document Center</h3>
+                        <p class="panel-copy">Every confidential file attached anywhere in your ventures.</p>
+                      </div>
+                    </div>
+                    <div class="venture-document-toolbar">
+                      <select id="venture-document-filter" class="select" aria-label="Filter venture documents">
+                        <option value="all">All files</option>
+                        <option value="document">Documents</option>
+                        <option value="image">Images</option>
+                        <option value="spreadsheet">Spreadsheets</option>
+                        <option value="pdf">PDFs</option>
+                      </select>
+                      <input id="venture-document-search" class="input" type="search" placeholder="Search filenames, tags or categories…" />
+                    </div>
+                    <div id="ventures-documents-list" class="venture-document-list"></div>
+                  </section>
+                </div>
+
+                <div class="venture-focus-grid">
                   <section class="venture-focus-panel">
                     <div class="panel-header">
                       <div>
@@ -4091,6 +4191,26 @@ const supabasePublishableKey =
                       </div>
                     </div>
                     <div id="ventures-milestones-list" class="venture-focus-list"></div>
+                  </section>
+                  <section class="venture-focus-panel">
+                    <div class="panel-header">
+                      <div>
+                        <p class="eyebrow">Archive Safety</p>
+                        <h3 class="panel-title">Recoverable by Design</h3>
+                        <p class="panel-copy">Tasks, cards, milestones and files are archived instead of permanently deleted.</p>
+                      </div>
+                    </div>
+                    <div class="venture-focus-list"><div class="empty-state"><strong>Safer editing</strong>Archived records stay in Supabase and activity history records the change.</div></div>
+                  </section>
+                  <section class="venture-focus-panel">
+                    <div class="panel-header">
+                      <div>
+                        <p class="eyebrow">Shortcuts</p>
+                        <h3 class="panel-title">Fast Navigation</h3>
+                        <p class="panel-copy">⌘/Ctrl+K commands · / search · N venture · T task · F files.</p>
+                      </div>
+                    </div>
+                    <div class="venture-focus-list"><div class="empty-state"><strong>Keyboard ready</strong>Shortcuts are disabled while typing in a field.</div></div>
                   </section>
                 </div>
               </div>
@@ -5714,6 +5834,7 @@ const supabasePublishableKey =
                     <div class="form-grid">
                       <div class="form-field full"><label class="label" for="venture-name">Name</label><input id="venture-name" class="input" type="text" required /></div>
                       <div class="form-field full"><label class="label" for="venture-tagline">One-line description</label><input id="venture-tagline" class="input" type="text" maxlength="180" placeholder="What this venture does in one clear sentence" /></div>
+                      <div class="form-field full"><label class="label" for="venture-template">Workspace template</label><select id="venture-template" class="select"><option value="blank">Blank / custom</option><option value="hardware">Hardware product</option><option value="software">Software / SaaS</option><option value="real-estate">Real estate</option><option value="hospitality">Hospitality / retreat</option><option value="import-distribution">Import / distribution</option><option value="content-community">Content / community</option></select><p class="field-help">Templates shape the default workspace modules. Existing custom data is never removed.</p></div>
                       <div class="form-field"><label class="label" for="venture-status">Stage</label><select id="venture-status" class="select"><option value="idea">Idea</option><option value="validation">Validation</option><option value="building">Building</option><option value="pilot">Pilot</option><option value="active">Active</option><option value="paused">Paused</option><option value="archived">Archived</option></select></div>
                       <div class="form-field"><label class="label" for="venture-role">My role</label><input id="venture-role" class="input" type="text" placeholder="Founder, co-founder, investor..." /></div>
                       <div class="form-field"><label class="label" for="venture-sector">Sector</label><input id="venture-sector" class="input" type="text" /></div>
@@ -5785,6 +5906,14 @@ const supabasePublishableKey =
               </div>
               <div class="form-section-body">
                 <div class="venture-public-boundary">Private notes, tasks, milestones, workspace cards and private attachments are stored separately and are never read by the public venture overview.</div>
+                <div class="row-actions" style="margin-top:14px;">
+                  <button id="copy-private-to-public-button" class="secondary-button" type="button">Copy Suggested Private Fields</button>
+                  <button id="refresh-public-preview-button" class="secondary-button" type="button">Refresh Preview</button>
+                </div>
+                <div class="venture-public-compare">
+                  <div class="venture-public-compare-card"><p class="eyebrow">Private Source</p><div id="venture-private-compare"></div></div>
+                  <div class="venture-public-preview-card"><p class="eyebrow">Public Preview</p><div id="venture-public-live-preview"></div></div>
+                </div>
                 <div class="form-grid" style="margin-top:16px;">
                   <div class="form-field full">
                     <label class="venture-readiness">
@@ -5840,11 +5969,16 @@ const supabasePublishableKey =
                     <div class="form-field"><label class="label" for="venture-task-start">Start date</label><input id="venture-task-start" class="input" type="date" /></div>
                     <div class="form-field"><label class="label" for="venture-task-due">Due date</label><input id="venture-task-due" class="input" type="date" /></div>
                     <div class="form-field full"><label class="label" for="venture-task-description">Notes</label><textarea id="venture-task-description" class="textarea"></textarea></div>
+                    <div class="form-field full"><label class="label" for="venture-task-checklist">Checklist</label><textarea id="venture-task-checklist" class="textarea" placeholder="[ ] First step&#10;[x] Completed step"></textarea><p class="field-help">One item per line. Use [x] to mark an item complete.</p></div>
+                    <div class="form-field"><label class="label" for="venture-task-recurrence">Repeat</label><select id="venture-task-recurrence" class="select"><option value="none">Does not repeat</option><option value="weekly">Weekly</option><option value="monthly">Monthly</option><option value="quarterly">Quarterly</option><option value="yearly">Yearly</option></select></div>
+                    <div class="form-field"><label class="label" for="venture-task-recurrence-interval">Every</label><input id="venture-task-recurrence-interval" class="input" type="number" min="1" max="24" value="1" /></div>
+                    <div class="form-field"><label class="label" for="venture-task-related-card">Related workspace card</label><select id="venture-task-related-card" class="select"><option value="">None</option></select></div>
+                    <div class="form-field"><label class="label" for="venture-task-related-milestone">Related milestone</label><select id="venture-task-related-milestone" class="select"><option value="">None</option></select></div>
                     <div class="form-field"><label class="label" for="venture-task-order">Order</label><input id="venture-task-order" class="input" type="number" value="0" /></div>
                   </div>
                   <div class="row-actions" style="margin-top: 16px;">
                     <button id="cancel-venture-task-button" class="secondary-button" type="button">Cancel</button>
-                    <button id="delete-venture-task-button" class="danger-button hidden" type="button">Delete</button>
+                    <button id="delete-venture-task-button" class="danger-button hidden" type="button">Archive</button>
                     <button id="save-venture-task-button" class="primary-button" type="button">Save Task</button>
                   </div>
                 </div>
@@ -5885,7 +6019,7 @@ const supabasePublishableKey =
                 </div>
                 <div class="row-actions" style="margin-top:16px;">
                   <button id="cancel-venture-milestone-button" class="secondary-button" type="button">Cancel</button>
-                  <button id="delete-venture-milestone-button" class="danger-button hidden" type="button">Delete</button>
+                  <button id="delete-venture-milestone-button" class="danger-button hidden" type="button">Archive</button>
                   <button id="save-venture-milestone-button" class="primary-button" type="button">Save Milestone</button>
                 </div>
               </div>
@@ -5978,7 +6112,7 @@ const supabasePublishableKey =
           </div>
         </div>
         <div class="modal-footer">
-          <button id="delete-venture-workspace-item" class="danger-button hidden" type="button">Delete</button>
+          <button id="delete-venture-workspace-item" class="danger-button hidden" type="button">Archive</button>
           <div class="modal-footer-right">
             <button class="secondary-button" type="button" data-close-modal="venture-workspace-item">Cancel</button>
             <button id="save-venture-workspace-item" class="primary-button" type="submit">Save Item</button>
@@ -6000,11 +6134,17 @@ const supabasePublishableKey =
         </div>
         <div class="modal-body">
           <div class="venture-public-boundary">These files are stored in a private bucket. Opening a file creates a temporary signed link that expires after 5 minutes. Private files are never exposed by the public Ventures overview.</div>
-          <div class="venture-file-upload" style="margin-top:16px;">
+          <div id="venture-file-drop-zone" class="venture-file-upload" style="margin-top:16px;">
             <div>
               <label class="label" for="venture-files-input">Add documents, files or pictures</label>
               <input id="venture-files-input" class="input" type="file" multiple />
-              <p class="field-help">Up to 50 MB per file.</p>
+              <p class="field-help">Choose files or drag them here. Up to 50 MB per file.</p>
+            </div>
+            <div class="form-grid">
+              <div class="form-field"><label class="label" for="venture-file-category">Category</label><input id="venture-file-category" class="input" placeholder="Contract, research, receipt…" /></div>
+              <div class="form-field"><label class="label" for="venture-file-document-date">Document date</label><input id="venture-file-document-date" class="input" type="date" /></div>
+              <div class="form-field"><label class="label" for="venture-file-tags">Tags</label><input id="venture-file-tags" class="input" placeholder="prototype, supplier, legal" /></div>
+              <div class="form-field"><label class="label" for="venture-file-source">Source</label><input id="venture-file-source" class="input" placeholder="Supplier, bank, internal…" /></div>
             </div>
             <div class="row-actions"><button id="upload-venture-files-button" class="primary-button" type="button">Upload Selected Files</button></div>
           </div>
@@ -6067,6 +6207,26 @@ const supabasePublishableKey =
         </div>
         <div class="modal-footer"><span>Private · never published automatically</span><div class="modal-footer-right"><button class="secondary-button" type="button" data-close-modal="evidence">Cancel</button><button id="save-evidence-button" class="primary-button" type="submit">Save Evidence</button></div></div>
       </form>
+    </div>
+
+
+    <div id="venture-command-modal" class="modal-backdrop hidden" hidden role="dialog" aria-modal="true" aria-labelledby="venture-command-title">
+      <div class="modal venture-command-palette">
+        <div class="modal-header">
+          <div><p class="eyebrow">Command Palette</p><h2 id="venture-command-title" class="modal-title">Go anywhere or do anything</h2></div>
+          <button class="quiet-button" type="button" data-close-modal="venture-command">Close</button>
+        </div>
+        <div class="modal-body">
+          <input id="venture-command-input" class="input" type="search" autocomplete="off" placeholder="Search ventures, tasks, files or type an action…" />
+          <div id="venture-command-results" class="venture-command-results"></div>
+        </div>
+      </div>
+    </div>
+
+    <div id="venture-mobile-actions" class="venture-mobile-actions">
+      <button id="mobile-venture-task" class="secondary-button" type="button">+ Task</button>
+      <button id="mobile-venture-file" class="secondary-button" type="button">+ File</button>
+      <button id="mobile-venture-edit" class="primary-button" type="button">Edit</button>
     </div>
 
 
@@ -13830,6 +13990,8 @@ const supabasePublishableKey =
             "#venture-workspace-item-modal",
           "venture-files":
             "#venture-files-modal",
+          "venture-command":
+            "#venture-command-modal",
           evidence:
             "#evidence-modal",
           "workspace-task":
