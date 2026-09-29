@@ -11897,6 +11897,7 @@ const supabasePublishableKey =
                     ${task.description ? `<p class="row-description">${escapeHtml(task.description)}</p>` : ""}
                   </div>
                   <div class="venture-task-actions">
+                    <button class="secondary-button" type="button" data-manage-venture-files data-attachment-type="task" data-attachment-id="${escapeHtml(task.id)}">Files · ${attachmentCount("task", task.id)}</button>
                     <button class="secondary-button" type="button" data-edit-venture-task="${escapeHtml(task.id)}">Edit</button>
                   </div>
                 </div>
@@ -12059,7 +12060,10 @@ const supabasePublishableKey =
                   </div>
                   ${item.notes ? `<p class="row-description">${escapeHtml(item.notes)}</p>` : ""}
                 </div>
-                <button class="secondary-button" type="button" data-edit-venture-milestone="${escapeHtml(item.id)}">Edit</button>
+                <div class="row-actions">
+                  <button class="secondary-button" type="button" data-manage-venture-files data-attachment-type="milestone" data-attachment-id="${escapeHtml(item.id)}">Files · ${attachmentCount("milestone", item.id)}</button>
+                  <button class="secondary-button" type="button" data-edit-venture-milestone="${escapeHtml(item.id)}">Edit</button>
+                </div>
               </article>
             `).join("")
           : `<div class="empty-state"><strong>No milestones yet</strong>Capture the first meaningful outcome you are working toward.</div>`;
@@ -12353,29 +12357,39 @@ const supabasePublishableKey =
         const grid = $("#ventures-preview-grid");
         if (!grid) return;
 
-        const items = [...state.ventures]
-          .filter((item) => item.venture_status !== "archived")
-          .sort((a, b) => Number(a.sort_order || 0) - Number(b.sort_order || 0));
+        const items = state.venturePublicOverviews
+          .map((overview) => ({
+            overview,
+            venture: state.ventures.find((venture) => String(venture.id) === String(overview.venture_id))
+          }))
+          .filter(({ venture }) => Boolean(venture))
+          .sort((a, b) => Number(a.overview.sort_order || 0) - Number(b.overview.sort_order || 0));
 
         grid.innerHTML = items.length
-          ? items.map((item) => `
-              <article class="panel" style="padding: 22px; min-height: 220px;">
-                <div class="venture-meta-line">
-                  <span class="status-pill ${escapeHtml(item.venture_status || "idea")}">${escapeHtml(ventureStatusLabel(item.venture_status))}</span>
-                  <span class="status-pill ${item.public_ready ? "active" : "draft"}">${item.public_ready ? "Ready" : "Internal draft"}</span>
-                </div>
-                <h3 class="panel-title" style="margin-top: 12px;">${escapeHtml(item.name)}</h3>
-                ${item.tagline ? `<p class="panel-copy" style="margin-top: 10px;">${escapeHtml(item.tagline)}</p>` : ""}
-                ${item.description ? `<p class="row-description">${escapeHtml(item.description)}</p>` : ""}
-                <div class="row-meta" style="margin-top: 18px;">
-                  ${item.sector ? `<span>${escapeHtml(item.sector)}</span>` : ""}
-                  ${item.location ? `<span>•</span><span>${escapeHtml(item.location)}</span>` : ""}
-                </div>
-              </article>
-            `).join("")
-          : `<div class="empty-state" style="grid-column:1/-1;"><strong>Nothing to preview yet</strong>Add a venture first.</div>`;
+          ? items.map(({ overview, venture }) => {
+              const highlights = Array.isArray(overview.public_highlights) ? overview.public_highlights : [];
+              return `
+                <article class="panel" style="padding:22px;min-height:220px;">
+                  <div class="venture-meta-line">
+                    <span class="status-pill ${overview.is_visible ? "active" : "draft"}">${overview.is_visible ? "Public" : "Hidden"}</span>
+                    ${overview.public_status ? `<span>${escapeHtml(overview.public_status)}</span>` : ""}
+                  </div>
+                  <h3 class="panel-title" style="margin-top:12px;">${escapeHtml(overview.public_title || venture.name)}</h3>
+                  ${overview.public_tagline ? `<p class="panel-copy" style="margin-top:10px;">${escapeHtml(overview.public_tagline)}</p>` : ""}
+                  ${overview.public_summary ? `<p class="row-description">${escapeHtml(overview.public_summary)}</p>` : ""}
+                  ${highlights.length ? `<ul style="margin:14px 0 0;padding-left:18px;">${highlights.map((highlight) => `<li class="row-description">${escapeHtml(highlight)}</li>`).join("")}</ul>` : ""}
+                  <div class="row-meta" style="margin-top:18px;">
+                    ${overview.public_sector ? `<span>${escapeHtml(overview.public_sector)}</span>` : ""}
+                    ${overview.public_location ? `<span>•</span><span>${escapeHtml(overview.public_location)}</span>` : ""}
+                  </div>
+                  <div class="row-actions" style="margin-top:16px;">
+                    <button class="secondary-button" type="button" data-edit-venture="${escapeHtml(venture.id)}" data-venture-open-tab="public">Edit Public Overview</button>
+                  </div>
+                </article>
+              `;
+            }).join("")
+          : '<div class="empty-state" style="grid-column:1/-1;"><strong>No public overviews yet</strong>Edit a venture and curate its Public Overview.</div>';
       }
-
 
       function resetVentureForm() {
         $("#venture-form").reset();
@@ -13338,7 +13352,10 @@ const supabasePublishableKey =
                     </div>
                     <h3 class="venture-workspace-item-title" style="margin-top:9px;">${escapeHtml(item.title)}</h3>
                   </div>
-                  <button class="quiet-button" type="button" data-edit-workspace-item="${escapeHtml(item.id)}">Edit</button>
+                  <div class="row-actions">
+                    <button class="quiet-button" type="button" data-manage-venture-files data-attachment-type="workspace_item" data-attachment-id="${escapeHtml(item.id)}">Files · ${attachmentCount("workspace_item", item.id)}</button>
+                    <button class="quiet-button" type="button" data-edit-workspace-item="${escapeHtml(item.id)}">Edit</button>
+                  </div>
                 </div>
                 ${item.summary ? `<p class="venture-workspace-item-summary">${escapeHtml(item.summary)}</p>` : ""}
                 ${item.notes ? `<p class="venture-workspace-item-notes">${escapeHtml(item.notes)}</p>` : ""}
@@ -13386,7 +13403,10 @@ const supabasePublishableKey =
                     </div>
                     ${task.description ? `<p class="row-description">${escapeHtml(task.description)}</p>` : ""}
                   </div>
-                  <div class="venture-task-actions"><button class="secondary-button" type="button" data-context-edit-task="${escapeHtml(task.id)}">Edit</button></div>
+                  <div class="venture-task-actions">
+                    <button class="secondary-button" type="button" data-manage-venture-files data-attachment-type="task" data-attachment-id="${escapeHtml(task.id)}">Files · ${attachmentCount("task", task.id)}</button>
+                    <button class="secondary-button" type="button" data-context-edit-task="${escapeHtml(task.id)}">Edit</button>
+                  </div>
                 </div>
               `;
             }).join("")
@@ -13411,7 +13431,10 @@ const supabasePublishableKey =
                   </div>
                   ${item.notes ? `<p class="row-description">${escapeHtml(item.notes)}</p>` : ""}
                 </div>
-                <button class="secondary-button" type="button" data-context-edit-milestone="${escapeHtml(item.id)}">Edit</button>
+                <div class="row-actions">
+                  <button class="secondary-button" type="button" data-manage-venture-files data-attachment-type="milestone" data-attachment-id="${escapeHtml(item.id)}">Files · ${attachmentCount("milestone", item.id)}</button>
+                  <button class="secondary-button" type="button" data-context-edit-milestone="${escapeHtml(item.id)}">Edit</button>
+                </div>
               </article>
             `).join("")
           : `<div class="empty-state"><strong>No milestones yet</strong>Add the first meaningful checkpoint for ${escapeHtml(venture.name)}.</div>`;
