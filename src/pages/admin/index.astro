@@ -11411,7 +11411,7 @@ const supabasePublishableKey =
               <p class="venture-focus-title">${escapeHtml(task.title)}</p>
               <div class="venture-focus-meta">${escapeHtml(venture?.name || "Venture")} · ${escapeHtml(taskTimeline(task))}${task.priority === "high" ? " · High priority" : ""}</div>
             </div>
-            ${venture ? `<button class="quiet-button" type="button" data-edit-venture="${escapeHtml(venture.id)}">Open</button>` : ""}
+            ${venture ? `<button class="quiet-button" type="button" data-edit-venture="${escapeHtml(venture.id)}" data-venture-open-tab="execution">Open</button>` : ""}
           </div>
         `;
       }
@@ -11476,7 +11476,7 @@ const supabasePublishableKey =
                   <p class="venture-focus-title">${escapeHtml(item.title)}</p>
                   <div class="venture-focus-meta">${escapeHtml(venture?.name || "Venture")}${item.milestone_date ? ` · ${escapeHtml(formatDate(item.milestone_date))}` : " · No date"}</div>
                 </div>
-                ${venture ? `<button class="quiet-button" type="button" data-edit-venture="${escapeHtml(venture.id)}">Open</button>` : ""}
+                ${venture ? `<button class="quiet-button" type="button" data-edit-venture="${escapeHtml(venture.id)}" data-venture-open-tab="milestones">Open</button>` : ""}
               </div>
             `;
           }),
@@ -11487,7 +11487,7 @@ const supabasePublishableKey =
                 <p class="venture-focus-title">${escapeHtml(venture.next_milestone)}</p>
                 <div class="venture-focus-meta">${escapeHtml(venture.name)} · Current focus</div>
               </div>
-              <button class="quiet-button" type="button" data-edit-venture="${escapeHtml(venture.id)}">Open</button>
+              <button class="quiet-button" type="button" data-edit-venture="${escapeHtml(venture.id)}" data-venture-open-tab="milestones">Open</button>
             </div>
           `)
         ].join("");
@@ -13364,8 +13364,10 @@ const supabasePublishableKey =
             ventureButton
           ) {
             openVentureModal(
-              ventureButton.dataset.editVenture
+              ventureButton.dataset.editVenture,
+              ventureButton.dataset.ventureOpenTab || "overview"
             );
+            return;
           }
 
 
