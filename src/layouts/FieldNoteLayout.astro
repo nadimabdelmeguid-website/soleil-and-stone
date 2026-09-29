@@ -13,7 +13,8 @@ const {
   images = {
     cover: null,
     gallery: []
-  }
+  },
+  relatedEvents = []
 } =
   Astro.props;
 
@@ -281,6 +282,31 @@ const recommendedDate =
 
   </section>
 
+
+
+  {
+    relatedEvents.length > 0 && (
+      <section class="bg-brand-cream border-b border-brand-border">
+        <div class="max-w-4xl w-full mx-auto px-6 py-12">
+          <span class="text-[10px] uppercase tracking-[0.2em] text-brand-gold font-semibold">Related Fieldwork</span>
+          <h2 class="font-serif text-2xl text-brand-charcoal mt-2 mb-6">Where This Note Connects</h2>
+          <div class="grid sm:grid-cols-2 gap-4">
+            {relatedEvents.map((event) => (
+              <div class="bg-white border border-brand-border p-5">
+                <p class="text-[9px] uppercase tracking-[0.14em] text-brand-gold font-semibold">{event.typeLabel || event.participation}</p>
+                <h3 class="font-serif text-lg text-brand-charcoal mt-2">{event.title}</h3>
+                <p class="text-xs text-brand-slate mt-2">{event.city || ""} · {new Date(`${event.startDate}T12:00:00`).toLocaleDateString("en-US",{month:"short",day:"numeric",year:"numeric"})}</p>
+                <div class="flex flex-wrap gap-4 mt-4 text-[10px] uppercase tracking-[0.12em] font-semibold">
+                  <a href={event.url} target="_blank" rel="noopener noreferrer" class="text-brand-charcoal hover:text-brand-gold">View Event ↗</a>
+                  {event.recapUrl && <a href={event.recapUrl} class="text-brand-charcoal hover:text-brand-gold">Event Recap →</a>}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    )
+  }
 
 
   <!-- =====================================================
