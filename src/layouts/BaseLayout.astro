@@ -120,6 +120,22 @@ const structuredData = {
 
 <head>
 
+  <!-- OAuth fallback bridge: Supabase may fall back to the Site URL when a redirect URL is not allow-listed. -->
+  <script is:inline>
+    (() => {
+      const hash = window.location.hash || "";
+      if (!hash) return;
+      const params = new URLSearchParams(hash.replace(/^#/, ""));
+      const isAuthReturn =
+        (params.get("access_token") && params.get("refresh_token")) ||
+        params.get("error") ||
+        params.get("error_description");
+      if (isAuthReturn && window.location.pathname !== "/admin/" && window.location.pathname !== "/admin") {
+        window.location.replace("/admin/" + hash);
+      }
+    })();
+  </script>
+
   <!-- =====================================================
        CORE SEO
        ===================================================== -->
