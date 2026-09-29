@@ -1,0 +1,85 @@
+---
+import { getCollection } from "astro:content";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { events } from "../data/events.cms";
+import { getEventRecapUrl } from "../utils/eventRecaps";
+
+const now = new Date();
+const fieldNotes = (await getCollection("fieldNotes"))
+  .filter((post) => !post.data.draft && post.data.published <= now)
+  .map((post) => ({
+    type: "Field Note",
+    title: post.data.title,
+    description: post.data.description,
+    meta: post.data.category,
+    url: `/field-notes/${post.id.replace(/\.md$/, "")}/`,
+    search: [post.data.title, post.data.description, post.data.category].join(" ").toLowerCase()
+  }));
+
+const eventRecaps = (await getCollection("eventRecaps"))
+  .filter((post) => !post.data.draft && post.data.published <= now)
+  .map((post) => ({
+    type: "Event Recap",
+    title: post.data.title,
+    description: post.data.excerpt,
+    meta: post.data.tags.join(" · "),
+    url: getEventRecapUrl(post.data.eventId) || `/event-recaps/${post.id.replace(/\.md$/, "")}/`,
+    search: [post.data.title, post.data.excerpt, ...post.data.tags].join(" ").toLowerCase()
+  }));
+
+const eventItems = events.map((event) => ({
+  type: "Event",
+  title: event.title,
+  description: event.description || "",
+  meta: [event.city, event.typeLabel].filter(Boolean).join(" · "),
+  url: `/fieldwork/?event=${encodeURIComponent(event.id)}`,
+  search: [event.title, event.description, event.city, event.venue, event.typeLabel, ...(event.sponsors || []), ...(event.partners || [])].filter(Boolean).join(" ").toLowerCase()
+}));
+
+const searchItems = [...fieldNotes, ...eventRecaps, ...eventItems];
+---
+
+<BaseLayout title="SOLEIL & STONE | Search" description="Search Field Notes, Event Recaps and Fieldwork across Soleil & Stone.">
+  <section class="bg-white border-b border-brand-border">
+    <div class="max-w-6xl w-full mx-auto px-6 py-16">
+      <span class="text-[10px] uppercase tracking-[0.2em] text-brand-gold font-semibold">Explore</span>
+      <h1 class="font-serif text-4xl sm:text-5xl text-brand-charcoal mt-2">Search Soleil & Stone</h1>
+      <p class="text-brand-slate font-light mt-4 max-w-2xl">Search across Field Notes, Event Recaps and Fieldwork.</p>
+      <input id="site-search" type="search" autocomplete="off" placeholder="Search topics, events, cities, organizations..." class="mt-8 w-full max-w-3xl border border-brand-border bg-white px-5 py-4 text-sm text-brand-charcoal outline-none focus:border-brand-gold" />
+    </div>
+  </section>
+  <section class="bg-brand-cream">
+    <div class="max-w-6xl w-full mx-auto px-6 py-12">
+      <p id="search-count" class="text-[10px] uppercase tracking-[0.15em] text-brand-slate mb-5">Start typing to search</p>
+      <div id="search-results" class="grid md:grid-cols-2 gap-4"></div>
+    </div>
+  </section>
+
+  <script is:inline define:vars={{ searchItems }}>
+    (() => {
+      const input = document.getElementById("site-search");
+      const results = document.getElementById("search-results");
+      const count = document.getElementById("search-count");
+      if (!input || !results || !count) return;
+      const escapeHtml = (value) => String(value ?? "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;");
+      const render = () => {
+        const query = input.value.trim().toLowerCase();
+        if (!query) { results.innerHTML = ""; count.textContent = "Start typing to search"; return; }
+        const terms = query.split(/\s+/).filter(Boolean);
+        const matches = searchItems.filter((item) => terms.every((term) => item.search.includes(term))).slice(0, 50);
+        count.textContent = `${matches.length} ${matches.length === 1 ? "result" : "results"}`;
+        results.innerHTML = matches.length ? matches.map((item) => `
+          <a href="${escapeHtml(item.url)}" class="block bg-white border border-brand-border p-6 hover:border-brand-gold transition-colors">
+            <span class="text-[9px] uppercase tracking-[0.16em] text-brand-gold font-semibold">${escapeHtml(item.type)}</span>
+            <h2 class="font-serif text-xl text-brand-charcoal mt-2">${escapeHtml(item.title)}</h2>
+            ${item.meta ? `<p class="text-[10px] text-brand-slate mt-2">${escapeHtml(item.meta)}</p>` : ""}
+            ${item.description ? `<p class="text-sm text-brand-slate font-light leading-relaxed mt-3">${escapeHtml(item.description)}</p>` : ""}
+          </a>`).join("") : `<div class="md:col-span-2 py-12 text-brand-slate">No matching content found.</div>`;
+      };
+      input.addEventListener("input", render);
+      const q = new URLSearchParams(window.location.search).get("q");
+      if (q) { input.value = q; render(); }
+      input.focus();
+    })();
+  </script>
+</BaseLayout>
