@@ -4054,44 +4054,6 @@ const supabasePublishableKey =
               class="admin-section"
               data-admin-section="ventures"
             >
-              <div class="ventures-hero">
-                <div class="ventures-hero-copy">
-                  <span class="ventures-private-badge">Private workspace</span>
-                  <h2 class="ventures-hero-title">Venture Command Center</h2>
-                  <p class="ventures-hero-text">
-                    Track each venture from idea to execution: current focus, tasks, deadlines, milestones and progress updates.
-                    This workspace is private and nothing here is published automatically.
-                  </p>
-                </div>
-                <div class="ventures-hero-actions row-actions">
-                  <button id="preview-ventures-button" class="secondary-button" type="button">Portfolio Preview</button>
-                  <button id="add-venture-button" class="primary-button" type="button">+ New Venture</button>
-                </div>
-              </div>
-
-              <div class="venture-controls">
-                <input id="ventures-search" class="input" type="search" placeholder="Search ventures, sectors, roles or updates..." />
-                <div class="venture-control-right">
-                  <select id="ventures-sort" class="select" aria-label="Sort ventures">
-                    <option value="priority">Priority order</option>
-                    <option value="updated">Recently updated</option>
-                    <option value="name">Name A–Z</option>
-                    <option value="stage">Stage</option>
-                  </select>
-                </div>
-              </div>
-
-              <div id="venture-stage-filters" class="venture-stage-filters" aria-label="Filter ventures by stage">
-                <button class="venture-stage-button active" type="button" data-venture-stage="all">All</button>
-                <button class="venture-stage-button" type="button" data-venture-stage="idea">Idea</button>
-                <button class="venture-stage-button" type="button" data-venture-stage="validation">Validation</button>
-                <button class="venture-stage-button" type="button" data-venture-stage="building">Building</button>
-                <button class="venture-stage-button" type="button" data-venture-stage="pilot">Pilot</button>
-                <button class="venture-stage-button" type="button" data-venture-stage="active">Active</button>
-                <button class="venture-stage-button" type="button" data-venture-stage="paused">Paused</button>
-                <button class="venture-stage-button" type="button" data-venture-stage="archived">Archived</button>
-              </div>
-
               <div id="ventures-dashboard">
                 <div id="ventures-dashboard-stats" class="stats-grid"></div>
 
@@ -4129,6 +4091,44 @@ const supabasePublishableKey =
                     <div id="ventures-milestones-list" class="venture-focus-list"></div>
                   </section>
                 </div>
+              </div>
+
+              <div class="ventures-hero">
+                <div class="ventures-hero-copy">
+                  <span class="ventures-private-badge">Private workspace</span>
+                  <h2 class="ventures-hero-title">Venture Command Center</h2>
+                  <p class="ventures-hero-text">
+                    Track each venture from idea to execution: current focus, tasks, deadlines, milestones and progress updates.
+                    This workspace is private and nothing here is published automatically.
+                  </p>
+                </div>
+                <div class="ventures-hero-actions row-actions">
+                  <button id="preview-ventures-button" class="secondary-button" type="button">Portfolio Preview</button>
+                  <button id="add-venture-button" class="primary-button" type="button">+ New Venture</button>
+                </div>
+              </div>
+
+              <div class="venture-controls">
+                <input id="ventures-search" class="input" type="search" placeholder="Search ventures, sectors, roles or updates..." />
+                <div class="venture-control-right">
+                  <select id="ventures-sort" class="select" aria-label="Sort ventures">
+                    <option value="priority">Priority order</option>
+                    <option value="updated">Recently updated</option>
+                    <option value="name">Name A–Z</option>
+                    <option value="stage">Stage</option>
+                  </select>
+                </div>
+              </div>
+
+              <div id="venture-stage-filters" class="venture-stage-filters" aria-label="Filter ventures by stage">
+                <button class="venture-stage-button active" type="button" data-venture-stage="all">All</button>
+                <button class="venture-stage-button" type="button" data-venture-stage="idea">Idea</button>
+                <button class="venture-stage-button" type="button" data-venture-stage="validation">Validation</button>
+                <button class="venture-stage-button" type="button" data-venture-stage="building">Building</button>
+                <button class="venture-stage-button" type="button" data-venture-stage="pilot">Pilot</button>
+                <button class="venture-stage-button" type="button" data-venture-stage="active">Active</button>
+                <button class="venture-stage-button" type="button" data-venture-stage="paused">Paused</button>
+                <button class="venture-stage-button" type="button" data-venture-stage="archived">Archived</button>
               </div>
 
               <div class="venture-section-heading">
