@@ -2156,7 +2156,7 @@ const supabasePublishableKey =
           Manage events, Field Notes, recaps, photos, logos and community content without editing the website code.
         </p>
 
-        <form id="login-form">
+        <form id="login-form" data-supabase-url={supabaseUrl} data-supabase-key={supabasePublishableKey}>
           <label
             class="label"
             for="login-email"
@@ -2229,55 +2229,10 @@ const supabasePublishableKey =
     </section>
 
 
-    <script is:inline define:vars={{ supabaseUrl, supabasePublishableKey }}>
-      (() => {
-        const form = document.getElementById("login-form");
-        const emailInput = document.getElementById("login-email");
-        const button = document.getElementById("login-submit");
-        const message = document.getElementById("login-message");
-        const otpInput = document.getElementById("login-otp");
-        if (!form || !emailInput || !button || !message) return;
 
-        form.addEventListener("submit", async (event) => {
-          event.preventDefault();
-          event.stopImmediatePropagation();
-          const email = emailInput.value.trim();
-          if (!email) return;
-          button.disabled = true;
-          button.textContent = "Sending...";
-          message.textContent = "Requesting your secure sign-in email...";
-          message.className = "form-message";
 
-          try {
-            const redirectTo = (location.hostname === "localhost" || location.hostname === "127.0.0.1")
-              ? location.origin + "/admin/"
-              : "https://soleilandstone.co/admin/";
-            const response = await fetch(supabaseUrl + "/auth/v1/otp?redirect_to=" + encodeURIComponent(redirectTo), {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-                "apikey": supabasePublishableKey,
-                "Authorization": "Bearer " + supabasePublishableKey
-              },
-              body: JSON.stringify({ email, create_user: true })
-            });
-            let payload = {};
-            try { payload = await response.json(); } catch (_) {}
-            if (!response.ok) throw new Error(payload?.msg || payload?.message || payload?.error_description || "Could not send the sign-in email.");
-            message.textContent = "Email sent. Check your inbox and spam folder, then enter the verification code below.";
-            message.className = "form-message success";
-            if (otpInput) otpInput.focus();
-          } catch (error) {
-            message.textContent = error?.message || "Could not send the sign-in email.";
-            message.className = "form-message error";
-          } finally {
-            button.disabled = false;
-            button.textContent = "Send secure sign-in email";
-          }
-        }, true);
-      })();
-    </script>
 
+    <script src="/admin-auth.js" defer></script>
 
     <!-- =====================================================
          ADMIN APP
