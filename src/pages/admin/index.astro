@@ -2350,6 +2350,11 @@ const supabasePublishableKey =
               <span>Ventures</span>
               <span id="nav-ventures-count" class="nav-count">0</span>
             </button>
+
+            <button class="nav-button" type="button" data-section="evidence">
+              <span>Evidence</span>
+              <span id="nav-evidence-count" class="nav-count">0</span>
+            </button>
           </nav>
 
           <div class="sidebar-footer">
@@ -3249,6 +3254,17 @@ const supabasePublishableKey =
                 </div>
                 <div id="ventures-preview-grid" class="media-grid"></div>
               </div>
+            </section>
+
+            <section id="section-evidence" class="admin-section hidden" data-admin-section="evidence">
+              <div class="toolbar">
+                <div class="toolbar-left"><input id="evidence-search" class="input search-input" type="search" placeholder="Search evidence..." /></div>
+                <button id="add-evidence-button" class="primary-button" type="button">+ Add Evidence</button>
+              </div>
+              <div class="panel" style="margin-bottom: 24px;">
+                <div class="panel-header"><div><h2 class="panel-title">Private Evidence Archive</h2><p class="panel-copy">Supporting material linked to events, notes, recaps, communities and ventures. Never published automatically.</p></div></div>
+              </div>
+              <div id="evidence-list" class="content-list"></div>
             </section>
           </div>
         </main>
@@ -4780,6 +4796,28 @@ const supabasePublishableKey =
     </div>
 
 
+    <div id="evidence-modal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="evidence-modal-title">
+      <form id="evidence-form" class="modal">
+        <div class="modal-header"><div><p class="eyebrow">Evidence Archive</p><h2 id="evidence-modal-title" class="modal-title">Add Evidence</h2></div><button class="quiet-button" type="button" data-close-modal="evidence">Close</button></div>
+        <div class="modal-body">
+          <input id="evidence-record-id" type="hidden" />
+          <div class="form-section"><div class="form-section-body"><div class="form-grid">
+            <div class="form-field full"><label class="label" for="evidence-title">Title</label><input id="evidence-title" class="input" required /></div>
+            <div class="form-field"><label class="label" for="evidence-type">Evidence type</label><select id="evidence-type" class="select"><option value="photo">Photo</option><option value="document">Document</option><option value="event-page">Event page</option><option value="confirmation">Confirmation</option><option value="metric">Metric</option><option value="media">Media mention</option><option value="screenshot">Screenshot</option><option value="other">Other</option></select></div>
+            <div class="form-field"><label class="label" for="evidence-status">Status</label><select id="evidence-status" class="select"><option value="verified">Verified</option><option value="to-review">To review</option><option value="archived">Archived</option></select></div>
+            <div class="form-field"><label class="label" for="evidence-content-type">Linked content</label><select id="evidence-content-type" class="select"><option value="event">Event</option><option value="field-note">Field Note</option><option value="event-recap">Event Recap</option><option value="community">Community</option><option value="venture">Venture</option><option value="general">General</option></select></div>
+            <div class="form-field"><label class="label" for="evidence-content-id">Record ID</label><input id="evidence-content-id" class="input" placeholder="Event ID, slug or venture ID" /></div>
+            <div class="form-field"><label class="label" for="evidence-date">Evidence date</label><input id="evidence-date" class="input" type="date" /></div>
+            <div class="form-field full"><label class="label" for="evidence-url">Source URL</label><input id="evidence-url" class="input" type="url" /></div>
+            <div class="form-field full"><label class="label" for="evidence-storage-path">Stored file path</label><input id="evidence-storage-path" class="input" placeholder="Optional private storage reference" /></div>
+            <div class="form-field full"><label class="label" for="evidence-notes">Notes</label><textarea id="evidence-notes" class="textarea"></textarea></div>
+          </div></div></div>
+        </div>
+        <div class="modal-footer"><span>Private · never published automatically</span><div class="modal-footer-right"><button class="secondary-button" type="button" data-close-modal="evidence">Cancel</button><button id="save-evidence-button" class="primary-button" type="submit">Save Evidence</button></div></div>
+      </form>
+    </div>
+
+
     <!-- =====================================================
          TOAST
          ===================================================== -->
@@ -4852,6 +4890,9 @@ const supabasePublishableKey =
           [],
 
         ventureTasks:
+          [],
+
+        evidence:
           [],
 
         eventSpeakers:
@@ -5868,6 +5909,7 @@ const supabasePublishableKey =
             loadPeople(),
             loadVentures(),
             loadVentureTasks(),
+            loadEvidence(),
             loadEventSpeakers(),
             loadEventSponsors(),
             loadFeaturedContent()
@@ -5884,6 +5926,7 @@ const supabasePublishableKey =
         renderOrganizations();
         renderPeople();
         renderVentures();
+        renderEvidence();
         renderEvents();
         renderFeatures();
 
@@ -6093,6 +6136,9 @@ const supabasePublishableKey =
           ventures:
             state.ventures.length,
 
+          evidence:
+            state.evidence.length,
+
           features:
             state.featuredContent.filter((item) => item.active !== false).length
         };
@@ -6133,6 +6179,9 @@ const supabasePublishableKey =
 
         $("#nav-ventures-count").textContent =
           values.ventures;
+
+        $("#nav-evidence-count").textContent =
+          values.evidence;
 
         $("#nav-features-count").textContent =
           values.features;
@@ -9929,6 +9978,48 @@ const supabasePublishableKey =
       }
 
 
+      async function loadEvidence() {
+        const { data, error } = await supabase.from("evidence_items").select("*").order("evidence_date", { ascending: false, nullsFirst: false }).order("created_at", { ascending: false });
+        if (error) { showToast(`Could not load evidence: ${error.message}`, "error"); return; }
+        state.evidence = data || [];
+        renderEvidence();
+      }
+
+      function renderEvidence() {
+        const container = $("#evidence-list");
+        if (!container) return;
+        const search = $("#evidence-search")?.value.trim().toLowerCase() || "";
+        const items = state.evidence.filter((item) => !search || [item.title,item.evidence_type,item.content_type,item.content_id,item.notes].filter(Boolean).some((value) => String(value).toLowerCase().includes(search)));
+        container.innerHTML = items.length ? items.map((item) => `
+          <div class="content-row"><div>
+            <h3 class="row-title">${escapeHtml(item.title)}</h3>
+            <div class="row-meta"><span class="status-pill ${item.status === "verified" ? "published" : "draft"}">${escapeHtml(item.status)}</span><span>•</span><span>${escapeHtml(item.evidence_type)}</span><span>•</span><span>${escapeHtml(item.content_type)}${item.content_id ? ` · ${escapeHtml(item.content_id)}` : ""}</span></div>
+            ${item.notes ? `<p class="row-description">${escapeHtml(item.notes)}</p>` : ""}
+          </div><button class="secondary-button" type="button" data-edit-evidence="${escapeHtml(item.id)}">Edit</button></div>
+        `).join("") : `<div class="empty-state"><strong>No evidence found</strong>Add supporting material as you document your work.</div>`;
+      }
+
+      function resetEvidenceForm() {
+        $("#evidence-form").reset(); $("#evidence-record-id").value = ""; $("#evidence-modal-title").textContent = "Add Evidence"; $("#evidence-status").value = "verified"; $("#evidence-type").value = "photo"; $("#evidence-content-type").value = "event";
+      }
+
+      function openEvidenceModal(id = "") {
+        resetEvidenceForm();
+        if (id) {
+          const item = state.evidence.find((entry) => String(entry.id) === String(id)); if (!item) return;
+          $("#evidence-record-id").value=item.id; $("#evidence-modal-title").textContent="Edit Evidence"; $("#evidence-title").value=item.title||""; $("#evidence-type").value=item.evidence_type||"other"; $("#evidence-status").value=item.status||"verified"; $("#evidence-content-type").value=item.content_type||"general"; $("#evidence-content-id").value=item.content_id||""; $("#evidence-date").value=item.evidence_date||""; $("#evidence-url").value=item.source_url||""; $("#evidence-storage-path").value=item.storage_path||""; $("#evidence-notes").value=item.notes||"";
+        }
+        $("#evidence-modal").classList.remove("hidden"); document.body.style.overflow="hidden";
+      }
+
+      async function saveEvidence() {
+        const id=$("#evidence-record-id").value;
+        const payload={title:$("#evidence-title").value.trim(),evidence_type:$("#evidence-type").value,status:$("#evidence-status").value,content_type:$("#evidence-content-type").value,content_id:$("#evidence-content-id").value.trim()||null,evidence_date:$("#evidence-date").value||null,source_url:$("#evidence-url").value.trim()||null,storage_path:$("#evidence-storage-path").value.trim()||null,notes:$("#evidence-notes").value.trim()||null};
+        const response=id?await supabase.from("evidence_items").update(payload).eq("id",id):await supabase.from("evidence_items").insert(payload);
+        if(response.error) throw response.error; closeModal("evidence"); showToast(id?"Evidence updated.":"Evidence added."); await loadAllContent();
+      }
+
+
       async function loadVentures() {
         const { data, error } = await supabase
           .from("ventures")
@@ -10863,6 +10954,11 @@ const supabasePublishableKey =
             "Ventures",
           subtitle:
             "Track venture progress and privately preview the future portfolio page."
+        },
+        evidence: {
+          eyebrow: "Private Archive",
+          title: "Evidence",
+          subtitle: "Keep supporting material connected to the work it documents."
         }
       };
 
@@ -10936,7 +11032,9 @@ const supabasePublishableKey =
           person:
             "#person-modal",
           venture:
-            "#venture-modal"
+            "#venture-modal",
+          evidence:
+            "#evidence-modal"
         };
 
 
@@ -11753,6 +11851,10 @@ const supabasePublishableKey =
       );
 
 
+      $("#add-evidence-button").addEventListener("click", () => openEvidenceModal());
+      $("#evidence-search").addEventListener("input", renderEvidence);
+
+
       $("#add-venture-button").addEventListener(
         "click",
         () =>
@@ -11976,6 +12078,13 @@ const supabasePublishableKey =
             openPersonModal(
               personButton.dataset.editPerson
             );
+          }
+
+
+          const evidenceButton =
+            event.target.closest("[data-edit-evidence]");
+          if (evidenceButton) {
+            openEvidenceModal(evidenceButton.dataset.editEvidence);
           }
 
 
@@ -12683,6 +12792,13 @@ const supabasePublishableKey =
       });
 
 
+      $("#evidence-form").addEventListener("submit", async (event) => {
+        event.preventDefault();
+        const button=$("#save-evidence-button"); setButtonLoading(button,true,"Saving...","Save Evidence");
+        try { await saveEvidence(); } catch(error) { console.error(error); showToast(error?.message||"Could not save evidence.","error"); } finally { setButtonLoading(button,false,"Saving...","Save Evidence"); }
+      });
+
+
       $("#venture-form").addEventListener(
         "submit",
         async (event) => {
@@ -12946,7 +13062,8 @@ const supabasePublishableKey =
             "community",
             "organization",
             "person",
-            "venture"
+            "venture",
+            "evidence"
           ].forEach(
             closeModal
           );
