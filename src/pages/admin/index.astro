@@ -3080,7 +3080,7 @@ const supabasePublishableKey =
           <nav id="website-sidebar-nav" class="sidebar-nav">
             <div class="sidebar-group-label">Soleil & Stone</div>
             <button class="nav-button" type="button" data-section="venture-home">
-              <span>Venture Dashboard</span>
+              <span>Dashboard</span>
             </button>
             <div class="sidebar-group-label">Website & Content</div>
             <button
@@ -3088,7 +3088,7 @@ const supabasePublishableKey =
               type="button"
               data-section="dashboard"
             >
-              <span>Dashboard</span>
+              <span>Website / CMS</span>
             </button>
 
             <button
@@ -7094,7 +7094,7 @@ const supabasePublishableKey =
         const upcoming=open.filter((t)=>t.due_date&&t.due_date>today);
         const noDate=open.filter((t)=>!t.due_date);
         const waiting=open.filter((t)=>t.status==="waiting");
-        $("#workspace-stat-open").textContent=open.length; $("#workspace-stat-today").textContent=todayTasks.length; $("#workspace-stat-overdue").textContent=overdue.length; $("#workspace-stat-waiting").textContent=waiting.length; if ($("#nav-workspace-count")) $("#nav-workspace-count").textContent=open.length;
+        $("#workspace-stat-open").textContent=open.length; $("#workspace-stat-today").textContent=todayTasks.length; $("#workspace-stat-overdue").textContent=overdue.length; $("#workspace-stat-waiting").textContent=waiting.length;
         const groups=[["Overdue",overdue],["Today",todayTasks],["Upcoming",upcoming],["No Due Date",noDate],["Completed",state.workspaceTasks.filter((t)=>t.status==="done").slice(0,10)]];
         $("#workspace-task-groups").innerHTML=groups.filter(([,items])=>items.length).map(([name,items])=>`<section class="mydash-section"><h2 class="mydash-section-title">${name}</h2><div class="content-list">${items.map(taskRow).join("")}</div></section>`).join("") || '<div class="empty-state"><strong>No tasks yet</strong>Add an area, then add your first task.</div>';
       }
@@ -7396,11 +7396,6 @@ const supabasePublishableKey =
 
         $("#nav-people-count").textContent =
           values.people;
-
-        if ($("#nav-ventures-count")) {
-          $("#nav-ventures-count").textContent =
-            values.ventures;
-        }
 
         $("#nav-evidence-count").textContent =
           values.evidence;
