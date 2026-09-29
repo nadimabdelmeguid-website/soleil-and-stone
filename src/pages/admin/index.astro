@@ -957,6 +957,10 @@ const supabasePublishableKey =
           width: 100%;
         }
 
+        .venture-card-actions .primary-button {
+          grid-column: 1 / -1;
+        }
+
         .venture-tabs {
           top: 69px;
         }
@@ -11961,7 +11965,7 @@ const supabasePublishableKey =
               ? formatDate(String(item.updated_at).slice(0, 10))
               : "";
           return `
-            <article class="venture-card">
+            <article class="venture-card portfolio-venture-card" data-enter-venture-card="${escapeHtml(item.id)}">
               <div class="venture-card-top">
                 <div>
                   <div class="venture-meta-line">
@@ -14487,6 +14491,18 @@ const supabasePublishableKey =
 
           if (portfolioTaskButton) {
             openVentureModal(portfolioTaskButton.dataset.portfolioAddTask, "execution", true);
+            return;
+          }
+
+
+          const portfolioVentureCard =
+            event.target.closest("[data-enter-venture-card]");
+
+          if (
+            portfolioVentureCard &&
+            !event.target.closest("button, a, input, select, textarea, label")
+          ) {
+            enterVenture(portfolioVentureCard.dataset.enterVentureCard);
             return;
           }
 
