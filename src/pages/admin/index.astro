@@ -12604,6 +12604,521 @@ const supabasePublishableKey =
          NAVIGATION
          ===================================================== */
 
+      const ventureWorkspaceConfig = {
+        "soleil-and-stone": {
+          subtitle: "Website, community & venture",
+          modules: []
+        },
+        taprecon: {
+          subtitle: "Hospitality software",
+          modules: [
+            { key: "product", label: "Product", description: "Product concept, value proposition and core functionality." },
+            { key: "integrations", label: "Integrations", description: "POS and draft-system integrations relevant to the product." },
+            { key: "customers", label: "Customer Discovery", description: "Target venues, discovery work and validation accounts." },
+            { key: "pilots", label: "Pilots & LOIs", description: "Letters of intent, pilot planning and early deployment work." }
+          ]
+        },
+        "apex-kinetics": {
+          subtitle: "Connected outdoor hardware",
+          modules: [
+            { key: "product", label: "Products", description: "Smart trekking pole and weather-sensor product concepts." },
+            { key: "prototype", label: "Prototype & Design", description: "Industrial design direction and prototype development." },
+            { key: "market", label: "Market", description: "Pricing benchmarks, positioning and market validation." }
+          ]
+        },
+        "fwi-spirits": {
+          subtitle: "Spirits import & distribution",
+          modules: [
+            { key: "regulatory", label: "Regulatory", description: "Federal and California licensing work." },
+            { key: "brands", label: "Brands", description: "Selected portfolio brands and brand-level information." },
+            { key: "distribution", label: "Distribution", description: "Launch territories, pricing and market coverage." }
+          ]
+        }
+      };
+
+
+      function currentVenture() {
+        return state.ventures.find((item) => String(item.id) === String(state.currentVentureId)) || null;
+      }
+
+
+      function workspaceConfigFor(venture = currentVenture()) {
+        if (!venture) return { subtitle: "Venture workspace", modules: [] };
+        const configured = ventureWorkspaceConfig[venture.slug];
+        if (configured) return configured;
+
+        const dynamicModules = [...new Set(
+          state.ventureWorkspaceItems
+            .filter((item) => String(item.venture_id) === String(venture.id))
+            .map((item) => item.module_key)
+        )].map((key) => ({
+          key,
+          label: String(key || "module").replaceAll("-", " ").replace(/\b\w/g, (letter) => letter.toUpperCase()),
+          description: "Venture workspace module."
+        }));
+
+        return {
+          subtitle: venture.sector || "Venture workspace",
+          modules: dynamicModules
+        };
+      }
+
+
+      function workspaceItemsFor(ventureId, moduleKey = null) {
+        return state.ventureWorkspaceItems
+          .filter((item) => String(item.venture_id) === String(ventureId))
+          .filter((item) => !moduleKey || item.module_key === moduleKey)
+          .sort((a, b) =>
+            Number(a.sort_order || 0) - Number(b.sort_order || 0)
+            || String(a.title || "").localeCompare(String(b.title || ""))
+          );
+      }
+
+
+      function renderVentureSidebar() {
+        const venture = currentVenture();
+        if (!venture) return;
+
+        $("#sidebar-venture-name").textContent = venture.name;
+        $("#sidebar-venture-subtitle").textContent = workspaceConfigFor(venture).subtitle;
+
+        const isSoleil = venture.slug === "soleil-and-stone";
+        $("#website-sidebar-nav").classList.toggle("hidden", !isSoleil);
+        $("#venture-sidebar-nav").classList.toggle("hidden", isSoleil);
+
+        if (isSoleil) {
+          refreshCounts();
+          return;
+        }
+
+        const config = workspaceConfigFor(venture);
+        $("#venture-sidebar-nav").innerHTML = `
+          <div class="sidebar-group-label">Overview</div>
+          <button class="nav-button" type="button" data-section="venture-home">
+            <span>Dashboard</span>
+          </button>
+
+          ${config.modules.length ? `
+            <div class="sidebar-group-label">Business</div>
+            ${config.modules.map((module) => `
+              <button class="nav-button" type="button" data-section="venture-module" data-venture-module="${escapeHtml(module.key)}">
+                <span>${escapeHtml(module.label)}</span>
+                <span class="nav-count">${workspaceItemsFor(venture.id, module.key).length}</span>
+              </button>
+            `).join("")}
+          ` : ""}
+
+          <div class="sidebar-group-label">Execution</div>
+          <button class="nav-button" type="button" data-section="venture-execution">
+            <span>Tasks</span>
+            <span class="nav-count">${tasksForVenture(venture.id).filter((task) => !isVentureTaskDone(task)).length}</span>
+          </button>
+          <button class="nav-button" type="button" data-section="venture-milestones">
+            <span>Milestones</span>
+            <span class="nav-count">${milestonesForVenture(venture.id).filter((item) => item.status === "planned").length}</span>
+          </button>
+          <button class="nav-button" type="button" data-section="venture-notes">
+            <span>Private Notes</span>
+          </button>
+        `;
+      }
+
+
+      function portfolioMode(enabled) {
+        $(".admin-shell").classList.toggle("portfolio-mode", enabled);
+        $("#portfolio-top-actions").classList.toggle("hidden", !enabled);
+        $("#sync-note").classList.add("hidden");
+        if (enabled) {
+          $("#sidebar").classList.remove("open");
+        }
+      }
+
+
+      function openPortfolio() {
+        state.currentVentureId = null;
+        state.currentVentureModule = null;
+        portfolioMode(true);
+        openSection("ventures");
+        renderVentures();
+      }
+
+
+      function enterVenture(ventureId, initialSection = "venture-home") {
+        const venture = state.ventures.find((item) => String(item.id) === String(ventureId));
+        if (!venture) return;
+
+        state.currentVentureId = venture.id;
+        state.currentVentureModule = null;
+        portfolioMode(false);
+        renderVentureSidebar();
+        renderCurrentVentureContext();
+        openSection(initialSection);
+      }
+
+
+      function renderCurrentVentureContext() {
+        if (!state.currentVentureId) return;
+        renderVentureContextDashboard();
+        renderVentureContextExecution();
+        renderVentureContextMilestones();
+        renderVentureContextNotes();
+        if (state.currentVentureModule) {
+          renderVentureModule();
+        }
+        renderVentureSidebar();
+      }
+
+
+      function renderVentureContextDashboard() {
+        const container = $("#venture-context-dashboard");
+        const venture = currentVenture();
+        if (!container || !venture) return;
+
+        const stats = ventureTaskStats(venture.id);
+        const milestoneItems = milestonesForVenture(venture.id);
+        const plannedMilestones = milestoneItems.filter((item) => item.status === "planned");
+        const allWorkspaceItems = workspaceItemsFor(venture.id);
+        const config = workspaceConfigFor(venture);
+
+        let moduleCards = "";
+
+        if (venture.slug === "soleil-and-stone") {
+          moduleCards = `
+            <button class="venture-module-card" type="button" data-context-section="dashboard">
+              <span class="eyebrow">Website</span>
+              <h3 class="venture-module-title">Website & CMS</h3>
+              <p class="venture-module-copy">Homepage, publishing controls and recent content.</p>
+              <span class="venture-module-count">${state.fieldNotes.length + state.recaps.length + state.events.length}</span>
+            </button>
+            <button class="venture-module-card" type="button" data-context-section="events">
+              <span class="eyebrow">Fieldwork</span>
+              <h3 class="venture-module-title">Events & Recaps</h3>
+              <p class="venture-module-copy">Industry fieldwork, hosted events and event documentation.</p>
+              <span class="venture-module-count">${state.events.length}</span>
+            </button>
+            <button class="venture-module-card" type="button" data-context-section="communities">
+              <span class="eyebrow">Community</span>
+              <h3 class="venture-module-title">Communities</h3>
+              <p class="venture-module-copy">Startup Mixer, Hardware Meetup and related organizations.</p>
+              <span class="venture-module-count">${state.communities.length}</span>
+            </button>
+          `;
+        } else {
+          moduleCards = config.modules.map((module) => `
+            <button class="venture-module-card" type="button" data-context-module="${escapeHtml(module.key)}">
+              <span class="eyebrow">${escapeHtml(venture.name)}</span>
+              <h3 class="venture-module-title">${escapeHtml(module.label)}</h3>
+              <p class="venture-module-copy">${escapeHtml(module.description)}</p>
+              <span class="venture-module-count">${workspaceItemsFor(venture.id, module.key).length}</span>
+            </button>
+          `).join("");
+        }
+
+        const nextTasks = tasksForVenture(venture.id)
+          .filter((task) => !isVentureTaskDone(task))
+          .sort((a, b) => String(a.due_date || "9999-12-31").localeCompare(String(b.due_date || "9999-12-31")))
+          .slice(0, 4);
+
+        const nextMilestones = plannedMilestones.slice(0, 4);
+
+        container.innerHTML = `
+          <div class="venture-context-hero">
+            <div class="venture-context-hero-head">
+              <div>
+                <div class="venture-meta-line">
+                  <span class="status-pill ${escapeHtml(venture.venture_status || "idea")}">${escapeHtml(ventureStatusLabel(venture.venture_status))}</span>
+                  <span class="ventures-private-badge">Private workspace</span>
+                </div>
+                <h2 class="venture-context-name">${escapeHtml(venture.name)}</h2>
+                <p class="venture-context-description">${escapeHtml(venture.description || venture.tagline || "")}</p>
+              </div>
+              <div class="venture-context-actions">
+                <button class="secondary-button" type="button" data-edit-current-venture="overview">Edit Venture</button>
+                <button class="primary-button" type="button" data-context-add-task>+ Task</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="venture-context-grid">
+            <div class="venture-context-stat"><strong>${stats.open}</strong><span>Open Tasks</span></div>
+            <div class="venture-context-stat"><strong>${stats.progress}%</strong><span>Task Progress</span></div>
+            <div class="venture-context-stat"><strong>${plannedMilestones.length}</strong><span>Planned Milestones</span></div>
+            <div class="venture-context-stat"><strong>${allWorkspaceItems.length}</strong><span>Workspace Items</span></div>
+          </div>
+
+          <div class="dashboard-grid" style="margin-bottom:20px;">
+            <div class="panel">
+              <div class="panel-header"><div><p class="eyebrow">Current Focus</p><h3 class="panel-title">What matters next</h3></div></div>
+              <div style="padding:18px;">
+                <p class="row-description" style="margin:0;max-width:none;">${escapeHtml(venture.next_milestone || "No current focus has been set yet.")}</p>
+              </div>
+            </div>
+            <div class="panel">
+              <div class="panel-header"><div><p class="eyebrow">Latest Update</p><h3 class="panel-title">${venture.last_update_at ? escapeHtml(formatDate(venture.last_update_at)) : "No date"}</h3></div></div>
+              <div style="padding:18px;">
+                <p class="row-description" style="margin:0;max-width:none;">${escapeHtml(venture.last_update || "No progress update has been added yet.")}</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="venture-section-heading">
+            <div><p class="eyebrow">Workspace</p><h2>${venture.slug === "soleil-and-stone" ? "Soleil & Stone Systems" : "Business Modules"}</h2></div>
+          </div>
+          <div class="venture-module-grid">${moduleCards || '<div class="empty-state" style="grid-column:1/-1;"><strong>No business modules yet</strong>This venture can be expanded with tailored modules as it develops.</div>'}</div>
+
+          <div class="venture-focus-grid" style="margin-top:24px;">
+            <section class="venture-focus-panel">
+              <div class="panel-header"><div><p class="eyebrow">Execution</p><h3 class="panel-title">Next Tasks</h3></div><button class="quiet-button" type="button" data-context-section="venture-execution">View all</button></div>
+              <div class="venture-focus-list">
+                ${nextTasks.length ? nextTasks.map(ventureFocusRow).join("") : '<div class="empty-state"><strong>No open tasks</strong>Add the next action for this venture.</div>'}
+              </div>
+            </section>
+            <section class="venture-focus-panel">
+              <div class="panel-header"><div><p class="eyebrow">Roadmap</p><h3 class="panel-title">Next Milestones</h3></div><button class="quiet-button" type="button" data-context-section="venture-milestones">View all</button></div>
+              <div class="venture-focus-list">
+                ${nextMilestones.length ? nextMilestones.map((item) => `
+                  <div class="venture-focus-row">
+                    <span class="venture-check">◇</span>
+                    <div><p class="venture-focus-title">${escapeHtml(item.title)}</p><div class="venture-focus-meta">${item.milestone_date ? escapeHtml(formatDate(item.milestone_date)) : "No date set"}</div></div>
+                    <button class="quiet-button" type="button" data-context-edit-milestone="${escapeHtml(item.id)}">Edit</button>
+                  </div>
+                `).join("") : '<div class="empty-state"><strong>No planned milestones</strong>Add the next meaningful outcome.</div>'}
+              </div>
+            </section>
+            <section class="venture-focus-panel">
+              <div class="panel-header"><div><p class="eyebrow">Profile</p><h3 class="panel-title">Venture Details</h3></div></div>
+              <div style="padding:16px;">
+                <div class="row-meta" style="margin-top:0;">
+                  ${venture.role ? `<span>${escapeHtml(venture.role)}</span>` : ""}
+                  ${venture.sector ? `<span>•</span><span>${escapeHtml(venture.sector)}</span>` : ""}
+                  ${venture.location ? `<span>•</span><span>${escapeHtml(venture.location)}</span>` : ""}
+                </div>
+                ${venture.tagline ? `<p class="row-description">${escapeHtml(venture.tagline)}</p>` : ""}
+              </div>
+            </section>
+          </div>
+        `;
+      }
+
+
+      function openVentureModule(moduleKey) {
+        const venture = currentVenture();
+        if (!venture) return;
+        const module = workspaceConfigFor(venture).modules.find((item) => item.key === moduleKey);
+        if (!module) return;
+        state.currentVentureModule = moduleKey;
+        openSection("venture-module");
+        renderVentureModule();
+      }
+
+
+      function renderVentureModule() {
+        const venture = currentVenture();
+        const container = $("#venture-module-items");
+        if (!venture || !container || !state.currentVentureModule) return;
+
+        const config = workspaceConfigFor(venture);
+        const module = config.modules.find((item) => item.key === state.currentVentureModule);
+        const items = workspaceItemsFor(venture.id, state.currentVentureModule);
+
+        $("#venture-module-description").textContent = module?.description || "Venture workspace module.";
+
+        container.innerHTML = items.length
+          ? items.map((item) => `
+              <article class="venture-workspace-item">
+                <div class="venture-workspace-item-header">
+                  <div>
+                    <div class="venture-meta-line">
+                      <span class="status-pill ${item.status === "completed" || item.status === "active" ? "active" : item.status === "pending" || item.status === "planned" ? "scheduled" : item.status === "archived" ? "archived" : "draft"}">${escapeHtml(item.status)}</span>
+                      <span>${escapeHtml(item.item_type)}</span>
+                    </div>
+                    <h3 class="venture-workspace-item-title" style="margin-top:9px;">${escapeHtml(item.title)}</h3>
+                  </div>
+                  <button class="quiet-button" type="button" data-edit-workspace-item="${escapeHtml(item.id)}">Edit</button>
+                </div>
+                ${item.summary ? `<p class="venture-workspace-item-summary">${escapeHtml(item.summary)}</p>` : ""}
+                ${item.notes ? `<p class="venture-workspace-item-notes">${escapeHtml(item.notes)}</p>` : ""}
+                ${item.source_url ? `<p class="row-description"><a href="${escapeHtml(item.source_url)}" target="_blank" rel="noreferrer">Open resource ↗</a></p>` : ""}
+              </article>
+            `).join("")
+          : `<div class="empty-state" style="grid-column:1/-1;"><strong>No items in this module yet</strong>Add the first ${escapeHtml(module?.label || "workspace")} item.</div>`;
+      }
+
+
+      function renderVentureContextExecution() {
+        const venture = currentVenture();
+        const summary = $("#venture-context-task-summary");
+        const container = $("#venture-context-task-list");
+        if (!venture || !summary || !container) return;
+
+        const stats = ventureTaskStats(venture.id);
+        const tasks = [...stats.tasks].sort((a, b) => {
+          if (isVentureTaskDone(a) !== isVentureTaskDone(b)) return isVentureTaskDone(a) ? 1 : -1;
+          return String(a.due_date || "9999-12-31").localeCompare(String(b.due_date || "9999-12-31"));
+        });
+        const waiting = tasks.filter((item) => ventureTaskStatus(item) === "waiting").length;
+
+        summary.innerHTML = `
+          <div class="stat-card"><div class="stat-value">${stats.open}</div><div class="stat-label">Open</div></div>
+          <div class="stat-card"><div class="stat-value">${stats.progress}%</div><div class="stat-label">Completed</div></div>
+          <div class="stat-card"><div class="stat-value">${stats.overdue}</div><div class="stat-label">Overdue</div></div>
+          <div class="stat-card"><div class="stat-value">${waiting}</div><div class="stat-label">Waiting</div></div>
+        `;
+
+        container.innerHTML = tasks.length
+          ? tasks.map((task) => {
+              const done = isVentureTaskDone(task);
+              const status = ventureTaskStatus(task);
+              const overdue = !done && task.due_date && task.due_date < localDateKey();
+              return `
+                <div class="venture-task-row ${done ? "is-done" : ""} ${overdue ? "is-overdue" : ""}">
+                  <button class="venture-check" type="button" data-toggle-venture-task="${escapeHtml(task.id)}">${done ? "✓" : "○"}</button>
+                  <div>
+                    <h4 class="venture-task-row-title">${escapeHtml(task.title)}</h4>
+                    <div class="venture-task-row-meta">
+                      <span class="status-pill ${status === "done" ? "active" : status === "in-progress" ? "scheduled" : status === "waiting" ? "paused" : "idea"}">${escapeHtml(ventureTaskStatusLabel(status))}</span>
+                      <span>${escapeHtml(ventureTaskPriorityLabel(task.priority))} priority</span>
+                      <span>•</span><span>${escapeHtml(taskTimeline(task))}</span>
+                    </div>
+                    ${task.description ? `<p class="row-description">${escapeHtml(task.description)}</p>` : ""}
+                  </div>
+                  <div class="venture-task-actions"><button class="secondary-button" type="button" data-context-edit-task="${escapeHtml(task.id)}">Edit</button></div>
+                </div>
+              `;
+            }).join("")
+          : `<div class="empty-state"><strong>No tasks yet</strong>Add the first action for ${escapeHtml(venture.name)}.</div>`;
+      }
+
+
+      function renderVentureContextMilestones() {
+        const venture = currentVenture();
+        const container = $("#venture-context-milestone-list");
+        if (!venture || !container) return;
+
+        const items = milestonesForVenture(venture.id);
+        container.innerHTML = items.length
+          ? items.map((item) => `
+              <article class="venture-milestone-card ${item.status === "completed" ? "completed" : ""}">
+                <div>
+                  <h3 class="venture-milestone-title">${escapeHtml(item.title)}</h3>
+                  <div class="row-meta">
+                    <span class="status-pill ${item.status === "completed" ? "active" : item.status === "cancelled" ? "archived" : "scheduled"}">${escapeHtml(item.status)}</span>
+                    ${item.milestone_date ? `<span>•</span><span>${escapeHtml(formatDate(item.milestone_date))}</span>` : ""}
+                  </div>
+                  ${item.notes ? `<p class="row-description">${escapeHtml(item.notes)}</p>` : ""}
+                </div>
+                <button class="secondary-button" type="button" data-context-edit-milestone="${escapeHtml(item.id)}">Edit</button>
+              </article>
+            `).join("")
+          : `<div class="empty-state"><strong>No milestones yet</strong>Add the first meaningful checkpoint for ${escapeHtml(venture.name)}.</div>`;
+      }
+
+
+      function renderVentureContextNotes() {
+        const venture = currentVenture();
+        const container = $("#venture-context-notes-panel");
+        if (!venture || !container) return;
+
+        container.innerHTML = `
+          <div class="panel">
+            <div class="panel-header">
+              <div><p class="eyebrow">Private Working Context</p><h2 class="panel-title">Notes & Latest Update</h2></div>
+              <button class="primary-button" type="button" data-edit-current-venture="notes">Edit Notes</button>
+            </div>
+            <div style="padding:20px;">
+              <p class="label">Private Notes</p>
+              <p class="row-description" style="max-width:none;white-space:pre-wrap;">${escapeHtml(venture.notes || "No private notes yet.")}</p>
+              <div style="height:1px;background:var(--border);margin:22px 0;"></div>
+              <p class="label">Latest Progress Update</p>
+              <p class="row-description" style="max-width:none;">${escapeHtml(venture.last_update || "No update yet.")}</p>
+              ${venture.last_update_at ? `<div class="row-meta"><span>${escapeHtml(formatDate(venture.last_update_at))}</span></div>` : ""}
+            </div>
+          </div>
+        `;
+      }
+
+
+      function resetVentureWorkspaceItemForm() {
+        $("#venture-workspace-item-form").reset();
+        $("#venture-workspace-item-id").value = "";
+        $("#venture-workspace-item-status").value = "active";
+        $("#venture-workspace-item-type").value = "note";
+        $("#venture-workspace-item-order").value = "0";
+        $("#venture-workspace-item-modal-title").textContent = "Add Item";
+        $("#delete-venture-workspace-item").classList.add("hidden");
+      }
+
+
+      function openVentureWorkspaceItem(itemId = "") {
+        const venture = currentVenture();
+        if (!venture || !state.currentVentureModule) return;
+        resetVentureWorkspaceItemForm();
+
+        if (itemId) {
+          const item = state.ventureWorkspaceItems.find((candidate) => String(candidate.id) === String(itemId));
+          if (!item) return;
+          $("#venture-workspace-item-id").value = item.id;
+          $("#venture-workspace-item-title").value = item.title || "";
+          $("#venture-workspace-item-type").value = item.item_type || "note";
+          $("#venture-workspace-item-status").value = item.status || "active";
+          $("#venture-workspace-item-summary").value = item.summary || "";
+          $("#venture-workspace-item-notes").value = item.notes || "";
+          $("#venture-workspace-item-url").value = item.source_url || "";
+          $("#venture-workspace-item-order").value = item.sort_order ?? 0;
+          $("#venture-workspace-item-modal-title").textContent = "Edit Item";
+          $("#delete-venture-workspace-item").classList.remove("hidden");
+        }
+
+        $("#venture-workspace-item-modal").removeAttribute("hidden");
+        $("#venture-workspace-item-modal").classList.remove("hidden");
+        document.body.style.overflow = "hidden";
+      }
+
+
+      async function saveVentureWorkspaceItem() {
+        const venture = currentVenture();
+        if (!venture || !state.currentVentureModule) throw new Error("No venture module is selected.");
+
+        const id = $("#venture-workspace-item-id").value;
+        const title = $("#venture-workspace-item-title").value.trim();
+        if (!title) throw new Error("Title is required.");
+
+        const payload = {
+          venture_id: venture.id,
+          module_key: state.currentVentureModule,
+          item_type: $("#venture-workspace-item-type").value,
+          title,
+          status: $("#venture-workspace-item-status").value,
+          summary: $("#venture-workspace-item-summary").value.trim() || null,
+          notes: $("#venture-workspace-item-notes").value.trim() || null,
+          source_url: $("#venture-workspace-item-url").value.trim() || null,
+          sort_order: Number($("#venture-workspace-item-order").value || 0)
+        };
+
+        const response = id
+          ? await supabase.from("venture_workspace_items").update(payload).eq("id", id)
+          : await supabase.from("venture_workspace_items").insert(payload);
+
+        if (response.error) throw response.error;
+        closeModal("venture-workspace-item");
+        await loadVentureWorkspaceItems();
+        renderVentureModule();
+        showToast(id ? "Workspace item updated." : "Workspace item added.");
+      }
+
+
+      async function deleteVentureWorkspaceItem() {
+        const id = $("#venture-workspace-item-id").value;
+        if (!id || !window.confirm("Delete this workspace item?")) return;
+        const { error } = await supabase.from("venture_workspace_items").delete().eq("id", id);
+        if (error) throw error;
+        closeModal("venture-workspace-item");
+        await loadVentureWorkspaceItems();
+        renderVentureModule();
+        showToast("Workspace item deleted.");
+      }
+
+
       const sectionCopy = {
         "my-dashboard": {
           eyebrow: "Private Workspace",
