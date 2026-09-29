@@ -1,0 +1,45 @@
+---
+import { getCollection } from "astro:content";
+import { events } from "../data/events.cms";
+import { getProfessionalMetrics } from "../utils/eventMetrics";
+import { getEventRecapUrl } from "../utils/eventRecaps";
+
+const now = new Date();
+const notes = (await getCollection("fieldNotes"))
+  .filter((post) => !post.data.draft && post.data.published <= now)
+  .sort((a,b) => b.data.published.getTime() - a.data.published.getTime());
+const recaps = (await getCollection("eventRecaps"))
+  .filter((post) => !post.data.draft && post.data.published <= now)
+  .sort((a,b) => b.data.published.getTime() - a.data.published.getTime());
+const upcoming = events
+  .filter((event) => new Date(`${event.endDate || event.startDate}T23:59:59`) >= now)
+  .sort((a,b) => new Date(`${a.startDate}T12:00:00`).getTime() - new Date(`${b.startDate}T12:00:00`).getTime())[0];
+const latestNote = notes[0];
+const latestRecap = recaps[0];
+const metrics = getProfessionalMetrics(events);
+const noteUrl = latestNote ? `/field-notes/${latestNote.id.replace(/\.md$/, "")}/` : null;
+const recapUrl = latestRecap ? (getEventRecapUrl(latestRecap.data.eventId) || `/event-recaps/${latestRecap.id.replace(/\.md$/, "")}/`) : null;
+---
+
+<section class="bg-white border-b border-brand-border">
+  <div class="max-w-6xl w-full mx-auto px-6 py-12">
+    <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-7">
+      <div>
+        <span class="text-[10px] uppercase tracking-[0.2em] text-brand-gold font-semibold">Now</span>
+        <h2 class="font-serif text-2xl sm:text-3xl text-brand-charcoal mt-2">What I'm Working Around</h2>
+      </div>
+      <p class="text-xs text-brand-slate font-light max-w-md">A live snapshot generated from the latest notes, fieldwork and community activity.</p>
+    </div>
+    <div class="grid md:grid-cols-3 gap-px bg-brand-border border border-brand-border">
+      {latestNote && <a href={noteUrl} class="bg-white p-6 hover:bg-brand-cream transition-colors"><span class="text-[9px] uppercase tracking-[0.16em] text-brand-gold font-semibold">Latest Field Note</span><h3 class="font-serif text-lg text-brand-charcoal mt-2">{latestNote.data.title}</h3><p class="text-xs text-brand-slate mt-3 line-clamp-3">{latestNote.data.description}</p></a>}
+      {upcoming && <a href="/fieldwork/" class="bg-white p-6 hover:bg-brand-cream transition-colors"><span class="text-[9px] uppercase tracking-[0.16em] text-brand-gold font-semibold">Next Fieldwork</span><h3 class="font-serif text-lg text-brand-charcoal mt-2">{upcoming.title}</h3><p class="text-xs text-brand-slate mt-3">{new Date(`${upcoming.startDate}T12:00:00`).toLocaleDateString("en-US",{month:"long",day:"numeric",year:"numeric"})}{upcoming.city ? ` · ${upcoming.city}` : ""}</p></a>}
+      {latestRecap && <a href={recapUrl} class="bg-white p-6 hover:bg-brand-cream transition-colors"><span class="text-[9px] uppercase tracking-[0.16em] text-brand-gold font-semibold">Latest Event Recap</span><h3 class="font-serif text-lg text-brand-charcoal mt-2">{latestRecap.data.title}</h3><p class="text-xs text-brand-slate mt-3 line-clamp-3">{latestRecap.data.excerpt}</p></a>}
+    </div>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-px bg-brand-border border border-brand-border border-t-0">
+      <div class="bg-brand-cream p-5"><strong class="font-serif text-2xl text-brand-gold">{metrics.total}</strong><p class="text-[9px] uppercase tracking-[0.14em] text-brand-slate mt-1">Fieldwork Events</p></div>
+      <div class="bg-brand-cream p-5"><strong class="font-serif text-2xl text-brand-gold">{metrics.led}</strong><p class="text-[9px] uppercase tracking-[0.14em] text-brand-slate mt-1">Events Led</p></div>
+      <div class="bg-brand-cream p-5"><strong class="font-serif text-2xl text-brand-gold">{metrics.registrationsLed}</strong><p class="text-[9px] uppercase tracking-[0.14em] text-brand-slate mt-1">Registrations</p></div>
+      <div class="bg-brand-cream p-5"><strong class="font-serif text-2xl text-brand-gold">{metrics.organizationsEngaged}</strong><p class="text-[9px] uppercase tracking-[0.14em] text-brand-slate mt-1">Organizations</p></div>
+    </div>
+  </div>
+</section>
