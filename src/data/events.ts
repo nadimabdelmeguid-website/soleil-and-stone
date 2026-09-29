@@ -56,6 +56,9 @@ export interface SiteEvent {
 
   registrations?: number;
 
+  /** Documented attendance only. Never derived from registrations. */
+  attendees?: number;
+
   sponsors?: string[];
 
   partners?: string[];
