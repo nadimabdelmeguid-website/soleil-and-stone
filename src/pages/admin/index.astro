@@ -94,6 +94,7 @@ const supabasePublishableKey =
         cursor: pointer;
       }
 
+      [hidden],
       .hidden {
         display: none !important;
       }
@@ -2181,7 +2182,43 @@ const supabasePublishableKey =
 
 
 
-    <script src="/admin-auth.js" defer></script>
+    <script is:inline>
+      (() => {
+        const initGoogleLogin = () => {
+          const root = document.getElementById("login-form");
+          const button = document.getElementById("google-login-button");
+          const message = document.getElementById("login-message");
+          if (!root || !button || button.dataset.bound === "true") return;
+          button.dataset.bound = "true";
+          const supabaseUrl = root.dataset.supabaseUrl;
+          const show = (text, type = "") => {
+            if (!message) return;
+            message.textContent = text;
+            message.className = "form-message " + type;
+          };
+          button.addEventListener("click", () => {
+            if (!supabaseUrl) {
+              show("Admin authentication is not configured correctly.", "error");
+              return;
+            }
+            button.disabled = true;
+            button.textContent = "Opening Google...";
+            show("Redirecting to Google sign-in...");
+            const redirectTo = window.location.origin + "/admin/";
+            window.location.assign(
+              supabaseUrl + "/auth/v1/authorize?provider=google&redirect_to=" +
+              encodeURIComponent(redirectTo) +
+              "&scopes=" + encodeURIComponent("openid email profile")
+            );
+          });
+        };
+        if (document.readyState === "loading") {
+          document.addEventListener("DOMContentLoaded", initGoogleLogin, { once: true });
+        } else {
+          initGoogleLogin();
+        }
+      })();
+    </script>
 
     <!-- =====================================================
          ADMIN APP
