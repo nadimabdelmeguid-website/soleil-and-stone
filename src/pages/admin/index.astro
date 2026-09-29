@@ -6064,6 +6064,15 @@ const supabasePublishableKey =
         ventureTasks:
           [],
 
+        ventureWorkspaceItems:
+          [],
+
+        currentVentureId:
+          null,
+
+        currentVentureModule:
+          null,
+
         ventureStageFilter:
           "all",
 
@@ -7111,6 +7120,7 @@ const supabasePublishableKey =
             loadPeople(),
             loadVentures(),
             loadVentureTasks(),
+            loadVentureWorkspaceItems(),
             loadEvidence(),
             loadFieldNoteEvents(),
             loadVentureMilestones(),
@@ -11291,6 +11301,23 @@ const supabasePublishableKey =
         const payload={title:$("#evidence-title").value.trim(),evidence_type:$("#evidence-type").value,status:$("#evidence-status").value,content_type:$("#evidence-content-type").value,content_id:$("#evidence-content-id").value.trim()||null,evidence_date:$("#evidence-date").value||null,source_url:$("#evidence-url").value.trim()||null,storage_path:$("#evidence-storage-path").value.trim()||null,notes:$("#evidence-notes").value.trim()||null};
         const response=id?await supabase.from("evidence_items").update(payload).eq("id",id):await supabase.from("evidence_items").insert(payload);
         if(response.error) throw response.error; closeModal("evidence"); showToast(id?"Evidence updated.":"Evidence added."); await loadAllContent();
+      }
+
+
+      async function loadVentureWorkspaceItems() {
+        const { data, error } = await supabase
+          .from("venture_workspace_items")
+          .select("*")
+          .order("sort_order", { ascending: true })
+          .order("updated_at", { ascending: false });
+
+        if (error) {
+          showToast(`Could not load venture workspace items: ${error.message}`, "error");
+          return;
+        }
+
+        state.ventureWorkspaceItems = data || [];
+        renderCurrentVentureContext();
       }
 
 
