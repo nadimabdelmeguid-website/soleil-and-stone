@@ -4865,12 +4865,12 @@ const supabasePublishableKey =
          ADMIN LOGIC
          ===================================================== -->
 
-    <script
-      type="module"
-      define:vars={{ supabaseUrl, supabasePublishableKey }}
-    >
+    <script>
       import { createClient } from "@supabase/supabase-js";
 
+      const authRoot = document.getElementById("login-form");
+      const supabaseUrl = authRoot?.dataset.supabaseUrl || "";
+      const supabasePublishableKey = authRoot?.dataset.supabaseKey || "";
 
       const supabase =
         createClient(
