@@ -3541,6 +3541,12 @@ const supabasePublishableKey =
                   </p>
                 </div>
 
+                <div id="event-attendees-field" class="form-field conditional-field hidden">
+                  <label class="label" for="event-attendees">Documented attendance</label>
+                  <input id="event-attendees" class="input" type="number" min="0" step="1" />
+                  <p class="field-help">Enter only a documented attendance number. Never derived from registrations.</p>
+                </div>
+
                 <div class="form-field full">
                   <label
                     class="label"
@@ -4077,6 +4083,12 @@ const supabasePublishableKey =
                   >
                     Maximum 4 lines. Keep the description concise; the public card is clamped to four lines.
                   </p>
+                </div>
+
+                <div class="form-field full">
+                  <label class="label" for="field-note-related-events">Related events</label>
+                  <select id="field-note-related-events" class="select" multiple size="6"></select>
+                  <p class="field-help">Select events connected to this note. Public cross-links are generated automatically.</p>
                 </div>
 
                 <div class="form-field full">
@@ -4894,6 +4906,12 @@ const supabasePublishableKey =
           [],
 
         evidence:
+          [],
+
+        fieldNoteEvents:
+          [],
+
+        ventureMilestones:
           [],
 
         eventSpeakers:
@@ -5911,6 +5929,8 @@ const supabasePublishableKey =
             loadVentures(),
             loadVentureTasks(),
             loadEvidence(),
+            loadFieldNoteEvents(),
+            loadVentureMilestones(),
             loadEventSpeakers(),
             loadEventSponsors(),
             loadFeaturedContent()
@@ -8246,6 +8266,7 @@ const supabasePublishableKey =
 
           $("#event-registrations").value =
             event.registrations ?? "";
+          $("#event-attendees").value = event.attendees ?? "";
 
           $("#event-description").value =
             event.description || "";
@@ -8399,6 +8420,10 @@ const supabasePublishableKey =
               ? Number(
                   $("#event-registrations").value
                 )
+              : null,
+          attendees:
+            led && $("#event-attendees").value !== ""
+              ? Number($("#event-attendees").value)
               : null,
           description:
             $("#event-description").value.trim() ||
@@ -8750,6 +8775,7 @@ const supabasePublishableKey =
         updateFieldNotePublishingUI();
         renderFieldNotePictureUploaders();
         updateFieldNoteSeoCounters();
+        refreshFieldNoteEventSelector([]);
 
       }
 
@@ -8812,6 +8838,7 @@ const supabasePublishableKey =
           $("#field-note-seo-title").value = item.seo_title || "";
           $("#field-note-seo-description").value = item.seo_description || "";
           $("#field-note-featured").checked = Boolean(item.featured);
+          refreshFieldNoteEventSelector(state.fieldNoteEvents.filter((link)=>link.field_note_id===item.id).map((link)=>link.event_id));
 
         }
 
@@ -8970,6 +8997,8 @@ const supabasePublishableKey =
         ) {
           throw response.error;
         }
+
+        await syncFieldNoteEvents(savedFieldNoteId);
 
         await syncEditorFeaturePlacement(
           "home",
@@ -9988,6 +10017,31 @@ const supabasePublishableKey =
       }
 
 
+      async function loadFieldNoteEvents() {
+        const { data, error } = await supabase.from("field_note_events").select("*");
+        if (error) { showToast(`Could not load Field Note relationships: ${error.message}`, "error"); return; }
+        state.fieldNoteEvents = data || [];
+      }
+
+      async function loadVentureMilestones() {
+        const { data, error } = await supabase.from("venture_milestones").select("*").order("milestone_date", { ascending: false, nullsFirst: false });
+        if (error) { showToast(`Could not load venture milestones: ${error.message}`, "error"); return; }
+        state.ventureMilestones = data || [];
+        renderVentures();
+      }
+
+      function refreshFieldNoteEventSelector(selected = []) {
+        const select=$("#field-note-related-events"); if(!select) return;
+        select.innerHTML=state.events.map((event)=>`<option value="${escapeHtml(event.id)}">${escapeHtml(event.title)}</option>`).join("");
+        Array.from(select.options).forEach((option)=>{option.selected=selected.includes(option.value);});
+      }
+
+      async function syncFieldNoteEvents(fieldNoteId) {
+        const ids=Array.from($("#field-note-related-events")?.selectedOptions || []).map((option)=>option.value);
+        const del=await supabase.from("field_note_events").delete().eq("field_note_id",fieldNoteId); if(del.error) throw del.error;
+        if(ids.length){const ins=await supabase.from("field_note_events").insert(ids.map((event_id)=>({field_note_id:fieldNoteId,event_id}))); if(ins.error) throw ins.error;}
+      }
+
       async function loadEvidence() {
         const { data, error } = await supabase.from("evidence_items").select("*").order("evidence_date", { ascending: false, nullsFirst: false }).order("created_at", { ascending: false });
         if (error) { showToast(`Could not load evidence: ${error.message}`, "error"); return; }
@@ -10083,6 +10137,20 @@ const supabasePublishableKey =
         renderVentures();
       }
 
+
+      function renderVentureMilestones() {
+        const container=$("#venture-milestones-list"); const ventureId=$("#venture-record-id")?.value; if(!container) return;
+        if(!ventureId){container.innerHTML='<div class="empty-state"><strong>Save the venture first</strong>Milestones can be added after the venture exists.</div>';return;}
+        const items=state.ventureMilestones.filter((m)=>String(m.venture_id)===String(ventureId));
+        container.innerHTML=items.length?items.map((m)=>`<div class="content-row"><div><h4 class="row-title">${escapeHtml(m.title)}</h4><div class="row-meta"><span>${escapeHtml(m.status)}</span>${m.milestone_date?`<span>•</span><span>${escapeHtml(formatDate(m.milestone_date))}</span>`:""}</div></div></div>`).join(""):'<div class="empty-state"><strong>No milestones yet</strong>Add the first milestone below.</div>';
+      }
+
+      async function addVentureMilestone() {
+        const ventureId=$("#venture-record-id").value; const title=$("#venture-milestone-title").value.trim();
+        if(!ventureId) throw new Error("Save the venture before adding milestones."); if(!title) throw new Error("Enter a milestone title.");
+        const {error}=await supabase.from("venture_milestones").insert({venture_id:ventureId,title,milestone_date:$("#venture-milestone-date").value||null,status:$("#venture-milestone-status").value});
+        if(error) throw error; $("#venture-milestone-title").value=""; $("#venture-milestone-date").value=""; await loadVentureMilestones(); renderVentureMilestones();
+      }
 
       function tasksForVenture(ventureId) {
         return state.ventureTasks.filter((task) => String(task.venture_id) === String(ventureId));
@@ -11883,6 +11951,9 @@ const supabasePublishableKey =
       $("#add-evidence-button").addEventListener("click", () => openEvidenceModal());
       $("#evidence-search").addEventListener("input", renderEvidence);
       $("#evidence-status-filter").addEventListener("change", renderEvidence);
+
+
+      $("#add-venture-milestone-button")?.addEventListener("click", async () => { try { await addVentureMilestone(); showToast("Milestone added."); } catch(error) { showToast(error?.message || "Could not add milestone.","error"); } });
 
 
       $("#add-venture-button").addEventListener(
