@@ -2182,43 +2182,7 @@ const supabasePublishableKey =
 
 
 
-    <script is:inline>
-      (() => {
-        const initGoogleLogin = () => {
-          const root = document.getElementById("login-form");
-          const button = document.getElementById("google-login-button");
-          const message = document.getElementById("login-message");
-          if (!root || !button || button.dataset.bound === "true") return;
-          button.dataset.bound = "true";
-          const supabaseUrl = root.dataset.supabaseUrl;
-          const show = (text, type = "") => {
-            if (!message) return;
-            message.textContent = text;
-            message.className = "form-message " + type;
-          };
-          button.addEventListener("click", () => {
-            if (!supabaseUrl) {
-              show("Admin authentication is not configured correctly.", "error");
-              return;
-            }
-            button.disabled = true;
-            button.textContent = "Opening Google...";
-            show("Redirecting to Google sign-in...");
-            const redirectTo = window.location.origin + "/admin/";
-            window.location.assign(
-              supabaseUrl + "/auth/v1/authorize?provider=google&redirect_to=" +
-              encodeURIComponent(redirectTo) +
-              "&scopes=" + encodeURIComponent("openid email profile")
-            );
-          });
-        };
-        if (document.readyState === "loading") {
-          document.addEventListener("DOMContentLoaded", initGoogleLogin, { once: true });
-        } else {
-          initGoogleLogin();
-        }
-      })();
-    </script>
+    
 
     <!-- =====================================================
          ADMIN APP
@@ -4833,8 +4797,6 @@ const supabasePublishableKey =
               </div>
             </div>
           </div>
-            </div>
-          </div>
         </div>
         <div class="modal-footer"><span>Admin only · not published</span><div class="modal-footer-right"><button class="secondary-button" type="button" data-close-modal="venture">Cancel</button><button id="save-venture-button" class="primary-button" type="submit">Save Venture</button></div></div>
       </form>
@@ -4907,9 +4869,7 @@ const supabasePublishableKey =
       type="module"
       define:vars={{ supabaseUrl, supabasePublishableKey }}
     >
-      import {
-        createClient
-      } from "https://esm.sh/@supabase/supabase-js@2";
+      import { createClient } from "@supabase/supabase-js";
 
 
       const supabase =
@@ -5028,7 +4988,7 @@ const supabasePublishableKey =
           );
 
 
-      const $$ =
+      const $ =
         (
           selector
         ) =>
@@ -5037,6 +4997,39 @@ const supabasePublishableKey =
               selector
             )
           );
+
+
+      const AUTHORIZED_ADMIN_EMAIL = "nadimabdelmeguid@gmail.com";
+      const PRODUCTION_ADMIN_REDIRECT = "https://soleilandstone.co/admin/";
+
+      function setAuthMessage(text, type = "") {
+        const message = $("#login-message");
+        if (!message) return;
+        message.textContent = text;
+        message.className = "form-message " + type;
+      }
+
+      $("#google-login-button")?.addEventListener("click", async () => {
+        const button = $("#google-login-button");
+        setButtonLoading(button, true, "Opening Google...", "Continue with Google");
+        setAuthMessage("Redirecting to Google sign-in...");
+
+        const isLocal = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
+        const redirectTo = isLocal ? window.location.origin + "/admin/" : PRODUCTION_ADMIN_REDIRECT;
+
+        const { error } = await supabase.auth.signInWithOAuth({
+          provider: "google",
+          options: {
+            redirectTo,
+            scopes: "openid email profile"
+          }
+        });
+
+        if (error) {
+          setButtonLoading(button, false, "Opening Google...", "Continue with Google");
+          setAuthMessage(error.message || "Could not start Google sign-in.", "error");
+        }
+      });
 
 
       /* =====================================================
@@ -5634,76 +5627,6 @@ const supabasePublishableKey =
          AUTH
          ===================================================== */
 
-      async function sendLoginLink(
-        email
-      ) {
-
-        const {
-          error
-        } =
-          await supabase.auth.signInWithOtp(
-            {
-              email,
-
-              options: {
-                emailRedirectTo:
-                  window.location.hostname === "localhost" ||
-                  window.location.hostname === "127.0.0.1"
-                    ? `${window.location.origin}/admin/`
-                    : "https://soleilandstone.co/admin/"
-              }
-            }
-          );
-
-
-        if (
-          error
-        ) {
-          throw error;
-        }
-
-      }
-
-
-      async function verifyLoginCode(
-        email,
-        token
-      ) {
-
-        const {
-          data,
-          error
-        } =
-          await supabase.auth.verifyOtp(
-            {
-              email,
-              token,
-              type: "email"
-            }
-          );
-
-
-        if (
-          error
-        ) {
-          throw error;
-        }
-
-
-        if (
-          !data?.session
-        ) {
-          throw new Error(
-            "The code was accepted, but no session was created. Please request a new code."
-          );
-        }
-
-
-        return data.session;
-
-      }
-
-
       async function bootstrapAdminMembership(
         user
       ) {
@@ -5714,7 +5637,8 @@ const supabasePublishableKey =
 
         if (
           !user?.id ||
-          !email
+          !email ||
+          email.toLowerCase() !== AUTHORIZED_ADMIN_EMAIL
         ) {
           return false;
         }
