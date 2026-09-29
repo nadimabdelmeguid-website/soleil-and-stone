@@ -3050,7 +3050,7 @@ const supabasePublishableKey =
       id="admin-app"
       class="admin-app hidden"
     >
-      <div class="admin-shell">
+      <div class="admin-shell portfolio-mode">
         <aside
           id="sidebar"
           class="sidebar"
@@ -11233,6 +11233,7 @@ const supabasePublishableKey =
         state.ventureMilestones = data || [];
         renderVentureMilestones();
         renderVentures();
+        renderCurrentVentureContext();
       }
 
       function refreshFieldNoteEventSelector(selected = []) {
@@ -11339,6 +11340,7 @@ const supabasePublishableKey =
 
         state.ventures = data || [];
         renderVentures();
+        renderCurrentVentureContext();
       }
 
 
@@ -11358,6 +11360,7 @@ const supabasePublishableKey =
         renderVentureTasks();
         renderVentures();
         updateVentureLiveSummary();
+        renderCurrentVentureContext();
       }
 
 
@@ -15544,6 +15547,7 @@ const supabasePublishableKey =
             "organization",
             "person",
             "venture",
+            "venture-workspace-item",
             "evidence"
           ].forEach(
             closeModal
