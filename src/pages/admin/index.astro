@@ -102,6 +102,25 @@ const supabasePublishableKey =
         font-family: "Cinzel", Georgia, serif;
       }
 
+
+      .mydash-add { display:grid; grid-template-columns:minmax(0,2fr) 1fr 1fr auto; gap:10px; align-items:end; }
+      .mydash-task { display:grid; grid-template-columns:auto minmax(0,1fr) auto; gap:12px; align-items:center; padding:14px 16px; background:white; border:1px solid var(--border); }
+      .mydash-check { width:44px; height:44px; border:1px solid var(--border); background:white; font-size:18px; }
+      .mydash-actions { display:flex; gap:6px; }
+      .mydash-section { margin-top:24px; }
+      .mydash-section-title { font-family:"Cinzel",Georgia,serif; font-size:18px; font-weight:400; margin:0 0 10px; }
+      .mydash-task-title { font-weight:600; font-size:14px; }
+      .mydash-task-meta { color:var(--slate); font-size:11px; margin-top:4px; }
+      .mydash-done .mydash-task-title { text-decoration:line-through; opacity:.55; }
+      @media (max-width: 720px) {
+        .mydash-add { grid-template-columns:1fr 1fr; }
+        .mydash-add .mydash-title-field { grid-column:1/-1; }
+        .mydash-add button { min-height:48px; }
+        .mydash-task { grid-template-columns:auto minmax(0,1fr); padding:12px; }
+        .mydash-actions { grid-column:2; }
+        .mydash-actions button { min-height:42px; }
+      }
+
       /* =====================================================
          AUTH
          ===================================================== */
@@ -2237,8 +2256,11 @@ const supabasePublishableKey =
           </a>
 
           <nav class="sidebar-nav">
+            <button class="nav-button active" type="button" data-section="my-dashboard">
+              <span>My Dashboard</span><span id="nav-workspace-count" class="nav-count">0</span>
+            </button>
             <button
-              class="nav-button active"
+              class="nav-button"
               type="button"
               data-section="dashboard"
             >
@@ -2425,9 +2447,28 @@ const supabasePublishableKey =
                  DASHBOARD
                  ============================================= -->
 
+            <section id="section-my-dashboard" class="admin-section" data-admin-section="my-dashboard">
+              <div class="panel">
+                <div class="panel-header"><div><h2 class="panel-title">Quick Add</h2><p class="panel-copy">Private workspace only. Seltech, CASA and Personal are excluded.</p></div><button id="manage-workspace-areas" class="secondary-button" type="button">+ Area</button></div>
+                <form id="workspace-quick-add" class="mydash-add">
+                  <div class="form-field mydash-title-field"><label class="label" for="workspace-task-title">Task</label><input id="workspace-task-title" class="input" required placeholder="What needs to happen?" /></div>
+                  <div class="form-field"><label class="label" for="workspace-task-area">Area</label><select id="workspace-task-area" class="select" required></select></div>
+                  <div class="form-field"><label class="label" for="workspace-task-due">Due</label><input id="workspace-task-due" class="input" type="date" /></div>
+                  <button class="primary-button" type="submit">Add Task</button>
+                </form>
+              </div>
+              <div class="stats-grid" style="margin-top:18px;">
+                <div class="stat-card"><div id="workspace-stat-open" class="stat-value">0</div><div class="stat-label">Open</div></div>
+                <div class="stat-card"><div id="workspace-stat-today" class="stat-value">0</div><div class="stat-label">Due Today</div></div>
+                <div class="stat-card"><div id="workspace-stat-overdue" class="stat-value">0</div><div class="stat-label">Overdue</div></div>
+                <div class="stat-card"><div id="workspace-stat-waiting" class="stat-value">0</div><div class="stat-label">Waiting</div></div>
+              </div>
+              <div id="workspace-task-groups"></div>
+            </section>
+
             <section
               id="section-dashboard"
-              class="admin-section"
+              class="admin-section hidden"
               data-admin-section="dashboard"
             >
               <div class="quick-actions">
@@ -4809,6 +4850,31 @@ const supabasePublishableKey =
     </div>
 
 
+
+    <div id="workspace-task-modal" class="modal-backdrop hidden" role="dialog" aria-modal="true">
+      <form id="workspace-task-form" class="modal">
+        <div class="modal-header"><div><p class="eyebrow">My Dashboard</p><h2 class="modal-title">Edit Task</h2></div><button class="quiet-button" type="button" data-close-modal="workspace-task">Close</button></div>
+        <div class="modal-body"><input id="workspace-task-id" type="hidden" /><div class="form-grid">
+          <div class="form-field full"><label class="label" for="workspace-edit-title">Task</label><input id="workspace-edit-title" class="input" required /></div>
+          <div class="form-field"><label class="label" for="workspace-edit-area">Area</label><select id="workspace-edit-area" class="select" required></select></div>
+          <div class="form-field"><label class="label" for="workspace-edit-project">Project</label><input id="workspace-edit-project" class="input" /></div>
+          <div class="form-field"><label class="label" for="workspace-edit-due">Due date</label><input id="workspace-edit-due" class="input" type="date" /></div>
+          <div class="form-field"><label class="label" for="workspace-edit-priority">Priority</label><select id="workspace-edit-priority" class="select"><option value="low">Low</option><option value="medium">Medium</option><option value="high">High</option></select></div>
+          <div class="form-field"><label class="label" for="workspace-edit-status">Status</label><select id="workspace-edit-status" class="select"><option value="todo">To do</option><option value="in-progress">In progress</option><option value="waiting">Waiting</option><option value="done">Done</option></select></div>
+          <div class="form-field full"><label class="label" for="workspace-edit-notes">Notes</label><textarea id="workspace-edit-notes" class="textarea"></textarea></div>
+        </div></div>
+        <div class="modal-footer"><button id="workspace-delete-task" class="danger-button" type="button">Delete</button><div class="modal-footer-right"><button class="secondary-button" type="button" data-close-modal="workspace-task">Cancel</button><button class="primary-button" type="submit">Save Task</button></div></div>
+      </form>
+    </div>
+
+    <div id="workspace-area-modal" class="modal-backdrop hidden" role="dialog" aria-modal="true">
+      <form id="workspace-area-form" class="modal">
+        <div class="modal-header"><div><p class="eyebrow">My Workspace</p><h2 class="modal-title">Add Area</h2></div><button class="quiet-button" type="button" data-close-modal="workspace-area">Close</button></div>
+        <div class="modal-body"><label class="label" for="workspace-area-name">Area name</label><input id="workspace-area-name" class="input" required placeholder="e.g. Career Transition" /><p class="field-help">Seltech, CASA and Personal cannot be added here.</p></div>
+        <div class="modal-footer"><span></span><div class="modal-footer-right"><button class="primary-button" type="submit">Add Area</button></div></div>
+      </form>
+    </div>
+
     <div id="evidence-modal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="evidence-modal-title">
       <form id="evidence-form" class="modal">
         <div class="modal-header"><div><p class="eyebrow">Evidence Archive</p><h2 id="evidence-modal-title" class="modal-title">Add Evidence</h2></div><button class="quiet-button" type="button" data-close-modal="evidence">Close</button></div>
@@ -4877,6 +4943,12 @@ const supabasePublishableKey =
       const state = {
         user:
           null,
+
+        workspaceAreas:
+          [],
+
+        workspaceTasks:
+          [],
 
         events:
           [],
@@ -5915,10 +5987,64 @@ const supabasePublishableKey =
          DATA LOADING
          ===================================================== */
 
+
+      const forbiddenWorkspaceSlugs = new Set(["seltech","casa","personal","personal-life"]);
+      const localDate = () => { const d=new Date(); return [d.getFullYear(),String(d.getMonth()+1).padStart(2,"0"),String(d.getDate()).padStart(2,"0")].join("-"); };
+
+      async function loadWorkspaceAreas() {
+        const {data,error}=await supabase.from("workspace_areas").select("*").eq("is_active",true).order("sort_order").order("name");
+        if(error){showToast(`Could not load workspace areas: ${error.message}`,"error");return;}
+        state.workspaceAreas=(data||[]).filter((a)=>!forbiddenWorkspaceSlugs.has(a.slug));
+        refreshWorkspaceSelectors();
+      }
+      async function loadWorkspaceTasks() {
+        const {data,error}=await supabase.from("workspace_tasks").select("*").order("due_date",{ascending:true,nullsFirst:false}).order("created_at",{ascending:false});
+        if(error){showToast(`Could not load workspace tasks: ${error.message}`,"error");return;}
+        state.workspaceTasks=data||[]; renderMyDashboard();
+      }
+      function refreshWorkspaceSelectors() {
+        const html=state.workspaceAreas.map((a)=>`<option value="${escapeHtml(a.id)}">${escapeHtml(a.name)}</option>`).join("");
+        ["#workspace-task-area","#workspace-edit-area"].forEach((s)=>{const el=$(s);if(el)el.innerHTML=html||'<option value="">Add an area first</option>';});
+      }
+      function areaName(id){return state.workspaceAreas.find((a)=>String(a.id)===String(id))?.name||"Workspace";}
+      function taskRow(task){
+        const due=task.due_date?formatDate(task.due_date):"No due date";
+        return `<div class="mydash-task ${task.status==="done"?"mydash-done":""}">
+          <button class="mydash-check" type="button" data-workspace-toggle="${escapeHtml(task.id)}" aria-label="Toggle task">${task.status==="done"?"✓":"○"}</button>
+          <div><div class="mydash-task-title">${escapeHtml(task.title)}</div><div class="mydash-task-meta">${escapeHtml(areaName(task.area_id))}${task.project?` · ${escapeHtml(task.project)}`:""} · ${escapeHtml(due)} · ${escapeHtml(task.priority)}</div></div>
+          <div class="mydash-actions"><button class="secondary-button" type="button" data-workspace-edit="${escapeHtml(task.id)}">Edit</button><button class="danger-button" type="button" data-workspace-delete="${escapeHtml(task.id)}">Delete</button></div>
+        </div>`;
+      }
+      function renderMyDashboard(){
+        const today=localDate(); const open=state.workspaceTasks.filter((t)=>t.status!=="done");
+        const overdue=open.filter((t)=>t.due_date&&t.due_date<today);
+        const todayTasks=open.filter((t)=>t.due_date===today);
+        const upcoming=open.filter((t)=>t.due_date&&t.due_date>today);
+        const noDate=open.filter((t)=>!t.due_date);
+        const waiting=open.filter((t)=>t.status==="waiting");
+        $("#workspace-stat-open").textContent=open.length; $("#workspace-stat-today").textContent=todayTasks.length; $("#workspace-stat-overdue").textContent=overdue.length; $("#workspace-stat-waiting").textContent=waiting.length; $("#nav-workspace-count").textContent=open.length;
+        const groups=[["Overdue",overdue],["Today",todayTasks],["Upcoming",upcoming],["No Due Date",noDate],["Completed",state.workspaceTasks.filter((t)=>t.status==="done").slice(0,10)]];
+        $("#workspace-task-groups").innerHTML=groups.filter(([,items])=>items.length).map(([name,items])=>`<section class="mydash-section"><h2 class="mydash-section-title">${name}</h2><div class="content-list">${items.map(taskRow).join("")}</div></section>`).join("") || '<div class="empty-state"><strong>No tasks yet</strong>Add an area, then add your first task.</div>';
+      }
+      async function createWorkspaceTask(title,areaId,dueDate){
+        const {error}=await supabase.from("workspace_tasks").insert({title,area_id:areaId,due_date:dueDate||null}); if(error)throw error; await loadWorkspaceTasks();
+      }
+      async function toggleWorkspaceTask(id){
+        const t=state.workspaceTasks.find((x)=>x.id===id);if(!t)return; const {error}=await supabase.from("workspace_tasks").update({status:t.status==="done"?"todo":"done"}).eq("id",id);if(error)throw error;await loadWorkspaceTasks();
+      }
+      async function deleteWorkspaceTask(id){
+        const {error}=await supabase.from("workspace_tasks").delete().eq("id",id);if(error)throw error;await loadWorkspaceTasks();
+      }
+      function openWorkspaceTask(id){
+        const t=state.workspaceTasks.find((x)=>x.id===id);if(!t)return;refreshWorkspaceSelectors();$("#workspace-task-id").value=t.id;$("#workspace-edit-title").value=t.title;$("#workspace-edit-area").value=t.area_id;$("#workspace-edit-project").value=t.project||"";$("#workspace-edit-due").value=t.due_date||"";$("#workspace-edit-priority").value=t.priority;$("#workspace-edit-status").value=t.status;$("#workspace-edit-notes").value=t.notes||"";$("#workspace-task-modal").classList.remove("hidden");document.body.style.overflow="hidden";
+      }
+
       async function loadAllContent() {
 
         await Promise.all(
           [
+            loadWorkspaceAreas(),
+            loadWorkspaceTasks(),
             loadEvents(),
             loadFieldNotes(),
             loadRecaps(),
@@ -10972,6 +11098,11 @@ const supabasePublishableKey =
          ===================================================== */
 
       const sectionCopy = {
+        "my-dashboard": {
+          eyebrow: "Private Workspace",
+          title: "My Dashboard",
+          subtitle: "Tasks and priorities across your selected areas."
+        },
         dashboard: {
           eyebrow:
             "Overview",
@@ -11131,7 +11262,11 @@ const supabasePublishableKey =
           venture:
             "#venture-modal",
           evidence:
-            "#evidence-modal"
+            "#evidence-modal",
+          "workspace-task":
+            "#workspace-task-modal",
+          "workspace-area":
+            "#workspace-area-modal"
         };
 
 
@@ -11948,6 +12083,13 @@ const supabasePublishableKey =
       );
 
 
+      $("#workspace-quick-add").addEventListener("submit",async(event)=>{event.preventDefault();try{await createWorkspaceTask($("#workspace-task-title").value.trim(),$("#workspace-task-area").value,$("#workspace-task-due").value);event.target.reset();refreshWorkspaceSelectors();showToast("Task added.");}catch(error){showToast(error?.message||"Could not add task.","error");}});
+      $("#manage-workspace-areas").addEventListener("click",()=>{$("#workspace-area-form").reset();$("#workspace-area-modal").classList.remove("hidden");document.body.style.overflow="hidden";});
+      $("#workspace-area-form").addEventListener("submit",async(event)=>{event.preventDefault();const name=$("#workspace-area-name").value.trim();const slug=slugify(name);if(forbiddenWorkspaceSlugs.has(slug)){showToast("This area is intentionally excluded from My Dashboard.","error");return;}const {error}=await supabase.from("workspace_areas").insert({name,slug});if(error){showToast(error.message,"error");return;}closeModal("workspace-area");await loadWorkspaceAreas();showToast("Area added.");});
+      $("#workspace-task-form").addEventListener("submit",async(event)=>{event.preventDefault();const id=$("#workspace-task-id").value;const payload={title:$("#workspace-edit-title").value.trim(),area_id:$("#workspace-edit-area").value,project:$("#workspace-edit-project").value.trim()||null,due_date:$("#workspace-edit-due").value||null,priority:$("#workspace-edit-priority").value,status:$("#workspace-edit-status").value,notes:$("#workspace-edit-notes").value.trim()||null};const {error}=await supabase.from("workspace_tasks").update(payload).eq("id",id);if(error){showToast(error.message,"error");return;}closeModal("workspace-task");await loadWorkspaceTasks();showToast("Task updated.");});
+      $("#workspace-delete-task").addEventListener("click",async()=>{const id=$("#workspace-task-id").value;if(!id)return;await deleteWorkspaceTask(id);closeModal("workspace-task");showToast("Task deleted.");});
+
+
       $("#add-evidence-button").addEventListener("click", () => openEvidenceModal());
       $("#evidence-search").addEventListener("input", renderEvidence);
       $("#evidence-status-filter").addEventListener("change", renderEvidence);
@@ -12180,6 +12322,11 @@ const supabasePublishableKey =
               personButton.dataset.editPerson
             );
           }
+
+
+          const workspaceToggle=event.target.closest("[data-workspace-toggle]"); if(workspaceToggle){try{await toggleWorkspaceTask(workspaceToggle.dataset.workspaceToggle);}catch(error){showToast(error.message,"error");}return;}
+          const workspaceEdit=event.target.closest("[data-workspace-edit]"); if(workspaceEdit){openWorkspaceTask(workspaceEdit.dataset.workspaceEdit);return;}
+          const workspaceDelete=event.target.closest("[data-workspace-delete]"); if(workspaceDelete){try{await deleteWorkspaceTask(workspaceDelete.dataset.workspaceDelete);showToast("Task deleted.");}catch(error){showToast(error.message,"error");}return;}
 
 
           const evidenceButton =
