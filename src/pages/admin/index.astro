@@ -13199,11 +13199,36 @@ const supabasePublishableKey =
         },
         ventures: {
           eyebrow:
-            "Private Portfolio",
+            "Portfolio",
           title:
-            "Ventures",
+            "Main Dashboard",
           subtitle:
-            "Track venture progress and privately preview the future portfolio page."
+            "All ventures, priorities, tasks and milestones in one place."
+        },
+        "venture-home": {
+          eyebrow: "Venture Workspace",
+          title: "Dashboard",
+          subtitle: "Current focus, execution and business modules."
+        },
+        "venture-module": {
+          eyebrow: "Business Module",
+          title: "Module",
+          subtitle: "Venture-specific information and working context."
+        },
+        "venture-execution": {
+          eyebrow: "Execution",
+          title: "Tasks",
+          subtitle: "Actions, priorities and deadlines for this venture."
+        },
+        "venture-milestones": {
+          eyebrow: "Roadmap",
+          title: "Milestones",
+          subtitle: "Meaningful outcomes and checkpoints for this venture."
+        },
+        "venture-notes": {
+          eyebrow: "Private Context",
+          title: "Notes",
+          subtitle: "Working notes and progress context for this venture."
         },
         evidence: {
           eyebrow: "Private Archive",
@@ -13217,7 +13242,7 @@ const supabasePublishableKey =
         section
       ) {
 
-        $$(".admin-section").forEach(
+        $(".admin-section").forEach(
           (
             element
           ) =>
@@ -13228,22 +13253,72 @@ const supabasePublishableKey =
         );
 
 
-        $$(".nav-button").forEach(
+        $(".nav-button").forEach(
           (
             button
-          ) =>
+          ) => {
+            const moduleMatch =
+              section === "venture-module" &&
+              button.dataset.ventureModule &&
+              button.dataset.ventureModule === state.currentVentureModule;
+
             button.classList.toggle(
               "active",
-              button.dataset.section === section
-            )
+              moduleMatch ||
+              (
+                !button.dataset.ventureModule &&
+                button.dataset.section === section
+              )
+            );
+          }
         );
 
 
-        const copy =
+        let copy =
           sectionCopy[
             section
           ] ||
           sectionCopy.dashboard;
+
+        const venture =
+          currentVenture();
+
+        if (
+          venture &&
+          section === "venture-home"
+        ) {
+          copy = {
+            eyebrow: "Venture Workspace",
+            title: venture.name,
+            subtitle: venture.tagline || "Venture dashboard"
+          };
+        }
+
+        if (
+          venture &&
+          section === "venture-module"
+        ) {
+          const module =
+            workspaceConfigFor(venture).modules.find(
+              (item) => item.key === state.currentVentureModule
+            );
+
+          copy = {
+            eyebrow: venture.name,
+            title: module?.label || "Business Module",
+            subtitle: module?.description || "Venture-specific working context."
+          };
+        }
+
+        if (
+          venture &&
+          ["venture-execution", "venture-milestones", "venture-notes"].includes(section)
+        ) {
+          copy = {
+            ...copy,
+            eyebrow: venture.name
+          };
+        }
 
 
         $("#page-eyebrow").textContent =
@@ -13257,8 +13332,49 @@ const supabasePublishableKey =
 
         $("#sidebar").classList.remove("open");
 
+
+        const soleilCmsSections = [
+          "dashboard",
+          "features",
+          "events",
+          "field-notes",
+          "recaps",
+          "media",
+          "communities",
+          "organizations",
+          "people",
+          "evidence"
+        ];
+
+        const showSyncNote =
+          venture?.slug === "soleil-and-stone" &&
+          soleilCmsSections.includes(section);
+
+        $("#sync-note").classList.toggle("hidden", !showSyncNote);
+
+
         if (section === "features") {
           renderFeatures();
+        }
+
+        if (section === "venture-home") {
+          renderVentureContextDashboard();
+        }
+
+        if (section === "venture-module") {
+          renderVentureModule();
+        }
+
+        if (section === "venture-execution") {
+          renderVentureContextExecution();
+        }
+
+        if (section === "venture-milestones") {
+          renderVentureContextMilestones();
+        }
+
+        if (section === "venture-notes") {
+          renderVentureContextNotes();
         }
 
       }
@@ -13283,6 +13399,8 @@ const supabasePublishableKey =
             "#person-modal",
           venture:
             "#venture-modal",
+          "venture-workspace-item":
+            "#venture-workspace-item-modal",
           evidence:
             "#evidence-modal",
           "workspace-task":
