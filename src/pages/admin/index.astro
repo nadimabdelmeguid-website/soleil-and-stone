@@ -5667,6 +5667,12 @@ const supabasePublishableKey =
         ventureTasks:
           [],
 
+        ventureStageFilter:
+          "all",
+
+        ventureSort:
+          "priority",
+
         evidence:
           [],
 
@@ -10804,9 +10810,17 @@ const supabasePublishableKey =
       }
 
       async function loadVentureMilestones() {
-        const { data, error } = await supabase.from("venture_milestones").select("*").order("milestone_date", { ascending: false, nullsFirst: false });
-        if (error) { showToast(`Could not load venture milestones: ${error.message}`, "error"); return; }
+        const { data, error } = await supabase
+          .from("venture_milestones")
+          .select("*")
+          .order("milestone_date", { ascending: false, nullsFirst: false })
+          .order("created_at", { ascending: false });
+        if (error) {
+          showToast(`Could not load venture milestones: ${error.message}`, "error");
+          return;
+        }
         state.ventureMilestones = data || [];
+        renderVentureMilestones();
         renderVentures();
       }
 
@@ -10905,7 +10919,7 @@ const supabasePublishableKey =
           .from("venture_tasks")
           .select("*")
           .order("sort_order", { ascending: true })
-          .order("due_date", { ascending: true });
+          .order("due_date", { ascending: true, nullsFirst: false });
 
         if (error) {
           showToast(`Could not load venture tasks: ${error.message}`, "error");
@@ -10915,25 +10929,53 @@ const supabasePublishableKey =
         state.ventureTasks = data || [];
         renderVentureTasks();
         renderVentures();
+        updateVentureLiveSummary();
       }
 
-
-      function renderVentureMilestones() {
-        const container=$("#venture-milestones-list"); const ventureId=$("#venture-record-id")?.value; if(!container) return;
-        if(!ventureId){container.innerHTML='<div class="empty-state"><strong>Save the venture first</strong>Milestones can be added after the venture exists.</div>';return;}
-        const items=state.ventureMilestones.filter((m)=>String(m.venture_id)===String(ventureId));
-        container.innerHTML=items.length?items.map((m)=>`<div class="content-row"><div><h4 class="row-title">${escapeHtml(m.title)}</h4><div class="row-meta"><span>${escapeHtml(m.status)}</span>${m.milestone_date?`<span>•</span><span>${escapeHtml(formatDate(m.milestone_date))}</span>`:""}</div></div></div>`).join(""):'<div class="empty-state"><strong>No milestones yet</strong>Add the first milestone below.</div>';
-      }
-
-      async function addVentureMilestone() {
-        const ventureId=$("#venture-record-id").value; const title=$("#venture-milestone-title").value.trim();
-        if(!ventureId) throw new Error("Save the venture before adding milestones."); if(!title) throw new Error("Enter a milestone title.");
-        const {error}=await supabase.from("venture_milestones").insert({venture_id:ventureId,title,milestone_date:$("#venture-milestone-date").value||null,status:$("#venture-milestone-status").value});
-        if(error) throw error; $("#venture-milestone-title").value=""; $("#venture-milestone-date").value=""; await loadVentureMilestones(); renderVentureMilestones();
-      }
 
       function tasksForVenture(ventureId) {
         return state.ventureTasks.filter((task) => String(task.venture_id) === String(ventureId));
+      }
+
+
+      function milestonesForVenture(ventureId) {
+        return state.ventureMilestones
+          .filter((item) => String(item.venture_id) === String(ventureId))
+          .sort((a, b) => {
+            if (a.status === "completed" && b.status !== "completed") return 1;
+            if (b.status === "completed" && a.status !== "completed") return -1;
+            return String(a.milestone_date || "9999-12-31").localeCompare(String(b.milestone_date || "9999-12-31"));
+          });
+      }
+
+
+      function isVentureTaskDone(task) {
+        return task?.task_status === "done" || Boolean(task?.is_done);
+      }
+
+
+      function ventureTaskStatus(task) {
+        if (task?.task_status) return task.task_status;
+        return task?.is_done ? "done" : "todo";
+      }
+
+
+      function ventureTaskStatusLabel(status) {
+        return ({
+          todo: "To do",
+          "in-progress": "In progress",
+          waiting: "Waiting",
+          done: "Done"
+        })[status] || "To do";
+      }
+
+
+      function ventureTaskPriorityLabel(priority) {
+        return ({
+          low: "Low",
+          medium: "Medium",
+          high: "High"
+        })[priority] || "Medium";
       }
 
 
@@ -10941,39 +10983,160 @@ const supabasePublishableKey =
         if (task.start_date && task.due_date) return `${formatDate(task.start_date)} → ${formatDate(task.due_date)}`;
         if (task.due_date) return `Due ${formatDate(task.due_date)}`;
         if (task.start_date) return `Starts ${formatDate(task.start_date)}`;
-        return "No timeline";
+        return "No due date";
+      }
+
+
+      function localDateKey(date = new Date()) {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, "0");
+        const day = String(date.getDate()).padStart(2, "0");
+        return `${year}-${month}-${day}`;
+      }
+
+
+      function dateKeyPlusDays(days) {
+        const date = new Date();
+        date.setHours(12, 0, 0, 0);
+        date.setDate(date.getDate() + days);
+        return localDateKey(date);
+      }
+
+
+      function ventureStatusLabel(status) {
+        return ({
+          idea: "Idea",
+          validation: "Validation",
+          building: "Building",
+          pilot: "Pilot",
+          active: "Active",
+          paused: "Paused",
+          archived: "Archived"
+        })[status] || status || "Idea";
+      }
+
+
+      function ventureTaskStats(ventureId) {
+        const tasks = tasksForVenture(ventureId);
+        const done = tasks.filter(isVentureTaskDone).length;
+        const open = tasks.length - done;
+        const today = localDateKey();
+        const overdue = tasks.filter((task) => !isVentureTaskDone(task) && task.due_date && task.due_date < today).length;
+        const progress = tasks.length ? Math.round((done / tasks.length) * 100) : 0;
+        return { tasks, done, open, overdue, progress };
+      }
+
+
+      function updateVentureLiveSummary() {
+        const summary = $("#venture-live-summary");
+        if (!summary) return;
+        const ventureId = $("#venture-record-id")?.value;
+        if (!ventureId) {
+          summary.innerHTML = `
+            <p class="eyebrow">Execution Snapshot</p>
+            <span class="venture-summary-number">0%</span>
+            <p class="panel-copy">Save the venture, then add tasks and milestones.</p>
+          `;
+          return;
+        }
+
+        const stats = ventureTaskStats(ventureId);
+        const plannedMilestones = milestonesForVenture(ventureId).filter((item) => item.status === "planned").length;
+        summary.innerHTML = `
+          <p class="eyebrow">Execution Snapshot</p>
+          <span class="venture-summary-number">${stats.progress}%</span>
+          <p class="panel-copy">${stats.done} of ${stats.tasks.length} tasks complete · ${stats.open} open · ${plannedMilestones} planned milestone${plannedMilestones === 1 ? "" : "s"}.</p>
+          <div class="venture-progress-track" style="margin-top:12px;"><div class="venture-progress-fill" style="width:${stats.progress}%"></div></div>
+        `;
+      }
+
+
+      function setVentureTab(tabName = "overview") {
+        const hasRecord = Boolean($("#venture-record-id")?.value);
+        const protectedTab = ["execution", "milestones"].includes(tabName);
+        const next = protectedTab && !hasRecord ? "overview" : tabName;
+
+        $$("#venture-tabs [data-venture-tab]").forEach((button) => {
+          button.classList.toggle("active", button.dataset.ventureTab === next);
+          button.disabled = !hasRecord && ["execution", "milestones"].includes(button.dataset.ventureTab);
+        });
+
+        $$("[data-venture-tab-panel]").forEach((panel) => {
+          panel.classList.toggle("hidden", panel.dataset.ventureTabPanel !== next);
+        });
+      }
+
+
+      function refreshVentureModalHeader(item = null) {
+        const meta = $("#venture-modal-header-meta");
+        if (!meta) return;
+        const status = item?.venture_status || $("#venture-status")?.value || "idea";
+        meta.innerHTML = `
+          <span class="status-pill ${escapeHtml(status)}">${escapeHtml(ventureStatusLabel(status))}</span>
+          <span class="ventures-private-badge">Admin only</span>
+          ${item?.public_ready ? '<span class="status-pill active">Presentation ready</span>' : ""}
+        `;
       }
 
 
       function renderVentureTasks() {
         const container = $("#venture-tasks-list");
         const ventureId = $("#venture-record-id")?.value;
-        if (!container || !ventureId) return;
+        if (!container) return;
 
-        const tasks = tasksForVenture(ventureId);
-        const done = tasks.filter((task) => task.is_done).length;
+        if (!ventureId) {
+          container.innerHTML = `<div class="empty-state"><strong>Save the venture first</strong>Tasks become available after the venture record exists.</div>`;
+          updateVentureLiveSummary();
+          return;
+        }
+
+        const today = localDateKey();
+        const tasks = [...tasksForVenture(ventureId)].sort((a, b) => {
+          const aDone = isVentureTaskDone(a);
+          const bDone = isVentureTaskDone(b);
+          if (aDone !== bDone) return aDone ? 1 : -1;
+          const priorityOrder = { high: 0, medium: 1, low: 2 };
+          const priorityDelta = (priorityOrder[a.priority] ?? 1) - (priorityOrder[b.priority] ?? 1);
+          if (priorityDelta) return priorityDelta;
+          const dueDelta = String(a.due_date || "9999-12-31").localeCompare(String(b.due_date || "9999-12-31"));
+          if (dueDelta) return dueDelta;
+          return Number(a.sort_order || 0) - Number(b.sort_order || 0);
+        });
+
+        const done = tasks.filter(isVentureTaskDone).length;
+        const progress = tasks.length ? Math.round((done / tasks.length) * 100) : 0;
         $("#venture-task-progress").textContent = tasks.length
-          ? `${done} of ${tasks.length} tasks completed · ${Math.round((done / tasks.length) * 100)}%`
-          : "No tasks yet.";
+          ? `${done} of ${tasks.length} completed · ${progress}%`
+          : "No tasks yet. Add the first concrete next action.";
 
         container.innerHTML = tasks.length
-          ? tasks.map((task) => `
-              <div class="content-row">
-                <div>
-                  <h4 class="row-title">${task.is_done ? "✓ " : ""}${escapeHtml(task.title)}</h4>
-                  <div class="row-meta">
-                    <span class="status-pill ${task.is_done ? "published" : "draft"}">${task.is_done ? "Done" : "Not yet"}</span>
-                    <span>•</span><span>${escapeHtml(taskTimeline(task))}</span>
+          ? tasks.map((task) => {
+              const status = ventureTaskStatus(task);
+              const doneTask = isVentureTaskDone(task);
+              const overdue = !doneTask && task.due_date && task.due_date < today;
+              return `
+                <div class="venture-task-row ${doneTask ? "is-done" : ""} ${overdue ? "is-overdue" : ""}">
+                  <button class="venture-check" type="button" data-toggle-venture-task="${escapeHtml(task.id)}" aria-label="${doneTask ? "Mark task open" : "Mark task done"}">${doneTask ? "✓" : "○"}</button>
+                  <div>
+                    <h4 class="venture-task-row-title">${escapeHtml(task.title)}</h4>
+                    <div class="venture-task-row-meta">
+                      <span class="status-pill ${status === "done" ? "active" : status === "in-progress" ? "scheduled" : status === "waiting" ? "paused" : "idea"}">${escapeHtml(ventureTaskStatusLabel(status))}</span>
+                      <span class="${task.priority === "high" ? "venture-priority-high" : ""}">${escapeHtml(ventureTaskPriorityLabel(task.priority))} priority</span>
+                      <span>•</span>
+                      <span>${escapeHtml(taskTimeline(task))}</span>
+                      ${overdue ? '<span class="venture-priority-high">• Overdue</span>' : ""}
+                    </div>
+                    ${task.description ? `<p class="row-description">${escapeHtml(task.description)}</p>` : ""}
                   </div>
-                  ${task.description ? `<p class="row-description">${escapeHtml(task.description)}</p>` : ""}
+                  <div class="venture-task-actions">
+                    <button class="secondary-button" type="button" data-edit-venture-task="${escapeHtml(task.id)}">Edit</button>
+                  </div>
                 </div>
-                <div class="row-actions">
-                  <button class="secondary-button" type="button" data-toggle-venture-task="${escapeHtml(task.id)}">${task.is_done ? "Mark not done" : "Mark done"}</button>
-                  <button class="secondary-button" type="button" data-edit-venture-task="${escapeHtml(task.id)}">Edit</button>
-                </div>
-              </div>
-            `).join("")
-          : `<div class="empty-state"><strong>No tasks yet</strong>Add the first task for this venture.</div>`;
+              `;
+            }).join("")
+          : `<div class="empty-state"><strong>No tasks yet</strong>Add the first concrete next action for this venture.</div>`;
+
+        updateVentureLiveSummary();
       }
 
 
@@ -10984,7 +11147,10 @@ const supabasePublishableKey =
         $("#venture-task-due").value = "";
         $("#venture-task-description").value = "";
         $("#venture-task-order").value = "0";
-        $("#venture-task-done").value = "false";
+        $("#venture-task-status").value = "todo";
+        $("#venture-task-priority").value = "medium";
+        $("#venture-task-editor-title").textContent = "New Task";
+        $("#delete-venture-task-button").classList.add("hidden");
       }
 
 
@@ -10999,9 +11165,14 @@ const supabasePublishableKey =
           $("#venture-task-due").value = task.due_date || "";
           $("#venture-task-description").value = task.description || "";
           $("#venture-task-order").value = task.sort_order ?? 0;
-          $("#venture-task-done").value = String(Boolean(task.is_done));
+          $("#venture-task-status").value = ventureTaskStatus(task);
+          $("#venture-task-priority").value = task.priority || "medium";
+          $("#venture-task-editor-title").textContent = "Edit Task";
+          $("#delete-venture-task-button").classList.remove("hidden");
         }
         $("#venture-task-editor").classList.remove("hidden");
+        $("#venture-task-title").focus();
+        $("#venture-task-editor").scrollIntoView({ behavior: "smooth", block: "nearest" });
       }
 
 
@@ -11018,13 +11189,16 @@ const supabasePublishableKey =
           throw new Error("Due date cannot be before the start date.");
         }
 
+        const taskStatus = $("#venture-task-status").value;
         const payload = {
           venture_id: ventureId,
           title,
           description: $("#venture-task-description").value.trim() || null,
           start_date: startDate,
           due_date: dueDate,
-          is_done: $("#venture-task-done").value === "true",
+          task_status: taskStatus,
+          priority: $("#venture-task-priority").value,
+          is_done: taskStatus === "done",
           sort_order: Number($("#venture-task-order").value || 0)
         };
 
@@ -11043,17 +11217,171 @@ const supabasePublishableKey =
       async function toggleVentureTask(taskId) {
         const task = state.ventureTasks.find((item) => String(item.id) === String(taskId));
         if (!task) return;
+        const nextStatus = isVentureTaskDone(task) ? "todo" : "done";
         const { error } = await supabase
           .from("venture_tasks")
-          .update({ is_done: !task.is_done })
+          .update({ task_status: nextStatus, is_done: nextStatus === "done" })
           .eq("id", taskId);
         if (error) throw error;
         await loadVentureTasks();
       }
 
 
-      function ventureStatusLabel(status) {
-        return ({
+      async function deleteVentureTask(taskId) {
+        if (!taskId) return;
+        if (!window.confirm("Delete this venture task?")) return;
+        const { error } = await supabase.from("venture_tasks").delete().eq("id", taskId);
+        if (error) throw error;
+        $("#venture-task-editor").classList.add("hidden");
+        resetVentureTaskEditor();
+        await loadVentureTasks();
+        showToast("Task deleted.");
+      }
+
+
+      function resetVentureMilestoneEditor() {
+        $("#venture-milestone-id").value = "";
+        $("#venture-milestone-title").value = "";
+        $("#venture-milestone-date").value = "";
+        $("#venture-milestone-status").value = "planned";
+        $("#venture-milestone-notes").value = "";
+        $("#venture-milestone-editor-title").textContent = "New Milestone";
+        $("#delete-venture-milestone-button").classList.add("hidden");
+      }
+
+
+      function openVentureMilestoneEditor(milestoneId = "") {
+        resetVentureMilestoneEditor();
+        if (milestoneId) {
+          const item = state.ventureMilestones.find((milestone) => String(milestone.id) === String(milestoneId));
+          if (!item) return;
+          $("#venture-milestone-id").value = item.id;
+          $("#venture-milestone-title").value = item.title || "";
+          $("#venture-milestone-date").value = item.milestone_date || "";
+          $("#venture-milestone-status").value = item.status || "planned";
+          $("#venture-milestone-notes").value = item.notes || "";
+          $("#venture-milestone-editor-title").textContent = "Edit Milestone";
+          $("#delete-venture-milestone-button").classList.remove("hidden");
+        }
+        $("#venture-milestone-editor").classList.remove("hidden");
+        $("#venture-milestone-title").focus();
+        $("#venture-milestone-editor").scrollIntoView({ behavior: "smooth", block: "nearest" });
+      }
+
+
+      function renderVentureMilestones() {
+        const container = $("#venture-milestones-list");
+        const ventureId = $("#venture-record-id")?.value;
+        if (!container) return;
+
+        if (!ventureId) {
+          container.innerHTML = `<div class="empty-state"><strong>Save the venture first</strong>Milestones can be added once the venture exists.</div>`;
+          return;
+        }
+
+        const items = milestonesForVenture(ventureId);
+        container.innerHTML = items.length
+          ? items.map((item) => `
+              <article class="venture-milestone-card ${item.status === "completed" ? "completed" : ""}">
+                <div>
+                  <h4 class="venture-milestone-title">${escapeHtml(item.title)}</h4>
+                  <div class="row-meta">
+                    <span class="status-pill ${item.status === "completed" ? "active" : item.status === "cancelled" ? "archived" : "scheduled"}">${escapeHtml(item.status)}</span>
+                    ${item.milestone_date ? `<span>•</span><span>${escapeHtml(formatDate(item.milestone_date))}</span>` : ""}
+                  </div>
+                  ${item.notes ? `<p class="row-description">${escapeHtml(item.notes)}</p>` : ""}
+                </div>
+                <button class="secondary-button" type="button" data-edit-venture-milestone="${escapeHtml(item.id)}">Edit</button>
+              </article>
+            `).join("")
+          : `<div class="empty-state"><strong>No milestones yet</strong>Capture the first meaningful outcome you are working toward.</div>`;
+
+        updateVentureLiveSummary();
+      }
+
+
+      async function saveVentureMilestone() {
+        const ventureId = $("#venture-record-id").value;
+        const milestoneId = $("#venture-milestone-id").value;
+        const title = $("#venture-milestone-title").value.trim();
+        if (!ventureId) throw new Error("Save the venture before adding milestones.");
+        if (!title) throw new Error("Milestone title is required.");
+
+        const payload = {
+          venture_id: ventureId,
+          title,
+          milestone_date: $("#venture-milestone-date").value || null,
+          status: $("#venture-milestone-status").value,
+          notes: $("#venture-milestone-notes").value.trim() || null
+        };
+
+        const response = milestoneId
+          ? await supabase.from("venture_milestones").update(payload).eq("id", milestoneId)
+          : await supabase.from("venture_milestones").insert(payload);
+
+        if (response.error) throw response.error;
+        $("#venture-milestone-editor").classList.add("hidden");
+        resetVentureMilestoneEditor();
+        await loadVentureMilestones();
+        showToast(milestoneId ? "Milestone updated." : "Milestone added.");
+      }
+
+
+      async function deleteVentureMilestone(milestoneId) {
+        if (!milestoneId) return;
+        if (!window.confirm("Delete this milestone?")) return;
+        const { error } = await supabase.from("venture_milestones").delete().eq("id", milestoneId);
+        if (error) throw error;
+        $("#venture-milestone-editor").classList.add("hidden");
+        resetVentureMilestoneEditor();
+        await loadVentureMilestones();
+        showToast("Milestone deleted.");
+      }
+
+
+      function filteredVentures() {
+        const search = $("#ventures-search")?.value.trim().toLowerCase() || "";
+        let items = state.ventures.filter((item) => {
+          const matchesStage = state.ventureStageFilter === "all" || item.venture_status === state.ventureStageFilter;
+          const matchesSearch = !search || [
+            item.name,
+            item.tagline,
+            item.description,
+            item.sector,
+            item.role,
+            item.location,
+            item.next_milestone,
+            item.last_update,
+            item.venture_status
+          ]
+            .filter(Boolean)
+            .some((value) => String(value).toLowerCase().includes(search));
+          return matchesStage && matchesSearch;
+        });
+
+        const stageOrder = { idea: 0, validation: 1, building: 2, pilot: 3, active: 4, paused: 5, archived: 6 };
+        items = [...items].sort((a, b) => {
+          if (state.ventureSort === "updated") {
+            return String(b.updated_at || "").localeCompare(String(a.updated_at || ""));
+          }
+          if (state.ventureSort === "name") {
+            return String(a.name || "").localeCompare(String(b.name || ""));
+          }
+          if (state.ventureSort === "stage") {
+            const stageDelta = (stageOrder[a.venture_status] ?? 99) - (stageOrder[b.venture_status] ?? 99);
+            return stageDelta || String(a.name || "").localeCompare(String(b.name || ""));
+          }
+          return Number(a.sort_order || 0) - Number(b.sort_order || 0)
+            || String(b.updated_at || "").localeCompare(String(a.updated_at || ""));
+        });
+
+        return items;
+      }
+
+
+      function renderVentureStageFilters() {
+        const labels = {
+          all: "All",
           idea: "Idea",
           validation: "Validation",
           building: "Building",
@@ -11061,25 +11389,31 @@ const supabasePublishableKey =
           active: "Active",
           paused: "Paused",
           archived: "Archived"
-        })[status] || status || "Idea";
+        };
+        $$("#venture-stage-filters [data-venture-stage]").forEach((button) => {
+          const stage = button.dataset.ventureStage;
+          const count = stage === "all"
+            ? state.ventures.length
+            : state.ventures.filter((venture) => venture.venture_status === stage).length;
+          button.textContent = `${labels[stage] || stage} · ${count}`;
+          button.classList.toggle("active", state.ventureStageFilter === stage);
+        });
       }
 
 
-      function filteredVentures() {
-        const search = $("#ventures-search")?.value.trim().toLowerCase() || "";
-        return state.ventures.filter((item) =>
-          !search || [item.name, item.tagline, item.description, item.sector, item.role, item.venture_status]
-            .filter(Boolean)
-            .some((value) => String(value).toLowerCase().includes(search))
-        );
-      }
-
-
-      function localDateKey(date = new Date()) {
-        const year = date.getFullYear();
-        const month = String(date.getMonth() + 1).padStart(2, "0");
-        const day = String(date.getDate()).padStart(2, "0");
-        return `${year}-${month}-${day}`;
+      function ventureFocusRow(task) {
+        const venture = state.ventures.find((item) => String(item.id) === String(task.venture_id));
+        const done = isVentureTaskDone(task);
+        return `
+          <div class="venture-focus-row">
+            <button class="venture-check" type="button" data-toggle-venture-task="${escapeHtml(task.id)}" aria-label="${done ? "Reopen task" : "Complete task"}">${done ? "✓" : "○"}</button>
+            <div>
+              <p class="venture-focus-title">${escapeHtml(task.title)}</p>
+              <div class="venture-focus-meta">${escapeHtml(venture?.name || "Venture")} · ${escapeHtml(taskTimeline(task))}${task.priority === "high" ? " · High priority" : ""}</div>
+            </div>
+            ${venture ? `<button class="quiet-button" type="button" data-edit-venture="${escapeHtml(venture.id)}">Open</button>` : ""}
+          </div>
+        `;
       }
 
 
@@ -11093,106 +11427,154 @@ const supabasePublishableKey =
         const activeVentures = state.ventures.filter((venture) =>
           !["paused", "archived"].includes(venture.venture_status)
         );
-        const openTasks = state.ventureTasks.filter((task) => !task.is_done);
-        const doneTasks = state.ventureTasks.filter((task) => task.is_done);
+        const openTasks = state.ventureTasks.filter((task) => !isVentureTaskDone(task));
+        const doneTasks = state.ventureTasks.filter(isVentureTaskDone);
         const today = localDateKey();
+        const in14Days = dateKeyPlusDays(14);
         const overdue = openTasks
           .filter((task) => task.due_date && task.due_date < today)
-          .sort((a, b) => a.due_date.localeCompare(b.due_date));
+          .sort((a, b) => String(a.due_date).localeCompare(String(b.due_date)));
         const upcoming = openTasks
-          .filter((task) => task.due_date && task.due_date >= today)
-          .sort((a, b) => a.due_date.localeCompare(b.due_date))
-          .slice(0, 8);
-        const totalTasks = state.ventureTasks.length;
-        const completion = totalTasks ? Math.round((doneTasks.length / totalTasks) * 100) : 0;
-
-        const statusSummary = ["idea", "validation", "building", "pilot", "active"]
-          .map((status) => {
-            const count = state.ventures.filter((venture) => venture.venture_status === status).length;
-            return count ? `${count} ${ventureStatusLabel(status)}` : "";
-          })
-          .filter(Boolean)
-          .join(" · ");
+          .filter((task) => task.due_date && task.due_date >= today && task.due_date <= in14Days)
+          .sort((a, b) => String(a.due_date).localeCompare(String(b.due_date)));
+        const completion = state.ventureTasks.length
+          ? Math.round((doneTasks.length / state.ventureTasks.length) * 100)
+          : 0;
 
         stats.innerHTML = `
-          <div class="stat-card"><span class="stat-label">Active Ventures</span><strong class="stat-value">${activeVentures.length}</strong><span class="stat-meta">${escapeHtml(statusSummary || "No active ventures")}</span></div>
-          <div class="stat-card"><span class="stat-label">Open Tasks</span><strong class="stat-value">${openTasks.length}</strong><span class="stat-meta">${doneTasks.length} completed</span></div>
-          <div class="stat-card"><span class="stat-label">Task Progress</span><strong class="stat-value">${completion}%</strong><span class="stat-meta">${doneTasks.length} of ${totalTasks}</span></div>
-          <div class="stat-card"><span class="stat-label">Overdue</span><strong class="stat-value">${overdue.length}</strong><span class="stat-meta">${overdue.length ? "Needs attention" : "Nothing overdue"}</span></div>
+          <div class="stat-card"><div class="stat-value">${activeVentures.length}</div><div class="stat-label">Active Ventures</div><div class="stat-meta">${state.ventures.length} total</div></div>
+          <div class="stat-card"><div class="stat-value">${openTasks.length}</div><div class="stat-label">Open Tasks</div><div class="stat-meta">${completion}% completed overall</div></div>
+          <div class="stat-card"><div class="stat-value">${upcoming.length}</div><div class="stat-label">Due in 14 Days</div><div class="stat-meta">${upcoming.length ? "Upcoming execution" : "No near-term deadlines"}</div></div>
+          <div class="stat-card"><div class="stat-value">${overdue.length}</div><div class="stat-label">Overdue</div><div class="stat-meta">${overdue.length ? "Needs attention" : "Everything on track"}</div></div>
         `;
 
-        const taskRow = (task) => {
-          const venture = state.ventures.find((item) => String(item.id) === String(task.venture_id));
-          return `
-            <div class="content-row">
-              <div>
-                <h3 class="row-title">${escapeHtml(task.title)}</h3>
-                <div class="row-meta">
-                  <span>${escapeHtml(venture?.name || "Venture")}</span>
-                  <span>•</span>
-                  <span>${escapeHtml(taskTimeline(task))}</span>
-                </div>
-              </div>
-              ${venture ? `<button class="secondary-button" type="button" data-edit-venture="${escapeHtml(venture.id)}">Open</button>` : ""}
-            </div>
-          `;
-        };
-
         overdueList.innerHTML = overdue.length
-          ? overdue.slice(0, 8).map(taskRow).join("")
+          ? overdue.slice(0, 7).map(ventureFocusRow).join("")
           : `<div class="empty-state"><strong>All clear</strong>No overdue venture tasks.</div>`;
 
         upcomingList.innerHTML = upcoming.length
-          ? upcoming.map(taskRow).join("")
-          : `<div class="empty-state"><strong>No upcoming deadlines</strong>Add due dates to venture tasks to populate this view.</div>`;
+          ? upcoming.slice(0, 7).map(ventureFocusRow).join("")
+          : `<div class="empty-state"><strong>No near-term deadlines</strong>Add due dates to tasks and the next two weeks will appear here.</div>`;
 
-        const milestones = activeVentures
-          .filter((venture) => venture.next_milestone)
-          .sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0));
+        const plannedMilestones = state.ventureMilestones
+          .filter((item) => item.status === "planned")
+          .filter((item) => activeVentures.some((venture) => String(venture.id) === String(item.venture_id)))
+          .sort((a, b) => String(a.milestone_date || "9999-12-31").localeCompare(String(b.milestone_date || "9999-12-31")))
+          .slice(0, 7);
 
-        milestonesList.innerHTML = milestones.length
-          ? milestones.map((venture) => `
-              <div class="content-row">
+        const fallbackFocus = activeVentures
+          .filter((venture) => venture.next_milestone && !plannedMilestones.some((item) => String(item.venture_id) === String(venture.id)))
+          .slice(0, Math.max(0, 7 - plannedMilestones.length));
+
+        const milestoneMarkup = [
+          ...plannedMilestones.map((item) => {
+            const venture = state.ventures.find((candidate) => String(candidate.id) === String(item.venture_id));
+            return `
+              <div class="venture-focus-row">
+                <span class="venture-check">◇</span>
                 <div>
-                  <h3 class="row-title">${escapeHtml(venture.name)}</h3>
-                  <div class="row-meta"><span class="status-pill ${escapeHtml(venture.venture_status)}">${escapeHtml(ventureStatusLabel(venture.venture_status))}</span></div>
-                  <p class="row-description">${escapeHtml(venture.next_milestone)}</p>
+                  <p class="venture-focus-title">${escapeHtml(item.title)}</p>
+                  <div class="venture-focus-meta">${escapeHtml(venture?.name || "Venture")}${item.milestone_date ? ` · ${escapeHtml(formatDate(item.milestone_date))}` : " · No date"}</div>
                 </div>
-                <button class="secondary-button" type="button" data-edit-venture="${escapeHtml(venture.id)}">Open</button>
+                ${venture ? `<button class="quiet-button" type="button" data-edit-venture="${escapeHtml(venture.id)}">Open</button>` : ""}
               </div>
-            `).join("")
-          : `<div class="empty-state"><strong>No milestones yet</strong>Add a next milestone to a venture to keep the current focus visible here.</div>`;
+            `;
+          }),
+          ...fallbackFocus.map((venture) => `
+            <div class="venture-focus-row">
+              <span class="venture-check">→</span>
+              <div>
+                <p class="venture-focus-title">${escapeHtml(venture.next_milestone)}</p>
+                <div class="venture-focus-meta">${escapeHtml(venture.name)} · Current focus</div>
+              </div>
+              <button class="quiet-button" type="button" data-edit-venture="${escapeHtml(venture.id)}">Open</button>
+            </div>
+          `)
+        ].join("");
+
+        milestonesList.innerHTML = milestoneMarkup
+          || `<div class="empty-state"><strong>No milestones yet</strong>Add a milestone or current focus to a venture.</div>`;
       }
 
 
       function renderVentures() {
         renderVenturesDashboard();
+        renderVentureStageFilters();
+
         const container = $("#ventures-list");
+        const count = $("#ventures-result-count");
         if (!container) return;
         const items = filteredVentures();
 
+        if (count) {
+          count.textContent = `${items.length} venture${items.length === 1 ? "" : "s"} shown`;
+        }
+
         if (!items.length) {
-          container.innerHTML = `<div class="empty-state"><strong>No ventures found</strong>Add the first venture to start your private portfolio workspace.</div>`;
+          const hasAny = state.ventures.length > 0;
+          container.innerHTML = `
+            <div class="empty-state" style="grid-column:1/-1;">
+              <strong>${hasAny ? "No ventures match this view" : "Build your private venture portfolio"}</strong>
+              ${hasAny ? "Change the search or stage filter." : "Create the first venture, then add its current focus, tasks and milestones."}
+            </div>
+          `;
           renderVenturesPreview();
           return;
         }
 
-        container.innerHTML = items.map((item) => `
-          <div class="content-row">
-            <div>
-              <h3 class="row-title">${escapeHtml(item.name)}</h3>
-              <div class="row-meta">
-                <span class="status-pill ${escapeHtml(item.venture_status || "idea")}">${escapeHtml(ventureStatusLabel(item.venture_status))}</span>
-                ${item.sector ? `<span>•</span><span>${escapeHtml(item.sector)}</span>` : ""}
-                ${item.role ? `<span>•</span><span>${escapeHtml(item.role)}</span>` : ""}
+        container.innerHTML = items.map((item) => {
+          const stats = ventureTaskStats(item.id);
+          const latest = item.last_update_at
+            ? formatDate(item.last_update_at)
+            : item.updated_at
+              ? formatDate(String(item.updated_at).slice(0, 10))
+              : "";
+          return `
+            <article class="venture-card">
+              <div class="venture-card-top">
+                <div>
+                  <div class="venture-meta-line">
+                    <span class="status-pill ${escapeHtml(item.venture_status || "idea")}">${escapeHtml(ventureStatusLabel(item.venture_status))}</span>
+                    ${item.public_ready ? '<span class="status-pill active">Presentation ready</span>' : ""}
+                  </div>
+                  <h3 class="venture-card-title" style="margin-top:10px;">${escapeHtml(item.name)}</h3>
+                  ${item.tagline ? `<p class="venture-card-tagline">${escapeHtml(item.tagline)}</p>` : ""}
+                </div>
               </div>
-              ${item.tagline ? `<p class="row-description">${escapeHtml(item.tagline)}</p>` : ""}
-              ${item.next_milestone ? `<p class="row-description"><strong>Next:</strong> ${escapeHtml(item.next_milestone)}</p>` : ""}
-              ${tasksForVenture(item.id).length ? `<p class="row-description"><strong>Tasks:</strong> ${tasksForVenture(item.id).filter((task) => task.is_done).length}/${tasksForVenture(item.id).length} completed</p>` : ""}
-            </div>
-            <div class="row-actions"><button class="secondary-button" type="button" data-edit-venture="${escapeHtml(item.id)}">Edit</button></div>
-          </div>
-        `).join("");
+
+              <div class="venture-meta-line">
+                ${item.sector ? `<span>${escapeHtml(item.sector)}</span>` : ""}
+                ${item.sector && item.role ? "<span>•</span>" : ""}
+                ${item.role ? `<span>${escapeHtml(item.role)}</span>` : ""}
+                ${item.location ? `<span>•</span><span>${escapeHtml(item.location)}</span>` : ""}
+              </div>
+
+              <div class="venture-focus-card">
+                <span class="venture-focus-label">Current focus</span>
+                <p class="venture-focus-copy">${escapeHtml(item.next_milestone || "No current focus set yet.")}</p>
+              </div>
+
+              <div>
+                <div class="venture-progress-row">
+                  <div class="venture-progress-track"><div class="venture-progress-fill" style="width:${stats.progress}%"></div></div>
+                  <span class="venture-progress-label">${stats.progress}% · ${stats.done}/${stats.tasks.length} tasks</span>
+                </div>
+                <div class="venture-meta-line" style="margin-top:9px;">
+                  <span>${stats.open} open</span>
+                  ${stats.overdue ? `<span class="venture-priority-high">• ${stats.overdue} overdue</span>` : ""}
+                  ${latest ? `<span>•</span><span>Updated ${escapeHtml(latest)}</span>` : ""}
+                </div>
+              </div>
+
+              ${item.last_update ? `<p class="row-description"><strong>Latest:</strong> ${escapeHtml(item.last_update)}</p>` : ""}
+
+              <div class="venture-card-actions">
+                <button class="secondary-button" type="button" data-add-venture-task="${escapeHtml(item.id)}">+ Task</button>
+                <button class="primary-button" type="button" data-edit-venture="${escapeHtml(item.id)}">Open Workspace</button>
+              </div>
+            </article>
+          `;
+        }).join("");
 
         renderVenturesPreview();
       }
@@ -11204,13 +11586,16 @@ const supabasePublishableKey =
 
         const items = [...state.ventures]
           .filter((item) => item.venture_status !== "archived")
-          .sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0));
+          .sort((a, b) => Number(a.sort_order || 0) - Number(b.sort_order || 0));
 
         grid.innerHTML = items.length
           ? items.map((item) => `
-              <article class="panel" style="padding: 24px; min-height: 220px;">
-                <p class="eyebrow">${escapeHtml(ventureStatusLabel(item.venture_status))}</p>
-                <h3 class="panel-title" style="margin-top: 8px;">${escapeHtml(item.name)}</h3>
+              <article class="panel" style="padding: 22px; min-height: 220px;">
+                <div class="venture-meta-line">
+                  <span class="status-pill ${escapeHtml(item.venture_status || "idea")}">${escapeHtml(ventureStatusLabel(item.venture_status))}</span>
+                  <span class="status-pill ${item.public_ready ? "active" : "draft"}">${item.public_ready ? "Ready" : "Internal draft"}</span>
+                </div>
+                <h3 class="panel-title" style="margin-top: 12px;">${escapeHtml(item.name)}</h3>
                 ${item.tagline ? `<p class="panel-copy" style="margin-top: 10px;">${escapeHtml(item.tagline)}</p>` : ""}
                 ${item.description ? `<p class="row-description">${escapeHtml(item.description)}</p>` : ""}
                 <div class="row-meta" style="margin-top: 18px;">
@@ -11219,7 +11604,7 @@ const supabasePublishableKey =
                 </div>
               </article>
             `).join("")
-          : `<div class="empty-state"><strong>Nothing to preview yet</strong>Add a venture first.</div>`;
+          : `<div class="empty-state" style="grid-column:1/-1;"><strong>Nothing to preview yet</strong>Add a venture first.</div>`;
       }
 
 
@@ -11227,19 +11612,31 @@ const supabasePublishableKey =
         $("#venture-form").reset();
         $("#venture-record-id").value = "";
         $("#venture-modal-title").textContent = "New Venture";
-        $("#venture-status").value = "idea"; $("#venture-public-ready").checked = false; $("#venture-last-update").value = ""; $("#venture-last-update-at").value = "";
+        $("#venture-status").value = "idea";
+        $("#venture-public-ready").checked = false;
+        $("#venture-last-update").value = "";
+        $("#venture-last-update-at").value = "";
         $("#venture-sort-order").value = "0";
+        $("#save-venture-button").textContent = "Create Venture";
+        $("#venture-task-editor").classList.add("hidden");
+        $("#venture-milestone-editor").classList.add("hidden");
+        resetVentureTaskEditor();
+        resetVentureMilestoneEditor();
+        refreshVentureModalHeader();
+        updateVentureLiveSummary();
+        setVentureTab("overview");
       }
 
 
-      function openVentureModal(id = "") {
+      function openVentureModal(id = "", initialTab = "overview", createTask = false) {
         resetVentureForm();
 
+        let item = null;
         if (id) {
-          const item = state.ventures.find((venture) => String(venture.id) === String(id));
+          item = state.ventures.find((venture) => String(venture.id) === String(id));
           if (!item) return;
           $("#venture-record-id").value = item.id;
-          $("#venture-modal-title").textContent = "Edit Venture";
+          $("#venture-modal-title").textContent = item.name || "Venture";
           $("#venture-name").value = item.name || "";
           $("#venture-tagline").value = item.tagline || "";
           $("#venture-status").value = item.venture_status || "idea";
@@ -11251,20 +11648,34 @@ const supabasePublishableKey =
           $("#venture-website").value = item.website_url || "";
           $("#venture-notes").value = item.notes || "";
           $("#venture-sort-order").value = item.sort_order ?? 0;
+          $("#venture-public-ready").checked = Boolean(item.public_ready);
+          $("#venture-last-update").value = item.last_update || "";
+          $("#venture-last-update-at").value = item.last_update_at || "";
+          $("#save-venture-button").textContent = "Save Changes";
         }
 
-        $("#venture-tasks-section").classList.toggle("hidden", !id);
-        $("#venture-task-editor").classList.add("hidden");
-        if (id) renderVentureTasks();
+        refreshVentureModalHeader(item);
+        renderVentureTasks();
+        renderVentureMilestones();
+        updateVentureLiveSummary();
+        setVentureTab(initialTab);
 
-        $("#venture-modal").removeAttribute("hidden");$("#venture-modal").classList.remove("hidden");
+        $("#venture-modal").removeAttribute("hidden");
+        $("#venture-modal").classList.remove("hidden");
         document.body.style.overflow = "hidden";
+
+        if (createTask && id) {
+          setVentureTab("execution");
+          window.setTimeout(() => openVentureTaskEditor(), 0);
+        }
       }
 
 
       async function saveVenture() {
         const existingId = $("#venture-record-id").value;
         const name = $("#venture-name").value.trim();
+        if (!name) throw new Error("Venture name is required.");
+
         const payload = {
           name,
           slug: slugify(name),
@@ -11276,18 +11687,36 @@ const supabasePublishableKey =
           location: $("#venture-location").value.trim() || null,
           website_url: $("#venture-website").value.trim() || null,
           next_milestone: $("#venture-next-milestone").value.trim() || null,
+          last_update: $("#venture-last-update").value.trim() || null,
+          last_update_at: $("#venture-last-update-at").value || null,
+          public_ready: $("#venture-public-ready").checked,
           notes: $("#venture-notes").value.trim() || null,
           sort_order: Number($("#venture-sort-order").value || 0)
         };
 
-        const response = existingId
-          ? await supabase.from("ventures").update(payload).eq("id", existingId)
-          : await supabase.from("ventures").insert(payload);
+        let response;
+        if (existingId) {
+          response = await supabase.from("ventures").update(payload).eq("id", existingId).select("*").single();
+        } else {
+          response = await supabase.from("ventures").insert(payload).select("*").single();
+        }
 
         if (response.error) throw response.error;
-        closeModal("venture");
-        showToast(existingId ? "Venture updated." : "Venture created.");
-        await loadAllContent();
+
+        const saved = response.data;
+        $("#venture-record-id").value = saved.id;
+        $("#venture-modal-title").textContent = saved.name;
+        $("#save-venture-button").textContent = "Save Changes";
+
+        await Promise.all([loadVentures(), loadVentureTasks(), loadVentureMilestones()]);
+        const fresh = state.ventures.find((item) => String(item.id) === String(saved.id)) || saved;
+        refreshVentureModalHeader(fresh);
+        renderVentureTasks();
+        renderVentureMilestones();
+        updateVentureLiveSummary();
+        setVentureTab("overview");
+
+        showToast(existingId ? "Venture updated." : "Venture created. You can now add tasks and milestones.");
       }
 
 
