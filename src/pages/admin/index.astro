@@ -2982,6 +2982,21 @@ const supabasePublishableKey =
         }
       }
 
+      .venture-private-files { display:grid; gap:10px; }
+      .venture-file-row { display:grid; grid-template-columns:52px minmax(0,1fr) auto; gap:12px; align-items:center; padding:12px; border:1px solid var(--border); background:white; }
+      .venture-file-thumb { width:52px; height:52px; display:grid; place-items:center; overflow:hidden; border:1px solid var(--border); background:rgba(244,241,232,.55); font-size:18px; }
+      .venture-file-thumb img { width:100%; height:100%; object-fit:cover; }
+      .venture-file-name { margin:0; font-size:13px; font-weight:650; overflow-wrap:anywhere; }
+      .venture-file-meta { margin-top:4px; color:var(--slate); font-size:10px; }
+      .venture-file-actions { display:flex; gap:7px; flex-wrap:wrap; justify-content:flex-end; }
+      .venture-file-upload { display:grid; gap:10px; padding:16px; border:1px dashed var(--border); background:rgba(244,241,232,.36); }
+      .venture-public-boundary { padding:14px 16px; border-left:3px solid var(--gold); background:rgba(197,160,89,.08); color:var(--slate); font-size:11px; line-height:1.6; }
+      @media (max-width:640px) {
+        .venture-file-row { grid-template-columns:44px minmax(0,1fr); }
+        .venture-file-thumb { width:44px; height:44px; }
+        .venture-file-actions { grid-column:2; justify-content:flex-start; }
+      }
+
     </style>
   </head>
 
@@ -5678,6 +5693,7 @@ const supabasePublishableKey =
 
         <nav id="venture-tabs" class="venture-tabs" aria-label="Venture workspace">
           <button class="venture-tab active" type="button" data-venture-tab="overview">Overview</button>
+          <button class="venture-tab" type="button" data-venture-tab="public">Public Overview</button>
           <button class="venture-tab" type="button" data-venture-tab="execution">Execution</button>
           <button class="venture-tab" type="button" data-venture-tab="milestones">Milestones</button>
           <button class="venture-tab" type="button" data-venture-tab="notes">Private Notes</button>
@@ -5746,7 +5762,48 @@ const supabasePublishableKey =
                     </div>
                   </div>
                 </div>
-              </aside>
+              
+                <div class="form-section" style="margin-top:14px;">
+                  <div class="form-section-header">
+                    <h3 class="form-section-title">Private Files</h3>
+                    <p class="form-section-copy">Documents and images stored here stay private.</p>
+                  </div>
+                  <div class="form-section-body">
+                    <button id="venture-private-files-button" class="secondary-button" type="button">Manage Private Files</button>
+                    <p class="field-help" style="margin-top:8px;">Files are kept in private Supabase Storage and are never used by the public Ventures page.</p>
+                  </div>
+                </div>
+</aside>
+            </div>
+          </section>
+
+          <section class="venture-tab-panel hidden" data-venture-tab-panel="public">
+            <div class="form-section">
+              <div class="form-section-header">
+                <h3 class="form-section-title">Public Venture Overview</h3>
+                <p class="form-section-copy">This is the only venture information intended for the future public Ventures page.</p>
+              </div>
+              <div class="form-section-body">
+                <div class="venture-public-boundary">Private notes, tasks, milestones, workspace cards and private attachments are stored separately and are never read by the public venture overview.</div>
+                <div class="form-grid" style="margin-top:16px;">
+                  <div class="form-field full">
+                    <label class="venture-readiness">
+                      <input id="venture-public-visible" type="checkbox" />
+                      <span><strong>Show this venture on the public Ventures page</strong><br />Leave off while the public overview is being prepared.</span>
+                    </label>
+                  </div>
+                  <div class="form-field full"><label class="label" for="venture-public-title">Public title</label><input id="venture-public-title" class="input" type="text" /></div>
+                  <div class="form-field full"><label class="label" for="venture-public-tagline">Public one-line description</label><input id="venture-public-tagline" class="input" type="text" maxlength="180" /></div>
+                  <div class="form-field"><label class="label" for="venture-public-status">Public status / stage</label><input id="venture-public-status" class="input" type="text" placeholder="Optional" /></div>
+                  <div class="form-field"><label class="label" for="venture-public-role">Public role</label><input id="venture-public-role" class="input" type="text" placeholder="Optional" /></div>
+                  <div class="form-field"><label class="label" for="venture-public-sector">Public sector</label><input id="venture-public-sector" class="input" type="text" placeholder="Optional" /></div>
+                  <div class="form-field"><label class="label" for="venture-public-location">Public location / market</label><input id="venture-public-location" class="input" type="text" placeholder="Optional" /></div>
+                  <div class="form-field full"><label class="label" for="venture-public-summary">Public summary</label><textarea id="venture-public-summary" class="textarea" placeholder="Only the context you are comfortable publishing."></textarea></div>
+                  <div class="form-field full"><label class="label" for="venture-public-highlights">Highlights</label><textarea id="venture-public-highlights" class="textarea" placeholder="One public highlight per line"></textarea></div>
+                  <div class="form-field full"><label class="label" for="venture-public-image-url">Public image URL</label><input id="venture-public-image-url" class="input" type="url" placeholder="Optional public image only — never a private attachment URL" /></div>
+                  <div class="form-field full"><label class="label" for="venture-public-website-url">Public website / project URL</label><input id="venture-public-website-url" class="input" type="url" placeholder="Optional" /></div>
+                </div>
+              </div>
             </div>
           </section>
 
@@ -5931,6 +5988,42 @@ const supabasePublishableKey =
     </div>
 
 
+    <div id="venture-files-modal" class="modal-backdrop hidden" hidden role="dialog" aria-modal="true" aria-labelledby="venture-files-modal-title">
+      <div class="modal">
+        <div class="modal-header">
+          <div>
+            <p class="eyebrow">Confidential Venture Files</p>
+            <h2 id="venture-files-modal-title" class="modal-title">Private Files</h2>
+            <p id="venture-files-target-label" class="panel-copy"></p>
+          </div>
+          <button class="quiet-button" type="button" data-close-modal="venture-files">Close</button>
+        </div>
+        <div class="modal-body">
+          <div class="venture-public-boundary">These files are stored in a private bucket. Opening a file creates a temporary signed link that expires after 5 minutes. Private files are never exposed by the public Ventures overview.</div>
+          <div class="venture-file-upload" style="margin-top:16px;">
+            <div>
+              <label class="label" for="venture-files-input">Add documents, files or pictures</label>
+              <input id="venture-files-input" class="input" type="file" multiple />
+              <p class="field-help">Up to 50 MB per file.</p>
+            </div>
+            <div class="row-actions"><button id="upload-venture-files-button" class="primary-button" type="button">Upload Selected Files</button></div>
+          </div>
+          <div style="margin-top:18px;">
+            <div class="repeater-heading">
+              <div><p class="eyebrow">Attached</p><h3 class="form-section-title">Files</h3></div>
+              <span id="venture-files-count" class="venture-result-count"></span>
+            </div>
+            <div id="venture-files-list" class="venture-private-files"></div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <span>Private · never published automatically</span>
+          <div class="modal-footer-right"><button class="secondary-button" type="button" data-close-modal="venture-files">Close</button></div>
+        </div>
+      </div>
+    </div>
+
+
     <div id="workspace-task-modal" class="modal-backdrop hidden" hidden role="dialog" aria-modal="true">
       <form id="workspace-task-form" class="modal">
         <div class="modal-header"><div><p class="eyebrow">My Dashboard</p><h2 class="modal-title">Edit Task</h2></div><button class="quiet-button" type="button" data-close-modal="workspace-task">Close</button></div>
@@ -6057,6 +6150,15 @@ const supabasePublishableKey =
 
         ventureWorkspaceItems:
           [],
+
+        ventureAttachments:
+          [],
+
+        venturePublicOverviews:
+          [],
+
+        ventureFileTarget:
+          null,
 
         currentVentureId:
           null,
@@ -7114,6 +7216,8 @@ const supabasePublishableKey =
             loadVentures(),
             loadVentureTasks(),
             loadVentureWorkspaceItems(),
+            loadVentureAttachments(),
+            loadVenturePublicOverviews(),
             loadEvidence(),
             loadFieldNoteEvents(),
             loadVentureMilestones(),
@@ -11295,6 +11399,253 @@ const supabasePublishableKey =
       }
 
 
+      async function loadVentureAttachments() {
+        const { data, error } = await supabase.from("venture_attachments").select("*").order("sort_order", { ascending: true }).order("created_at", { ascending: true });
+        if (error) { showToast(`Could not load private venture files: ${error.message}`, "error"); return; }
+        state.ventureAttachments = data || [];
+        renderVentureTasks();
+        renderVentureMilestones();
+        if (state.currentVentureModule) renderVentureModule();
+        renderCurrentVentureContext();
+        updateVenturePrivateFilesButton();
+      }
+
+
+      async function loadVenturePublicOverviews() {
+        const { data, error } = await supabase.from("venture_public_overviews").select("*").order("sort_order", { ascending: true });
+        if (error) { showToast(`Could not load public venture overviews: ${error.message}`, "error"); return; }
+        state.venturePublicOverviews = data || [];
+        renderVenturesPreview();
+      }
+
+
+      function attachmentsFor(entityType, entityId) {
+        return state.ventureAttachments
+          .filter((item) => item.entity_type === entityType && String(item.entity_id) === String(entityId))
+          .sort((a, b) => Number(a.sort_order || 0) - Number(b.sort_order || 0) || String(a.created_at || "").localeCompare(String(b.created_at || "")));
+      }
+
+
+      function attachmentCount(entityType, entityId) {
+        return attachmentsFor(entityType, entityId).length;
+      }
+
+
+      function publicOverviewForVenture(ventureId) {
+        return state.venturePublicOverviews.find((item) => String(item.venture_id) === String(ventureId)) || null;
+      }
+
+
+      function resetVenturePublicOverviewFields() {
+        $("#venture-public-visible").checked = false;
+        $("#venture-public-title").value = "";
+        $("#venture-public-tagline").value = "";
+        $("#venture-public-status").value = "";
+        $("#venture-public-role").value = "";
+        $("#venture-public-sector").value = "";
+        $("#venture-public-location").value = "";
+        $("#venture-public-summary").value = "";
+        $("#venture-public-highlights").value = "";
+        $("#venture-public-image-url").value = "";
+        $("#venture-public-website-url").value = "";
+      }
+
+
+      function populateVenturePublicOverview(venture) {
+        resetVenturePublicOverviewFields();
+        if (!venture) return;
+        const overview = publicOverviewForVenture(venture.id);
+        $("#venture-public-visible").checked = Boolean(overview?.is_visible);
+        $("#venture-public-title").value = overview?.public_title || venture.name || "";
+        $("#venture-public-tagline").value = overview?.public_tagline || venture.tagline || "";
+        $("#venture-public-status").value = overview?.public_status || "";
+        $("#venture-public-role").value = overview?.public_role || "";
+        $("#venture-public-sector").value = overview?.public_sector || "";
+        $("#venture-public-location").value = overview?.public_location || "";
+        $("#venture-public-summary").value = overview?.public_summary || "";
+        $("#venture-public-highlights").value = Array.isArray(overview?.public_highlights) ? overview.public_highlights.join("\n") : "";
+        $("#venture-public-image-url").value = overview?.public_image_url || "";
+        $("#venture-public-website-url").value = overview?.public_website_url || "";
+      }
+
+
+      async function saveVenturePublicOverview(venture) {
+        if (!venture?.id) return;
+        const highlights = $("#venture-public-highlights").value.split("\n").map((value) => value.trim()).filter(Boolean);
+        const payload = {
+          venture_id: venture.id,
+          is_visible: $("#venture-public-visible").checked,
+          public_title: $("#venture-public-title").value.trim() || venture.name,
+          public_tagline: $("#venture-public-tagline").value.trim() || null,
+          public_status: $("#venture-public-status").value.trim() || null,
+          public_role: $("#venture-public-role").value.trim() || null,
+          public_sector: $("#venture-public-sector").value.trim() || null,
+          public_location: $("#venture-public-location").value.trim() || null,
+          public_summary: $("#venture-public-summary").value.trim() || null,
+          public_highlights: highlights,
+          public_image_url: $("#venture-public-image-url").value.trim() || null,
+          public_website_url: $("#venture-public-website-url").value.trim() || null,
+          sort_order: Number($("#venture-sort-order").value || 0)
+        };
+        const { error } = await supabase.from("venture_public_overviews").upsert(payload, { onConflict: "venture_id" });
+        if (error) throw error;
+      }
+
+
+      function ventureFileTarget(entityType, entityId) {
+        if (entityType === "venture") {
+          const item = state.ventures.find((entry) => String(entry.id) === String(entityId));
+          return item ? { ventureId: item.id, entityType, entityId: item.id, label: item.name } : null;
+        }
+        if (entityType === "task") {
+          const item = state.ventureTasks.find((entry) => String(entry.id) === String(entityId));
+          return item ? { ventureId: item.venture_id, entityType, entityId: item.id, label: item.title } : null;
+        }
+        if (entityType === "milestone") {
+          const item = state.ventureMilestones.find((entry) => String(entry.id) === String(entityId));
+          return item ? { ventureId: item.venture_id, entityType, entityId: item.id, label: item.title } : null;
+        }
+        if (entityType === "workspace_item") {
+          const item = state.ventureWorkspaceItems.find((entry) => String(entry.id) === String(entityId));
+          return item ? { ventureId: item.venture_id, entityType, entityId: item.id, label: item.title } : null;
+        }
+        return null;
+      }
+
+
+      function readableFileSize(bytes) {
+        const value = Number(bytes || 0);
+        if (!value) return "Size unavailable";
+        if (value < 1024) return `${value} B`;
+        if (value < 1024 * 1024) return `${(value / 1024).toFixed(1)} KB`;
+        return `${(value / (1024 * 1024)).toFixed(1)} MB`;
+      }
+
+
+      function updateVenturePrivateFilesButton() {
+        const button = $("#venture-private-files-button");
+        if (!button) return;
+        const ventureId = $("#venture-record-id")?.value;
+        button.disabled = !ventureId;
+        button.textContent = ventureId ? `Manage Private Files · ${attachmentCount("venture", ventureId)}` : "Save Venture Before Adding Files";
+      }
+
+
+      async function renderVentureFilesModal() {
+        const target = state.ventureFileTarget;
+        const container = $("#venture-files-list");
+        if (!target || !container) return;
+        const files = attachmentsFor(target.entityType, target.entityId);
+        $("#venture-files-count").textContent = `${files.length} file${files.length === 1 ? "" : "s"}`;
+        if (!files.length) {
+          container.innerHTML = '<div class="empty-state"><strong>No private files yet</strong>Add documents, spreadsheets, PDFs or pictures for this item.</div>';
+          return;
+        }
+        container.innerHTML = files.map((file) => {
+          const isImage = String(file.mime_type || "").startsWith("image/");
+          return `
+            <div class="venture-file-row">
+              <div class="venture-file-thumb" data-venture-file-thumb="${escapeHtml(file.id)}">${isImage ? "▧" : "↗"}</div>
+              <div>
+                <p class="venture-file-name">${escapeHtml(file.display_name || file.original_name || "File")}</p>
+                <div class="venture-file-meta">${escapeHtml(file.mime_type || "File")} · ${escapeHtml(readableFileSize(file.file_size))}</div>
+              </div>
+              <div class="venture-file-actions">
+                <button class="secondary-button" type="button" data-open-venture-file="${escapeHtml(file.id)}">Open</button>
+                <button class="danger-button" type="button" data-delete-venture-file="${escapeHtml(file.id)}">Delete</button>
+              </div>
+            </div>
+          `;
+        }).join("");
+
+        await Promise.all(files.filter((file) => String(file.mime_type || "").startsWith("image/")).map(async (file) => {
+          const { data, error } = await supabase.storage.from("venture-private-files").createSignedUrl(file.storage_path, 300);
+          if (error || !data?.signedUrl) return;
+          const thumb = document.querySelector(`[data-venture-file-thumb="${CSS.escape(String(file.id))}"]`);
+          if (thumb) thumb.innerHTML = `<img src="${escapeHtml(data.signedUrl)}" alt="" />`;
+        }));
+      }
+
+
+      function openVentureFiles(entityType, entityId) {
+        const target = ventureFileTarget(entityType, entityId);
+        if (!target) { showToast("Could not resolve the file target.", "error"); return; }
+        state.ventureFileTarget = target;
+        $("#venture-files-target-label").textContent = target.label || "Venture item";
+        $("#venture-files-input").value = "";
+        $("#venture-files-modal").removeAttribute("hidden");
+        $("#venture-files-modal").classList.remove("hidden");
+        document.body.style.overflow = "hidden";
+        renderVentureFilesModal();
+      }
+
+
+      function safeVentureFileName(name) {
+        return String(name || "file").normalize("NFKD").replace(/[^a-zA-Z0-9._-]+/g, "-").replace(/-+/g, "-").replace(/^-|-$/g, "").slice(-120) || "file";
+      }
+
+
+      async function uploadVentureFiles() {
+        const target = state.ventureFileTarget;
+        const files = Array.from($("#venture-files-input")?.files || []);
+        if (!target) throw new Error("No venture item is selected.");
+        if (!files.length) throw new Error("Choose at least one file.");
+        if (!state.user?.id) throw new Error("Your admin session is not available.");
+
+        for (const file of files) {
+          if (file.size > 50 * 1024 * 1024) throw new Error(`${file.name} is larger than the 50 MB private-file limit.`);
+          const storagePath = `${state.user.id}/${target.ventureId}/${target.entityType}/${target.entityId}/${crypto.randomUUID()}-${safeVentureFileName(file.name)}`;
+          const { error: uploadError } = await supabase.storage.from("venture-private-files").upload(storagePath, file, { cacheControl: "3600", upsert: false, contentType: file.type || undefined });
+          if (uploadError) throw uploadError;
+
+          const { error: recordError } = await supabase.from("venture_attachments").insert({
+            venture_id: target.ventureId,
+            entity_type: target.entityType,
+            entity_id: target.entityId,
+            display_name: file.name,
+            original_name: file.name,
+            mime_type: file.type || null,
+            file_size: file.size,
+            storage_path: storagePath
+          });
+
+          if (recordError) {
+            await supabase.storage.from("venture-private-files").remove([storagePath]);
+            throw recordError;
+          }
+        }
+
+        $("#venture-files-input").value = "";
+        await loadVentureAttachments();
+        await renderVentureFilesModal();
+        showToast(files.length === 1 ? "Private file uploaded." : `${files.length} private files uploaded.`);
+      }
+
+
+      async function openVentureAttachment(fileId) {
+        const file = state.ventureAttachments.find((item) => String(item.id) === String(fileId));
+        if (!file) return;
+        const { data, error } = await supabase.storage.from("venture-private-files").createSignedUrl(file.storage_path, 300);
+        if (error) throw error;
+        if (!data?.signedUrl) throw new Error("Could not create a private file link.");
+        window.open(data.signedUrl, "_blank", "noopener,noreferrer");
+      }
+
+
+      async function deleteVentureAttachment(fileId) {
+        const file = state.ventureAttachments.find((item) => String(item.id) === String(fileId));
+        if (!file) return;
+        if (!window.confirm(`Delete "${file.display_name || file.original_name || "this file"}"?`)) return;
+        const { error: storageError } = await supabase.storage.from("venture-private-files").remove([file.storage_path]);
+        if (storageError) throw storageError;
+        const { error: recordError } = await supabase.from("venture_attachments").delete().eq("id", file.id);
+        if (recordError) throw recordError;
+        await loadVentureAttachments();
+        await renderVentureFilesModal();
+        showToast("Private file deleted.");
+      }
+
+
       async function loadVentureWorkspaceItems() {
         const { data, error } = await supabase
           .from("venture_workspace_items")
@@ -11470,12 +11821,12 @@ const supabasePublishableKey =
 
       function setVentureTab(tabName = "overview") {
         const hasRecord = Boolean($("#venture-record-id")?.value);
-        const protectedTab = ["execution", "milestones"].includes(tabName);
+        const protectedTab = ["public", "execution", "milestones"].includes(tabName);
         const next = protectedTab && !hasRecord ? "overview" : tabName;
 
         $$("#venture-tabs [data-venture-tab]").forEach((button) => {
           button.classList.toggle("active", button.dataset.ventureTab === next);
-          button.disabled = !hasRecord && ["execution", "milestones"].includes(button.dataset.ventureTab);
+          button.disabled = !hasRecord && ["public", "execution", "milestones"].includes(button.dataset.ventureTab);
         });
 
         $$("[data-venture-tab-panel]").forEach((panel) => {
@@ -12032,6 +12383,7 @@ const supabasePublishableKey =
         $("#venture-modal-title").textContent = "New Venture";
         $("#venture-status").value = "idea";
         $("#venture-public-ready").checked = false;
+        resetVenturePublicOverviewFields();
         $("#venture-last-update").value = "";
         $("#venture-last-update-at").value = "";
         $("#venture-sort-order").value = "0";
@@ -12042,6 +12394,7 @@ const supabasePublishableKey =
         resetVentureMilestoneEditor();
         refreshVentureModalHeader();
         updateVentureLiveSummary();
+        updateVenturePrivateFilesButton();
         setVentureTab("overview");
       }
 
@@ -12070,9 +12423,11 @@ const supabasePublishableKey =
           $("#venture-last-update").value = item.last_update || "";
           $("#venture-last-update-at").value = item.last_update_at || "";
           $("#save-venture-button").textContent = "Save Changes";
+          populateVenturePublicOverview(item);
         }
 
         refreshVentureModalHeader(item);
+        updateVenturePrivateFilesButton();
         renderVentureTasks();
         renderVentureMilestones();
         updateVentureLiveSummary();
@@ -12126,13 +12481,16 @@ const supabasePublishableKey =
         $("#venture-modal-title").textContent = saved.name;
         $("#save-venture-button").textContent = "Save Changes";
 
-        await Promise.all([loadVentures(), loadVentureTasks(), loadVentureMilestones()]);
+        await saveVenturePublicOverview(saved);
+        await Promise.all([loadVentures(), loadVentureTasks(), loadVentureMilestones(), loadVenturePublicOverviews()]);
         const fresh = state.ventures.find((item) => String(item.id) === String(saved.id)) || saved;
         refreshVentureModalHeader(fresh);
         renderVentureTasks();
         renderVentureMilestones();
         updateVentureLiveSummary();
-        setVentureTab("overview");
+        updateVenturePrivateFilesButton();
+        const activeTab = $("#venture-tabs .venture-tab.active")?.dataset.ventureTab || "overview";
+        setVentureTab(activeTab);
 
         showToast(existingId ? "Venture updated." : "Venture created. You can now add tasks and milestones.");
       }
@@ -13447,6 +13805,8 @@ const supabasePublishableKey =
             "#venture-modal",
           "venture-workspace-item":
             "#venture-workspace-item-modal",
+          "venture-files":
+            "#venture-files-modal",
           evidence:
             "#evidence-modal",
           "workspace-task":
@@ -14571,6 +14931,27 @@ const supabasePublishableKey =
           }
 
 
+          const manageVentureFiles = event.target.closest("[data-manage-venture-files]");
+          if (manageVentureFiles) {
+            openVentureFiles(manageVentureFiles.dataset.attachmentType, manageVentureFiles.dataset.attachmentId);
+            return;
+          }
+
+          const openPrivateVentureFile = event.target.closest("[data-open-venture-file]");
+          if (openPrivateVentureFile) {
+            try { await openVentureAttachment(openPrivateVentureFile.dataset.openVentureFile); }
+            catch (error) { console.error(error); showToast(error?.message || "Could not open private file.", "error"); }
+            return;
+          }
+
+          const deletePrivateVentureFile = event.target.closest("[data-delete-venture-file]");
+          if (deletePrivateVentureFile) {
+            try { await deleteVentureAttachment(deletePrivateVentureFile.dataset.deleteVentureFile); }
+            catch (error) { console.error(error); showToast(error?.message || "Could not delete private file.", "error"); }
+            return;
+          }
+
+
           const contextTaskAdd =
             event.target.closest("[data-context-add-task]");
 
@@ -15324,6 +15705,20 @@ const supabasePublishableKey =
         event.preventDefault();
         const button=$("#save-evidence-button"); setButtonLoading(button,true,"Saving...","Save Evidence");
         try { await saveEvidence(); } catch(error) { console.error(error); showToast(error?.message||"Could not save evidence.","error"); } finally { setButtonLoading(button,false,"Saving...","Save Evidence"); }
+      });
+
+
+      $("#venture-private-files-button")?.addEventListener("click", () => {
+        const ventureId = $("#venture-record-id")?.value;
+        if (ventureId) openVentureFiles("venture", ventureId);
+      });
+
+      $("#upload-venture-files-button")?.addEventListener("click", async () => {
+        const button = $("#upload-venture-files-button");
+        setButtonLoading(button, true, "Uploading...", "Upload Selected Files");
+        try { await uploadVentureFiles(); }
+        catch (error) { console.error(error); showToast(error?.message || "Could not upload private files.", "error"); }
+        finally { setButtonLoading(button, false, "Uploading...", "Upload Selected Files"); }
       });
 
 
