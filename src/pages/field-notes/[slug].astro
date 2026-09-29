@@ -14,6 +14,9 @@ import {
   getFieldNoteImages
 } from "../../utils/fieldNoteImages";
 
+import { events } from "../../data/events.cms";
+import { getEventRecapUrl } from "../../utils/eventRecaps";
+
 
 export async function getStaticPaths() {
 
@@ -116,6 +119,11 @@ const images = {
   gallery:
     legacyImages.gallery
 };
+
+const relatedEvents = (post.data.relatedEvents || [])
+  .map((eventId) => events.find((event) => event.id === eventId))
+  .filter(Boolean)
+  .map((event) => ({ ...event, recapUrl: getEventRecapUrl(event.id) }));
 
 
 /* =====================================================
@@ -260,6 +268,7 @@ const articleSchema = {
     post={post}
     recommendedPost={recommendedPost}
     images={images}
+    relatedEvents={relatedEvents}
   >
 
     <Content />
