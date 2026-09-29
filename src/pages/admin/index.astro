@@ -13954,7 +13954,7 @@ const supabasePublishableKey =
       });
 
 
-      $$(".nav-button").forEach(
+      $(".nav-button").forEach(
         (
           button
         ) => {
@@ -13969,6 +13969,28 @@ const supabasePublishableKey =
 
         }
       );
+
+
+      $("#venture-sidebar-nav")?.addEventListener("click", (event) => {
+        const button = event.target.closest("[data-section]");
+        if (!button) return;
+
+        if (button.dataset.ventureModule) {
+          openVentureModule(button.dataset.ventureModule);
+          return;
+        }
+
+        openSection(button.dataset.section);
+      });
+
+
+      $("#back-to-portfolio")?.addEventListener("click", openPortfolio);
+
+
+      $("#portfolio-signout-button")?.addEventListener("click", async () => {
+        await supabase.auth.signOut();
+        window.location.href = "/admin/";
+      });
 
 
       $("#mobile-menu-button").addEventListener(
@@ -14070,6 +14092,44 @@ const supabasePublishableKey =
       $("#workspace-area-form").addEventListener("submit",async(event)=>{event.preventDefault();const name=$("#workspace-area-name").value.trim();const slug=slugify(name);if(forbiddenWorkspaceSlugs.has(slug)){showToast("This area is intentionally excluded from My Dashboard.","error");return;}const {error}=await supabase.from("workspace_areas").insert({name,slug});if(error){showToast(error.message,"error");return;}closeModal("workspace-area");await loadWorkspaceAreas();showToast("Area added.");});
       $("#workspace-task-form").addEventListener("submit",async(event)=>{event.preventDefault();const id=$("#workspace-task-id").value;const payload={title:$("#workspace-edit-title").value.trim(),area_id:$("#workspace-edit-area").value,project:$("#workspace-edit-project").value.trim()||null,due_date:$("#workspace-edit-due").value||null,priority:$("#workspace-edit-priority").value,status:$("#workspace-edit-status").value,notes:$("#workspace-edit-notes").value.trim()||null};const {error}=await supabase.from("workspace_tasks").update(payload).eq("id",id);if(error){showToast(error.message,"error");return;}closeModal("workspace-task");await loadWorkspaceTasks();showToast("Task updated.");});
       $("#workspace-delete-task").addEventListener("click",async()=>{const id=$("#workspace-task-id").value;if(!id)return;await deleteWorkspaceTask(id);closeModal("workspace-task");showToast("Task deleted.");});
+
+
+      $("#venture-context-add-task")?.addEventListener("click", () => {
+        const venture = currentVenture();
+        if (venture) openVentureModal(venture.id, "execution", true);
+      });
+
+      $("#venture-context-add-milestone")?.addEventListener("click", () => {
+        const venture = currentVenture();
+        if (!venture) return;
+        openVentureModal(venture.id, "milestones");
+        window.setTimeout(() => openVentureMilestoneEditor(), 0);
+      });
+
+      $("#add-venture-workspace-item-button")?.addEventListener("click", () => openVentureWorkspaceItem());
+
+      $("#venture-workspace-item-form")?.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        const button = $("#save-venture-workspace-item");
+        setButtonLoading(button, true, "Saving...", "Save Item");
+        try {
+          await saveVentureWorkspaceItem();
+        } catch (error) {
+          console.error(error);
+          showToast(error?.message || "Could not save workspace item.", "error");
+        } finally {
+          setButtonLoading(button, false, "Saving...", "Save Item");
+        }
+      });
+
+      $("#delete-venture-workspace-item")?.addEventListener("click", async () => {
+        try {
+          await deleteVentureWorkspaceItem();
+        } catch (error) {
+          console.error(error);
+          showToast(error?.message || "Could not delete workspace item.", "error");
+        }
+      });
 
 
       $("#add-evidence-button").addEventListener("click", () => openEvidenceModal());
@@ -14399,6 +14459,102 @@ const supabasePublishableKey =
           if (ventureMilestoneEdit) {
             setVentureTab("milestones");
             openVentureMilestoneEditor(ventureMilestoneEdit.dataset.editVentureMilestone);
+            return;
+          }
+
+
+          const openVentureWorkspaceButton =
+            event.target.closest("[data-open-venture-workspace]");
+
+          if (openVentureWorkspaceButton) {
+            enterVenture(
+              openVentureWorkspaceButton.dataset.openVentureWorkspace,
+              openVentureWorkspaceButton.dataset.ventureOpenSection || "venture-home"
+            );
+            return;
+          }
+
+
+          const portfolioTaskButton =
+            event.target.closest("[data-portfolio-add-task]");
+
+          if (portfolioTaskButton) {
+            openVentureModal(portfolioTaskButton.dataset.portfolioAddTask, "execution", true);
+            return;
+          }
+
+
+          const contextSectionButton =
+            event.target.closest("[data-context-section]");
+
+          if (contextSectionButton) {
+            openSection(contextSectionButton.dataset.contextSection);
+            return;
+          }
+
+
+          const contextModuleButton =
+            event.target.closest("[data-context-module]");
+
+          if (contextModuleButton) {
+            openVentureModule(contextModuleButton.dataset.contextModule);
+            return;
+          }
+
+
+          const currentVentureEdit =
+            event.target.closest("[data-edit-current-venture]");
+
+          if (currentVentureEdit) {
+            const venture = currentVenture();
+            if (venture) {
+              openVentureModal(venture.id, currentVentureEdit.dataset.editCurrentVenture || "overview");
+            }
+            return;
+          }
+
+
+          const contextTaskAdd =
+            event.target.closest("[data-context-add-task]");
+
+          if (contextTaskAdd) {
+            const venture = currentVenture();
+            if (venture) openVentureModal(venture.id, "execution", true);
+            return;
+          }
+
+
+          const contextTaskEdit =
+            event.target.closest("[data-context-edit-task]");
+
+          if (contextTaskEdit) {
+            const venture = currentVenture();
+            if (venture) {
+              openVentureModal(venture.id, "execution");
+              window.setTimeout(() => openVentureTaskEditor(contextTaskEdit.dataset.contextEditTask), 0);
+            }
+            return;
+          }
+
+
+          const contextMilestoneEdit =
+            event.target.closest("[data-context-edit-milestone]");
+
+          if (contextMilestoneEdit) {
+            const venture = currentVenture();
+            if (venture) {
+              openVentureModal(venture.id, "milestones");
+              window.setTimeout(() => openVentureMilestoneEditor(contextMilestoneEdit.dataset.contextEditMilestone), 0);
+            }
+            return;
+          }
+
+
+          const workspaceItemEdit =
+            event.target.closest("[data-edit-workspace-item]");
+
+          if (workspaceItemEdit) {
+            openVentureWorkspaceItem(workspaceItemEdit.dataset.editWorkspaceItem);
             return;
           }
 
