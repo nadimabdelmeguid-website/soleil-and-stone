@@ -3079,17 +3079,14 @@ const supabasePublishableKey =
 
           <nav id="website-sidebar-nav" class="sidebar-nav">
             <div class="sidebar-group-label">Soleil & Stone</div>
-            <button class="nav-button" type="button" data-section="venture-home">
-              <span>Dashboard</span>
-            </button>
-            <div class="sidebar-group-label">Website & Content</div>
             <button
               class="nav-button"
               type="button"
               data-section="dashboard"
             >
-              <span>Website / CMS</span>
+              <span>Dashboard</span>
             </button>
+            <div class="sidebar-group-label">Website & Content</div>
 
             <button
               class="nav-button"
@@ -3193,16 +3190,6 @@ const supabasePublishableKey =
               <span id="nav-evidence-count" class="nav-count">0</span>
             </button>
 
-            <div class="sidebar-group-label">Venture Management</div>
-            <button class="nav-button" type="button" data-section="venture-execution">
-              <span>Execution</span>
-            </button>
-            <button class="nav-button" type="button" data-section="venture-milestones">
-              <span>Milestones</span>
-            </button>
-            <button class="nav-button" type="button" data-section="venture-notes">
-              <span>Private Notes</span>
-            </button>
           </nav>
 
           <nav id="venture-sidebar-nav" class="sidebar-nav hidden"></nav>
@@ -12613,7 +12600,7 @@ const supabasePublishableKey =
 
       const ventureWorkspaceConfig = {
         "soleil-and-stone": {
-          subtitle: "Website, community & venture",
+          subtitle: "Content Manager",
           modules: []
         },
         taprecon: {
@@ -12785,6 +12772,12 @@ const supabasePublishableKey =
         state.currentVentureModule = null;
         portfolioMode(false);
         renderVentureSidebar();
+
+        if (venture.slug === "soleil-and-stone") {
+          openSection("dashboard");
+          return;
+        }
+
         renderCurrentVentureContext();
         openSection(initialSection);
       }
@@ -12792,6 +12785,15 @@ const supabasePublishableKey =
 
       function renderCurrentVentureContext() {
         if (!state.currentVentureId) return;
+
+        const venture = currentVenture();
+        if (!venture) return;
+
+        if (venture.slug === "soleil-and-stone") {
+          renderVentureSidebar();
+          return;
+        }
+
         renderVentureContextDashboard();
         renderVentureContextExecution();
         renderVentureContextMilestones();
