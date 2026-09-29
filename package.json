@@ -13,7 +13,8 @@
   "dependencies": {
     "@astrojs/sitemap": "^3.6.0",
     "astro": "^5.0.0",
-    "cheerio": "^1.0.0"
+    "cheerio": "^1.0.0",
+    "@supabase/supabase-js": "^2.49.4"
   },
   "devDependencies": {
     "tsx": "^4.0.0"
