@@ -13022,7 +13022,34 @@ const supabasePublishableKey =
       $("#evidence-status-filter").addEventListener("change", renderEvidence);
 
 
-      $("#add-venture-milestone-button")?.addEventListener("click", async () => { try { await addVentureMilestone(); showToast("Milestone added."); } catch(error) { showToast(error?.message || "Could not add milestone.","error"); } });
+      $("#add-venture-milestone-button")?.addEventListener("click", () => openVentureMilestoneEditor());
+
+      $("#cancel-venture-milestone-button")?.addEventListener("click", () => {
+        $("#venture-milestone-editor").classList.add("hidden");
+        resetVentureMilestoneEditor();
+      });
+
+      $("#save-venture-milestone-button")?.addEventListener("click", async () => {
+        const button = $("#save-venture-milestone-button");
+        setButtonLoading(button, true, "Saving...", "Save Milestone");
+        try {
+          await saveVentureMilestone();
+        } catch (error) {
+          console.error(error);
+          showToast(error?.message || "Could not save milestone.", "error");
+        } finally {
+          setButtonLoading(button, false, "Saving...", "Save Milestone");
+        }
+      });
+
+      $("#delete-venture-milestone-button")?.addEventListener("click", async () => {
+        try {
+          await deleteVentureMilestone($("#venture-milestone-id").value);
+        } catch (error) {
+          console.error(error);
+          showToast(error?.message || "Could not delete milestone.", "error");
+        }
+      });
 
 
       $("#add-venture-button").addEventListener(
@@ -13095,6 +13122,28 @@ const supabasePublishableKey =
         "input",
         renderVentures
       );
+
+      $("#ventures-sort")?.addEventListener("change", (event) => {
+        state.ventureSort = event.target.value || "priority";
+        renderVentures();
+      });
+
+      $("#venture-stage-filters")?.addEventListener("click", (event) => {
+        const button = event.target.closest("[data-venture-stage]");
+        if (!button) return;
+        state.ventureStageFilter = button.dataset.ventureStage || "all";
+        renderVentures();
+      });
+
+      $("#venture-tabs")?.addEventListener("click", (event) => {
+        const button = event.target.closest("[data-venture-tab]");
+        if (!button || button.disabled) return;
+        setVentureTab(button.dataset.ventureTab);
+      });
+
+      $("#venture-status")?.addEventListener("change", () => {
+        refreshVentureModalHeader();
+      });
 
 
       $("#event-filters").addEventListener(
@@ -13254,6 +13303,49 @@ const supabasePublishableKey =
           const workspaceToggle=event.target.closest("[data-workspace-toggle]"); if(workspaceToggle){try{await toggleWorkspaceTask(workspaceToggle.dataset.workspaceToggle);}catch(error){showToast(error.message,"error");}return;}
           const workspaceEdit=event.target.closest("[data-workspace-edit]"); if(workspaceEdit){openWorkspaceTask(workspaceEdit.dataset.workspaceEdit);return;}
           const workspaceDelete=event.target.closest("[data-workspace-delete]"); if(workspaceDelete){try{await deleteWorkspaceTask(workspaceDelete.dataset.workspaceDelete);showToast("Task deleted.");}catch(error){showToast(error.message,"error");}return;}
+
+
+          const ventureTaskToggle =
+            event.target.closest("[data-toggle-venture-task]");
+
+          if (ventureTaskToggle) {
+            try {
+              await toggleVentureTask(ventureTaskToggle.dataset.toggleVentureTask);
+            } catch (error) {
+              console.error(error);
+              showToast(error?.message || "Could not update task.", "error");
+            }
+            return;
+          }
+
+
+          const ventureTaskEdit =
+            event.target.closest("[data-edit-venture-task]");
+
+          if (ventureTaskEdit) {
+            setVentureTab("execution");
+            openVentureTaskEditor(ventureTaskEdit.dataset.editVentureTask);
+            return;
+          }
+
+
+          const ventureTaskAdd =
+            event.target.closest("[data-add-venture-task]");
+
+          if (ventureTaskAdd) {
+            openVentureModal(ventureTaskAdd.dataset.addVentureTask, "execution", true);
+            return;
+          }
+
+
+          const ventureMilestoneEdit =
+            event.target.closest("[data-edit-venture-milestone]");
+
+          if (ventureMilestoneEdit) {
+            setVentureTab("milestones");
+            openVentureMilestoneEditor(ventureMilestoneEdit.dataset.editVentureMilestone);
+            return;
+          }
 
 
           const evidenceButton =
@@ -13935,6 +14027,15 @@ const supabasePublishableKey =
         resetVentureTaskEditor();
       });
 
+      $("#delete-venture-task-button")?.addEventListener("click", async () => {
+        try {
+          await deleteVentureTask($("#venture-task-id").value);
+        } catch (error) {
+          console.error(error);
+          showToast(error?.message || "Could not delete task.", "error");
+        }
+      });
+
       $("#save-venture-task-button").addEventListener("click", async () => {
         const button = $("#save-venture-task-button");
         setButtonLoading(button, true, "Saving...", "Save Task");
@@ -13945,24 +14046,6 @@ const supabasePublishableKey =
           showToast(error?.message || "Could not save task.", "error");
         } finally {
           setButtonLoading(button, false, "Saving...", "Save Task");
-        }
-      });
-
-      $("#venture-tasks-list").addEventListener("click", async (event) => {
-        const edit = event.target.closest("[data-edit-venture-task]");
-        if (edit) {
-          openVentureTaskEditor(edit.dataset.editVentureTask);
-          return;
-        }
-
-        const toggle = event.target.closest("[data-toggle-venture-task]");
-        if (toggle) {
-          try {
-            await toggleVentureTask(toggle.dataset.toggleVentureTask);
-          } catch (error) {
-            console.error(error);
-            showToast(error?.message || "Could not update task.", "error");
-          }
         }
       });
 
@@ -13979,14 +14062,20 @@ const supabasePublishableKey =
         async (event) => {
           event.preventDefault();
           const button = $("#save-venture-button");
-          setButtonLoading(button, true, "Saving...", "Save Venture");
+          const normalText = $("#venture-record-id").value ? "Save Changes" : "Create Venture";
+          setButtonLoading(button, true, "Saving...", normalText);
           try {
             await saveVenture();
           } catch (error) {
             console.error(error);
             showToast(error?.message || "Could not save venture.", "error");
           } finally {
-            setButtonLoading(button, false, "Saving...", "Save Venture");
+            setButtonLoading(
+              button,
+              false,
+              "Saving...",
+              $("#venture-record-id").value ? "Save Changes" : "Create Venture"
+            );
           }
         }
       );
