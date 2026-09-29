@@ -11835,7 +11835,7 @@ const supabasePublishableKey =
               <p class="venture-focus-title">${escapeHtml(task.title)}</p>
               <div class="venture-focus-meta">${escapeHtml(venture?.name || "Venture")} · ${escapeHtml(taskTimeline(task))}${task.priority === "high" ? " · High priority" : ""}</div>
             </div>
-            ${venture ? `<button class="quiet-button" type="button" data-edit-venture="${escapeHtml(venture.id)}" data-venture-open-tab="execution">Open</button>` : ""}
+            ${venture ? `<button class="quiet-button" type="button" data-open-venture-workspace="${escapeHtml(venture.id)}" data-venture-open-section="venture-execution">Open</button>` : ""}
           </div>
         `;
       }
@@ -11900,7 +11900,7 @@ const supabasePublishableKey =
                   <p class="venture-focus-title">${escapeHtml(item.title)}</p>
                   <div class="venture-focus-meta">${escapeHtml(venture?.name || "Venture")}${item.milestone_date ? ` · ${escapeHtml(formatDate(item.milestone_date))}` : " · No date"}</div>
                 </div>
-                ${venture ? `<button class="quiet-button" type="button" data-edit-venture="${escapeHtml(venture.id)}" data-venture-open-tab="milestones">Open</button>` : ""}
+                ${venture ? `<button class="quiet-button" type="button" data-open-venture-workspace="${escapeHtml(venture.id)}" data-venture-open-section="venture-milestones">Open</button>` : ""}
               </div>
             `;
           }),
@@ -11911,7 +11911,7 @@ const supabasePublishableKey =
                 <p class="venture-focus-title">${escapeHtml(venture.next_milestone)}</p>
                 <div class="venture-focus-meta">${escapeHtml(venture.name)} · Current focus</div>
               </div>
-              <button class="quiet-button" type="button" data-edit-venture="${escapeHtml(venture.id)}" data-venture-open-tab="milestones">Open</button>
+              <button class="quiet-button" type="button" data-open-venture-workspace="${escapeHtml(venture.id)}" data-venture-open-section="venture-milestones">Open</button>
             </div>
           `)
         ].join("");
@@ -11993,8 +11993,9 @@ const supabasePublishableKey =
               ${item.last_update ? `<p class="row-description"><strong>Latest:</strong> ${escapeHtml(item.last_update)}</p>` : ""}
 
               <div class="venture-card-actions">
-                <button class="secondary-button" type="button" data-add-venture-task="${escapeHtml(item.id)}">+ Task</button>
-                <button class="primary-button" type="button" data-edit-venture="${escapeHtml(item.id)}">Open Workspace</button>
+                <button class="secondary-button" type="button" data-portfolio-add-task="${escapeHtml(item.id)}">+ Task</button>
+                <button class="secondary-button" type="button" data-edit-venture="${escapeHtml(item.id)}">Edit</button>
+                <button class="primary-button" type="button" data-open-venture-workspace="${escapeHtml(item.id)}">Open Workspace</button>
               </div>
             </article>
           `;
