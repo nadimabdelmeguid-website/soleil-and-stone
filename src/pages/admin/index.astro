@@ -124,6 +124,273 @@ const supabasePublishableKey =
 
 
       /* =====================================================
+         MULTI-VENTURE ADMIN SHELL
+         ===================================================== */
+
+      .admin-shell.portfolio-mode {
+        grid-template-columns: minmax(0, 1fr);
+      }
+
+      .admin-shell.portfolio-mode .sidebar {
+        display: none;
+      }
+
+      .admin-shell.portfolio-mode .main-inner {
+        width: min(100%, 1320px);
+      }
+
+      .portfolio-top-actions {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .portfolio-top-actions a {
+        text-decoration: none;
+      }
+
+      .sidebar-back {
+        width: 100%;
+        min-height: 40px;
+        margin-top: 22px;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        background: transparent;
+        color: rgba(255, 255, 255, 0.72);
+        padding: 0 12px;
+        text-align: left;
+        font-size: 10px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      .sidebar-back:hover {
+        color: white;
+        border-color: rgba(255, 255, 255, 0.28);
+      }
+
+      .sidebar-group-label {
+        padding: 18px 12px 7px;
+        color: rgba(255, 255, 255, 0.34);
+        font-size: 8px;
+        font-weight: 600;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+      }
+
+      .venture-context-hero {
+        margin-bottom: 20px;
+        padding: 22px;
+        border: 1px solid var(--border);
+        background:
+          linear-gradient(135deg, rgba(197, 160, 89, 0.10), transparent 44%),
+          white;
+      }
+
+      .venture-context-hero-head {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 18px;
+      }
+
+      .venture-context-name {
+        margin: 5px 0 7px;
+        font-family: "Cinzel", Georgia, serif;
+        font-size: 26px;
+        font-weight: 400;
+      }
+
+      .venture-context-description {
+        max-width: 760px;
+        margin: 0;
+        color: var(--slate);
+        font-size: 12px;
+        line-height: 1.7;
+      }
+
+      .venture-context-grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 12px;
+        margin: 18px 0 24px;
+      }
+
+      .venture-context-stat {
+        min-width: 0;
+        border: 1px solid var(--border);
+        background: white;
+        padding: 17px;
+      }
+
+      .venture-context-stat strong {
+        display: block;
+        font-family: "Cinzel", Georgia, serif;
+        font-size: 25px;
+        font-weight: 400;
+        color: var(--gold);
+      }
+
+      .venture-context-stat span {
+        display: block;
+        margin-top: 5px;
+        color: var(--slate);
+        font-size: 9px;
+        font-weight: 600;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+      }
+
+      .venture-module-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 12px;
+      }
+
+      .venture-module-card {
+        min-width: 0;
+        min-height: 150px;
+        border: 1px solid var(--border);
+        background: white;
+        padding: 17px;
+        display: flex;
+        flex-direction: column;
+        text-align: left;
+        color: var(--charcoal);
+        transition: border-color 150ms ease, transform 150ms ease;
+      }
+
+      button.venture-module-card {
+        cursor: pointer;
+      }
+
+      .venture-module-card:hover {
+        border-color: var(--gold);
+        transform: translateY(-1px);
+      }
+
+      .venture-module-count {
+        margin-top: auto;
+        padding-top: 18px;
+        color: var(--gold);
+        font-family: "Cinzel", Georgia, serif;
+        font-size: 24px;
+      }
+
+      .venture-module-title {
+        margin: 6px 0 0;
+        font-family: "Cinzel", Georgia, serif;
+        font-size: 16px;
+        font-weight: 400;
+      }
+
+      .venture-module-copy {
+        margin: 6px 0 0;
+        color: var(--slate);
+        font-size: 10px;
+        line-height: 1.55;
+      }
+
+      .venture-workspace-item-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+      }
+
+      .venture-workspace-item {
+        border: 1px solid var(--border);
+        background: white;
+        padding: 17px;
+        min-width: 0;
+      }
+
+      .venture-workspace-item-header {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        align-items: flex-start;
+      }
+
+      .venture-workspace-item-title {
+        margin: 0;
+        font-family: "Cinzel", Georgia, serif;
+        font-size: 16px;
+        font-weight: 400;
+      }
+
+      .venture-workspace-item-summary {
+        margin: 10px 0 0;
+        color: var(--slate);
+        font-size: 11px;
+        line-height: 1.6;
+      }
+
+      .venture-workspace-item-notes {
+        margin: 10px 0 0;
+        padding-top: 10px;
+        border-top: 1px solid var(--border);
+        color: var(--slate);
+        font-size: 10px;
+        line-height: 1.6;
+      }
+
+      .venture-context-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .venture-context-task-list,
+      .venture-context-milestone-list {
+        display: grid;
+        gap: 8px;
+      }
+
+      .portfolio-venture-card {
+        cursor: pointer;
+      }
+
+      @media (max-width: 900px) {
+        .venture-context-grid {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .venture-module-grid {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .admin-shell.portfolio-mode .mobile-menu-button {
+          display: none !important;
+        }
+      }
+
+      @media (max-width: 640px) {
+        .portfolio-top-actions {
+          width: 100%;
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+        }
+
+        .venture-context-hero-head {
+          flex-direction: column;
+        }
+
+        .venture-context-grid,
+        .venture-module-grid,
+        .venture-workspace-item-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .venture-context-actions {
+          width: 100%;
+        }
+
+        .venture-context-actions > * {
+          flex: 1;
+        }
+      }
+
+
+      /* =====================================================
          VENTURES COMMAND CENTER
          ===================================================== */
 
@@ -2791,20 +3058,27 @@ const supabasePublishableKey =
           <a
             class="admin-brand"
             href="/admin/"
+            aria-label="Return to portfolio dashboard"
           >
-            <div class="admin-brand-name">
+            <div id="sidebar-venture-name" class="admin-brand-name">
               SOLEIL & STONE
             </div>
 
-            <div class="admin-brand-subtitle">
-              Content Manager
+            <div id="sidebar-venture-subtitle" class="admin-brand-subtitle">
+              Venture Workspace
             </div>
           </a>
 
-          <nav class="sidebar-nav">
-            <button class="nav-button active" type="button" data-section="my-dashboard">
-              <span>My Dashboard</span><span id="nav-workspace-count" class="nav-count">0</span>
+          <button id="back-to-portfolio" class="sidebar-back" type="button">
+            ← All Ventures
+          </button>
+
+          <nav id="website-sidebar-nav" class="sidebar-nav">
+            <div class="sidebar-group-label">Soleil & Stone</div>
+            <button class="nav-button" type="button" data-section="venture-home">
+              <span>Venture Dashboard</span>
             </button>
+            <div class="sidebar-group-label">Website & Content</div>
             <button
               class="nav-button"
               type="button"
@@ -2910,20 +3184,24 @@ const supabasePublishableKey =
               <span id="nav-people-count" class="nav-count">0</span>
             </button>
 
-            <button
-              class="nav-button"
-              type="button"
-              data-section="ventures"
-            >
-              <span>Ventures</span>
-              <span id="nav-ventures-count" class="nav-count">0</span>
-            </button>
-
             <button class="nav-button" type="button" data-section="evidence">
               <span>Evidence</span>
               <span id="nav-evidence-count" class="nav-count">0</span>
             </button>
+
+            <div class="sidebar-group-label">Venture Management</div>
+            <button class="nav-button" type="button" data-section="venture-execution">
+              <span>Execution</span>
+            </button>
+            <button class="nav-button" type="button" data-section="venture-milestones">
+              <span>Milestones</span>
+            </button>
+            <button class="nav-button" type="button" data-section="venture-notes">
+              <span>Private Notes</span>
+            </button>
           </nav>
+
+          <nav id="venture-sidebar-nav" class="sidebar-nav hidden"></nav>
 
           <div class="sidebar-footer">
             <div
@@ -2983,8 +3261,13 @@ const supabasePublishableKey =
                 </p>
               </div>
 
-              <div class="sync-note">
+              <div id="sync-note" class="sync-note">
                 The CMS is now the public site's source of truth. Published changes rebuild automatically and usually appear on the website within about 15 minutes. Scheduled content becomes public automatically after its publication time.
+              </div>
+
+              <div id="portfolio-top-actions" class="portfolio-top-actions hidden">
+                <a class="secondary-button" href="/">View Website ↗</a>
+                <button id="portfolio-signout-button" class="secondary-button" type="button">Sign Out</button>
               </div>
             </div>
 
@@ -2993,7 +3276,7 @@ const supabasePublishableKey =
                  DASHBOARD
                  ============================================= -->
 
-            <section id="section-my-dashboard" class="admin-section" data-admin-section="my-dashboard">
+            <section id="section-my-dashboard" class="admin-section hidden" data-admin-section="my-dashboard">
               <div class="panel">
                 <div class="panel-header"><div><h2 class="panel-title">Quick Add</h2><p class="panel-copy">Private workspace only. Seltech, CASA and Personal are excluded.</p></div><button id="manage-workspace-areas" class="secondary-button" type="button">+ Area</button></div>
                 <form id="workspace-quick-add" class="mydash-add">
@@ -3764,7 +4047,7 @@ const supabasePublishableKey =
 
             <section
               id="section-ventures"
-              class="admin-section hidden"
+              class="admin-section"
               data-admin-section="ventures"
             >
               <div class="ventures-hero">
