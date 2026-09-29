@@ -3200,6 +3200,42 @@ const supabasePublishableKey =
                 </div>
               </div>
 
+              <div id="ventures-dashboard" style="margin-bottom: 28px;">
+                <div id="ventures-dashboard-stats" class="stats-grid"></div>
+
+                <div class="dashboard-grid" style="margin-top: 20px;">
+                  <div class="panel">
+                    <div class="panel-header">
+                      <div>
+                        <p class="eyebrow">Attention</p>
+                        <h2 class="panel-title">Overdue Tasks</h2>
+                      </div>
+                    </div>
+                    <div id="ventures-overdue-list" class="content-list"></div>
+                  </div>
+
+                  <div class="panel">
+                    <div class="panel-header">
+                      <div>
+                        <p class="eyebrow">Timeline</p>
+                        <h2 class="panel-title">Upcoming Tasks</h2>
+                      </div>
+                    </div>
+                    <div id="ventures-upcoming-list" class="content-list"></div>
+                  </div>
+                </div>
+
+                <div class="panel" style="margin-top: 20px;">
+                  <div class="panel-header">
+                    <div>
+                      <p class="eyebrow">Focus</p>
+                      <h2 class="panel-title">Next Milestones</h2>
+                    </div>
+                  </div>
+                  <div id="ventures-milestones-list" class="content-list"></div>
+                </div>
+              </div>
+
               <div id="ventures-list" class="content-list"></div>
 
               <div id="ventures-preview" class="panel hidden" style="margin-top: 24px;">
@@ -10071,7 +10107,98 @@ const supabasePublishableKey =
       }
 
 
+      function localDateKey(date = new Date()) {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, "0");
+        const day = String(date.getDate()).padStart(2, "0");
+        return `${year}-${month}-${day}`;
+      }
+
+
+      function renderVenturesDashboard() {
+        const stats = $("#ventures-dashboard-stats");
+        const overdueList = $("#ventures-overdue-list");
+        const upcomingList = $("#ventures-upcoming-list");
+        const milestonesList = $("#ventures-milestones-list");
+        if (!stats || !overdueList || !upcomingList || !milestonesList) return;
+
+        const activeVentures = state.ventures.filter((venture) =>
+          !["paused", "archived"].includes(venture.venture_status)
+        );
+        const openTasks = state.ventureTasks.filter((task) => !task.is_done);
+        const doneTasks = state.ventureTasks.filter((task) => task.is_done);
+        const today = localDateKey();
+        const overdue = openTasks
+          .filter((task) => task.due_date && task.due_date < today)
+          .sort((a, b) => a.due_date.localeCompare(b.due_date));
+        const upcoming = openTasks
+          .filter((task) => task.due_date && task.due_date >= today)
+          .sort((a, b) => a.due_date.localeCompare(b.due_date))
+          .slice(0, 8);
+        const totalTasks = state.ventureTasks.length;
+        const completion = totalTasks ? Math.round((doneTasks.length / totalTasks) * 100) : 0;
+
+        const statusSummary = ["idea", "validation", "building", "pilot", "active"]
+          .map((status) => {
+            const count = state.ventures.filter((venture) => venture.venture_status === status).length;
+            return count ? `${count} ${ventureStatusLabel(status)}` : "";
+          })
+          .filter(Boolean)
+          .join(" · ");
+
+        stats.innerHTML = `
+          <div class="stat-card"><span class="stat-label">Active Ventures</span><strong class="stat-value">${activeVentures.length}</strong><span class="stat-meta">${escapeHtml(statusSummary || "No active ventures")}</span></div>
+          <div class="stat-card"><span class="stat-label">Open Tasks</span><strong class="stat-value">${openTasks.length}</strong><span class="stat-meta">${doneTasks.length} completed</span></div>
+          <div class="stat-card"><span class="stat-label">Task Progress</span><strong class="stat-value">${completion}%</strong><span class="stat-meta">${doneTasks.length} of ${totalTasks}</span></div>
+          <div class="stat-card"><span class="stat-label">Overdue</span><strong class="stat-value">${overdue.length}</strong><span class="stat-meta">${overdue.length ? "Needs attention" : "Nothing overdue"}</span></div>
+        `;
+
+        const taskRow = (task) => {
+          const venture = state.ventures.find((item) => String(item.id) === String(task.venture_id));
+          return `
+            <div class="content-row">
+              <div>
+                <h3 class="row-title">${escapeHtml(task.title)}</h3>
+                <div class="row-meta">
+                  <span>${escapeHtml(venture?.name || "Venture")}</span>
+                  <span>•</span>
+                  <span>${escapeHtml(taskTimeline(task))}</span>
+                </div>
+              </div>
+              ${venture ? `<button class="secondary-button" type="button" data-edit-venture="${escapeHtml(venture.id)}">Open</button>` : ""}
+            </div>
+          `;
+        };
+
+        overdueList.innerHTML = overdue.length
+          ? overdue.slice(0, 8).map(taskRow).join("")
+          : `<div class="empty-state"><strong>All clear</strong>No overdue venture tasks.</div>`;
+
+        upcomingList.innerHTML = upcoming.length
+          ? upcoming.map(taskRow).join("")
+          : `<div class="empty-state"><strong>No upcoming deadlines</strong>Add due dates to venture tasks to populate this view.</div>`;
+
+        const milestones = activeVentures
+          .filter((venture) => venture.next_milestone)
+          .sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0));
+
+        milestonesList.innerHTML = milestones.length
+          ? milestones.map((venture) => `
+              <div class="content-row">
+                <div>
+                  <h3 class="row-title">${escapeHtml(venture.name)}</h3>
+                  <div class="row-meta"><span class="status-pill ${escapeHtml(venture.venture_status)}">${escapeHtml(ventureStatusLabel(venture.venture_status))}</span></div>
+                  <p class="row-description">${escapeHtml(venture.next_milestone)}</p>
+                </div>
+                <button class="secondary-button" type="button" data-edit-venture="${escapeHtml(venture.id)}">Open</button>
+              </div>
+            `).join("")
+          : `<div class="empty-state"><strong>No milestones yet</strong>Add a next milestone to a venture to keep the current focus visible here.</div>`;
+      }
+
+
       function renderVentures() {
+        renderVenturesDashboard();
         const container = $("#ventures-list");
         if (!container) return;
         const items = filteredVentures();
