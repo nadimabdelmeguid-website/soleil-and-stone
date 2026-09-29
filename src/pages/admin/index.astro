@@ -2181,7 +2181,7 @@ const supabasePublishableKey =
 
 
 
-    <script type="module" src="/admin-auth.js"></script>
+    <script src="/admin-auth.js" defer></script>
 
     <!-- =====================================================
          ADMIN APP
@@ -3274,7 +3274,7 @@ const supabasePublishableKey =
 
     <div
       id="event-modal"
-      class="modal-backdrop hidden"
+      class="modal-backdrop hidden" hidden
       role="dialog"
       aria-modal="true"
       aria-labelledby="event-modal-title"
@@ -3972,7 +3972,7 @@ const supabasePublishableKey =
 
     <div
       id="field-note-modal"
-      class="modal-backdrop hidden"
+      class="modal-backdrop hidden" hidden
       role="dialog"
       aria-modal="true"
       aria-labelledby="field-note-modal-title"
@@ -4278,7 +4278,7 @@ const supabasePublishableKey =
 
     <div
       id="recap-modal"
-      class="modal-backdrop hidden"
+      class="modal-backdrop hidden" hidden
       role="dialog"
       aria-modal="true"
       aria-labelledby="recap-modal-title"
@@ -4627,7 +4627,7 @@ const supabasePublishableKey =
          COMMUNITY MODAL
          ===================================================== -->
 
-    <div id="community-modal" class="modal-backdrop hidden" role="dialog" aria-modal="true">
+    <div id="community-modal" class="modal-backdrop hidden" hidden role="dialog" aria-modal="true">
       <form id="community-form" class="modal">
         <div class="modal-header">
           <div><p class="eyebrow">Community Editor</p><h2 id="community-modal-title" class="modal-title">New Community</h2></div>
@@ -4682,7 +4682,7 @@ const supabasePublishableKey =
          ORGANIZATION MODAL
          ===================================================== -->
 
-    <div id="organization-modal" class="modal-backdrop hidden" role="dialog" aria-modal="true">
+    <div id="organization-modal" class="modal-backdrop hidden" hidden role="dialog" aria-modal="true">
       <form id="organization-form" class="modal">
         <div class="modal-header"><div><p class="eyebrow">Organization Editor</p><h2 id="organization-modal-title" class="modal-title">New Organization</h2></div><button class="quiet-button" type="button" data-close-modal="organization">Close</button></div>
         <div class="modal-body">
@@ -4705,7 +4705,7 @@ const supabasePublishableKey =
          PERSON MODAL
          ===================================================== -->
 
-    <div id="person-modal" class="modal-backdrop hidden" role="dialog" aria-modal="true">
+    <div id="person-modal" class="modal-backdrop hidden" hidden role="dialog" aria-modal="true">
       <form id="person-form" class="modal">
         <div class="modal-header"><div><p class="eyebrow">Speaker Editor</p><h2 id="person-modal-title" class="modal-title">New Speaker</h2></div><button class="quiet-button" type="button" data-close-modal="person">Close</button></div>
         <div class="modal-body">
@@ -4732,7 +4732,7 @@ const supabasePublishableKey =
          VENTURE MODAL — ADMIN ONLY
          ===================================================== -->
 
-    <div id="venture-modal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="venture-modal-title">
+    <div id="venture-modal" class="modal-backdrop hidden" hidden role="dialog" aria-modal="true" aria-labelledby="venture-modal-title">
       <form id="venture-form" class="modal">
         <div class="modal-header">
           <div><p class="eyebrow">Venture Editor</p><h2 id="venture-modal-title" class="modal-title">New Venture</h2></div>
@@ -4805,7 +4805,7 @@ const supabasePublishableKey =
 
 
 
-    <div id="workspace-task-modal" class="modal-backdrop hidden" role="dialog" aria-modal="true">
+    <div id="workspace-task-modal" class="modal-backdrop hidden" hidden role="dialog" aria-modal="true">
       <form id="workspace-task-form" class="modal">
         <div class="modal-header"><div><p class="eyebrow">My Dashboard</p><h2 class="modal-title">Edit Task</h2></div><button class="quiet-button" type="button" data-close-modal="workspace-task">Close</button></div>
         <div class="modal-body"><input id="workspace-task-id" type="hidden" /><div class="form-grid">
@@ -4821,7 +4821,7 @@ const supabasePublishableKey =
       </form>
     </div>
 
-    <div id="workspace-area-modal" class="modal-backdrop hidden" role="dialog" aria-modal="true">
+    <div id="workspace-area-modal" class="modal-backdrop hidden" hidden role="dialog" aria-modal="true">
       <form id="workspace-area-form" class="modal">
         <div class="modal-header"><div><p class="eyebrow">My Workspace</p><h2 class="modal-title">Add Area</h2></div><button class="quiet-button" type="button" data-close-modal="workspace-area">Close</button></div>
         <div class="modal-body"><label class="label" for="workspace-area-name">Area name</label><input id="workspace-area-name" class="input" required placeholder="e.g. Career Transition" /><p class="field-help">Seltech, CASA and Personal cannot be added here.</p></div>
@@ -4829,7 +4829,7 @@ const supabasePublishableKey =
       </form>
     </div>
 
-    <div id="evidence-modal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="evidence-modal-title">
+    <div id="evidence-modal" class="modal-backdrop hidden" hidden role="dialog" aria-modal="true" aria-labelledby="evidence-modal-title">
       <form id="evidence-form" class="modal">
         <div class="modal-header"><div><p class="eyebrow">Evidence Archive</p><h2 id="evidence-modal-title" class="modal-title">Add Evidence</h2></div><button class="quiet-button" type="button" data-close-modal="evidence">Close</button></div>
         <div class="modal-body">
@@ -5990,7 +5990,7 @@ const supabasePublishableKey =
         const {error}=await supabase.from("workspace_tasks").delete().eq("id",id);if(error)throw error;await loadWorkspaceTasks();
       }
       function openWorkspaceTask(id){
-        const t=state.workspaceTasks.find((x)=>x.id===id);if(!t)return;refreshWorkspaceSelectors();$("#workspace-task-id").value=t.id;$("#workspace-edit-title").value=t.title;$("#workspace-edit-area").value=t.area_id;$("#workspace-edit-project").value=t.project||"";$("#workspace-edit-due").value=t.due_date||"";$("#workspace-edit-priority").value=t.priority;$("#workspace-edit-status").value=t.status;$("#workspace-edit-notes").value=t.notes||"";$("#workspace-task-modal").classList.remove("hidden");document.body.style.overflow="hidden";
+        const t=state.workspaceTasks.find((x)=>x.id===id);if(!t)return;refreshWorkspaceSelectors();$("#workspace-task-id").value=t.id;$("#workspace-edit-title").value=t.title;$("#workspace-edit-area").value=t.area_id;$("#workspace-edit-project").value=t.project||"";$("#workspace-edit-due").value=t.due_date||"";$("#workspace-edit-priority").value=t.priority;$("#workspace-edit-status").value=t.status;$("#workspace-edit-notes").value=t.notes||"";$("#workspace-task-modal").removeAttribute("hidden");$("#workspace-task-modal").classList.remove("hidden");document.body.style.overflow="hidden";
       }
 
       async function loadAllContent() {
@@ -8426,7 +8426,7 @@ const supabasePublishableKey =
         syncEventConditionalFields();
         refreshEventRepeaterMediaSelectors();
 
-        $("#event-modal")
+        $("#event-modal").removeAttribute("hidden");$("#event-modal")
           .classList.remove("hidden");
 
         document.body.style.overflow =
@@ -8926,7 +8926,7 @@ const supabasePublishableKey =
         renderFieldNotePictureUploaders();
         updateFieldNoteSeoCounters();
 
-        $("#field-note-modal").classList.remove("hidden");
+        $("#field-note-modal").removeAttribute("hidden");$("#field-note-modal").classList.remove("hidden");
         document.body.style.overflow = "hidden";
 
       }
@@ -9356,7 +9356,7 @@ const supabasePublishableKey =
         renderRecapPictureUploaders();
         updateRecapSeoCounters();
 
-        $("#recap-modal").classList.remove("hidden");
+        $("#recap-modal").removeAttribute("hidden");$("#recap-modal").classList.remove("hidden");
         document.body.style.overflow = "hidden";
 
       }
@@ -10172,7 +10172,7 @@ const supabasePublishableKey =
           const item = state.evidence.find((entry) => String(entry.id) === String(id)); if (!item) return;
           $("#evidence-record-id").value=item.id; $("#evidence-modal-title").textContent="Edit Evidence"; $("#evidence-title").value=item.title||""; $("#evidence-type").value=item.evidence_type||"other"; $("#evidence-status").value=item.status||"verified"; $("#evidence-content-type").value=item.content_type||"general"; $("#evidence-content-id").value=item.content_id||""; $("#evidence-date").value=item.evidence_date||""; $("#evidence-url").value=item.source_url||""; $("#evidence-storage-path").value=item.storage_path||""; $("#evidence-notes").value=item.notes||"";
         }
-        $("#evidence-modal").classList.remove("hidden"); document.body.style.overflow="hidden";
+        $("#evidence-modal").removeAttribute("hidden");$("#evidence-modal").classList.remove("hidden"); document.body.style.overflow="hidden";
       }
 
       async function saveEvidence() {
@@ -10557,7 +10557,7 @@ const supabasePublishableKey =
         $("#venture-task-editor").classList.add("hidden");
         if (id) renderVentureTasks();
 
-        $("#venture-modal").classList.remove("hidden");
+        $("#venture-modal").removeAttribute("hidden");$("#venture-modal").classList.remove("hidden");
         document.body.style.overflow = "hidden";
       }
 
@@ -10626,7 +10626,7 @@ const supabasePublishableKey =
           $("#community-status").value = item.status || "published";
           $("#community-sort-order").value = item.sort_order ?? 0;
         }
-        $("#community-modal").classList.remove("hidden");
+        $("#community-modal").removeAttribute("hidden");$("#community-modal").classList.remove("hidden");
         document.body.style.overflow = "hidden";
       }
 
@@ -10685,7 +10685,7 @@ const supabasePublishableKey =
           $("#organization-logo-media").value = item.logo_media_id || "";
           $("#organization-status").value = item.status || "active";
         }
-        $("#organization-modal").classList.remove("hidden");
+        $("#organization-modal").removeAttribute("hidden");$("#organization-modal").classList.remove("hidden");
         document.body.style.overflow = "hidden";
       }
 
@@ -10738,7 +10738,7 @@ const supabasePublishableKey =
           $("#person-photo-media").value = item.photo_media_id || "";
           $("#person-status").value = item.status || "active";
         }
-        $("#person-modal").classList.remove("hidden");
+        $("#person-modal").removeAttribute("hidden");$("#person-modal").classList.remove("hidden");
         document.body.style.overflow = "hidden";
       }
 
@@ -11229,6 +11229,7 @@ const supabasePublishableKey =
 
 
         modal?.classList.add("hidden");
+        modal?.setAttribute("hidden", "");
         document.body.style.overflow = "";
 
       }
@@ -11881,7 +11882,7 @@ const supabasePublishableKey =
 
 
       $("#workspace-quick-add").addEventListener("submit",async(event)=>{event.preventDefault();try{await createWorkspaceTask($("#workspace-task-title").value.trim(),$("#workspace-task-area").value,$("#workspace-task-due").value);event.target.reset();refreshWorkspaceSelectors();showToast("Task added.");}catch(error){showToast(error?.message||"Could not add task.","error");}});
-      $("#manage-workspace-areas").addEventListener("click",()=>{$("#workspace-area-form").reset();$("#workspace-area-modal").classList.remove("hidden");document.body.style.overflow="hidden";});
+      $("#manage-workspace-areas").addEventListener("click",()=>{$("#workspace-area-form").reset();$("#workspace-area-modal").removeAttribute("hidden");$("#workspace-area-modal").classList.remove("hidden");document.body.style.overflow="hidden";});
       $("#workspace-area-form").addEventListener("submit",async(event)=>{event.preventDefault();const name=$("#workspace-area-name").value.trim();const slug=slugify(name);if(forbiddenWorkspaceSlugs.has(slug)){showToast("This area is intentionally excluded from My Dashboard.","error");return;}const {error}=await supabase.from("workspace_areas").insert({name,slug});if(error){showToast(error.message,"error");return;}closeModal("workspace-area");await loadWorkspaceAreas();showToast("Area added.");});
       $("#workspace-task-form").addEventListener("submit",async(event)=>{event.preventDefault();const id=$("#workspace-task-id").value;const payload={title:$("#workspace-edit-title").value.trim(),area_id:$("#workspace-edit-area").value,project:$("#workspace-edit-project").value.trim()||null,due_date:$("#workspace-edit-due").value||null,priority:$("#workspace-edit-priority").value,status:$("#workspace-edit-status").value,notes:$("#workspace-edit-notes").value.trim()||null};const {error}=await supabase.from("workspace_tasks").update(payload).eq("id",id);if(error){showToast(error.message,"error");return;}closeModal("workspace-task");await loadWorkspaceTasks();showToast("Task updated.");});
       $("#workspace-delete-task").addEventListener("click",async()=>{const id=$("#workspace-task-id").value;if(!id)return;await deleteWorkspaceTask(id);closeModal("workspace-task");showToast("Task deleted.");});
