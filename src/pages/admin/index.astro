@@ -4150,6 +4150,49 @@ const supabasePublishableKey =
               </div>
             </section>
 
+            <!-- =============================================
+                 VENTURE-SPECIFIC WORKSPACE
+                 ============================================= -->
+
+            <section id="section-venture-home" class="admin-section hidden" data-admin-section="venture-home">
+              <div id="venture-context-dashboard"></div>
+            </section>
+
+            <section id="section-venture-module" class="admin-section hidden" data-admin-section="venture-module">
+              <div class="toolbar">
+                <div class="toolbar-left">
+                  <p id="venture-module-description" class="panel-copy"></p>
+                </div>
+                <button id="add-venture-workspace-item-button" class="primary-button" type="button">+ Add Item</button>
+              </div>
+              <div id="venture-module-items" class="venture-workspace-item-grid"></div>
+            </section>
+
+            <section id="section-venture-execution" class="admin-section hidden" data-admin-section="venture-execution">
+              <div class="toolbar">
+                <div class="toolbar-left">
+                  <p class="panel-copy">Tasks and deadlines for the selected venture only.</p>
+                </div>
+                <button id="venture-context-add-task" class="primary-button" type="button">+ Task</button>
+              </div>
+              <div id="venture-context-task-summary" class="stats-grid"></div>
+              <div id="venture-context-task-list" class="venture-context-task-list"></div>
+            </section>
+
+            <section id="section-venture-milestones" class="admin-section hidden" data-admin-section="venture-milestones">
+              <div class="toolbar">
+                <div class="toolbar-left">
+                  <p class="panel-copy">Key outcomes and checkpoints for the selected venture.</p>
+                </div>
+                <button id="venture-context-add-milestone" class="primary-button" type="button">+ Milestone</button>
+              </div>
+              <div id="venture-context-milestone-list" class="venture-context-milestone-list"></div>
+            </section>
+
+            <section id="section-venture-notes" class="admin-section hidden" data-admin-section="venture-notes">
+              <div id="venture-context-notes-panel"></div>
+            </section>
+
             <section id="section-evidence" class="admin-section hidden" data-admin-section="evidence">
               <div class="toolbar">
                 <div class="toolbar-left"><input id="evidence-search" class="input search-input" type="search" placeholder="Search evidence..." />
@@ -5820,6 +5863,77 @@ const supabasePublishableKey =
           <div class="modal-footer-right">
             <button class="secondary-button" type="button" data-close-modal="venture">Cancel</button>
             <button id="save-venture-button" class="primary-button" type="submit">Save Venture</button>
+          </div>
+        </div>
+      </form>
+    </div>
+
+
+    <div id="venture-workspace-item-modal" class="modal-backdrop hidden" hidden role="dialog" aria-modal="true" aria-labelledby="venture-workspace-item-modal-title">
+      <form id="venture-workspace-item-form" class="modal">
+        <div class="modal-header">
+          <div>
+            <p class="eyebrow">Venture Module</p>
+            <h2 id="venture-workspace-item-modal-title" class="modal-title">Add Item</h2>
+          </div>
+          <button class="quiet-button" type="button" data-close-modal="venture-workspace-item">Close</button>
+        </div>
+        <div class="modal-body">
+          <input id="venture-workspace-item-id" type="hidden" />
+          <div class="form-grid">
+            <div class="form-field full">
+              <label class="label" for="venture-workspace-item-title">Title</label>
+              <input id="venture-workspace-item-title" class="input" required />
+            </div>
+            <div class="form-field">
+              <label class="label" for="venture-workspace-item-type">Type</label>
+              <select id="venture-workspace-item-type" class="select">
+                <option value="note">Note</option>
+                <option value="company">Company</option>
+                <option value="brand">Brand</option>
+                <option value="integration">Integration</option>
+                <option value="product">Product</option>
+                <option value="market">Market</option>
+                <option value="regulatory">Regulatory</option>
+                <option value="target">Target</option>
+                <option value="metric">Metric</option>
+                <option value="resource">Resource</option>
+              </select>
+            </div>
+            <div class="form-field">
+              <label class="label" for="venture-workspace-item-status">Status</label>
+              <select id="venture-workspace-item-status" class="select">
+                <option value="active">Active</option>
+                <option value="planned">Planned</option>
+                <option value="pending">Pending</option>
+                <option value="completed">Completed</option>
+                <option value="paused">Paused</option>
+                <option value="archived">Archived</option>
+              </select>
+            </div>
+            <div class="form-field full">
+              <label class="label" for="venture-workspace-item-summary">Summary</label>
+              <textarea id="venture-workspace-item-summary" class="textarea"></textarea>
+            </div>
+            <div class="form-field full">
+              <label class="label" for="venture-workspace-item-notes">Notes</label>
+              <textarea id="venture-workspace-item-notes" class="textarea"></textarea>
+            </div>
+            <div class="form-field">
+              <label class="label" for="venture-workspace-item-url">URL</label>
+              <input id="venture-workspace-item-url" class="input" type="url" />
+            </div>
+            <div class="form-field">
+              <label class="label" for="venture-workspace-item-order">Order</label>
+              <input id="venture-workspace-item-order" class="input" type="number" value="0" />
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button id="delete-venture-workspace-item" class="danger-button hidden" type="button">Delete</button>
+          <div class="modal-footer-right">
+            <button class="secondary-button" type="button" data-close-modal="venture-workspace-item">Cancel</button>
+            <button id="save-venture-workspace-item" class="primary-button" type="submit">Save Item</button>
           </div>
         </div>
       </form>
