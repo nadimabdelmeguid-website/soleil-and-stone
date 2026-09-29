@@ -4701,6 +4701,43 @@ const supabasePublishableKey =
               </div>
             </div>
           </div>
+
+          <div id="venture-tasks-section" class="form-section hidden">
+            <div class="form-section-header">
+              <div>
+                <h3 class="form-section-title">Tasks & Timeline</h3>
+                <p class="form-section-copy">Track the execution plan for this venture. Save the venture first, then add tasks.</p>
+              </div>
+              <button id="add-venture-task-button" class="secondary-button" type="button">+ Add Task</button>
+            </div>
+            <div class="form-section-body">
+              <div id="venture-task-progress" class="panel-copy" style="margin-bottom: 16px;"></div>
+              <div id="venture-tasks-list" class="content-list"></div>
+            </div>
+          </div>
+
+          <div id="venture-task-editor" class="form-section hidden">
+            <div class="form-section-header">
+              <h3 class="form-section-title">Task</h3>
+            </div>
+            <div class="form-section-body">
+              <input id="venture-task-id" type="hidden" />
+              <div class="form-grid">
+                <div class="form-field full"><label class="label" for="venture-task-title">Task</label><input id="venture-task-title" class="input" type="text" /></div>
+                <div class="form-field"><label class="label" for="venture-task-start">Start date</label><input id="venture-task-start" class="input" type="date" /></div>
+                <div class="form-field"><label class="label" for="venture-task-due">Due date</label><input id="venture-task-due" class="input" type="date" /></div>
+                <div class="form-field full"><label class="label" for="venture-task-description">Notes</label><textarea id="venture-task-description" class="textarea"></textarea></div>
+                <div class="form-field"><label class="label" for="venture-task-order">Order</label><input id="venture-task-order" class="input" type="number" value="0" /></div>
+                <div class="form-field"><label class="label" for="venture-task-done">Status</label><select id="venture-task-done" class="select"><option value="false">Not yet</option><option value="true">Done</option></select></div>
+              </div>
+              <div class="row-actions" style="margin-top: 16px;">
+                <button id="cancel-venture-task-button" class="secondary-button" type="button">Cancel</button>
+                <button id="save-venture-task-button" class="primary-button" type="button">Save Task</button>
+              </div>
+            </div>
+          </div>
+            </div>
+          </div>
         </div>
         <div class="modal-footer"><span>Admin only · not published</span><div class="modal-footer-right"><button class="secondary-button" type="button" data-close-modal="venture">Cancel</button><button id="save-venture-button" class="primary-button" type="submit">Save Venture</button></div></div>
       </form>
@@ -4776,6 +4813,9 @@ const supabasePublishableKey =
           [],
 
         ventures:
+          [],
+
+        ventureTasks:
           [],
 
         eventSpeakers:
@@ -5791,6 +5831,7 @@ const supabasePublishableKey =
             loadOrganizations(),
             loadPeople(),
             loadVentures(),
+            loadVentureTasks(),
             loadEventSpeakers(),
             loadEventSponsors(),
             loadFeaturedContent()
@@ -9869,6 +9910,144 @@ const supabasePublishableKey =
       }
 
 
+      async function loadVentureTasks() {
+        const { data, error } = await supabase
+          .from("venture_tasks")
+          .select("*")
+          .order("sort_order", { ascending: true })
+          .order("due_date", { ascending: true });
+
+        if (error) {
+          showToast(`Could not load venture tasks: ${error.message}`, "error");
+          return;
+        }
+
+        state.ventureTasks = data || [];
+        renderVentureTasks();
+        renderVentures();
+      }
+
+
+      function tasksForVenture(ventureId) {
+        return state.ventureTasks.filter((task) => String(task.venture_id) === String(ventureId));
+      }
+
+
+      function taskTimeline(task) {
+        if (task.start_date && task.due_date) return `${formatDate(task.start_date)} → ${formatDate(task.due_date)}`;
+        if (task.due_date) return `Due ${formatDate(task.due_date)}`;
+        if (task.start_date) return `Starts ${formatDate(task.start_date)}`;
+        return "No timeline";
+      }
+
+
+      function renderVentureTasks() {
+        const container = $("#venture-tasks-list");
+        const ventureId = $("#venture-record-id")?.value;
+        if (!container || !ventureId) return;
+
+        const tasks = tasksForVenture(ventureId);
+        const done = tasks.filter((task) => task.is_done).length;
+        $("#venture-task-progress").textContent = tasks.length
+          ? `${done} of ${tasks.length} tasks completed · ${Math.round((done / tasks.length) * 100)}%`
+          : "No tasks yet.";
+
+        container.innerHTML = tasks.length
+          ? tasks.map((task) => `
+              <div class="content-row">
+                <div>
+                  <h4 class="row-title">${task.is_done ? "✓ " : ""}${escapeHtml(task.title)}</h4>
+                  <div class="row-meta">
+                    <span class="status-pill ${task.is_done ? "published" : "draft"}">${task.is_done ? "Done" : "Not yet"}</span>
+                    <span>•</span><span>${escapeHtml(taskTimeline(task))}</span>
+                  </div>
+                  ${task.description ? `<p class="row-description">${escapeHtml(task.description)}</p>` : ""}
+                </div>
+                <div class="row-actions">
+                  <button class="secondary-button" type="button" data-toggle-venture-task="${escapeHtml(task.id)}">${task.is_done ? "Mark not done" : "Mark done"}</button>
+                  <button class="secondary-button" type="button" data-edit-venture-task="${escapeHtml(task.id)}">Edit</button>
+                </div>
+              </div>
+            `).join("")
+          : `<div class="empty-state"><strong>No tasks yet</strong>Add the first task for this venture.</div>`;
+      }
+
+
+      function resetVentureTaskEditor() {
+        $("#venture-task-id").value = "";
+        $("#venture-task-title").value = "";
+        $("#venture-task-start").value = "";
+        $("#venture-task-due").value = "";
+        $("#venture-task-description").value = "";
+        $("#venture-task-order").value = "0";
+        $("#venture-task-done").value = "false";
+      }
+
+
+      function openVentureTaskEditor(taskId = "") {
+        resetVentureTaskEditor();
+        if (taskId) {
+          const task = state.ventureTasks.find((item) => String(item.id) === String(taskId));
+          if (!task) return;
+          $("#venture-task-id").value = task.id;
+          $("#venture-task-title").value = task.title || "";
+          $("#venture-task-start").value = task.start_date || "";
+          $("#venture-task-due").value = task.due_date || "";
+          $("#venture-task-description").value = task.description || "";
+          $("#venture-task-order").value = task.sort_order ?? 0;
+          $("#venture-task-done").value = String(Boolean(task.is_done));
+        }
+        $("#venture-task-editor").classList.remove("hidden");
+      }
+
+
+      async function saveVentureTask() {
+        const ventureId = $("#venture-record-id").value;
+        const taskId = $("#venture-task-id").value;
+        const title = $("#venture-task-title").value.trim();
+        if (!ventureId) throw new Error("Save the venture before adding tasks.");
+        if (!title) throw new Error("Task title is required.");
+
+        const startDate = $("#venture-task-start").value || null;
+        const dueDate = $("#venture-task-due").value || null;
+        if (startDate && dueDate && dueDate < startDate) {
+          throw new Error("Due date cannot be before the start date.");
+        }
+
+        const payload = {
+          venture_id: ventureId,
+          title,
+          description: $("#venture-task-description").value.trim() || null,
+          start_date: startDate,
+          due_date: dueDate,
+          is_done: $("#venture-task-done").value === "true",
+          sort_order: Number($("#venture-task-order").value || 0)
+        };
+
+        const response = taskId
+          ? await supabase.from("venture_tasks").update(payload).eq("id", taskId)
+          : await supabase.from("venture_tasks").insert(payload);
+
+        if (response.error) throw response.error;
+        $("#venture-task-editor").classList.add("hidden");
+        resetVentureTaskEditor();
+        await loadVentureTasks();
+        showToast(taskId ? "Task updated." : "Task added.");
+      }
+
+
+      async function toggleVentureTask(taskId) {
+        const task = state.ventureTasks.find((item) => String(item.id) === String(taskId));
+        if (!task) return;
+        const { error } = await supabase
+          .from("venture_tasks")
+          .update({ is_done: !task.is_done })
+          .eq("id", taskId);
+        if (error) throw error;
+        await loadVentureTasks();
+      }
+
+
       function ventureStatusLabel(status) {
         return ({
           idea: "Idea",
@@ -9914,6 +10093,7 @@ const supabasePublishableKey =
               </div>
               ${item.tagline ? `<p class="row-description">${escapeHtml(item.tagline)}</p>` : ""}
               ${item.next_milestone ? `<p class="row-description"><strong>Next:</strong> ${escapeHtml(item.next_milestone)}</p>` : ""}
+              ${tasksForVenture(item.id).length ? `<p class="row-description"><strong>Tasks:</strong> ${tasksForVenture(item.id).filter((task) => task.is_done).length}/${tasksForVenture(item.id).length} completed</p>` : ""}
             </div>
             <div class="row-actions"><button class="secondary-button" type="button" data-edit-venture="${escapeHtml(item.id)}">Edit</button></div>
           </div>
@@ -9977,6 +10157,10 @@ const supabasePublishableKey =
           $("#venture-notes").value = item.notes || "";
           $("#venture-sort-order").value = item.sort_order ?? 0;
         }
+
+        $("#venture-tasks-section").classList.toggle("hidden", !id);
+        $("#venture-task-editor").classList.add("hidden");
+        if (id) renderVentureTasks();
 
         $("#venture-modal").classList.remove("hidden");
         document.body.style.overflow = "hidden";
@@ -12331,6 +12515,45 @@ const supabasePublishableKey =
           }
         }
       );
+
+
+      $("#add-venture-task-button").addEventListener("click", () => openVentureTaskEditor());
+
+      $("#cancel-venture-task-button").addEventListener("click", () => {
+        $("#venture-task-editor").classList.add("hidden");
+        resetVentureTaskEditor();
+      });
+
+      $("#save-venture-task-button").addEventListener("click", async () => {
+        const button = $("#save-venture-task-button");
+        setButtonLoading(button, true, "Saving...", "Save Task");
+        try {
+          await saveVentureTask();
+        } catch (error) {
+          console.error(error);
+          showToast(error?.message || "Could not save task.", "error");
+        } finally {
+          setButtonLoading(button, false, "Saving...", "Save Task");
+        }
+      });
+
+      $("#venture-tasks-list").addEventListener("click", async (event) => {
+        const edit = event.target.closest("[data-edit-venture-task]");
+        if (edit) {
+          openVentureTaskEditor(edit.dataset.editVentureTask);
+          return;
+        }
+
+        const toggle = event.target.closest("[data-toggle-venture-task]");
+        if (toggle) {
+          try {
+            await toggleVentureTask(toggle.dataset.toggleVentureTask);
+          } catch (error) {
+            console.error(error);
+            showToast(error?.message || "Could not update task.", "error");
+          }
+        }
+      });
 
 
       $("#venture-form").addEventListener(
