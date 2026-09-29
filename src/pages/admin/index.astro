@@ -2341,6 +2341,15 @@ const supabasePublishableKey =
               <span>Speakers</span>
               <span id="nav-people-count" class="nav-count">0</span>
             </button>
+
+            <button
+              class="nav-button"
+              type="button"
+              data-section="ventures"
+            >
+              <span>Ventures</span>
+              <span id="nav-ventures-count" class="nav-count">0</span>
+            </button>
           </nav>
 
           <div class="sidebar-footer">
@@ -3154,6 +3163,56 @@ const supabasePublishableKey =
               </div>
 
               <div id="people-list" class="content-list"></div>
+            </section>
+
+
+            <!-- =============================================
+                 VENTURES — ADMIN ONLY
+                 ============================================= -->
+
+            <section
+              id="section-ventures"
+              class="admin-section hidden"
+              data-admin-section="ventures"
+            >
+              <div class="toolbar">
+                <div class="toolbar-left">
+                  <input id="ventures-search" class="input search-input" type="search" placeholder="Search ventures..." />
+                </div>
+                <div class="row-actions">
+                  <button id="preview-ventures-button" class="secondary-button" type="button">
+                    Preview portfolio
+                  </button>
+                  <button id="add-venture-button" class="primary-button" type="button">
+                    + New Venture
+                  </button>
+                </div>
+              </div>
+
+              <div class="panel" style="margin-bottom: 24px;">
+                <div class="panel-header">
+                  <div>
+                    <h2 class="panel-title">Private workspace</h2>
+                    <p class="panel-copy">
+                      Ventures are stored for admin use only. Nothing in this section is published to the public website.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div id="ventures-list" class="content-list"></div>
+
+              <div id="ventures-preview" class="panel hidden" style="margin-top: 24px;">
+                <div class="panel-header">
+                  <div>
+                    <p class="eyebrow">Admin Preview</p>
+                    <h2 class="panel-title">Ventures</h2>
+                    <p class="panel-copy">A private preview of how the venture portfolio could appear later.</p>
+                  </div>
+                  <button id="close-ventures-preview-button" class="secondary-button" type="button">Close preview</button>
+                </div>
+                <div id="ventures-preview-grid" class="media-grid"></div>
+              </div>
             </section>
           </div>
         </main>
@@ -4610,6 +4669,45 @@ const supabasePublishableKey =
 
 
     <!-- =====================================================
+         VENTURE MODAL — ADMIN ONLY
+         ===================================================== -->
+
+    <div id="venture-modal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="venture-modal-title">
+      <form id="venture-form" class="modal">
+        <div class="modal-header">
+          <div><p class="eyebrow">Venture Editor</p><h2 id="venture-modal-title" class="modal-title">New Venture</h2></div>
+          <button class="quiet-button" type="button" data-close-modal="venture">Close</button>
+        </div>
+        <div class="modal-body">
+          <input id="venture-record-id" type="hidden" />
+          <div class="form-section">
+            <div class="form-section-header">
+              <h3 class="form-section-title">Venture Profile</h3>
+              <p class="form-section-copy">Track the project internally now; this information is not exposed publicly.</p>
+            </div>
+            <div class="form-section-body">
+              <div class="form-grid">
+                <div class="form-field full"><label class="label" for="venture-name">Name</label><input id="venture-name" class="input" type="text" required /></div>
+                <div class="form-field full"><label class="label" for="venture-tagline">Short description / tagline</label><input id="venture-tagline" class="input" type="text" maxlength="180" /></div>
+                <div class="form-field"><label class="label" for="venture-status">Status</label><select id="venture-status" class="select"><option value="idea">Idea</option><option value="validation">Validation</option><option value="building">Building</option><option value="pilot">Pilot</option><option value="active">Active</option><option value="paused">Paused</option><option value="archived">Archived</option></select></div>
+                <div class="form-field"><label class="label" for="venture-role">My role</label><input id="venture-role" class="input" type="text" placeholder="Founder, co-founder, investor..." /></div>
+                <div class="form-field"><label class="label" for="venture-sector">Sector</label><input id="venture-sector" class="input" type="text" /></div>
+                <div class="form-field"><label class="label" for="venture-location">Location</label><input id="venture-location" class="input" type="text" /></div>
+                <div class="form-field full"><label class="label" for="venture-description">Description</label><textarea id="venture-description" class="textarea"></textarea></div>
+                <div class="form-field full"><label class="label" for="venture-next-milestone">Next milestone</label><input id="venture-next-milestone" class="input" type="text" /></div>
+                <div class="form-field full"><label class="label" for="venture-website">Website (optional)</label><input id="venture-website" class="input" type="url" /></div>
+                <div class="form-field full"><label class="label" for="venture-notes">Private notes</label><textarea id="venture-notes" class="textarea"></textarea></div>
+                <div class="form-field"><label class="label" for="venture-sort-order">Display order</label><input id="venture-sort-order" class="input" type="number" value="0" /></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer"><span>Admin only · not published</span><div class="modal-footer-right"><button class="secondary-button" type="button" data-close-modal="venture">Cancel</button><button id="save-venture-button" class="primary-button" type="submit">Save Venture</button></div></div>
+      </form>
+    </div>
+
+
+    <!-- =====================================================
          TOAST
          ===================================================== -->
 
@@ -4675,6 +4773,9 @@ const supabasePublishableKey =
           [],
 
         people:
+          [],
+
+        ventures:
           [],
 
         eventSpeakers:
@@ -5689,6 +5790,7 @@ const supabasePublishableKey =
             loadCommunities(),
             loadOrganizations(),
             loadPeople(),
+            loadVentures(),
             loadEventSpeakers(),
             loadEventSponsors(),
             loadFeaturedContent()
@@ -5704,6 +5806,7 @@ const supabasePublishableKey =
         renderCommunities();
         renderOrganizations();
         renderPeople();
+        renderVentures();
         renderEvents();
         renderFeatures();
 
@@ -5910,6 +6013,9 @@ const supabasePublishableKey =
           people:
             state.people.length,
 
+          ventures:
+            state.ventures.length,
+
           features:
             state.featuredContent.filter((item) => item.active !== false).length
         };
@@ -5947,6 +6053,9 @@ const supabasePublishableKey =
 
         $("#nav-people-count").textContent =
           values.people;
+
+        $("#nav-ventures-count").textContent =
+          values.ventures;
 
         $("#nav-features-count").textContent =
           values.features;
@@ -9743,6 +9852,166 @@ const supabasePublishableKey =
       }
 
 
+      async function loadVentures() {
+        const { data, error } = await supabase
+          .from("ventures")
+          .select("*")
+          .order("sort_order", { ascending: true })
+          .order("updated_at", { ascending: false });
+
+        if (error) {
+          showToast(`Could not load ventures: ${error.message}`, "error");
+          return;
+        }
+
+        state.ventures = data || [];
+        renderVentures();
+      }
+
+
+      function ventureStatusLabel(status) {
+        return ({
+          idea: "Idea",
+          validation: "Validation",
+          building: "Building",
+          pilot: "Pilot",
+          active: "Active",
+          paused: "Paused",
+          archived: "Archived"
+        })[status] || status || "Idea";
+      }
+
+
+      function filteredVentures() {
+        const search = $("#ventures-search")?.value.trim().toLowerCase() || "";
+        return state.ventures.filter((item) =>
+          !search || [item.name, item.tagline, item.description, item.sector, item.role, item.venture_status]
+            .filter(Boolean)
+            .some((value) => String(value).toLowerCase().includes(search))
+        );
+      }
+
+
+      function renderVentures() {
+        const container = $("#ventures-list");
+        if (!container) return;
+        const items = filteredVentures();
+
+        if (!items.length) {
+          container.innerHTML = `<div class="empty-state"><strong>No ventures found</strong>Add the first venture to start your private portfolio workspace.</div>`;
+          renderVenturesPreview();
+          return;
+        }
+
+        container.innerHTML = items.map((item) => `
+          <div class="content-row">
+            <div>
+              <h3 class="row-title">${escapeHtml(item.name)}</h3>
+              <div class="row-meta">
+                <span class="status-pill ${escapeHtml(item.venture_status || "idea")}">${escapeHtml(ventureStatusLabel(item.venture_status))}</span>
+                ${item.sector ? `<span>•</span><span>${escapeHtml(item.sector)}</span>` : ""}
+                ${item.role ? `<span>•</span><span>${escapeHtml(item.role)}</span>` : ""}
+              </div>
+              ${item.tagline ? `<p class="row-description">${escapeHtml(item.tagline)}</p>` : ""}
+              ${item.next_milestone ? `<p class="row-description"><strong>Next:</strong> ${escapeHtml(item.next_milestone)}</p>` : ""}
+            </div>
+            <div class="row-actions"><button class="secondary-button" type="button" data-edit-venture="${escapeHtml(item.id)}">Edit</button></div>
+          </div>
+        `).join("");
+
+        renderVenturesPreview();
+      }
+
+
+      function renderVenturesPreview() {
+        const grid = $("#ventures-preview-grid");
+        if (!grid) return;
+
+        const items = [...state.ventures]
+          .filter((item) => item.venture_status !== "archived")
+          .sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0));
+
+        grid.innerHTML = items.length
+          ? items.map((item) => `
+              <article class="panel" style="padding: 24px; min-height: 220px;">
+                <p class="eyebrow">${escapeHtml(ventureStatusLabel(item.venture_status))}</p>
+                <h3 class="panel-title" style="margin-top: 8px;">${escapeHtml(item.name)}</h3>
+                ${item.tagline ? `<p class="panel-copy" style="margin-top: 10px;">${escapeHtml(item.tagline)}</p>` : ""}
+                ${item.description ? `<p class="row-description">${escapeHtml(item.description)}</p>` : ""}
+                <div class="row-meta" style="margin-top: 18px;">
+                  ${item.sector ? `<span>${escapeHtml(item.sector)}</span>` : ""}
+                  ${item.location ? `<span>•</span><span>${escapeHtml(item.location)}</span>` : ""}
+                </div>
+              </article>
+            `).join("")
+          : `<div class="empty-state"><strong>Nothing to preview yet</strong>Add a venture first.</div>`;
+      }
+
+
+      function resetVentureForm() {
+        $("#venture-form").reset();
+        $("#venture-record-id").value = "";
+        $("#venture-modal-title").textContent = "New Venture";
+        $("#venture-status").value = "idea";
+        $("#venture-sort-order").value = "0";
+      }
+
+
+      function openVentureModal(id = "") {
+        resetVentureForm();
+
+        if (id) {
+          const item = state.ventures.find((venture) => String(venture.id) === String(id));
+          if (!item) return;
+          $("#venture-record-id").value = item.id;
+          $("#venture-modal-title").textContent = "Edit Venture";
+          $("#venture-name").value = item.name || "";
+          $("#venture-tagline").value = item.tagline || "";
+          $("#venture-status").value = item.venture_status || "idea";
+          $("#venture-role").value = item.role || "";
+          $("#venture-sector").value = item.sector || "";
+          $("#venture-location").value = item.location || "";
+          $("#venture-description").value = item.description || "";
+          $("#venture-next-milestone").value = item.next_milestone || "";
+          $("#venture-website").value = item.website_url || "";
+          $("#venture-notes").value = item.notes || "";
+          $("#venture-sort-order").value = item.sort_order ?? 0;
+        }
+
+        $("#venture-modal").classList.remove("hidden");
+        document.body.style.overflow = "hidden";
+      }
+
+
+      async function saveVenture() {
+        const existingId = $("#venture-record-id").value;
+        const name = $("#venture-name").value.trim();
+        const payload = {
+          name,
+          slug: slugify(name),
+          tagline: $("#venture-tagline").value.trim() || null,
+          description: $("#venture-description").value.trim() || null,
+          venture_status: $("#venture-status").value,
+          role: $("#venture-role").value.trim() || null,
+          sector: $("#venture-sector").value.trim() || null,
+          location: $("#venture-location").value.trim() || null,
+          website_url: $("#venture-website").value.trim() || null,
+          next_milestone: $("#venture-next-milestone").value.trim() || null,
+          notes: $("#venture-notes").value.trim() || null,
+          sort_order: Number($("#venture-sort-order").value || 0)
+        };
+
+        const response = existingId
+          ? await supabase.from("ventures").update(payload).eq("id", existingId)
+          : await supabase.from("ventures").insert(payload);
+
+        if (response.error) throw response.error;
+        closeModal("venture");
+        showToast(existingId ? "Venture updated." : "Venture created.");
+        await loadAllContent();
+      }
+
+
       function resetCommunityForm() {
         $("#community-form").reset();
         $("#community-record-id").value = "";
@@ -10275,6 +10544,14 @@ const supabasePublishableKey =
             "Speakers",
           subtitle:
             "Manage speaker profiles and reuse them across events."
+        },
+        ventures: {
+          eyebrow:
+            "Private Portfolio",
+          title:
+            "Ventures",
+          subtitle:
+            "Track venture progress and privately preview the future portfolio page."
         }
       };
 
@@ -10346,7 +10623,9 @@ const supabasePublishableKey =
           organization:
             "#organization-modal",
           person:
-            "#person-modal"
+            "#person-modal",
+          venture:
+            "#venture-modal"
         };
 
 
@@ -11163,6 +11442,30 @@ const supabasePublishableKey =
       );
 
 
+      $("#add-venture-button").addEventListener(
+        "click",
+        () =>
+          openVentureModal()
+      );
+
+
+      $("#preview-ventures-button").addEventListener(
+        "click",
+        () => {
+          renderVenturesPreview();
+          $("#ventures-preview").classList.remove("hidden");
+          $("#ventures-preview").scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+      );
+
+
+      $("#close-ventures-preview-button").addEventListener(
+        "click",
+        () =>
+          $("#ventures-preview").classList.add("hidden")
+      );
+
+
       $("#events-search").addEventListener(
         "input",
         renderEvents
@@ -11202,6 +11505,12 @@ const supabasePublishableKey =
       $("#people-search").addEventListener(
         "input",
         renderPeople
+      );
+
+
+      $("#ventures-search").addEventListener(
+        "input",
+        renderVentures
       );
 
 
@@ -11355,6 +11664,20 @@ const supabasePublishableKey =
           ) {
             openPersonModal(
               personButton.dataset.editPerson
+            );
+          }
+
+
+          const ventureButton =
+            event.target.closest(
+              "[data-edit-venture]"
+            );
+
+          if (
+            ventureButton
+          ) {
+            openVentureModal(
+              ventureButton.dataset.editVenture
             );
           }
 
@@ -12010,6 +12333,24 @@ const supabasePublishableKey =
       );
 
 
+      $("#venture-form").addEventListener(
+        "submit",
+        async (event) => {
+          event.preventDefault();
+          const button = $("#save-venture-button");
+          setButtonLoading(button, true, "Saving...", "Save Venture");
+          try {
+            await saveVenture();
+          } catch (error) {
+            console.error(error);
+            showToast(error?.message || "Could not save venture.", "error");
+          } finally {
+            setButtonLoading(button, false, "Saving...", "Save Venture");
+          }
+        }
+      );
+
+
       const dropZone =
         $("#drop-zone");
 
@@ -12254,7 +12595,8 @@ const supabasePublishableKey =
             "recap",
             "community",
             "organization",
-            "person"
+            "person",
+            "venture"
           ].forEach(
             closeModal
           );
