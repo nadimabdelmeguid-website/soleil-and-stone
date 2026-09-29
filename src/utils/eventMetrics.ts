@@ -641,6 +641,24 @@ export function getProfessionalMetrics(
     );
 
 
+  const attendanceLed =
+    ledEvents.reduce(
+      (total, event) =>
+        total +
+        (
+          typeof (event as SiteEvent & { attendees?: number }).attendees === "number"
+            ? (event as SiteEvent & { attendees?: number }).attendees!
+            : 0
+        ),
+      0
+    );
+
+  const ledEventsWithAttendanceData =
+    ledEvents.filter(
+      (event) =>
+        typeof (event as SiteEvent & { attendees?: number }).attendees === "number"
+    ).length;
+
   const years =
     new Set(
       completed.map(
@@ -676,6 +694,10 @@ export function getProfessionalMetrics(
 
     ledEventsWithRegistrationData,
 
+    attendanceLed,
+
+    ledEventsWithAttendanceData,
+
     speakers:
       speakers.length,
 
@@ -692,7 +714,17 @@ export function getProfessionalMetrics(
       cities.length,
 
     yearsActive:
-      years.size
+      years.size,
+
+    byYear:
+      Object.fromEntries(
+        Array.from(years)
+          .sort((a, b) => b - a)
+          .map((year) => [
+            year,
+            completed.filter((event) => parseMetricDate(event.startDate).getFullYear() === year).length
+          ])
+      )
 
   };
 
