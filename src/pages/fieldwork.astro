@@ -1729,7 +1729,7 @@ const tradeShowLogoLoop =
             grid-cols-1
             sm:grid-cols-2
             lg:grid-cols-3
-            xl:grid-cols-5
+            xl:grid-cols-6
             gap-3
             w-full
           "
@@ -2033,6 +2033,12 @@ const tradeShowLogoLoop =
 
             </select>
 
+          </div>
+
+          <!-- KEYWORD -->
+          <div>
+            <label for="fieldwork-search" class="block text-[9px] uppercase tracking-[0.14em] text-brand-slate mb-2">Keyword</label>
+            <input id="fieldwork-search" type="search" placeholder="Event, venue, topic..." class="w-full bg-white border border-brand-border px-4 py-3 text-xs text-brand-charcoal outline-none focus:border-brand-gold" />
           </div>
 
         </div>
@@ -2943,6 +2949,12 @@ const tradeShowLogoLoop =
         );
 
 
+      const searchInput =
+        document.getElementById(
+          "fieldwork-search"
+        );
+
+
       const resetButton =
         document.getElementById(
           "fieldwork-reset"
@@ -3005,6 +3017,10 @@ const tradeShowLogoLoop =
           citySelect.value;
 
 
+        const searchTerm =
+          searchInput?.value.trim().toLowerCase() || "";
+
+
         let visibleCount =
           0;
 
@@ -3047,12 +3063,18 @@ const tradeShowLogoLoop =
                 selectedCity;
 
 
+            const matchesSearch =
+              !searchTerm ||
+              event.textContent.toLowerCase().includes(searchTerm);
+
+
             const visible =
               matchesYear &&
               matchesMonth &&
               matchesParticipation &&
               matchesType &&
-              matchesCity;
+              matchesCity &&
+              matchesSearch;
 
 
             event.classList.toggle(
@@ -3134,6 +3156,12 @@ const tradeShowLogoLoop =
         );
 
 
+      searchInput?.addEventListener(
+        "input",
+        applyFilters
+      );
+
+
       resetButton?.addEventListener(
         "click",
         () => {
@@ -3156,6 +3184,11 @@ const tradeShowLogoLoop =
 
           citySelect.value =
             "all";
+
+
+          if (searchInput) {
+            searchInput.value = "";
+          }
 
 
           applyFilters();
