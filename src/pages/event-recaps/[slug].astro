@@ -94,6 +94,18 @@ const recap = {
 };
 
 
+const allFieldNotes =
+  await getCollection("fieldNotes");
+
+const relatedFieldNotes =
+  allFieldNotes
+    .filter((note) =>
+      !note.data.draft &&
+      note.data.relatedEvents?.includes(recap.eventId)
+    )
+    .sort((a, b) => b.data.published.getTime() - a.data.published.getTime());
+
+
 const event =
   events.find(
     (item) =>
@@ -732,6 +744,26 @@ function formatDate(
       )
     }
 
+
+
+    {
+      relatedFieldNotes.length > 0 && (
+        <section class="bg-white border-t border-brand-border">
+          <div class="max-w-3xl w-full mx-auto px-6 py-12">
+            <span class="text-[10px] uppercase tracking-[0.2em] text-brand-gold font-semibold">Related Field Notes</span>
+            <h2 class="font-serif text-2xl text-brand-charcoal mt-2 mb-6">Ideas Connected To This Event</h2>
+            <div class="space-y-3">
+              {relatedFieldNotes.map((note) => (
+                <a href={`/field-notes/${note.id}/`} class="block border border-brand-border p-5 hover:border-brand-gold transition-colors">
+                  <h3 class="font-serif text-lg text-brand-charcoal">{note.data.title}</h3>
+                  <p class="text-xs text-brand-slate mt-2">{note.data.description}</p>
+                </a>
+              ))}
+            </div>
+          </div>
+        </section>
+      )
+    }
 
 
     <!-- =====================================================
