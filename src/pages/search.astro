@@ -45,7 +45,12 @@ const searchItems = [...fieldNotes, ...eventRecaps, ...eventItems];
       <span class="text-[10px] uppercase tracking-[0.2em] text-brand-gold font-semibold">Explore</span>
       <h1 class="font-serif text-4xl sm:text-5xl text-brand-charcoal mt-2">Search Soleil & Stone</h1>
       <p class="text-brand-slate font-light mt-4 max-w-2xl">Search across Field Notes, Event Recaps and Fieldwork.</p>
-      <input id="site-search" type="search" autocomplete="off" placeholder="Search topics, events, cities, organizations..." class="mt-8 w-full max-w-3xl border border-brand-border bg-white px-5 py-4 text-sm text-brand-charcoal outline-none focus:border-brand-gold" />
+      <div class="mt-8 flex flex-col sm:flex-row gap-3 max-w-4xl">
+        <input id="site-search" type="search" autocomplete="off" placeholder="Search topics, events, cities, organizations..." class="flex-1 border border-brand-border bg-white px-5 py-4 text-sm text-brand-charcoal outline-none focus:border-brand-gold" />
+        <select id="site-search-type" class="border border-brand-border bg-white px-4 py-4 text-xs text-brand-charcoal outline-none focus:border-brand-gold">
+          <option value="all">All content</option><option value="Field Note">Field Notes</option><option value="Event Recap">Event Recaps</option><option value="Event">Fieldwork</option>
+        </select>
+      </div>
     </div>
   </section>
   <section class="bg-brand-cream">
@@ -58,6 +63,7 @@ const searchItems = [...fieldNotes, ...eventRecaps, ...eventItems];
   <script is:inline define:vars={{ searchItems }}>
     (() => {
       const input = document.getElementById("site-search");
+      const typeSelect = document.getElementById("site-search-type");
       const results = document.getElementById("search-results");
       const count = document.getElementById("search-count");
       if (!input || !results || !count) return;
@@ -66,7 +72,17 @@ const searchItems = [...fieldNotes, ...eventRecaps, ...eventItems];
         const query = input.value.trim().toLowerCase();
         if (!query) { results.innerHTML = ""; count.textContent = "Start typing to search"; return; }
         const terms = query.split(/\s+/).filter(Boolean);
-        const matches = searchItems.filter((item) => terms.every((term) => item.search.includes(term))).slice(0, 50);
+        const selectedType = typeSelect?.value || "all";
+        const score = (item) => {
+          const title = item.title.toLowerCase();
+          let value = 0;
+          terms.forEach((term) => { if (title === term) value += 20; else if (title.includes(term)) value += 10; if (item.search.includes(term)) value += 1; });
+          return value;
+        };
+        const matches = searchItems
+          .filter((item) => (selectedType === "all" || item.type === selectedType) && terms.every((term) => item.search.includes(term)))
+          .sort((a,b) => score(b)-score(a))
+          .slice(0, 50);
         count.textContent = `${matches.length} ${matches.length === 1 ? "result" : "results"}`;
         results.innerHTML = matches.length ? matches.map((item) => `
           <a href="${escapeHtml(item.url)}" class="block bg-white border border-brand-border p-6 hover:border-brand-gold transition-colors">
@@ -77,8 +93,13 @@ const searchItems = [...fieldNotes, ...eventRecaps, ...eventItems];
           </a>`).join("") : `<div class="md:col-span-2 py-12 text-brand-slate">No matching content found.</div>`;
       };
       input.addEventListener("input", render);
-      const q = new URLSearchParams(window.location.search).get("q");
+      typeSelect?.addEventListener("change", () => { const params=new URLSearchParams(window.location.search); if(typeSelect.value==="all") params.delete("type"); else params.set("type",typeSelect.value); history.replaceState(null,"",`${window.location.pathname}?${params.toString()}`); render(); });
+      const params = new URLSearchParams(window.location.search);
+      const q = params.get("q");
+      const type = params.get("type");
+      if (type && typeSelect && Array.from(typeSelect.options).some((option) => option.value === type)) typeSelect.value = type;
       if (q) { input.value = q; render(); }
+      input.addEventListener("input", () => { const p=new URLSearchParams(window.location.search); if(input.value.trim()) p.set("q",input.value.trim()); else p.delete("q"); history.replaceState(null,"",`${window.location.pathname}?${p.toString()}`); });
       input.focus();
     })();
   </script>
