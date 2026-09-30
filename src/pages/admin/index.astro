@@ -11592,6 +11592,7 @@ const supabasePublishableKey =
         if (state.currentVentureModule) renderVentureModule();
         renderCurrentVentureContext();
         updateVenturePrivateFilesButton();
+        renderVentureDocumentCenter();
       }
 
 
@@ -12835,10 +12836,39 @@ const supabasePublishableKey =
       }
 
 
+      function executeVentureCommandAction(action,ventureId) {
+        if(action==="command:new-venture"){openVentureModal();return true;}
+        if(action==="command:all-ventures"){openPortfolio();return true;}
+        if(action==="command:export-portfolio"){exportVenturePortfolio();return true;}
+        if(action==="command:new-task"){
+          const venture=ventureById(ventureId)||currentVenture();
+          if(venture){openVentureModal(venture.id,"execution",true);}
+          return true;
+        }
+        if(action==="command:files"){
+          const venture=ventureById(ventureId)||currentVenture();
+          if(venture)openVentureFiles("venture",venture.id);
+          return true;
+        }
+        if(action==="command:public"){
+          const venture=ventureById(ventureId)||currentVenture();
+          if(venture)openVentureModal(venture.id,"public");
+          return true;
+        }
+        if(action==="command:export-venture"){
+          const venture=ventureById(ventureId)||currentVenture();
+          if(venture)exportVenture(venture);
+          return true;
+        }
+        return false;
+      }
+
+
       function executeVentureSearchResult(action,id,ventureId) {
         $("#venture-universal-results")?.classList.add("hidden");
         closeModal("venture-command");
 
+        if(executeVentureCommandAction(action,ventureId))return;
         if (action === "venture") { enterVenture(ventureId); return; }
         if (action === "task") {
           enterVenture(ventureId,"venture-execution");
@@ -13175,7 +13205,7 @@ const supabasePublishableKey =
         $("#save-venture-button").textContent = "Save Changes";
 
         await saveVenturePublicOverview(saved);
-        await Promise.all([loadVentures(), loadVentureTasks(), loadVentureMilestones(), loadVenturePublicOverviews()]);
+        await Promise.all([loadVentures(), loadVentureTasks(), loadVentureMilestones(), loadVenturePublicOverviews(), loadVentureActivity()]);
         const fresh = state.ventures.find((item) => String(item.id) === String(saved.id)) || saved;
         refreshVentureModalHeader(fresh);
         renderVentureTasks();
@@ -13793,6 +13823,7 @@ const supabasePublishableKey =
 
         const dynamicModules = [...new Set(
           state.ventureWorkspaceItems
+            .filter((item) => !item.archived_at)
             .filter((item) => String(item.venture_id) === String(venture.id))
             .map((item) => item.module_key)
         )].map((key) => ({
@@ -13879,12 +13910,31 @@ const supabasePublishableKey =
       }
 
 
+      function updateMobileVentureActions() {
+        const venture=currentVenture();
+        const task=$("#mobile-venture-task");
+        const file=$("#mobile-venture-file");
+        const edit=$("#mobile-venture-edit");
+        if(!task||!file||!edit)return;
+        if(venture){
+          task.textContent="+ Task";
+          file.textContent="+ File";
+          edit.textContent="Edit";
+        }else{
+          task.textContent="+ Venture";
+          file.textContent="Search";
+          edit.textContent="Commands";
+        }
+      }
+
+
       function openPortfolio() {
         state.currentVentureId = null;
         state.currentVentureModule = null;
         portfolioMode(true);
         openSection("ventures");
         renderVentures();
+        updateMobileVentureActions();
       }
 
 
@@ -13895,6 +13945,7 @@ const supabasePublishableKey =
         state.currentVentureId = venture.id;
         state.currentVentureModule = null;
         portfolioMode(false);
+        updateMobileVentureActions();
         renderVentureSidebar();
 
         if (isSoleilAndStoneVenture(venture)) {
@@ -15425,10 +15476,44 @@ const supabasePublishableKey =
         renderVentures();
       });
 
+      $("#venture-universal-search")?.addEventListener("input", renderUniversalVentureSearch);
+      $("#venture-universal-search")?.addEventListener("focus", renderUniversalVentureSearch);
+      $("#venture-document-filter")?.addEventListener("change", renderVentureDocumentCenter);
+      $("#venture-document-search")?.addEventListener("input", renderVentureDocumentCenter);
+      $("#open-command-palette-button")?.addEventListener("click", openCommandPalette);
+      $("#export-venture-portfolio-button")?.addEventListener("click", exportVenturePortfolio);
+      $("#venture-command-input")?.addEventListener("input", renderCommandPalette);
+
+      $("#copy-private-to-public-button")?.addEventListener("click", copyPrivateToPublic);
+      $("#refresh-public-preview-button")?.addEventListener("click", renderVenturePublicCompare);
+      [
+        "#venture-public-visible","#venture-public-title","#venture-public-tagline","#venture-public-status",
+        "#venture-public-role","#venture-public-sector","#venture-public-location","#venture-public-summary",
+        "#venture-public-highlights","#venture-public-image-url","#venture-public-website-url"
+      ].forEach((selector)=>{
+        $(selector)?.addEventListener("input",renderVenturePublicCompare);
+        $(selector)?.addEventListener("change",renderVenturePublicCompare);
+      });
+
+      $("#venture-template")?.addEventListener("change",(event)=>{
+        const suggestions={
+          hardware:"Consumer hardware",
+          software:"Software / SaaS",
+          "real-estate":"Real estate",
+          hospitality:"Hospitality / wellness",
+          "import-distribution":"Import / distribution",
+          "content-community":"Content / community"
+        };
+        if(!$("#venture-sector").value.trim()&&suggestions[event.target.value]){
+          $("#venture-sector").value=suggestions[event.target.value];
+        }
+      });
+
       $("#venture-tabs")?.addEventListener("click", (event) => {
         const button = event.target.closest("[data-venture-tab]");
         if (!button || button.disabled) return;
         setVentureTab(button.dataset.ventureTab);
+        if(button.dataset.ventureTab==="public")renderVenturePublicCompare();
       });
 
       $("#venture-status")?.addEventListener("change", () => {
@@ -15481,6 +15566,28 @@ const supabasePublishableKey =
         async (
           event
         ) => {
+
+          if(!event.target.closest(".venture-universal-search-wrap"))$("#venture-universal-results")?.classList.add("hidden");
+
+          const ventureSearchResult=event.target.closest("[data-venture-search-action]");
+          if(ventureSearchResult){
+            executeVentureSearchResult(
+              ventureSearchResult.dataset.ventureSearchAction,
+              ventureSearchResult.dataset.ventureSearchId,
+              ventureSearchResult.dataset.ventureSearchVenture
+            );
+            return;
+          }
+
+          const checklistToggle=event.target.closest("[data-toggle-task-checklist]");
+          if(checklistToggle){
+            try{await toggleTaskChecklist(checklistToggle.dataset.toggleTaskChecklist,checklistToggle.dataset.checklistIndex);}
+            catch(error){console.error(error);showToast(error?.message||"Could not update checklist.","error");}
+            return;
+          }
+
+          const exportCurrent=event.target.closest("[data-export-current-venture]");
+          if(exportCurrent){exportVenture();return;}
 
           const markdownButton =
             event.target.closest(
@@ -15890,6 +15997,58 @@ const supabasePublishableKey =
         }
       );
 
+
+
+      document.addEventListener("dragover",(event)=>{
+        const target=event.target.closest?.("[data-file-drop]");
+        if(!target)return;
+        event.preventDefault();
+        target.classList.add("dragging");
+      });
+
+      document.addEventListener("dragleave",(event)=>{
+        const target=event.target.closest?.("[data-file-drop]");
+        target?.classList.remove("dragging");
+      });
+
+      document.addEventListener("drop",async(event)=>{
+        const targetEl=event.target.closest?.("[data-file-drop]");
+        if(!targetEl)return;
+        event.preventDefault();
+        targetEl.classList.remove("dragging");
+        const files=Array.from(event.dataTransfer?.files||[]);
+        if(!files.length)return;
+        const target=ventureFileTarget(targetEl.dataset.attachmentType,targetEl.dataset.attachmentId);
+        if(!target)return;
+        try{
+          const count=await uploadFilesToVentureTarget(files,target,{});
+          showToast(`${count} private file${count===1?"":"s"} attached to ${target.label}.`);
+        }catch(error){
+          console.error(error);
+          showToast(error?.message||"Could not attach dropped files.","error");
+        }
+      });
+
+      document.addEventListener("keydown",(event)=>{
+        const typing=["INPUT","TEXTAREA","SELECT"].includes(document.activeElement?.tagName) || document.activeElement?.isContentEditable;
+        if((event.metaKey||event.ctrlKey)&&event.key.toLowerCase()==="k"){
+          event.preventDefault();openCommandPalette();return;
+        }
+        if(event.key==="Escape"&&!$("#venture-command-modal")?.classList.contains("hidden")){
+          closeModal("venture-command");return;
+        }
+        if(typing)return;
+        if(event.key==="/"){
+          event.preventDefault();openPortfolio();window.setTimeout(()=>$("#venture-universal-search")?.focus(),0);return;
+        }
+        if(event.key.toLowerCase()==="n"){event.preventDefault();openVentureModal();return;}
+        if(event.key.toLowerCase()==="t"){
+          const venture=currentVenture();if(venture){event.preventDefault();openVentureModal(venture.id,"execution",true);}return;
+        }
+        if(event.key.toLowerCase()==="f"){
+          const venture=currentVenture();if(venture){event.preventDefault();openVentureFiles("venture",venture.id);}return;
+        }
+      });
 
 
       $("#recent-content-filters").addEventListener(
@@ -16483,12 +16642,49 @@ const supabasePublishableKey =
         if (ventureId) openVentureFiles("venture", ventureId);
       });
 
+      $("#venture-files-input")?.addEventListener("change",(event)=>{
+        state.venturePendingFiles=[];
+        const count=event.target.files?.length||0;
+        if(count)showToast(`${count} file${count===1?"":"s"} selected.`);
+      });
+
+      const ventureFileDropZone=$("#venture-file-drop-zone");
+      ventureFileDropZone?.addEventListener("dragover",(event)=>{
+        event.preventDefault();
+        ventureFileDropZone.classList.add("dragging");
+      });
+      ventureFileDropZone?.addEventListener("dragleave",()=>ventureFileDropZone.classList.remove("dragging"));
+      ventureFileDropZone?.addEventListener("drop",(event)=>{
+        event.preventDefault();
+        ventureFileDropZone.classList.remove("dragging");
+        state.venturePendingFiles=Array.from(event.dataTransfer?.files||[]);
+        $("#venture-files-input").value="";
+        if(state.venturePendingFiles.length)showToast(`${state.venturePendingFiles.length} dropped file${state.venturePendingFiles.length===1?"":"s"} ready to upload.`);
+      });
+
       $("#upload-venture-files-button")?.addEventListener("click", async () => {
         const button = $("#upload-venture-files-button");
         setButtonLoading(button, true, "Uploading...", "Upload Selected Files");
         try { await uploadVentureFiles(); }
         catch (error) { console.error(error); showToast(error?.message || "Could not upload private files.", "error"); }
         finally { setButtonLoading(button, false, "Uploading...", "Upload Selected Files"); }
+      });
+
+
+      $("#mobile-venture-task")?.addEventListener("click",()=>{
+        const venture=currentVenture();
+        if(venture)openVentureModal(venture.id,"execution",true);
+        else openVentureModal();
+      });
+      $("#mobile-venture-file")?.addEventListener("click",()=>{
+        const venture=currentVenture();
+        if(venture)openVentureFiles("venture",venture.id);
+        else { openPortfolio(); window.setTimeout(()=>$("#venture-universal-search")?.focus(),0); }
+      });
+      $("#mobile-venture-edit")?.addEventListener("click",()=>{
+        const venture=currentVenture();
+        if(venture)openVentureModal(venture.id,"overview");
+        else openCommandPalette();
       });
 
 
