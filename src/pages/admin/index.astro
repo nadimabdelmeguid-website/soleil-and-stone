@@ -11605,6 +11605,7 @@ const supabasePublishableKey =
 
       function attachmentsFor(entityType, entityId) {
         return state.ventureAttachments
+          .filter((item) => !item.archived_at)
           .filter((item) => item.entity_type === entityType && String(item.entity_id) === String(entityId))
           .sort((a, b) => Number(a.sort_order || 0) - Number(b.sort_order || 0) || String(a.created_at || "").localeCompare(String(b.created_at || "")));
       }
@@ -11777,11 +11778,13 @@ const supabasePublishableKey =
               <div class="venture-file-thumb" data-venture-file-thumb="${escapeHtml(file.id)}">${isImage ? "▧" : "↗"}</div>
               <div>
                 <p class="venture-file-name">${escapeHtml(file.display_name || file.original_name || "File")}</p>
-                <div class="venture-file-meta">${escapeHtml(file.mime_type || "File")} · ${escapeHtml(readableFileSize(file.file_size))}</div>
+                <div class="venture-file-meta">${escapeHtml(file.mime_type || "File")} · ${escapeHtml(readableFileSize(file.file_size))}${file.category ? ` · ${escapeHtml(file.category)}` : ""}${file.document_date ? ` · ${escapeHtml(formatDate(file.document_date))}` : ""}</div>
+                ${Array.isArray(file.tags) && file.tags.length ? `<div class="venture-file-meta">Tags: ${file.tags.map((tag)=>escapeHtml(tag)).join(", ")}</div>` : ""}
+                ${file.source_label ? `<div class="venture-file-meta">Source: ${escapeHtml(file.source_label)}</div>` : ""}
               </div>
               <div class="venture-file-actions">
                 <button class="secondary-button" type="button" data-open-venture-file="${escapeHtml(file.id)}">Open</button>
-                <button class="danger-button" type="button" data-delete-venture-file="${escapeHtml(file.id)}">Delete</button>
+                <button class="danger-button" type="button" data-delete-venture-file="${escapeHtml(file.id)}">Archive</button>
               </div>
             </div>
           `;
@@ -11800,8 +11803,13 @@ const supabasePublishableKey =
         const target = ventureFileTarget(entityType, entityId);
         if (!target) { showToast("Could not resolve the file target.", "error"); return; }
         state.ventureFileTarget = target;
+        state.venturePendingFiles = [];
         $("#venture-files-target-label").textContent = target.label || "Venture item";
         $("#venture-files-input").value = "";
+        $("#venture-file-category").value = "";
+        $("#venture-file-document-date").value = "";
+        $("#venture-file-tags").value = "";
+        $("#venture-file-source").value = "";
         $("#venture-files-modal").removeAttribute("hidden");
         $("#venture-files-modal").classList.remove("hidden");
         document.body.style.overflow = "hidden";
@@ -11814,42 +11822,61 @@ const supabasePublishableKey =
       }
 
 
-      async function uploadVentureFiles() {
-        const target = state.ventureFileTarget;
-        const files = Array.from($("#venture-files-input")?.files || []);
+      function ventureFileUploadMetadata() {
+        return {
+          category: $("#venture-file-category")?.value.trim() || null,
+          document_date: $("#venture-file-document-date")?.value || null,
+          tags: ($("#venture-file-tags")?.value || "").split(",").map((tag)=>tag.trim()).filter(Boolean),
+          source_label: $("#venture-file-source")?.value.trim() || null
+        };
+      }
+
+
+      async function uploadFilesToVentureTarget(files,target,metadata={}) {
+        const selected=Array.from(files || []);
         if (!target) throw new Error("No venture item is selected.");
-        if (!files.length) throw new Error("Choose at least one file.");
+        if (!selected.length) throw new Error("Choose at least one file.");
         if (!state.user?.id) throw new Error("Your admin session is not available.");
 
-        for (const file of files) {
+        for (const file of selected) {
           if (file.size > 50 * 1024 * 1024) throw new Error(`${file.name} is larger than the 50 MB private-file limit.`);
-          const storagePath = `${state.user.id}/${target.ventureId}/${target.entityType}/${target.entityId}/${crypto.randomUUID()}-${safeVentureFileName(file.name)}`;
-          const { error: uploadError } = await supabase.storage.from("venture-private-files").upload(storagePath, file, { cacheControl: "3600", upsert: false, contentType: file.type || undefined });
-          if (uploadError) throw uploadError;
-
-          const { error: recordError } = await supabase.from("venture_attachments").insert({
-            venture_id: target.ventureId,
-            entity_type: target.entityType,
-            entity_id: target.entityId,
-            display_name: file.name,
-            original_name: file.name,
-            mime_type: file.type || null,
-            file_size: file.size,
-            storage_path: storagePath
+          const storagePath=`${state.user.id}/${target.ventureId}/${target.entityType}/${target.entityId}/${crypto.randomUUID()}-${safeVentureFileName(file.name)}`;
+          const {error:uploadError}=await supabase.storage.from("venture-private-files").upload(storagePath,file,{cacheControl:"3600",upsert:false,contentType:file.type||undefined});
+          if(uploadError) throw uploadError;
+          const {error:recordError}=await supabase.from("venture_attachments").insert({
+            venture_id:target.ventureId,
+            entity_type:target.entityType,
+            entity_id:target.entityId,
+            display_name:file.name,
+            original_name:file.name,
+            mime_type:file.type||null,
+            file_size:file.size,
+            storage_path:storagePath,
+            category:metadata.category||null,
+            document_date:metadata.document_date||null,
+            tags:Array.isArray(metadata.tags)?metadata.tags:[],
+            source_label:metadata.source_label||null
           });
-
-          if (recordError) {
+          if(recordError){
             await supabase.storage.from("venture-private-files").remove([storagePath]);
             throw recordError;
           }
         }
-
-        $("#venture-files-input").value = "";
-        await loadVentureAttachments();
-        await renderVentureFilesModal();
-        showToast(files.length === 1 ? "Private file uploaded." : `${files.length} private files uploaded.`);
+        await Promise.all([loadVentureAttachments(),loadVentureActivity()]);
+        return selected.length;
       }
 
+
+      async function uploadVentureFiles() {
+        const target=state.ventureFileTarget;
+        const inputFiles=Array.from($("#venture-files-input")?.files||[]);
+        const files=state.venturePendingFiles.length ? state.venturePendingFiles : inputFiles;
+        const count=await uploadFilesToVentureTarget(files,target,ventureFileUploadMetadata());
+        state.venturePendingFiles=[];
+        $("#venture-files-input").value="";
+        await renderVentureFilesModal();
+        showToast(count===1 ? "Private file uploaded." : `${count} private files uploaded.`);
+      }
 
       async function openVentureAttachment(fileId) {
         const file = state.ventureAttachments.find((item) => String(item.id) === String(fileId));
@@ -11862,18 +11889,15 @@ const supabasePublishableKey =
 
 
       async function deleteVentureAttachment(fileId) {
-        const file = state.ventureAttachments.find((item) => String(item.id) === String(fileId));
-        if (!file) return;
-        if (!window.confirm(`Delete "${file.display_name || file.original_name || "this file"}"?`)) return;
-        const { error: storageError } = await supabase.storage.from("venture-private-files").remove([file.storage_path]);
-        if (storageError) throw storageError;
-        const { error: recordError } = await supabase.from("venture_attachments").delete().eq("id", file.id);
-        if (recordError) throw recordError;
-        await loadVentureAttachments();
+        const file=state.ventureAttachments.find((item)=>String(item.id)===String(fileId));
+        if(!file)return;
+        if(!window.confirm(`Archive "${file.display_name || file.original_name || "this file"}"? The stored file will be retained.`))return;
+        const {error}=await supabase.from("venture_attachments").update({archived_at:new Date().toISOString()}).eq("id",file.id);
+        if(error)throw error;
+        await Promise.all([loadVentureAttachments(),loadVentureActivity()]);
         await renderVentureFilesModal();
-        showToast("Private file deleted.");
+        showToast("Private file archived.");
       }
-
 
       async function loadVentureWorkspaceItems() {
         const { data, error } = await supabase
@@ -11931,12 +11955,13 @@ const supabasePublishableKey =
 
 
       function tasksForVenture(ventureId) {
-        return state.ventureTasks.filter((task) => String(task.venture_id) === String(ventureId));
+        return state.ventureTasks.filter((task) => !task.archived_at && String(task.venture_id) === String(ventureId));
       }
 
 
       function milestonesForVenture(ventureId) {
         return state.ventureMilestones
+          .filter((item) => !item.archived_at)
           .filter((item) => String(item.venture_id) === String(ventureId))
           .sort((a, b) => {
             if (a.status === "completed" && b.status !== "completed") return 1;
@@ -12076,6 +12101,49 @@ const supabasePublishableKey =
       }
 
 
+      function taskChecklist(task) {
+        return Array.isArray(task?.checklist) ? task.checklist : [];
+      }
+
+      function checklistToEditor(task) {
+        return taskChecklist(task).map((item)=>`${item.done ? "[x]" : "[ ]"} ${item.text || ""}`).join("\n");
+      }
+
+      function checklistFromEditor() {
+        return ($("#venture-task-checklist")?.value || "")
+          .split("\n").map((line)=>line.trim()).filter(Boolean)
+          .map((line)=>({done:/^\[x\]/i.test(line),text:line.replace(/^\[(?:x| )\]\s*/i,"").trim()}))
+          .filter((item)=>item.text);
+      }
+
+      function checklistMarkup(task) {
+        const items=taskChecklist(task);
+        if(!items.length)return "";
+        return `<div class="venture-checklist-preview">${items.slice(0,8).map((item,index)=>`
+          <button class="venture-checklist-chip ${item.done ? "done":""}" type="button" data-toggle-task-checklist="${escapeHtml(task.id)}" data-checklist-index="${index}">${item.done ? "✓":"○"} ${escapeHtml(item.text)}</button>
+        `).join("")}${items.length>8 ? `<span class="venture-checklist-chip">+${items.length-8}</span>`:""}</div>`;
+      }
+
+      function relatedTaskMarkup(task) {
+        const card=task.related_workspace_item_id ? state.ventureWorkspaceItems.find((item)=>String(item.id)===String(task.related_workspace_item_id)) : null;
+        const milestone=task.related_milestone_id ? state.ventureMilestones.find((item)=>String(item.id)===String(task.related_milestone_id)) : null;
+        if(!card&&!milestone)return "";
+        return `<div class="row-meta" style="margin-top:7px;">${card ? `<span>Card: ${escapeHtml(card.title)}</span>`:""}${card&&milestone ? "<span>•</span>":""}${milestone ? `<span>Milestone: ${escapeHtml(milestone.title)}</span>`:""}</div>`;
+      }
+
+      function refreshVentureTaskRelationSelectors(ventureId) {
+        const cardSelect=$("#venture-task-related-card");
+        const milestoneSelect=$("#venture-task-related-milestone");
+        if(cardSelect){
+          const cards=state.ventureWorkspaceItems.filter((item)=>!item.archived_at&&String(item.venture_id)===String(ventureId));
+          cardSelect.innerHTML='<option value="">None</option>'+cards.map((item)=>`<option value="${escapeHtml(item.id)}">${escapeHtml(item.title)}</option>`).join("");
+        }
+        if(milestoneSelect){
+          const milestones=state.ventureMilestones.filter((item)=>!item.archived_at&&String(item.venture_id)===String(ventureId));
+          milestoneSelect.innerHTML='<option value="">None</option>'+milestones.map((item)=>`<option value="${escapeHtml(item.id)}">${escapeHtml(item.title)}</option>`).join("");
+        }
+      }
+
       function renderVentureTasks() {
         const container = $("#venture-tasks-list");
         const ventureId = $("#venture-record-id")?.value;
@@ -12112,7 +12180,7 @@ const supabasePublishableKey =
               const doneTask = isVentureTaskDone(task);
               const overdue = !doneTask && task.due_date && task.due_date < today;
               return `
-                <div class="venture-task-row ${doneTask ? "is-done" : ""} ${overdue ? "is-overdue" : ""}">
+                <div class="venture-task-row ${doneTask ? "is-done" : ""} ${overdue ? "is-overdue" : ""}" data-file-drop data-attachment-type="task" data-attachment-id="${escapeHtml(task.id)}">
                   <button class="venture-check" type="button" data-toggle-venture-task="${escapeHtml(task.id)}" aria-label="${doneTask ? "Mark task open" : "Mark task done"}">${doneTask ? "✓" : "○"}</button>
                   <div>
                     <h4 class="venture-task-row-title">${escapeHtml(task.title)}</h4>
@@ -12124,6 +12192,8 @@ const supabasePublishableKey =
                       ${overdue ? '<span class="venture-priority-high">• Overdue</span>' : ""}
                     </div>
                     ${task.description ? `<p class="row-description">${escapeHtml(task.description)}</p>` : ""}
+                    ${relatedTaskMarkup(task)}
+                    ${checklistMarkup(task)}
                   </div>
                   <div class="venture-task-actions">
                     <button class="secondary-button" type="button" data-manage-venture-files data-attachment-type="task" data-attachment-id="${escapeHtml(task.id)}">Files · ${attachmentCount("task", task.id)}</button>
@@ -12144,6 +12214,11 @@ const supabasePublishableKey =
         $("#venture-task-start").value = "";
         $("#venture-task-due").value = "";
         $("#venture-task-description").value = "";
+        $("#venture-task-checklist").value = "";
+        $("#venture-task-recurrence").value = "none";
+        $("#venture-task-recurrence-interval").value = "1";
+        $("#venture-task-related-card").innerHTML = '<option value="">None</option>';
+        $("#venture-task-related-milestone").innerHTML = '<option value="">None</option>';
         $("#venture-task-order").value = "0";
         $("#venture-task-status").value = "todo";
         $("#venture-task-priority").value = "medium";
@@ -12154,6 +12229,8 @@ const supabasePublishableKey =
 
       function openVentureTaskEditor(taskId = "") {
         resetVentureTaskEditor();
+        const ventureId=$("#venture-record-id")?.value || currentVenture()?.id;
+        if(ventureId)refreshVentureTaskRelationSelectors(ventureId);
         if (taskId) {
           const task = state.ventureTasks.find((item) => String(item.id) === String(taskId));
           if (!task) return;
@@ -12162,6 +12239,11 @@ const supabasePublishableKey =
           $("#venture-task-start").value = task.start_date || "";
           $("#venture-task-due").value = task.due_date || "";
           $("#venture-task-description").value = task.description || "";
+          $("#venture-task-checklist").value = checklistToEditor(task);
+          $("#venture-task-recurrence").value = task.recurrence_frequency || "none";
+          $("#venture-task-recurrence-interval").value = task.recurrence_interval || 1;
+          $("#venture-task-related-card").value = task.related_workspace_item_id || "";
+          $("#venture-task-related-milestone").value = task.related_milestone_id || "";
           $("#venture-task-order").value = task.sort_order ?? 0;
           $("#venture-task-status").value = ventureTaskStatus(task);
           $("#venture-task-priority").value = task.priority || "medium";
@@ -12197,6 +12279,11 @@ const supabasePublishableKey =
           task_status: taskStatus,
           priority: $("#venture-task-priority").value,
           is_done: taskStatus === "done",
+          checklist: checklistFromEditor(),
+          recurrence_frequency: $("#venture-task-recurrence").value || "none",
+          recurrence_interval: Math.max(1,Number($("#venture-task-recurrence-interval").value || 1)),
+          related_workspace_item_id: $("#venture-task-related-card").value || null,
+          related_milestone_id: $("#venture-task-related-milestone").value || null,
           sort_order: Number($("#venture-task-order").value || 0)
         };
 
@@ -12207,35 +12294,68 @@ const supabasePublishableKey =
         if (response.error) throw response.error;
         $("#venture-task-editor").classList.add("hidden");
         resetVentureTaskEditor();
-        await loadVentureTasks();
+        await Promise.all([loadVentureTasks(),loadVentureActivity()]);
         showToast(taskId ? "Task updated." : "Task added.");
       }
 
 
-      async function toggleVentureTask(taskId) {
-        const task = state.ventureTasks.find((item) => String(item.id) === String(taskId));
-        if (!task) return;
-        const nextStatus = isVentureTaskDone(task) ? "todo" : "done";
-        const { error } = await supabase
-          .from("venture_tasks")
-          .update({ task_status: nextStatus, is_done: nextStatus === "done" })
-          .eq("id", taskId);
-        if (error) throw error;
-        await loadVentureTasks();
+      function shiftRecurringDate(value,frequency,interval=1) {
+        if(!value)return null;
+        const date=new Date(`${value}T12:00:00`);
+        if(Number.isNaN(date.getTime()))return value;
+        if(frequency==="weekly")date.setDate(date.getDate()+7*interval);
+        if(frequency==="monthly")date.setMonth(date.getMonth()+interval);
+        if(frequency==="quarterly")date.setMonth(date.getMonth()+3*interval);
+        if(frequency==="yearly")date.setFullYear(date.getFullYear()+interval);
+        return localDateKey(date);
       }
 
+      async function createNextRecurringTask(task) {
+        if(!task || !task.recurrence_frequency || task.recurrence_frequency==="none")return;
+        const already=state.ventureTasks.some((item)=>String(item.recurrence_parent_id||"")===String(task.id));
+        if(already)return;
+        const checklist=taskChecklist(task).map((item)=>({text:item.text,done:false}));
+        const {error}=await supabase.from("venture_tasks").insert({
+          venture_id:task.venture_id,title:task.title,description:task.description,
+          start_date:shiftRecurringDate(task.start_date,task.recurrence_frequency,task.recurrence_interval||1),
+          due_date:shiftRecurringDate(task.due_date,task.recurrence_frequency,task.recurrence_interval||1),
+          task_status:"todo",priority:task.priority,is_done:false,sort_order:task.sort_order||0,checklist,
+          recurrence_frequency:task.recurrence_frequency,recurrence_interval:task.recurrence_interval||1,
+          recurrence_parent_id:task.id,related_workspace_item_id:task.related_workspace_item_id||null,
+          related_milestone_id:task.related_milestone_id||null
+        });
+        if(error)throw error;
+      }
+
+      async function toggleVentureTask(taskId) {
+        const task=state.ventureTasks.find((item)=>String(item.id)===String(taskId));
+        if(!task)return;
+        const nextStatus=isVentureTaskDone(task) ? "todo":"done";
+        const {error}=await supabase.from("venture_tasks").update({task_status:nextStatus,is_done:nextStatus==="done"}).eq("id",taskId);
+        if(error)throw error;
+        if(nextStatus==="done")await createNextRecurringTask(task);
+        await Promise.all([loadVentureTasks(),loadVentureActivity()]);
+      }
+
+      async function toggleTaskChecklist(taskId,index) {
+        const task=state.ventureTasks.find((item)=>String(item.id)===String(taskId));
+        if(!task)return;
+        const checklist=taskChecklist(task).map((item,i)=>i===Number(index)?{...item,done:!item.done}:item);
+        const {error}=await supabase.from("venture_tasks").update({checklist}).eq("id",task.id);
+        if(error)throw error;
+        await Promise.all([loadVentureTasks(),loadVentureActivity()]);
+      }
 
       async function deleteVentureTask(taskId) {
-        if (!taskId) return;
-        if (!window.confirm("Delete this venture task?")) return;
-        const { error } = await supabase.from("venture_tasks").delete().eq("id", taskId);
-        if (error) throw error;
+        if(!taskId)return;
+        if(!window.confirm("Archive this venture task? Its history will be retained."))return;
+        const {error}=await supabase.from("venture_tasks").update({archived_at:new Date().toISOString()}).eq("id",taskId);
+        if(error)throw error;
         $("#venture-task-editor").classList.add("hidden");
         resetVentureTaskEditor();
-        await loadVentureTasks();
-        showToast("Task deleted.");
+        await Promise.all([loadVentureTasks(),loadVentureActivity()]);
+        showToast("Task archived.");
       }
-
 
       function resetVentureMilestoneEditor() {
         $("#venture-milestone-id").value = "";
@@ -12280,7 +12400,7 @@ const supabasePublishableKey =
         const items = milestonesForVenture(ventureId);
         container.innerHTML = items.length
           ? items.map((item) => `
-              <article class="venture-milestone-card ${item.status === "completed" ? "completed" : ""}">
+              <article class="venture-milestone-card ${item.status === "completed" ? "completed" : ""}" data-file-drop data-attachment-type="milestone" data-attachment-id="${escapeHtml(item.id)}">
                 <div>
                   <h4 class="venture-milestone-title">${escapeHtml(item.title)}</h4>
                   <div class="row-meta">
@@ -12323,20 +12443,20 @@ const supabasePublishableKey =
         if (response.error) throw response.error;
         $("#venture-milestone-editor").classList.add("hidden");
         resetVentureMilestoneEditor();
-        await loadVentureMilestones();
+        await Promise.all([loadVentureMilestones(),loadVentureActivity()]);
         showToast(milestoneId ? "Milestone updated." : "Milestone added.");
       }
 
 
       async function deleteVentureMilestone(milestoneId) {
-        if (!milestoneId) return;
-        if (!window.confirm("Delete this milestone?")) return;
-        const { error } = await supabase.from("venture_milestones").delete().eq("id", milestoneId);
-        if (error) throw error;
+        if(!milestoneId)return;
+        if(!window.confirm("Archive this milestone?"))return;
+        const {error}=await supabase.from("venture_milestones").update({archived_at:new Date().toISOString()}).eq("id",milestoneId);
+        if(error)throw error;
         $("#venture-milestone-editor").classList.add("hidden");
         resetVentureMilestoneEditor();
-        await loadVentureMilestones();
-        showToast("Milestone deleted.");
+        await Promise.all([loadVentureMilestones(),loadVentureActivity()]);
+        showToast("Milestone archived.");
       }
 
 
@@ -12858,7 +12978,7 @@ const supabasePublishableKey =
               ? formatDate(String(item.updated_at).slice(0, 10))
               : "";
           return `
-            <article class="venture-card portfolio-venture-card" data-enter-venture-card="${escapeHtml(item.id)}">
+            <article class="venture-card portfolio-venture-card" data-enter-venture-card="${escapeHtml(item.id)}" data-file-drop data-attachment-type="venture" data-attachment-id="${escapeHtml(item.id)}">
               <div class="venture-card-top">
                 <div>
                   <div class="venture-meta-line">
@@ -13690,6 +13810,7 @@ const supabasePublishableKey =
 
       function workspaceItemsFor(ventureId, moduleKey = null) {
         return state.ventureWorkspaceItems
+          .filter((item) => !item.archived_at)
           .filter((item) => String(item.venture_id) === String(ventureId))
           .filter((item) => !moduleKey || item.module_key === moduleKey)
           .sort((a, b) =>
@@ -13965,7 +14086,7 @@ const supabasePublishableKey =
 
         container.innerHTML = items.length
           ? items.map((item) => `
-              <article class="venture-workspace-item">
+              <article class="venture-workspace-item" data-file-drop data-attachment-type="workspace_item" data-attachment-id="${escapeHtml(item.id)}">
                 <div class="venture-workspace-item-header">
                   <div>
                     <div class="venture-meta-line">
@@ -14014,7 +14135,7 @@ const supabasePublishableKey =
               const status = ventureTaskStatus(task);
               const overdue = !done && task.due_date && task.due_date < localDateKey();
               return `
-                <div class="venture-task-row ${done ? "is-done" : ""} ${overdue ? "is-overdue" : ""}">
+                <div class="venture-task-row ${done ? "is-done" : ""} ${overdue ? "is-overdue" : ""}" data-file-drop data-attachment-type="task" data-attachment-id="${escapeHtml(task.id)}">
                   <button class="venture-check" type="button" data-toggle-venture-task="${escapeHtml(task.id)}">${done ? "✓" : "○"}</button>
                   <div>
                     <h4 class="venture-task-row-title">${escapeHtml(task.title)}</h4>
@@ -14024,6 +14145,8 @@ const supabasePublishableKey =
                       <span>•</span><span>${escapeHtml(taskTimeline(task))}</span>
                     </div>
                     ${task.description ? `<p class="row-description">${escapeHtml(task.description)}</p>` : ""}
+                    ${relatedTaskMarkup(task)}
+                    ${checklistMarkup(task)}
                   </div>
                   <div class="venture-task-actions">
                     <button class="secondary-button" type="button" data-manage-venture-files data-attachment-type="task" data-attachment-id="${escapeHtml(task.id)}">Files · ${attachmentCount("task", task.id)}</button>
@@ -14044,7 +14167,7 @@ const supabasePublishableKey =
         const items = milestonesForVenture(venture.id);
         container.innerHTML = items.length
           ? items.map((item) => `
-              <article class="venture-milestone-card ${item.status === "completed" ? "completed" : ""}">
+              <article class="venture-milestone-card ${item.status === "completed" ? "completed" : ""}" data-file-drop data-attachment-type="milestone" data-attachment-id="${escapeHtml(item.id)}">
                 <div>
                   <h3 class="venture-milestone-title">${escapeHtml(item.title)}</h3>
                   <div class="row-meta">
@@ -14150,21 +14273,21 @@ const supabasePublishableKey =
 
         if (response.error) throw response.error;
         closeModal("venture-workspace-item");
-        await loadVentureWorkspaceItems();
+        await Promise.all([loadVentureWorkspaceItems(),loadVentureActivity()]);
         renderVentureModule();
         showToast(id ? "Workspace item updated." : "Workspace item added.");
       }
 
 
       async function deleteVentureWorkspaceItem() {
-        const id = $("#venture-workspace-item-id").value;
-        if (!id || !window.confirm("Delete this workspace item?")) return;
-        const { error } = await supabase.from("venture_workspace_items").delete().eq("id", id);
-        if (error) throw error;
+        const id=$("#venture-workspace-item-id").value;
+        if(!id||!window.confirm("Archive this workspace item?"))return;
+        const {error}=await supabase.from("venture_workspace_items").update({archived_at:new Date().toISOString()}).eq("id",id);
+        if(error)throw error;
         closeModal("venture-workspace-item");
-        await loadVentureWorkspaceItems();
+        await Promise.all([loadVentureWorkspaceItems(),loadVentureActivity()]);
         renderVentureModule();
-        showToast("Workspace item deleted.");
+        showToast("Workspace item archived.");
       }
 
 
