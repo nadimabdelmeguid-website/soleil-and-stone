@@ -4174,6 +4174,10 @@ const supabasePublishableKey =
                         <option value="image">Images</option>
                         <option value="spreadsheet">Spreadsheets</option>
                         <option value="pdf">PDFs</option>
+                        <option value="target-venture">Attached to ventures</option>
+                        <option value="target-task">Attached to tasks</option>
+                        <option value="target-workspace_item">Attached to cards</option>
+                        <option value="target-milestone">Attached to milestones</option>
                       </select>
                       <input id="venture-document-search" class="input" type="search" placeholder="Search filenames, tags or categories…" />
                     </div>
@@ -4195,12 +4199,12 @@ const supabasePublishableKey =
                   <section class="venture-focus-panel">
                     <div class="panel-header">
                       <div>
-                        <p class="eyebrow">Archive Safety</p>
-                        <h3 class="panel-title">Recoverable by Design</h3>
-                        <p class="panel-copy">Tasks, cards, milestones and files are archived instead of permanently deleted.</p>
+                        <p class="eyebrow">Archive</p>
+                        <h3 class="panel-title">Archived Records</h3>
+                        <p class="panel-copy">Recover tasks, cards, milestones and files without touching Supabase.</p>
                       </div>
                     </div>
-                    <div class="venture-focus-list"><div class="empty-state"><strong>Safer editing</strong>Archived records stay in Supabase and activity history records the change.</div></div>
+                    <div id="ventures-archive-list" class="venture-focus-list"></div>
                   </section>
                   <section class="venture-focus-panel">
                     <div class="panel-header">
@@ -12615,7 +12619,11 @@ const supabasePublishableKey =
 
         const items = state.ventureAttachments
           .filter((file) => !file.archived_at)
-          .filter((file) => filter === "all" || ventureDocumentKind(file) === filter)
+          .filter((file) => {
+            if(filter==="all")return true;
+            if(filter.startsWith("target-"))return file.entity_type===filter.replace("target-","");
+            return ventureDocumentKind(file)===filter;
+          })
           .filter((file) => {
             if (!query) return true;
             const venture = ventureById(file.venture_id);
@@ -12641,6 +12649,58 @@ const supabasePublishableKey =
               `;
             }).join("")
           : '<div class="empty-state"><strong>No matching files</strong>Private attachments from every venture will appear here.</div>';
+      }
+
+
+      function archivedVentureRecords() {
+        const rows=[];
+        state.ventureTasks.filter((item)=>item.archived_at).forEach((item)=>rows.push({type:"task",id:item.id,ventureId:item.venture_id,title:item.title,archivedAt:item.archived_at}));
+        state.ventureMilestones.filter((item)=>item.archived_at).forEach((item)=>rows.push({type:"milestone",id:item.id,ventureId:item.venture_id,title:item.title,archivedAt:item.archived_at}));
+        state.ventureWorkspaceItems.filter((item)=>item.archived_at).forEach((item)=>rows.push({type:"workspace_item",id:item.id,ventureId:item.venture_id,title:item.title,archivedAt:item.archived_at}));
+        state.ventureAttachments.filter((item)=>item.archived_at).forEach((item)=>rows.push({type:"attachment",id:item.id,ventureId:item.venture_id,title:item.display_name||item.original_name||"File",archivedAt:item.archived_at}));
+        return rows.sort((a,b)=>String(b.archivedAt||"").localeCompare(String(a.archivedAt||"")));
+      }
+
+
+      function renderVentureArchiveCenter() {
+        const container=$("#ventures-archive-list");
+        if(!container)return;
+        const items=archivedVentureRecords();
+        container.innerHTML=items.length
+          ? items.slice(0,8).map((item)=>{
+              const venture=ventureById(item.ventureId);
+              const label=item.type==="workspace_item"?"card":item.type;
+              return `
+                <div class="venture-focus-row">
+                  <span class="venture-check">↺</span>
+                  <div>
+                    <p class="venture-focus-title">${escapeHtml(item.title)}</p>
+                    <div class="venture-focus-meta">${escapeHtml(venture?.name||"Venture")} · archived ${escapeHtml(label.replace("_"," "))}</div>
+                  </div>
+                  <button class="quiet-button" type="button" data-restore-venture-record="${escapeHtml(item.id)}" data-restore-type="${escapeHtml(item.type)}">Restore</button>
+                </div>
+              `;
+            }).join("")
+          : '<div class="empty-state"><strong>Archive is empty</strong>Archived records will appear here for recovery.</div>';
+      }
+
+
+      async function restoreVentureRecord(type,id) {
+        const table={
+          task:"venture_tasks",
+          milestone:"venture_milestones",
+          workspace_item:"venture_workspace_items",
+          attachment:"venture_attachments"
+        }[type];
+        if(!table)return;
+        const {error}=await supabase.from(table).update({archived_at:null}).eq("id",id);
+        if(error)throw error;
+        await Promise.all([
+          loadVentureTasks(),loadVentureMilestones(),loadVentureWorkspaceItems(),
+          loadVentureAttachments(),loadVentureActivity()
+        ]);
+        renderVentureArchiveCenter();
+        showToast("Archived record restored.");
       }
 
 
@@ -12753,6 +12813,7 @@ const supabasePublishableKey =
 
         renderVentureActivity();
         renderVentureDocumentCenter();
+        renderVentureArchiveCenter();
       }
 
       function ventureSearchEntries() {
@@ -15576,6 +15637,13 @@ const supabasePublishableKey =
               ventureSearchResult.dataset.ventureSearchId,
               ventureSearchResult.dataset.ventureSearchVenture
             );
+            return;
+          }
+
+          const restoreRecord=event.target.closest("[data-restore-venture-record]");
+          if(restoreRecord){
+            try{await restoreVentureRecord(restoreRecord.dataset.restoreType,restoreRecord.dataset.restoreVentureRecord);}
+            catch(error){console.error(error);showToast(error?.message||"Could not restore record.","error");}
             return;
           }
 
