@@ -3007,8 +3007,44 @@ const supabasePublishableKey =
       .venture-search-result-title { font-size:12px; font-weight:700; color:var(--ink); }
       .venture-search-result-meta { margin-top:3px; font-size:10px; color:var(--slate); }
       .venture-search-type { align-self:start; font-size:9px; text-transform:uppercase; letter-spacing:.12em; color:var(--gold-dark); }
-      .venture-ops-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:16px; margin-bottom:20px; }
-      .venture-admin-two-col { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:16px; margin-bottom:20px; }
+      .venture-dashboard-rail-wrap { position:relative; margin-bottom:20px; }
+      .venture-dashboard-rail-header { display:flex; align-items:center; justify-content:flex-end; gap:8px; margin-bottom:10px; }
+      .venture-dashboard-rail-nav { width:38px; height:38px; display:grid; place-items:center; border:1px solid var(--border); background:white; color:var(--ink); cursor:pointer; font-size:18px; line-height:1; }
+      .venture-dashboard-rail-nav:hover:not(:disabled) { border-color:var(--gold); background:rgba(197,160,89,.08); }
+      .venture-dashboard-rail-nav:disabled { opacity:.35; cursor:default; }
+      .venture-dashboard-rail {
+        display:flex;
+        gap:16px;
+        overflow-x:auto;
+        overflow-y:hidden;
+        scroll-snap-type:x proximity;
+        scroll-behavior:smooth;
+        overscroll-behavior-inline:contain;
+        scrollbar-width:thin;
+        scrollbar-color:var(--gold) transparent;
+        padding:0 0 10px;
+      }
+      .venture-dashboard-rail::-webkit-scrollbar { height:8px; }
+      .venture-dashboard-rail::-webkit-scrollbar-track { background:transparent; }
+      .venture-dashboard-rail::-webkit-scrollbar-thumb { background:rgba(197,160,89,.65); border-radius:999px; }
+      .venture-dashboard-card {
+        flex:0 0 clamp(360px,31vw,470px);
+        min-width:0;
+        scroll-snap-align:start;
+        min-height:292px;
+        max-height:420px;
+        display:flex;
+        flex-direction:column;
+      }
+      .venture-dashboard-card .venture-focus-list,
+      .venture-dashboard-card .venture-document-list,
+      .venture-dashboard-card .venture-activity-list {
+        min-height:0;
+        overflow:auto;
+        flex:1;
+      }
+      .venture-dashboard-card .venture-document-toolbar { flex:0 0 auto; }
+      .venture-utility-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px; margin-bottom:20px; }
       .venture-document-toolbar { display:flex; gap:8px; flex-wrap:wrap; padding:14px 16px 0; }
       .venture-document-list,.venture-activity-list { padding:0 16px 16px; display:grid; gap:8px; }
       .venture-document-row,.venture-activity-row { display:grid; grid-template-columns:minmax(0,1fr) auto; gap:10px; align-items:center; padding:11px 0; border-bottom:1px solid var(--border); }
@@ -3028,7 +3064,8 @@ const supabasePublishableKey =
       .venture-mobile-actions { display:none; position:fixed; z-index:45; left:12px; right:12px; bottom:12px; grid-template-columns:repeat(3,1fr); gap:7px; padding:8px; border:1px solid var(--border); background:rgba(255,255,255,.96); box-shadow:0 14px 35px rgba(20,28,38,.15); }
       .venture-mobile-actions button { min-height:42px; }
       @media (max-width:900px) {
-        .venture-ops-grid,.venture-admin-two-col { grid-template-columns:1fr; }
+        .venture-dashboard-card { flex-basis:min(84vw,420px); }
+        .venture-utility-grid { grid-template-columns:1fr; }
         .venture-public-compare { grid-template-columns:1fr; }
       }
       @media (max-width:720px) {
@@ -4112,90 +4149,96 @@ const supabasePublishableKey =
                   </div>
                 </div>
 
-                <div class="venture-ops-grid">
-                  <section class="venture-focus-panel">
-                    <div class="panel-header">
-                      <div>
-                        <p class="eyebrow">Execution</p>
-                        <h3 class="panel-title">This Week</h3>
-                        <p class="panel-copy">Actionable priorities for the next seven days.</p>
-                      </div>
-                    </div>
-                    <div id="ventures-this-week-list" class="venture-focus-list"></div>
-                  </section>
+                <div class="venture-dashboard-rail-wrap">
+                  <div class="venture-dashboard-rail-header" aria-label="Dashboard card navigation">
+                    <button id="venture-dashboard-scroll-prev" class="venture-dashboard-rail-nav" type="button" aria-label="Scroll dashboard cards left">←</button>
+                    <button id="venture-dashboard-scroll-next" class="venture-dashboard-rail-nav" type="button" aria-label="Scroll dashboard cards right">→</button>
+                  </div>
 
-                  <section class="venture-focus-panel">
-                    <div class="panel-header">
-                      <div>
-                        <p class="eyebrow">Dependencies</p>
-                        <h3 class="panel-title">Waiting / Blockers</h3>
-                        <p class="panel-copy">Work that cannot move until something changes.</p>
+                  <div id="venture-dashboard-rail" class="venture-dashboard-rail" tabindex="0" aria-label="Portfolio operating dashboard">
+                    <section class="venture-focus-panel venture-dashboard-card">
+                      <div class="panel-header">
+                        <div>
+                          <p class="eyebrow">Execution</p>
+                          <h3 class="panel-title">This Week</h3>
+                          <p class="panel-copy">Actionable priorities for the next seven days.</p>
+                        </div>
                       </div>
-                    </div>
-                    <div id="ventures-blockers-list" class="venture-focus-list"></div>
-                  </section>
+                      <div id="ventures-this-week-list" class="venture-focus-list"></div>
+                    </section>
 
-                  <section class="venture-focus-panel">
-                    <div class="panel-header">
-                      <div>
-                        <p class="eyebrow">Attention</p>
-                        <h3 class="panel-title">Stale / Missing Next Action</h3>
-                        <p class="panel-copy">Dormant ventures, overdue work and missing next steps.</p>
+                    <section class="venture-focus-panel venture-dashboard-card">
+                      <div class="panel-header">
+                        <div>
+                          <p class="eyebrow">Dependencies</p>
+                          <h3 class="panel-title">Waiting / Blockers</h3>
+                          <p class="panel-copy">Work that cannot move until something changes.</p>
+                        </div>
                       </div>
-                    </div>
-                    <div id="ventures-attention-list" class="venture-focus-list"></div>
-                  </section>
+                      <div id="ventures-blockers-list" class="venture-focus-list"></div>
+                    </section>
+
+                    <section class="venture-focus-panel venture-dashboard-card">
+                      <div class="panel-header">
+                        <div>
+                          <p class="eyebrow">Attention</p>
+                          <h3 class="panel-title">Stale / Missing Next Action</h3>
+                          <p class="panel-copy">Dormant ventures, overdue work and missing next steps.</p>
+                        </div>
+                      </div>
+                      <div id="ventures-attention-list" class="venture-focus-list"></div>
+                    </section>
+
+                    <section class="panel venture-dashboard-card">
+                      <div class="panel-header">
+                        <div>
+                          <p class="eyebrow">History</p>
+                          <h3 class="panel-title">Recent Activity</h3>
+                          <p class="panel-copy">Latest meaningful changes across the portfolio.</p>
+                        </div>
+                      </div>
+                      <div id="ventures-activity-list" class="venture-activity-list"></div>
+                    </section>
+
+                    <section class="panel venture-dashboard-card">
+                      <div class="panel-header">
+                        <div>
+                          <p class="eyebrow">Private Library</p>
+                          <h3 class="panel-title">Document Center</h3>
+                          <p class="panel-copy">Every confidential file attached anywhere in your ventures.</p>
+                        </div>
+                      </div>
+                      <div class="venture-document-toolbar">
+                        <select id="venture-document-filter" class="select" aria-label="Filter venture documents">
+                          <option value="all">All files</option>
+                          <option value="document">Documents</option>
+                          <option value="image">Images</option>
+                          <option value="spreadsheet">Spreadsheets</option>
+                          <option value="pdf">PDFs</option>
+                          <option value="target-venture">Attached to ventures</option>
+                          <option value="target-task">Attached to tasks</option>
+                          <option value="target-workspace_item">Attached to cards</option>
+                          <option value="target-milestone">Attached to milestones</option>
+                        </select>
+                        <input id="venture-document-search" class="input" type="search" placeholder="Search filenames, tags or categories…" />
+                      </div>
+                      <div id="ventures-documents-list" class="venture-document-list"></div>
+                    </section>
+
+                    <section class="venture-focus-panel venture-dashboard-card">
+                      <div class="panel-header">
+                        <div>
+                          <p class="eyebrow">Milestones</p>
+                          <h3 class="panel-title">What Comes Next</h3>
+                          <p class="panel-copy">Planned milestones and venture focus.</p>
+                        </div>
+                      </div>
+                      <div id="ventures-milestones-list" class="venture-focus-list"></div>
+                    </section>
+                  </div>
                 </div>
 
-                <div class="venture-admin-two-col">
-                  <section class="panel">
-                    <div class="panel-header">
-                      <div>
-                        <p class="eyebrow">History</p>
-                        <h3 class="panel-title">Recent Activity</h3>
-                        <p class="panel-copy">Latest meaningful changes across the portfolio.</p>
-                      </div>
-                    </div>
-                    <div id="ventures-activity-list" class="venture-activity-list"></div>
-                  </section>
-
-                  <section class="panel">
-                    <div class="panel-header">
-                      <div>
-                        <p class="eyebrow">Private Library</p>
-                        <h3 class="panel-title">Document Center</h3>
-                        <p class="panel-copy">Every confidential file attached anywhere in your ventures.</p>
-                      </div>
-                    </div>
-                    <div class="venture-document-toolbar">
-                      <select id="venture-document-filter" class="select" aria-label="Filter venture documents">
-                        <option value="all">All files</option>
-                        <option value="document">Documents</option>
-                        <option value="image">Images</option>
-                        <option value="spreadsheet">Spreadsheets</option>
-                        <option value="pdf">PDFs</option>
-                        <option value="target-venture">Attached to ventures</option>
-                        <option value="target-task">Attached to tasks</option>
-                        <option value="target-workspace_item">Attached to cards</option>
-                        <option value="target-milestone">Attached to milestones</option>
-                      </select>
-                      <input id="venture-document-search" class="input" type="search" placeholder="Search filenames, tags or categories…" />
-                    </div>
-                    <div id="ventures-documents-list" class="venture-document-list"></div>
-                  </section>
-                </div>
-
-                <div class="venture-focus-grid">
-                  <section class="venture-focus-panel">
-                    <div class="panel-header">
-                      <div>
-                        <p class="eyebrow">Milestones</p>
-                        <h3 class="panel-title">What Comes Next</h3>
-                        <p class="panel-copy">Planned milestones and venture focus.</p>
-                      </div>
-                    </div>
-                    <div id="ventures-milestones-list" class="venture-focus-list"></div>
-                  </section>
+                <div class="venture-utility-grid">
                   <section class="venture-focus-panel">
                     <div class="panel-header">
                       <div>
@@ -4206,6 +4249,7 @@ const supabasePublishableKey =
                     </div>
                     <div id="ventures-archive-list" class="venture-focus-list"></div>
                   </section>
+
                   <section class="venture-focus-panel">
                     <div class="panel-header">
                       <div>
@@ -4216,6 +4260,7 @@ const supabasePublishableKey =
                     </div>
                     <div class="venture-focus-list"><div class="empty-state"><strong>Keyboard ready</strong>Shortcuts are disabled while typing in a field.</div></div>
                   </section>
+                </div>
                 </div>
               </div>
 
@@ -15526,6 +15571,31 @@ const supabasePublishableKey =
           $("#venture-sector").value=suggestions[event.target.value];
         }
       });
+
+      function updateVentureDashboardRailNav() {
+        const rail=$("#venture-dashboard-rail");
+        const prev=$("#venture-dashboard-scroll-prev");
+        const next=$("#venture-dashboard-scroll-next");
+        if(!rail||!prev||!next)return;
+        const max=Math.max(0,rail.scrollWidth-rail.clientWidth);
+        prev.disabled=rail.scrollLeft<=4;
+        next.disabled=rail.scrollLeft>=max-4;
+      }
+
+      function scrollVentureDashboardRail(direction=1) {
+        const rail=$("#venture-dashboard-rail");
+        if(!rail)return;
+        const card=rail.querySelector(".venture-dashboard-card");
+        const gap=16;
+        const amount=(card?.getBoundingClientRect().width||400)+gap;
+        rail.scrollBy({left:direction*amount,behavior:"smooth"});
+      }
+
+      $("#venture-dashboard-scroll-prev")?.addEventListener("click",()=>scrollVentureDashboardRail(-1));
+      $("#venture-dashboard-scroll-next")?.addEventListener("click",()=>scrollVentureDashboardRail(1));
+      $("#venture-dashboard-rail")?.addEventListener("scroll",updateVentureDashboardRailNav,{passive:true});
+      window.addEventListener("resize",updateVentureDashboardRailNav);
+      window.setTimeout(updateVentureDashboardRailNav,0);
 
       $("#venture-tabs")?.addEventListener("click", (event) => {
         const button = event.target.closest("[data-venture-tab]");
