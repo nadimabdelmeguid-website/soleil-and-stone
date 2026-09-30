@@ -14776,7 +14776,10 @@ const supabasePublishableKey =
 
         modal?.classList.add("hidden");
         modal?.setAttribute("hidden", "");
-        document.body.style.overflow = "";
+        const anotherModalOpen = $(".modal-backdrop").some((candidate) =>
+          !candidate.classList.contains("hidden") && !candidate.hasAttribute("hidden")
+        );
+        document.body.style.overflow = anotherModalOpen ? "hidden" : "";
 
       }
 
