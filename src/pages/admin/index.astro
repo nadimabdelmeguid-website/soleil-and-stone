@@ -6317,8 +6317,14 @@ const supabasePublishableKey =
         venturePublicOverviews:
           [],
 
+        ventureActivity:
+          [],
+
         ventureFileTarget:
           null,
+
+        venturePendingFiles:
+          [],
 
         currentVentureId:
           null,
@@ -7378,6 +7384,7 @@ const supabasePublishableKey =
             loadVentureWorkspaceItems(),
             loadVentureAttachments(),
             loadVenturePublicOverviews(),
+            loadVentureActivity(),
             loadEvidence(),
             loadFieldNoteEvents(),
             loadVentureMilestones(),
@@ -11559,6 +11566,23 @@ const supabasePublishableKey =
       }
 
 
+      async function loadVentureActivity() {
+        const { data, error } = await supabase
+          .from("venture_activity_log")
+          .select("*")
+          .order("created_at", { ascending: false })
+          .limit(100);
+
+        if (error) {
+          showToast(`Could not load venture activity: ${error.message}`, "error");
+          return;
+        }
+
+        state.ventureActivity = data || [];
+        renderVenturesDashboard();
+      }
+
+
       async function loadVentureAttachments() {
         const { data, error } = await supabase.from("venture_attachments").select("*").order("sort_order", { ascending: true }).order("created_at", { ascending: true });
         if (error) { showToast(`Could not load private venture files: ${error.message}`, "error"); return; }
@@ -11626,6 +11650,51 @@ const supabasePublishableKey =
         $("#venture-public-highlights").value = Array.isArray(overview?.public_highlights) ? overview.public_highlights.join("\n") : "";
         $("#venture-public-image-url").value = overview?.public_image_url || "";
         $("#venture-public-website-url").value = overview?.public_website_url || "";
+        renderVenturePublicCompare();
+      }
+
+
+      function renderVenturePublicCompare() {
+        const venture = state.ventures.find((item)=>String(item.id)===String($("#venture-record-id")?.value));
+        if (!venture) return;
+        const privatePanel=$("#venture-private-compare");
+        const preview=$("#venture-public-live-preview");
+        if(privatePanel){
+          privatePanel.innerHTML=`
+            <p class="venture-file-name">${escapeHtml(venture.name)}</p>
+            ${venture.tagline ? `<p class="row-description">${escapeHtml(venture.tagline)}</p>` : ""}
+            <div class="row-meta">${[venture.venture_status,venture.role,venture.sector,venture.location].filter(Boolean).map((value)=>`<span>${escapeHtml(value)}</span>`).join("<span>•</span>")}</div>
+            ${venture.description ? `<p class="row-description">${escapeHtml(venture.description)}</p>` : ""}
+          `;
+        }
+        if(preview){
+          const highlights=$("#venture-public-highlights").value.split("\n").map((x)=>x.trim()).filter(Boolean);
+          preview.innerHTML=`
+            <div class="venture-meta-line">
+              <span class="status-pill ${$("#venture-public-visible").checked ? "active":"draft"}">${$("#venture-public-visible").checked ? "Public":"Hidden"}</span>
+              ${$("#venture-public-status").value.trim() ? `<span>${escapeHtml($("#venture-public-status").value.trim())}</span>` : ""}
+            </div>
+            <h3 class="panel-title" style="margin-top:10px;">${escapeHtml($("#venture-public-title").value.trim() || venture.name)}</h3>
+            ${$("#venture-public-tagline").value.trim() ? `<p class="panel-copy">${escapeHtml($("#venture-public-tagline").value.trim())}</p>` : ""}
+            ${$("#venture-public-summary").value.trim() ? `<p class="row-description">${escapeHtml($("#venture-public-summary").value.trim())}</p>` : ""}
+            ${highlights.length ? `<ul>${highlights.map((x)=>`<li class="row-description">${escapeHtml(x)}</li>`).join("")}</ul>` : ""}
+          `;
+        }
+      }
+
+
+      function copyPrivateToPublic() {
+        const venture=state.ventures.find((item)=>String(item.id)===String($("#venture-record-id")?.value));
+        if(!venture)return;
+        $("#venture-public-title").value=venture.name||"";
+        $("#venture-public-tagline").value=venture.tagline||"";
+        $("#venture-public-status").value=venture.venture_status||"";
+        $("#venture-public-role").value=venture.role||"";
+        $("#venture-public-sector").value=venture.sector||"";
+        $("#venture-public-location").value=venture.location||"";
+        $("#venture-public-summary").value=venture.description||"";
+        renderVenturePublicCompare();
+        showToast("Private fields copied into the public draft. Nothing has been published.");
       }
 
 
@@ -12349,83 +12418,410 @@ const supabasePublishableKey =
       }
 
 
+      function ventureById(id) {
+        return state.ventures.find((venture) => String(venture.id) === String(id)) || null;
+      }
+
+
+      function daysSinceDate(value) {
+        if (!value) return null;
+        const date = new Date(String(value).length === 10 ? `${value}T12:00:00` : value);
+        if (Number.isNaN(date.getTime())) return null;
+        return Math.floor((Date.now() - date.getTime()) / 86400000);
+      }
+
+
+      function ventureAttentionRow({ title, meta, ventureId, section = "venture-home", icon = "!" }) {
+        return `
+          <div class="venture-focus-row">
+            <span class="venture-check">${escapeHtml(icon)}</span>
+            <div>
+              <p class="venture-focus-title">${escapeHtml(title)}</p>
+              <div class="venture-focus-meta">${escapeHtml(meta)}</div>
+            </div>
+            ${ventureId ? `<button class="quiet-button" type="button" data-open-venture-workspace="${escapeHtml(ventureId)}" data-venture-open-section="${escapeHtml(section)}">Open</button>` : ""}
+          </div>
+        `;
+      }
+
+
+      function renderVentureActivity() {
+        const container = $("#ventures-activity-list");
+        if (!container) return;
+        const rows = state.ventureActivity.slice(0, 12);
+        container.innerHTML = rows.length
+          ? rows.map((item) => {
+              const venture = ventureById(item.venture_id);
+              const when = item.created_at ? new Date(item.created_at).toLocaleString([], { month:"short", day:"numeric", hour:"numeric", minute:"2-digit" }) : "";
+              return `
+                <div class="venture-activity-row">
+                  <div>
+                    <div class="venture-search-result-title">${escapeHtml(item.title || "Venture item")}</div>
+                    <div class="venture-search-result-meta">${escapeHtml(venture?.name || "Venture")} · ${escapeHtml(item.action || "updated")} ${escapeHtml(item.entity_type || "")} · ${escapeHtml(when)}</div>
+                  </div>
+                  ${venture ? `<button class="quiet-button" type="button" data-open-venture-workspace="${escapeHtml(venture.id)}">Open</button>` : ""}
+                </div>
+              `;
+            }).join("")
+          : '<div class="empty-state"><strong>No activity yet</strong>New venture changes will appear here automatically.</div>';
+      }
+
+
+      function ventureDocumentKind(file) {
+        const mime = String(file.mime_type || "").toLowerCase();
+        const name = String(file.display_name || file.original_name || "").toLowerCase();
+        if (mime.startsWith("image/")) return "image";
+        if (mime === "application/pdf" || name.endsWith(".pdf")) return "pdf";
+        if (mime.includes("spreadsheet") || mime.includes("excel") || /\.(xlsx?|csv)$/.test(name)) return "spreadsheet";
+        return "document";
+      }
+
+
+      function ventureAttachmentTargetLabel(file) {
+        if (file.entity_type === "venture") return ventureById(file.venture_id)?.name || "Venture";
+        if (file.entity_type === "task") return state.ventureTasks.find((item) => String(item.id) === String(file.entity_id))?.title || "Task";
+        if (file.entity_type === "milestone") return state.ventureMilestones.find((item) => String(item.id) === String(file.entity_id))?.title || "Milestone";
+        if (file.entity_type === "workspace_item") return state.ventureWorkspaceItems.find((item) => String(item.id) === String(file.entity_id))?.title || "Workspace card";
+        return "Venture item";
+      }
+
+
+      function renderVentureDocumentCenter() {
+        const container = $("#ventures-documents-list");
+        if (!container) return;
+        const filter = $("#venture-document-filter")?.value || "all";
+        const query = $("#venture-document-search")?.value.trim().toLowerCase() || "";
+
+        const items = state.ventureAttachments
+          .filter((file) => !file.archived_at)
+          .filter((file) => filter === "all" || ventureDocumentKind(file) === filter)
+          .filter((file) => {
+            if (!query) return true;
+            const venture = ventureById(file.venture_id);
+            return [
+              file.display_name,file.original_name,file.category,file.source_label,
+              ...(Array.isArray(file.tags) ? file.tags : []),
+              venture?.name,ventureAttachmentTargetLabel(file)
+            ].filter(Boolean).some((value) => String(value).toLowerCase().includes(query));
+          })
+          .sort((a,b) => String(b.updated_at || b.created_at || "").localeCompare(String(a.updated_at || a.created_at || "")));
+
+        container.innerHTML = items.length
+          ? items.slice(0, 15).map((file) => {
+              const venture = ventureById(file.venture_id);
+              return `
+                <div class="venture-document-row">
+                  <div>
+                    <div class="venture-search-result-title">${escapeHtml(file.display_name || file.original_name || "File")}</div>
+                    <div class="venture-search-result-meta">${escapeHtml(venture?.name || "Venture")} · ${escapeHtml(ventureAttachmentTargetLabel(file))} · ${escapeHtml(ventureDocumentKind(file))}${file.category ? ` · ${escapeHtml(file.category)}` : ""}</div>
+                  </div>
+                  <button class="quiet-button" type="button" data-open-venture-file="${escapeHtml(file.id)}">Open</button>
+                </div>
+              `;
+            }).join("")
+          : '<div class="empty-state"><strong>No matching files</strong>Private attachments from every venture will appear here.</div>';
+      }
+
+
       function renderVenturesDashboard() {
         const stats = $("#ventures-dashboard-stats");
-        const overdueList = $("#ventures-overdue-list");
-        const upcomingList = $("#ventures-upcoming-list");
+        const weekList = $("#ventures-this-week-list");
+        const blockersList = $("#ventures-blockers-list");
+        const attentionList = $("#ventures-attention-list");
         const milestonesList = $("#ventures-milestones-list");
-        if (!stats || !overdueList || !upcomingList || !milestonesList) return;
+        if (!stats || !weekList || !blockersList || !attentionList || !milestonesList) return;
 
         const activeVentures = state.ventures.filter((venture) =>
-          !["paused", "archived"].includes(venture.venture_status)
+          !["paused", "archived"].includes(venture.venture_status) && !venture.archived_at
         );
-        const openTasks = state.ventureTasks.filter((task) => !isVentureTaskDone(task));
-        const doneTasks = state.ventureTasks.filter(isVentureTaskDone);
+        const openTasks = state.ventureTasks.filter((task) => !task.archived_at && !isVentureTaskDone(task));
+        const doneTasks = state.ventureTasks.filter((task) => !task.archived_at && isVentureTaskDone(task));
+        const waiting = openTasks.filter((task) => ventureTaskStatus(task) === "waiting");
+        const actionable = openTasks.filter((task) => ventureTaskStatus(task) !== "waiting");
         const today = localDateKey();
-        const in14Days = dateKeyPlusDays(14);
-        const overdue = openTasks
+        const in7Days = dateKeyPlusDays(7);
+        const overdue = actionable
           .filter((task) => task.due_date && task.due_date < today)
-          .sort((a, b) => String(a.due_date).localeCompare(String(b.due_date)));
-        const upcoming = openTasks
-          .filter((task) => task.due_date && task.due_date >= today && task.due_date <= in14Days)
-          .sort((a, b) => String(a.due_date).localeCompare(String(b.due_date)));
-        const completion = state.ventureTasks.length
-          ? Math.round((doneTasks.length / state.ventureTasks.length) * 100)
+          .sort((a,b) => String(a.due_date).localeCompare(String(b.due_date)));
+
+        const thisWeek = actionable
+          .filter((task) => (task.due_date && task.due_date >= today && task.due_date <= in7Days) || (!task.due_date && task.priority === "high"))
+          .sort((a,b) => {
+            const priority = { high:0, medium:1, low:2 };
+            return (priority[a.priority] ?? 1) - (priority[b.priority] ?? 1)
+              || String(a.due_date || "9999-12-31").localeCompare(String(b.due_date || "9999-12-31"));
+          });
+
+        const completion = doneTasks.length + openTasks.length
+          ? Math.round((doneTasks.length / (doneTasks.length + openTasks.length)) * 100)
           : 0;
+
+        const activeFiles = state.ventureAttachments.filter((file) => !file.archived_at);
 
         stats.innerHTML = `
           <div class="stat-card"><div class="stat-value">${activeVentures.length}</div><div class="stat-label">Active Ventures</div><div class="stat-meta">${state.ventures.length} total</div></div>
-          <div class="stat-card"><div class="stat-value">${openTasks.length}</div><div class="stat-label">Open Tasks</div><div class="stat-meta">${completion}% completed overall</div></div>
-          <div class="stat-card"><div class="stat-value">${upcoming.length}</div><div class="stat-label">Due in 14 Days</div><div class="stat-meta">${upcoming.length ? "Upcoming execution" : "No near-term deadlines"}</div></div>
-          <div class="stat-card"><div class="stat-value">${overdue.length}</div><div class="stat-label">Overdue</div><div class="stat-meta">${overdue.length ? "Needs attention" : "Everything on track"}</div></div>
+          <div class="stat-card"><div class="stat-value">${actionable.length}</div><div class="stat-label">Actionable Tasks</div><div class="stat-meta">${completion}% completed overall</div></div>
+          <div class="stat-card"><div class="stat-value">${waiting.length}</div><div class="stat-label">Waiting / Blocked</div><div class="stat-meta">${overdue.length} overdue actionable</div></div>
+          <div class="stat-card"><div class="stat-value">${activeFiles.length}</div><div class="stat-label">Private Files</div><div class="stat-meta">Across all ventures</div></div>
         `;
 
-        overdueList.innerHTML = overdue.length
-          ? overdue.slice(0, 7).map(ventureFocusRow).join("")
-          : `<div class="empty-state"><strong>All clear</strong>No overdue venture tasks.</div>`;
+        weekList.innerHTML = thisWeek.length
+          ? thisWeek.slice(0,7).map(ventureFocusRow).join("")
+          : '<div class="empty-state"><strong>Nothing urgent this week</strong>High-priority undated tasks also appear here.</div>';
 
-        upcomingList.innerHTML = upcoming.length
-          ? upcoming.slice(0, 7).map(ventureFocusRow).join("")
-          : `<div class="empty-state"><strong>No near-term deadlines</strong>Add due dates to tasks and the next two weeks will appear here.</div>`;
+        blockersList.innerHTML = waiting.length
+          ? waiting.slice(0,7).map(ventureFocusRow).join("")
+          : '<div class="empty-state"><strong>No blockers</strong>No venture tasks are currently marked Waiting.</div>';
+
+        const attention = [
+          ...overdue.slice(0,4).map((task) => ({
+            title: task.title,
+            meta: `${ventureById(task.venture_id)?.name || "Venture"} · overdue ${task.due_date ? formatDate(task.due_date) : ""}`,
+            ventureId: task.venture_id,
+            section: "venture-execution",
+            icon: "!"
+          }))
+        ];
+
+        activeVentures.forEach((venture) => {
+          if (attention.length >= 8) return;
+          const openForVenture = openTasks.filter((task) => String(task.venture_id) === String(venture.id));
+          if (!openForVenture.length && !venture.next_milestone) {
+            attention.push({ title: venture.name, meta: "No open task and no current focus", ventureId: venture.id, icon: "→" });
+            return;
+          }
+          const last = venture.last_update_at || venture.updated_at;
+          const staleDays = daysSinceDate(last);
+          if (staleDays !== null && staleDays >= 60) {
+            attention.push({ title: venture.name, meta: `No meaningful update for ${staleDays} days`, ventureId: venture.id, icon: "◷" });
+          }
+        });
+
+        attentionList.innerHTML = attention.length
+          ? attention.slice(0,8).map(ventureAttentionRow).join("")
+          : '<div class="empty-state"><strong>Portfolio is current</strong>No overdue, stale or next-action gaps detected.</div>';
 
         const plannedMilestones = state.ventureMilestones
-          .filter((item) => item.status === "planned")
+          .filter((item) => !item.archived_at && item.status === "planned")
           .filter((item) => activeVentures.some((venture) => String(venture.id) === String(item.venture_id)))
-          .sort((a, b) => String(a.milestone_date || "9999-12-31").localeCompare(String(b.milestone_date || "9999-12-31")))
-          .slice(0, 7);
+          .sort((a,b) => String(a.milestone_date || "9999-12-31").localeCompare(String(b.milestone_date || "9999-12-31")))
+          .slice(0,7);
 
         const fallbackFocus = activeVentures
           .filter((venture) => venture.next_milestone && !plannedMilestones.some((item) => String(item.venture_id) === String(venture.id)))
-          .slice(0, Math.max(0, 7 - plannedMilestones.length));
+          .slice(0,Math.max(0,7-plannedMilestones.length));
 
-        const milestoneMarkup = [
+        milestonesList.innerHTML = [
           ...plannedMilestones.map((item) => {
-            const venture = state.ventures.find((candidate) => String(candidate.id) === String(item.venture_id));
-            return `
-              <div class="venture-focus-row">
-                <span class="venture-check">◇</span>
-                <div>
-                  <p class="venture-focus-title">${escapeHtml(item.title)}</p>
-                  <div class="venture-focus-meta">${escapeHtml(venture?.name || "Venture")}${item.milestone_date ? ` · ${escapeHtml(formatDate(item.milestone_date))}` : " · No date"}</div>
-                </div>
-                ${venture ? `<button class="quiet-button" type="button" data-open-venture-workspace="${escapeHtml(venture.id)}" data-venture-open-section="venture-milestones">Open</button>` : ""}
-              </div>
-            `;
+            const venture = ventureById(item.venture_id);
+            return ventureAttentionRow({
+              title:item.title,
+              meta:`${venture?.name || "Venture"}${item.milestone_date ? ` · ${formatDate(item.milestone_date)}` : " · No date"}`,
+              ventureId:item.venture_id,
+              section:"venture-milestones",
+              icon:"◇"
+            });
           }),
-          ...fallbackFocus.map((venture) => `
-            <div class="venture-focus-row">
-              <span class="venture-check">→</span>
-              <div>
-                <p class="venture-focus-title">${escapeHtml(venture.next_milestone)}</p>
-                <div class="venture-focus-meta">${escapeHtml(venture.name)} · Current focus</div>
-              </div>
-              <button class="quiet-button" type="button" data-open-venture-workspace="${escapeHtml(venture.id)}" data-venture-open-section="venture-milestones">Open</button>
-            </div>
-          `)
-        ].join("");
+          ...fallbackFocus.map((venture) => ventureAttentionRow({
+            title:venture.next_milestone,
+            meta:`${venture.name} · Current focus`,
+            ventureId:venture.id,
+            icon:"→"
+          }))
+        ].join("") || '<div class="empty-state"><strong>No milestones yet</strong>Add a milestone or current focus to a venture.</div>';
 
-        milestonesList.innerHTML = milestoneMarkup
-          || `<div class="empty-state"><strong>No milestones yet</strong>Add a milestone or current focus to a venture.</div>`;
+        renderVentureActivity();
+        renderVentureDocumentCenter();
+      }
+
+      function ventureSearchEntries() {
+        const entries = [];
+
+        state.ventures.filter((item) => !item.archived_at).forEach((venture) => entries.push({
+          type:"Venture", id:venture.id, ventureId:venture.id, title:venture.name,
+          text:[venture.tagline,venture.description,venture.sector,venture.role,venture.location,venture.next_milestone,venture.last_update].filter(Boolean).join(" "),
+          action:"venture"
+        }));
+
+        state.ventureTasks.filter((item) => !item.archived_at).forEach((task) => entries.push({
+          type:"Task", id:task.id, ventureId:task.venture_id, title:task.title,
+          text:[task.description,task.priority,task.task_status,task.due_date].filter(Boolean).join(" "),
+          action:"task"
+        }));
+
+        state.ventureMilestones.filter((item) => !item.archived_at).forEach((item) => entries.push({
+          type:"Milestone", id:item.id, ventureId:item.venture_id, title:item.title,
+          text:[item.notes,item.status,item.milestone_date].filter(Boolean).join(" "),
+          action:"milestone"
+        }));
+
+        state.ventureWorkspaceItems.filter((item) => !item.archived_at).forEach((item) => entries.push({
+          type:"Card", id:item.id, ventureId:item.venture_id, title:item.title,
+          text:[item.module_key,item.item_type,item.status,item.summary,item.notes,item.source_url].filter(Boolean).join(" "),
+          action:"workspace_item"
+        }));
+
+        state.ventureAttachments.filter((item) => !item.archived_at).forEach((item) => entries.push({
+          type:"Private File", id:item.id, ventureId:item.venture_id, title:item.display_name || item.original_name || "File",
+          text:[item.original_name,item.category,item.source_label,...(Array.isArray(item.tags)?item.tags:[])].filter(Boolean).join(" "),
+          action:"attachment"
+        }));
+
+        return entries;
+      }
+
+
+      function filteredVentureSearchEntries(query) {
+        const q = String(query || "").trim().toLowerCase();
+        if (!q) return [];
+        return ventureSearchEntries()
+          .map((entry) => {
+            const venture = ventureById(entry.ventureId);
+            const haystack = [entry.title,entry.type,entry.text,venture?.name].filter(Boolean).join(" ").toLowerCase();
+            const score = String(entry.title || "").toLowerCase().startsWith(q) ? 0 : haystack.includes(q) ? 1 : 99;
+            return { ...entry, ventureName:venture?.name || "Venture", score };
+          })
+          .filter((entry) => entry.score < 99)
+          .sort((a,b) => a.score-b.score || a.title.localeCompare(b.title))
+          .slice(0,20);
+      }
+
+
+      function searchResultMarkup(entry, command = false) {
+        return `
+          <button class="${command ? "venture-command-result" : "venture-search-result"}" type="button"
+            data-venture-search-action="${escapeHtml(entry.action)}"
+            data-venture-search-id="${escapeHtml(entry.id)}"
+            data-venture-search-venture="${escapeHtml(entry.ventureId)}">
+            <span>
+              <span class="venture-search-result-title">${escapeHtml(entry.title)}</span>
+              <span class="venture-search-result-meta">${escapeHtml(entry.ventureName || "Venture")}</span>
+            </span>
+            <span class="venture-search-type">${escapeHtml(entry.type)}</span>
+          </button>
+        `;
+      }
+
+
+      function renderUniversalVentureSearch() {
+        const input = $("#venture-universal-search");
+        const container = $("#venture-universal-results");
+        if (!input || !container) return;
+        const items = filteredVentureSearchEntries(input.value);
+        container.classList.toggle("hidden", !input.value.trim());
+        container.innerHTML = input.value.trim()
+          ? (items.length ? items.map((item) => searchResultMarkup(item)).join("") : '<div class="empty-state"><strong>No matches</strong>Try another venture, task or filename.</div>')
+          : "";
+      }
+
+
+      function executeVentureSearchResult(action,id,ventureId) {
+        $("#venture-universal-results")?.classList.add("hidden");
+        closeModal("venture-command");
+
+        if (action === "venture") { enterVenture(ventureId); return; }
+        if (action === "task") {
+          enterVenture(ventureId,"venture-execution");
+          window.setTimeout(() => openVentureTaskEditor(id),0);
+          return;
+        }
+        if (action === "milestone") {
+          enterVenture(ventureId,"venture-milestones");
+          window.setTimeout(() => openVentureMilestoneEditor(id),0);
+          return;
+        }
+        if (action === "workspace_item") {
+          const item = state.ventureWorkspaceItems.find((entry) => String(entry.id) === String(id));
+          if (!item) return;
+          enterVenture(ventureId);
+          window.setTimeout(() => {
+            openVentureModule(item.module_key);
+            openVentureWorkspaceItem(item.id);
+          },0);
+          return;
+        }
+        if (action === "attachment") {
+          const file = state.ventureAttachments.find((entry) => String(entry.id) === String(id));
+          if (!file) return;
+          openVentureFiles(file.entity_type,file.entity_id);
+          return;
+        }
+      }
+
+
+      function commandItems(query = "") {
+        const current = currentVenture();
+        const commands = [
+          { type:"Action", id:"new-venture", ventureId:"", title:"Create new venture", ventureName:"Portfolio", action:"command:new-venture" },
+          { type:"Action", id:"all-ventures", ventureId:"", title:"Open All Ventures", ventureName:"Portfolio", action:"command:all-ventures" },
+          { type:"Action", id:"export-portfolio", ventureId:"", title:"Export portfolio backup", ventureName:"JSON + file manifest", action:"command:export-portfolio" }
+        ];
+        if (current) {
+          commands.push(
+            { type:"Action", id:"new-task", ventureId:current.id, title:`New task for ${current.name}`, ventureName:current.name, action:"command:new-task" },
+            { type:"Action", id:"files", ventureId:current.id, title:`Private files for ${current.name}`, ventureName:current.name, action:"command:files" },
+            { type:"Action", id:"public", ventureId:current.id, title:`Edit public overview for ${current.name}`, ventureName:current.name, action:"command:public" },
+            { type:"Action", id:"export-venture", ventureId:current.id, title:`Export ${current.name}`, ventureName:"JSON + file manifest", action:"command:export-venture" }
+          );
+        }
+        const q=String(query||"").trim().toLowerCase();
+        const filteredCommands=q ? commands.filter((item)=>[item.title,item.ventureName].join(" ").toLowerCase().includes(q)) : commands;
+        return [...filteredCommands,...filteredVentureSearchEntries(q)].slice(0,24);
+      }
+
+
+      function renderCommandPalette() {
+        const input=$("#venture-command-input");
+        const container=$("#venture-command-results");
+        if(!input||!container)return;
+        container.innerHTML=commandItems(input.value).map((item)=>searchResultMarkup(item,true)).join("");
+      }
+
+
+      function openCommandPalette() {
+        $("#venture-command-modal").removeAttribute("hidden");
+        $("#venture-command-modal").classList.remove("hidden");
+        document.body.style.overflow="hidden";
+        $("#venture-command-input").value="";
+        renderCommandPalette();
+        window.setTimeout(()=>$("#venture-command-input").focus(),0);
+      }
+
+
+      function downloadJson(filename,payload) {
+        const blob=new Blob([JSON.stringify(payload,null,2)],{type:"application/json"});
+        const url=URL.createObjectURL(blob);
+        const a=document.createElement("a");
+        a.href=url;a.download=filename;document.body.appendChild(a);a.click();a.remove();
+        window.setTimeout(()=>URL.revokeObjectURL(url),1000);
+      }
+
+
+      function ventureExportPayload(venture) {
+        return {
+          exported_at:new Date().toISOString(),
+          venture,
+          public_overview:publicOverviewForVenture(venture.id),
+          tasks:state.ventureTasks.filter((item)=>String(item.venture_id)===String(venture.id)),
+          milestones:state.ventureMilestones.filter((item)=>String(item.venture_id)===String(venture.id)),
+          workspace_items:state.ventureWorkspaceItems.filter((item)=>String(item.venture_id)===String(venture.id)),
+          private_file_manifest:state.ventureAttachments.filter((item)=>String(item.venture_id)===String(venture.id)),
+          activity:state.ventureActivity.filter((item)=>String(item.venture_id)===String(venture.id))
+        };
+      }
+
+
+      function exportVenture(venture=currentVenture()) {
+        if(!venture)return;
+        downloadJson(`${slugify(venture.name)}-venture-backup-${localDateKey()}.json`,ventureExportPayload(venture));
+      }
+
+
+      function exportVenturePortfolio() {
+        downloadJson(`venture-portfolio-backup-${localDateKey()}.json`,{
+          exported_at:new Date().toISOString(),
+          ventures:state.ventures.map(ventureExportPayload)
+        });
       }
 
 
@@ -12556,6 +12952,7 @@ const supabasePublishableKey =
         $("#venture-record-id").value = "";
         $("#venture-modal-title").textContent = "New Venture";
         $("#venture-status").value = "idea";
+        $("#venture-template").value = "blank";
         $("#venture-public-ready").checked = false;
         resetVenturePublicOverviewFields();
         $("#venture-last-update").value = "";
@@ -12585,6 +12982,7 @@ const supabasePublishableKey =
           $("#venture-name").value = item.name || "";
           $("#venture-tagline").value = item.tagline || "";
           $("#venture-status").value = item.venture_status || "idea";
+          $("#venture-template").value = item.template_key || "blank";
           $("#venture-role").value = item.role || "";
           $("#venture-sector").value = item.sector || "";
           $("#venture-location").value = item.location || "";
@@ -12629,6 +13027,7 @@ const supabasePublishableKey =
           tagline: $("#venture-tagline").value.trim() || null,
           description: $("#venture-description").value.trim() || null,
           venture_status: $("#venture-status").value,
+          template_key: $("#venture-template").value || "blank",
           role: $("#venture-role").value.trim() || null,
           sector: $("#venture-sector").value.trim() || null,
           location: $("#venture-location").value.trim() || null,
@@ -13203,12 +13602,74 @@ const supabasePublishableKey =
       }
 
 
+      const ventureTemplateConfig = {
+        blank: { subtitle: "Venture workspace", modules: [] },
+        hardware: {
+          subtitle: "Hardware product workspace",
+          modules: [
+            { key: "product", label: "Product", description: "Product definition, requirements, prototypes and iterations." },
+            { key: "market", label: "Market", description: "Users, positioning, competitors and validation." },
+            { key: "supply-chain", label: "Supply Chain", description: "Suppliers, manufacturing, costing and sourcing." },
+            { key: "validation", label: "Validation", description: "Tests, pilot feedback and evidence." }
+          ]
+        },
+        software: {
+          subtitle: "Software venture workspace",
+          modules: [
+            { key: "product", label: "Product", description: "Product definition, UX, roadmap and releases." },
+            { key: "customers", label: "Customers", description: "Customer discovery, pilots and accounts." },
+            { key: "integrations", label: "Integrations", description: "Platforms, APIs and implementation dependencies." },
+            { key: "metrics", label: "Metrics", description: "Adoption, usage, revenue and operating metrics." }
+          ]
+        },
+        "real-estate": {
+          subtitle: "Real estate workspace",
+          modules: [
+            { key: "property", label: "Property", description: "Property details, condition and improvements." },
+            { key: "operations", label: "Operations", description: "Rental, maintenance and operating work." },
+            { key: "financials", label: "Financials", description: "Valuation, financing, costs and returns." },
+            { key: "documents", label: "Documents", description: "Property, legal, tax and operating records." }
+          ]
+        },
+        hospitality: {
+          subtitle: "Hospitality workspace",
+          modules: [
+            { key: "concept", label: "Concept", description: "Positioning, guest promise and experience design." },
+            { key: "property", label: "Property & Development", description: "Land, facilities, development and infrastructure." },
+            { key: "experiences", label: "Experiences", description: "Programming, partners and guest activities." },
+            { key: "operations", label: "Operations", description: "Staffing, systems, vendors and operating plan." },
+            { key: "financials", label: "Financials", description: "Capital needs, financing and operating economics." }
+          ]
+        },
+        "import-distribution": {
+          subtitle: "Import & distribution workspace",
+          modules: [
+            { key: "regulatory", label: "Regulatory", description: "Licenses, approvals, registrations and compliance." },
+            { key: "brands", label: "Brands", description: "Portfolio brands, products and commercial terms." },
+            { key: "distribution", label: "Distribution", description: "Territories, logistics, pricing and channel strategy." },
+            { key: "accounts", label: "Accounts", description: "Target customers, pipeline and commercial relationships." }
+          ]
+        },
+        "content-community": {
+          subtitle: "Content & community workspace",
+          modules: [
+            { key: "content", label: "Content", description: "Editorial pipeline and publishing." },
+            { key: "website", label: "Website", description: "Website experience and CMS operations." },
+            { key: "community", label: "Community", description: "Programs, events, partners and community growth." }
+          ]
+        }
+      };
+
+
       function workspaceConfigFor(venture = currentVenture()) {
         if (!venture) return { subtitle: "Venture workspace", modules: [] };
         const configured = isSoleilAndStoneVenture(venture)
           ? ventureWorkspaceConfig["soleil-and-stone"]
           : ventureWorkspaceConfig[venture.slug];
         if (configured) return configured;
+
+        const templated = ventureTemplateConfig[venture.template_key || "blank"];
+        if (templated && templated.modules.length) return templated;
 
         const dynamicModules = [...new Set(
           state.ventureWorkspaceItems
@@ -13411,6 +13872,7 @@ const supabasePublishableKey =
                 <p class="venture-context-description">${escapeHtml(venture.description || venture.tagline || "")}</p>
               </div>
               <div class="venture-context-actions">
+                <button class="secondary-button" type="button" data-export-current-venture>Export</button>
                 <button class="secondary-button" type="button" data-edit-current-venture="overview">Edit Venture</button>
                 <button class="primary-button" type="button" data-context-add-task>+ Task</button>
               </div>
