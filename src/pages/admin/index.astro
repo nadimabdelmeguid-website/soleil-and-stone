@@ -6168,6 +6168,34 @@ const supabasePublishableKey =
     </div>
 
 
+    <div id="venture-file-details-modal" class="modal-backdrop hidden" hidden role="dialog" aria-modal="true" aria-labelledby="venture-file-details-title">
+      <form id="venture-file-details-form" class="modal">
+        <div class="modal-header">
+          <div><p class="eyebrow">Private File Details</p><h2 id="venture-file-details-title" class="modal-title">File Details</h2></div>
+          <button class="quiet-button" type="button" data-close-modal="venture-file-details">Close</button>
+        </div>
+        <div class="modal-body">
+          <input id="venture-file-details-id" type="hidden" />
+          <div class="form-grid">
+            <div class="form-field full"><label class="label" for="venture-file-details-name">Display name</label><input id="venture-file-details-name" class="input" /></div>
+            <div class="form-field full"><label class="label" for="venture-file-details-caption">Description</label><textarea id="venture-file-details-caption" class="textarea"></textarea></div>
+            <div class="form-field"><label class="label" for="venture-file-details-category">Category</label><input id="venture-file-details-category" class="input" /></div>
+            <div class="form-field"><label class="label" for="venture-file-details-date">Document date</label><input id="venture-file-details-date" class="input" type="date" /></div>
+            <div class="form-field"><label class="label" for="venture-file-details-tags">Tags</label><input id="venture-file-details-tags" class="input" placeholder="comma, separated" /></div>
+            <div class="form-field"><label class="label" for="venture-file-details-source">Source</label><input id="venture-file-details-source" class="input" /></div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <span>Private metadata</span>
+          <div class="modal-footer-right">
+            <button class="secondary-button" type="button" data-close-modal="venture-file-details">Cancel</button>
+            <button id="save-venture-file-details-button" class="primary-button" type="submit">Save Details</button>
+          </div>
+        </div>
+      </form>
+    </div>
+
+
     <div id="workspace-task-modal" class="modal-backdrop hidden" hidden role="dialog" aria-modal="true">
       <form id="workspace-task-form" class="modal">
         <div class="modal-header"><div><p class="eyebrow">My Dashboard</p><h2 class="modal-title">Edit Task</h2></div><button class="quiet-button" type="button" data-close-modal="workspace-task">Close</button></div>
@@ -11707,6 +11735,10 @@ const supabasePublishableKey =
       async function saveVenturePublicOverview(venture) {
         if (!venture?.id) return;
         const highlights = $("#venture-public-highlights").value.split("\n").map((value) => value.trim()).filter(Boolean);
+        const publicImageUrl=$("#venture-public-image-url").value.trim() || null;
+        if(publicImageUrl && (publicImageUrl.includes("venture-private-files") || publicImageUrl.includes("/storage/v1/object/sign/"))){
+          throw new Error("Private signed-storage links cannot be used as public venture images. Choose a deliberately public image instead.");
+        }
         const payload = {
           venture_id: venture.id,
           is_visible: $("#venture-public-visible").checked,
@@ -11718,7 +11750,7 @@ const supabasePublishableKey =
           public_location: $("#venture-public-location").value.trim() || null,
           public_summary: $("#venture-public-summary").value.trim() || null,
           public_highlights: highlights,
-          public_image_url: $("#venture-public-image-url").value.trim() || null,
+          public_image_url: publicImageUrl,
           public_website_url: $("#venture-public-website-url").value.trim() || null,
           sort_order: Number($("#venture-sort-order").value || 0)
         };
@@ -11786,9 +11818,11 @@ const supabasePublishableKey =
                 <div class="venture-file-meta">${escapeHtml(file.mime_type || "File")} · ${escapeHtml(readableFileSize(file.file_size))}${file.category ? ` · ${escapeHtml(file.category)}` : ""}${file.document_date ? ` · ${escapeHtml(formatDate(file.document_date))}` : ""}</div>
                 ${Array.isArray(file.tags) && file.tags.length ? `<div class="venture-file-meta">Tags: ${file.tags.map((tag)=>escapeHtml(tag)).join(", ")}</div>` : ""}
                 ${file.source_label ? `<div class="venture-file-meta">Source: ${escapeHtml(file.source_label)}</div>` : ""}
+                ${file.caption ? `<div class="row-description" style="margin-top:6px;">${escapeHtml(file.caption)}</div>` : ""}
               </div>
               <div class="venture-file-actions">
                 <button class="secondary-button" type="button" data-open-venture-file="${escapeHtml(file.id)}">Open</button>
+                <button class="secondary-button" type="button" data-edit-venture-file="${escapeHtml(file.id)}">Details</button>
                 <button class="danger-button" type="button" data-delete-venture-file="${escapeHtml(file.id)}">Archive</button>
               </div>
             </div>
@@ -11882,6 +11916,42 @@ const supabasePublishableKey =
         await renderVentureFilesModal();
         showToast(count===1 ? "Private file uploaded." : `${count} private files uploaded.`);
       }
+
+      function openVentureFileDetails(fileId) {
+        const file=state.ventureAttachments.find((item)=>String(item.id)===String(fileId));
+        if(!file)return;
+        $("#venture-file-details-id").value=file.id;
+        $("#venture-file-details-title").textContent=file.display_name||file.original_name||"File Details";
+        $("#venture-file-details-name").value=file.display_name||file.original_name||"";
+        $("#venture-file-details-caption").value=file.caption||"";
+        $("#venture-file-details-category").value=file.category||"";
+        $("#venture-file-details-date").value=file.document_date||"";
+        $("#venture-file-details-tags").value=Array.isArray(file.tags)?file.tags.join(", "):"";
+        $("#venture-file-details-source").value=file.source_label||"";
+        $("#venture-file-details-modal").removeAttribute("hidden");
+        $("#venture-file-details-modal").classList.remove("hidden");
+        document.body.style.overflow="hidden";
+      }
+
+      async function saveVentureFileDetails() {
+        const id=$("#venture-file-details-id").value;
+        if(!id)throw new Error("No private file is selected.");
+        const payload={
+          display_name:$("#venture-file-details-name").value.trim()||"File",
+          caption:$("#venture-file-details-caption").value.trim()||null,
+          category:$("#venture-file-details-category").value.trim()||null,
+          document_date:$("#venture-file-details-date").value||null,
+          tags:$("#venture-file-details-tags").value.split(",").map((tag)=>tag.trim()).filter(Boolean),
+          source_label:$("#venture-file-details-source").value.trim()||null
+        };
+        const {error}=await supabase.from("venture_attachments").update(payload).eq("id",id);
+        if(error)throw error;
+        closeModal("venture-file-details");
+        await Promise.all([loadVentureAttachments(),loadVentureActivity()]);
+        if(!$("#venture-files-modal").classList.contains("hidden"))await renderVentureFilesModal();
+        showToast("Private file details updated.");
+      }
+
 
       async function openVentureAttachment(fileId) {
         const file = state.ventureAttachments.find((item) => String(item.id) === String(fileId));
@@ -14687,6 +14757,8 @@ const supabasePublishableKey =
             "#venture-workspace-item-modal",
           "venture-files":
             "#venture-files-modal",
+          "venture-file-details":
+            "#venture-file-details-modal",
           "venture-command":
             "#venture-command-modal",
           evidence:
@@ -15882,6 +15954,9 @@ const supabasePublishableKey =
             return;
           }
 
+          const editPrivateVentureFile=event.target.closest("[data-edit-venture-file]");
+          if(editPrivateVentureFile){openVentureFileDetails(editPrivateVentureFile.dataset.editVentureFile);return;}
+
           const openPrivateVentureFile = event.target.closest("[data-open-venture-file]");
           if (openPrivateVentureFile) {
             try { await openVentureAttachment(openPrivateVentureFile.dataset.openVentureFile); }
@@ -16753,6 +16828,16 @@ const supabasePublishableKey =
         const venture=currentVenture();
         if(venture)openVentureModal(venture.id,"overview");
         else openCommandPalette();
+      });
+
+
+      $("#venture-file-details-form")?.addEventListener("submit",async(event)=>{
+        event.preventDefault();
+        const button=$("#save-venture-file-details-button");
+        setButtonLoading(button,true,"Saving...","Save Details");
+        try{await saveVentureFileDetails();}
+        catch(error){console.error(error);showToast(error?.message||"Could not save file details.","error");}
+        finally{setButtonLoading(button,false,"Saving...","Save Details");}
       });
 
 
