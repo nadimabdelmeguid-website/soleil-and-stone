@@ -14915,7 +14915,7 @@ const supabasePublishableKey =
       function adminSectionMap() {
         if (!ventureRuntimeCache.adminSections) {
           ventureRuntimeCache.adminSections = new Map(
-            $(".admin-section").map((element) => [
+            qsa(".admin-section").map((element) => [
               String(element.dataset.adminSection || ""),
               element
             ])
