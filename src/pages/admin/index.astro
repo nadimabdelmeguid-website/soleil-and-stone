@@ -14667,7 +14667,7 @@ const supabasePublishableKey =
         state.currentAdminSection = section;
 
         if (sectionChanged) {
-          $(".admin-section").forEach(
+          $$(".admin-section").forEach(
             (
               element
             ) =>
@@ -14830,7 +14830,7 @@ const supabasePublishableKey =
 
         modal?.classList.add("hidden");
         modal?.setAttribute("hidden", "");
-        const anotherModalOpen = $(".modal-backdrop").some((candidate) =>
+        const anotherModalOpen = $$(".modal-backdrop").some((candidate) =>
           !candidate.classList.contains("hidden") && !candidate.hasAttribute("hidden")
         );
         document.body.style.overflow = anotherModalOpen ? "hidden" : "";
