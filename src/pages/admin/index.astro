@@ -6416,6 +6416,22 @@ const supabasePublishableKey =
         ventureSort:
           "priority",
 
+        currentAdminSection:
+          "",
+
+        isBulkLoading:
+          false,
+
+        ventureUiFrame:
+          0,
+
+        ventureUiDirty: {
+          portfolio: false,
+          current: false,
+          sidebar: false,
+          modal: false
+        },
+
         evidence:
           [],
 
@@ -7445,9 +7461,11 @@ const supabasePublishableKey =
       }
 
       async function loadAllContent() {
+        state.isBulkLoading = true;
 
-        await Promise.all(
-          [
+        try {
+          await Promise.all(
+            [
             loadWorkspaceAreas(),
             loadWorkspaceTasks(),
             loadEvents(),
@@ -7469,8 +7487,21 @@ const supabasePublishableKey =
             loadEventSpeakers(),
             loadEventSponsors(),
             loadFeaturedContent()
-          ]
-        );
+            ]
+          );
+        } finally {
+          state.isBulkLoading = false;
+          if (state.ventureUiFrame) {
+            cancelAnimationFrame(state.ventureUiFrame);
+            state.ventureUiFrame = 0;
+          }
+          state.ventureUiDirty = {
+            portfolio: false,
+            current: false,
+            sidebar: false,
+            modal: false
+          };
+        }
 
 
         refreshCounts();
@@ -7482,6 +7513,7 @@ const supabasePublishableKey =
         renderOrganizations();
         renderPeople();
         renderVentures();
+        renderCurrentVentureContext({ sidebar: true });
         renderEvidence();
         renderEvents();
         renderFeatures();
@@ -11566,9 +11598,12 @@ const supabasePublishableKey =
           return;
         }
         state.ventureMilestones = data || [];
-        renderVentureMilestones();
-        renderVentures();
-        renderCurrentVentureContext();
+        queueVentureUiRefresh({
+          portfolio: true,
+          current: true,
+          sidebar: true,
+          modal: true
+        });
       }
 
       function refreshFieldNoteEventSelector(selected = []) {
@@ -11644,6 +11679,66 @@ const supabasePublishableKey =
       }
 
 
+      function ventureModalIsOpen() {
+        const modal = $("#venture-modal");
+        return Boolean(modal && !modal.classList.contains("hidden") && !modal.hasAttribute("hidden"));
+      }
+
+
+      function mergeVentureUiDirty(flags = {}) {
+        state.ventureUiDirty = {
+          portfolio: Boolean(state.ventureUiDirty.portfolio || flags.portfolio),
+          current: Boolean(state.ventureUiDirty.current || flags.current),
+          sidebar: Boolean(state.ventureUiDirty.sidebar || flags.sidebar),
+          modal: Boolean(state.ventureUiDirty.modal || flags.modal)
+        };
+      }
+
+
+      function flushVentureUiRefresh() {
+        if (state.ventureUiFrame) {
+          cancelAnimationFrame(state.ventureUiFrame);
+          state.ventureUiFrame = 0;
+        }
+
+        const dirty = state.ventureUiDirty;
+        state.ventureUiDirty = {
+          portfolio: false,
+          current: false,
+          sidebar: false,
+          modal: false
+        };
+
+        if (dirty.portfolio && state.currentAdminSection === "ventures") {
+          renderVentures();
+        }
+
+        if (dirty.current && state.currentVentureId) {
+          renderCurrentVentureContext({ sidebar: dirty.sidebar });
+        } else if (dirty.sidebar && state.currentVentureId) {
+          renderVentureSidebar();
+        }
+
+        if (dirty.modal && ventureModalIsOpen()) {
+          renderVentureTasks();
+          renderVentureMilestones();
+          updateVentureLiveSummary();
+          updateVenturePrivateFilesButton();
+        }
+      }
+
+
+      function queueVentureUiRefresh(flags = {}) {
+        mergeVentureUiDirty(flags);
+        if (state.isBulkLoading || state.ventureUiFrame) return;
+
+        state.ventureUiFrame = requestAnimationFrame(() => {
+          state.ventureUiFrame = 0;
+          flushVentureUiRefresh();
+        });
+      }
+
+
       async function loadVentureActivity() {
         const { data, error } = await supabase
           .from("venture_activity_log")
@@ -11657,7 +11752,7 @@ const supabasePublishableKey =
         }
 
         state.ventureActivity = data || [];
-        renderVenturesDashboard();
+        queueVentureUiRefresh({ portfolio: true });
       }
 
 
@@ -11665,12 +11760,11 @@ const supabasePublishableKey =
         const { data, error } = await supabase.from("venture_attachments").select("*").order("sort_order", { ascending: true }).order("created_at", { ascending: true });
         if (error) { showToast(`Could not load private venture files: ${error.message}`, "error"); return; }
         state.ventureAttachments = data || [];
-        renderVentureTasks();
-        renderVentureMilestones();
-        if (state.currentVentureModule) renderVentureModule();
-        renderCurrentVentureContext();
-        updateVenturePrivateFilesButton();
-        renderVentureDocumentCenter();
+        queueVentureUiRefresh({
+          portfolio: true,
+          current: true,
+          modal: true
+        });
       }
 
 
@@ -12033,7 +12127,12 @@ const supabasePublishableKey =
         }
 
         state.ventureWorkspaceItems = data || [];
-        renderCurrentVentureContext();
+        queueVentureUiRefresh({
+          portfolio: true,
+          current: true,
+          sidebar: true,
+          modal: true
+        });
       }
 
 
@@ -12050,8 +12149,12 @@ const supabasePublishableKey =
         }
 
         state.ventures = data || [];
-        renderVentures();
-        renderCurrentVentureContext();
+        queueVentureUiRefresh({
+          portfolio: true,
+          current: true,
+          sidebar: true,
+          modal: true
+        });
       }
 
 
@@ -12068,10 +12171,12 @@ const supabasePublishableKey =
         }
 
         state.ventureTasks = data || [];
-        renderVentureTasks();
-        renderVentures();
-        updateVentureLiveSummary();
-        renderCurrentVentureContext();
+        queueVentureUiRefresh({
+          portfolio: true,
+          current: true,
+          sidebar: true,
+          modal: true
+        });
       }
 
 
@@ -14011,32 +14116,58 @@ const supabasePublishableKey =
           return;
         }
 
-        renderCurrentVentureContext();
         openSection(initialSection);
       }
 
 
-      function renderCurrentVentureContext() {
+      function renderVentureSection(section = state.currentAdminSection) {
+        if (!state.currentVentureId) return;
+
+        if (section === "venture-home") {
+          renderVentureContextDashboard();
+          return;
+        }
+
+        if (section === "venture-module") {
+          renderVentureModule();
+          return;
+        }
+
+        if (section === "venture-execution") {
+          renderVentureContextExecution();
+          return;
+        }
+
+        if (section === "venture-milestones") {
+          renderVentureContextMilestones();
+          return;
+        }
+
+        if (section === "venture-notes") {
+          renderVentureContextNotes();
+        }
+      }
+
+
+      function renderCurrentVentureContext({ sidebar = false } = {}) {
         if (!state.currentVentureId) return;
 
         const venture = currentVenture();
         if (!venture) return;
 
-        if (isSoleilAndStoneVenture(venture)) {
+        if (sidebar) {
           renderVentureSidebar();
+        }
+
+        if (isSoleilAndStoneVenture(venture)) {
           return;
         }
 
-        renderVentureContextDashboard();
-        renderVentureContextExecution();
-        renderVentureContextMilestones();
-        renderVentureContextNotes();
-        if (state.currentVentureModule) {
-          renderVentureModule();
+        const section = String(state.currentAdminSection || "");
+        if (section.startsWith("venture-")) {
+          renderVentureSection(section);
         }
-        renderVentureSidebar();
       }
-
 
       function renderVentureContextDashboard() {
         const container = $("#venture-context-dashboard");
@@ -14178,7 +14309,6 @@ const supabasePublishableKey =
         if (!module) return;
         state.currentVentureModule = moduleKey;
         openSection("venture-module");
-        renderVentureModule();
       }
 
 
@@ -14523,15 +14653,20 @@ const supabasePublishableKey =
         section
       ) {
 
-        $$(".admin-section").forEach(
-          (
-            element
-          ) =>
-            element.classList.toggle(
-              "hidden",
-              element.dataset.adminSection !== section
-            )
-        );
+        const sectionChanged = state.currentAdminSection !== section;
+        state.currentAdminSection = section;
+
+        if (sectionChanged) {
+          $(".admin-section").forEach(
+            (
+              element
+            ) =>
+              element.classList.toggle(
+                "hidden",
+                element.dataset.adminSection !== section
+              )
+          );
+        }
 
 
         $$(".nav-button").forEach(
@@ -14638,25 +14773,7 @@ const supabasePublishableKey =
           renderFeatures();
         }
 
-        if (section === "venture-home") {
-          renderVentureContextDashboard();
-        }
-
-        if (section === "venture-module") {
-          renderVentureModule();
-        }
-
-        if (section === "venture-execution") {
-          renderVentureContextExecution();
-        }
-
-        if (section === "venture-milestones") {
-          renderVentureContextMilestones();
-        }
-
-        if (section === "venture-notes") {
-          renderVentureContextNotes();
-        }
+        renderVentureSection(section);
 
       }
 
