@@ -3028,6 +3028,7 @@ const supabasePublishableKey =
       .venture-dashboard-rail::-webkit-scrollbar-track { background:transparent; }
       .venture-dashboard-rail::-webkit-scrollbar-thumb { background:rgba(197,160,89,.65); border-radius:999px; }
       .venture-dashboard-card {
+        contain: layout paint;
         flex:0 0 clamp(360px,31vw,470px);
         min-width:0;
         scroll-snap-align:start;
@@ -13257,8 +13258,10 @@ const supabasePublishableKey =
       }
 
 
-      function renderVentures() {
-        renderVenturesDashboard();
+      function renderVentures({ dashboard = true } = {}) {
+        if (dashboard) {
+          renderVenturesDashboard();
+        }
         renderVentureStageFilters();
 
         const container = $("#ventures-list");
@@ -14107,16 +14110,22 @@ const supabasePublishableKey =
 
         state.currentVentureId = venture.id;
         state.currentVentureModule = null;
-        portfolioMode(false);
-        updateMobileVentureActions();
+
+        // Prepare the venture view while the portfolio shell is still collapsed.
+        // This avoids reflowing the large portfolio dashboard with the sidebar visible
+        // immediately before hiding it.
         renderVentureSidebar();
 
         if (isSoleilAndStoneVenture(venture)) {
           openSection("dashboard");
+          portfolioMode(false);
+          updateMobileVentureActions();
           return;
         }
 
         openSection(initialSection);
+        portfolioMode(false);
+        updateMobileVentureActions();
       }
 
 
@@ -15641,19 +15650,19 @@ const supabasePublishableKey =
 
       $("#ventures-search").addEventListener(
         "input",
-        renderVentures
+        () => renderVentures({ dashboard: false })
       );
 
       $("#ventures-sort")?.addEventListener("change", (event) => {
         state.ventureSort = event.target.value || "priority";
-        renderVentures();
+        renderVentures({ dashboard: false });
       });
 
       $("#venture-stage-filters")?.addEventListener("click", (event) => {
         const button = event.target.closest("[data-venture-stage]");
         if (!button) return;
         state.ventureStageFilter = button.dataset.ventureStage || "all";
-        renderVentures();
+        renderVentures({ dashboard: false });
       });
 
       $("#venture-universal-search")?.addEventListener("input", renderUniversalVentureSearch);
