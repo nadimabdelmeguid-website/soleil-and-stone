@@ -14342,6 +14342,18 @@ const supabasePublishableKey =
       }
 
 
+      function resetVentureEntryScroll() {
+        const reset = () => {
+          window.scrollTo(0, 0);
+          document.documentElement.scrollTop = 0;
+          document.body.scrollTop = 0;
+        };
+
+        reset();
+        window.requestAnimationFrame(reset);
+      }
+
+
       function enterVenture(ventureId, initialSection = "venture-home") {
         const venture = ventureRuntimeCache.venturesById.get(String(ventureId));
         if (!venture) return;
@@ -14357,11 +14369,13 @@ const supabasePublishableKey =
         if (isSoleilAndStoneVenture(venture)) {
           openSection("dashboard");
           updateMobileVentureActions();
+          resetVentureEntryScroll();
           return;
         }
 
         openSection(initialSection);
         updateMobileVentureActions();
+        resetVentureEntryScroll();
       }
 
 
