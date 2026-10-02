@@ -3027,6 +3027,16 @@ const supabasePublishableKey =
       .venture-dashboard-rail::-webkit-scrollbar { height:8px; }
       .venture-dashboard-rail::-webkit-scrollbar-track { background:transparent; }
       .venture-dashboard-rail::-webkit-scrollbar-thumb { background:rgba(197,160,89,.65); border-radius:999px; }
+      .content-row,
+      .venture-card,
+      .venture-task-row,
+      .venture-milestone-card,
+      .venture-workspace-item,
+      .venture-dashboard-card {
+        content-visibility: auto;
+        contain-intrinsic-size: auto 120px;
+      }
+
       .venture-dashboard-card {
         contain: layout paint;
         flex:0 0 clamp(360px,31vw,470px);
@@ -6493,7 +6503,7 @@ const supabasePublishableKey =
           );
 
 
-      const $$ =
+      const $ =
         (
           selector
         ) =>
@@ -6502,6 +6512,94 @@ const supabasePublishableKey =
               selector
             )
           );
+
+
+      const ventureRuntimeCache = {
+        adminSections: null,
+        sidebarSignature: "",
+        venturesById: new Map(),
+        tasksByVenture: new Map(),
+        milestonesByVenture: new Map(),
+        workspaceByVenture: new Map(),
+        workspaceByVentureModule: new Map(),
+        attachmentsByEntity: new Map()
+      };
+
+
+      function groupedByVenture(items, { archived = false, sort = null } = {}) {
+        const grouped = new Map();
+        (items || []).forEach((item) => {
+          if (!archived && item.archived_at) return;
+          const key = String(item.venture_id || "");
+          if (!key) return;
+          if (!grouped.has(key)) grouped.set(key, []);
+          grouped.get(key).push(item);
+        });
+        if (sort) {
+          grouped.forEach((rows) => rows.sort(sort));
+        }
+        return grouped;
+      }
+
+
+      function rebuildVentureRecordIndex() {
+        ventureRuntimeCache.venturesById = new Map(
+          state.ventures.map((item) => [String(item.id), item])
+        );
+      }
+
+
+      function rebuildVentureTaskIndex() {
+        ventureRuntimeCache.tasksByVenture = groupedByVenture(state.ventureTasks);
+        ventureRuntimeCache.sidebarSignature = "";
+      }
+
+
+      function rebuildVentureMilestoneIndex() {
+        ventureRuntimeCache.milestonesByVenture = groupedByVenture(state.ventureMilestones, {
+          sort: (a, b) => {
+            if (a.status === "completed" && b.status !== "completed") return 1;
+            if (b.status === "completed" && a.status !== "completed") return -1;
+            return String(a.milestone_date || "9999-12-31").localeCompare(String(b.milestone_date || "9999-12-31"));
+          }
+        });
+        ventureRuntimeCache.sidebarSignature = "";
+      }
+
+
+      function rebuildVentureWorkspaceIndex() {
+        const sort = (a, b) =>
+          Number(a.sort_order || 0) - Number(b.sort_order || 0)
+          || String(a.title || "").localeCompare(String(b.title || ""));
+
+        ventureRuntimeCache.workspaceByVenture = groupedByVenture(state.ventureWorkspaceItems, { sort });
+        const byModule = new Map();
+        ventureRuntimeCache.workspaceByVenture.forEach((rows, ventureId) => {
+          rows.forEach((item) => {
+            const key = ventureId + "::" + String(item.module_key || "");
+            if (!byModule.has(key)) byModule.set(key, []);
+            byModule.get(key).push(item);
+          });
+        });
+        ventureRuntimeCache.workspaceByVentureModule = byModule;
+        ventureRuntimeCache.sidebarSignature = "";
+      }
+
+
+      function rebuildVentureAttachmentIndex() {
+        const byEntity = new Map();
+        state.ventureAttachments.forEach((item) => {
+          if (item.archived_at) return;
+          const key = String(item.entity_type || "") + "::" + String(item.entity_id || "");
+          if (!byEntity.has(key)) byEntity.set(key, []);
+          byEntity.get(key).push(item);
+        });
+        byEntity.forEach((rows) => rows.sort((a, b) =>
+          Number(a.sort_order || 0) - Number(b.sort_order || 0)
+          || String(a.created_at || "").localeCompare(String(b.created_at || ""))
+        ));
+        ventureRuntimeCache.attachmentsByEntity = byEntity;
+      }
 
 
       const AUTHORIZED_ADMIN_EMAIL = "nadimabdelmeguid@gmail.com";
@@ -11599,6 +11697,7 @@ const supabasePublishableKey =
           return;
         }
         state.ventureMilestones = data || [];
+        rebuildVentureMilestoneIndex();
         queueVentureUiRefresh({
           portfolio: true,
           current: true,
@@ -11761,6 +11860,7 @@ const supabasePublishableKey =
         const { data, error } = await supabase.from("venture_attachments").select("*").order("sort_order", { ascending: true }).order("created_at", { ascending: true });
         if (error) { showToast(`Could not load private venture files: ${error.message}`, "error"); return; }
         state.ventureAttachments = data || [];
+        rebuildVentureAttachmentIndex();
         queueVentureUiRefresh({
           portfolio: true,
           current: true,
@@ -11781,10 +11881,9 @@ const supabasePublishableKey =
 
 
       function attachmentsFor(entityType, entityId) {
-        return state.ventureAttachments
-          .filter((item) => !item.archived_at)
-          .filter((item) => item.entity_type === entityType && String(item.entity_id) === String(entityId))
-          .sort((a, b) => Number(a.sort_order || 0) - Number(b.sort_order || 0) || String(a.created_at || "").localeCompare(String(b.created_at || "")));
+        return ventureRuntimeCache.attachmentsByEntity.get(
+          String(entityType || "") + "::" + String(entityId || "")
+        ) || [];
       }
 
 
@@ -12131,6 +12230,7 @@ const supabasePublishableKey =
         }
 
         state.ventureWorkspaceItems = data || [];
+        rebuildVentureWorkspaceIndex();
         queueVentureUiRefresh({
           portfolio: true,
           current: true,
@@ -12153,6 +12253,8 @@ const supabasePublishableKey =
         }
 
         state.ventures = data || [];
+        rebuildVentureRecordIndex();
+        ventureRuntimeCache.sidebarSignature = "";
         queueVentureUiRefresh({
           portfolio: true,
           current: true,
@@ -12175,6 +12277,7 @@ const supabasePublishableKey =
         }
 
         state.ventureTasks = data || [];
+        rebuildVentureTaskIndex();
         queueVentureUiRefresh({
           portfolio: true,
           current: true,
@@ -12185,19 +12288,12 @@ const supabasePublishableKey =
 
 
       function tasksForVenture(ventureId) {
-        return state.ventureTasks.filter((task) => !task.archived_at && String(task.venture_id) === String(ventureId));
+        return ventureRuntimeCache.tasksByVenture.get(String(ventureId)) || [];
       }
 
 
       function milestonesForVenture(ventureId) {
-        return state.ventureMilestones
-          .filter((item) => !item.archived_at)
-          .filter((item) => String(item.venture_id) === String(ventureId))
-          .sort((a, b) => {
-            if (a.status === "completed" && b.status !== "completed") return 1;
-            if (b.status === "completed" && a.status !== "completed") return -1;
-            return String(a.milestone_date || "9999-12-31").localeCompare(String(b.milestone_date || "9999-12-31"));
-          });
+        return ventureRuntimeCache.milestonesByVenture.get(String(ventureId)) || [];
       }
 
 
@@ -12769,7 +12865,7 @@ const supabasePublishableKey =
 
 
       function ventureById(id) {
-        return state.ventures.find((venture) => String(venture.id) === String(id)) || null;
+        return ventureRuntimeCache.venturesById.get(String(id)) || null;
       }
 
 
@@ -13966,7 +14062,9 @@ const supabasePublishableKey =
          ===================================================== */
 
       function currentVenture() {
-        return state.ventures.find((item) => String(item.id) === String(state.currentVentureId)) || null;
+        return state.currentVentureId
+          ? ventureRuntimeCache.venturesById.get(String(state.currentVentureId)) || null
+          : null;
       }
 
 
@@ -14007,14 +14105,13 @@ const supabasePublishableKey =
 
 
       function workspaceItemsFor(ventureId, moduleKey = null) {
-        return state.ventureWorkspaceItems
-          .filter((item) => !item.archived_at)
-          .filter((item) => String(item.venture_id) === String(ventureId))
-          .filter((item) => !moduleKey || item.module_key === moduleKey)
-          .sort((a, b) =>
-            Number(a.sort_order || 0) - Number(b.sort_order || 0)
-            || String(a.title || "").localeCompare(String(b.title || ""))
-          );
+        const id = String(ventureId);
+        if (moduleKey) {
+          return ventureRuntimeCache.workspaceByVentureModule.get(
+            id + "::" + String(moduleKey)
+          ) || [];
+        }
+        return ventureRuntimeCache.workspaceByVenture.get(id) || [];
       }
 
 
@@ -14022,20 +14119,43 @@ const supabasePublishableKey =
         const venture = currentVenture();
         if (!venture) return;
 
-        $("#sidebar-venture-name").textContent = venture.name;
-        $("#sidebar-venture-subtitle").textContent = workspaceConfigFor(venture).subtitle;
-
+        const config = workspaceConfigFor(venture);
         const isSoleil = isSoleilAndStoneVenture(venture);
-        $("#website-sidebar-nav").classList.toggle("hidden", !isSoleil);
-        $("#venture-sidebar-nav").classList.toggle("hidden", isSoleil);
+        const websiteNav = $("#website-sidebar-nav");
+        const ventureNav = $("#venture-sidebar-nav");
+
+        $("#sidebar-venture-name").textContent = venture.name;
+        $("#sidebar-venture-subtitle").textContent = config.subtitle;
+        websiteNav.classList.toggle("hidden", !isSoleil);
+        ventureNav.classList.toggle("hidden", isSoleil);
 
         if (isSoleil) {
+          ventureRuntimeCache.sidebarSignature = "soleil-and-stone";
           refreshCounts();
           return;
         }
 
-        const config = workspaceConfigFor(venture);
-        $("#venture-sidebar-nav").innerHTML = `
+        const moduleCounts = config.modules.map((module) => [
+          module.key,
+          workspaceItemsFor(venture.id, module.key).length
+        ]);
+        const openTasks = tasksForVenture(venture.id).filter((task) => !isVentureTaskDone(task)).length;
+        const plannedMilestones = milestonesForVenture(venture.id).filter((item) => item.status === "planned").length;
+        const signature = JSON.stringify([
+          venture.id,
+          venture.name,
+          config.subtitle,
+          moduleCounts,
+          openTasks,
+          plannedMilestones
+        ]);
+
+        if (ventureRuntimeCache.sidebarSignature === signature) {
+          return;
+        }
+
+        ventureRuntimeCache.sidebarSignature = signature;
+        ventureNav.innerHTML = `
           <div class="sidebar-group-label">Overview</div>
           <button class="nav-button" type="button" data-section="venture-home">
             <span>Dashboard</span>
@@ -14054,11 +14174,11 @@ const supabasePublishableKey =
           <div class="sidebar-group-label">Execution</div>
           <button class="nav-button" type="button" data-section="venture-execution">
             <span>Tasks</span>
-            <span class="nav-count">${tasksForVenture(venture.id).filter((task) => !isVentureTaskDone(task)).length}</span>
+            <span class="nav-count">${openTasks}</span>
           </button>
           <button class="nav-button" type="button" data-section="venture-milestones">
             <span>Milestones</span>
-            <span class="nav-count">${milestonesForVenture(venture.id).filter((item) => item.status === "planned").length}</span>
+            <span class="nav-count">${plannedMilestones}</span>
           </button>
           <button class="nav-button" type="button" data-section="venture-notes">
             <span>Private Notes</span>
@@ -14106,7 +14226,7 @@ const supabasePublishableKey =
 
 
       function enterVenture(ventureId, initialSection = "venture-home") {
-        const venture = state.ventures.find((item) => String(item.id) === String(ventureId));
+        const venture = ventureRuntimeCache.venturesById.get(String(ventureId));
         if (!venture) return;
 
         state.currentVentureId = venture.id;
@@ -14659,45 +14779,77 @@ const supabasePublishableKey =
       };
 
 
+      function adminSectionMap() {
+        if (!ventureRuntimeCache.adminSections) {
+          ventureRuntimeCache.adminSections = new Map(
+            $(".admin-section").map((element) => [
+              String(element.dataset.adminSection || ""),
+              element
+            ])
+          );
+        }
+        return ventureRuntimeCache.adminSections;
+      }
+
+
+      function showAdminSection(section, previousSection = "") {
+        const sections = adminSectionMap();
+        const next = sections.get(String(section));
+        if (!next) return;
+
+        if (!previousSection) {
+          sections.forEach((element, name) => {
+            element.classList.toggle("hidden", name !== section);
+          });
+          return;
+        }
+
+        if (previousSection === section) return;
+        sections.get(String(previousSection))?.classList.add("hidden");
+        next.classList.remove("hidden");
+      }
+
+
+      function syncActiveAdminNav(section) {
+        const venture = currentVenture();
+        const root = isSoleilAndStoneVenture(venture)
+          ? $("#website-sidebar-nav")
+          : $("#venture-sidebar-nav");
+
+        if (!root) return;
+
+        root.querySelectorAll(".nav-button.active").forEach((button) =>
+          button.classList.remove("active")
+        );
+
+        let target = null;
+        if (section === "venture-module" && state.currentVentureModule) {
+          target = root.querySelector(
+            `.nav-button[data-section="venture-module"][data-venture-module="${CSS.escape(String(state.currentVentureModule))}"]`
+          );
+        } else {
+          target = root.querySelector(
+            `.nav-button[data-section="${CSS.escape(String(section))}"]:not([data-venture-module])`
+          );
+        }
+
+        target?.classList.add("active");
+      }
+
+
       function openSection(
         section
       ) {
 
-        const sectionChanged = state.currentAdminSection !== section;
+        const previousSection = state.currentAdminSection;
+        const sectionChanged = previousSection !== section;
         state.currentAdminSection = section;
 
         if (sectionChanged) {
-          $$(".admin-section").forEach(
-            (
-              element
-            ) =>
-              element.classList.toggle(
-                "hidden",
-                element.dataset.adminSection !== section
-              )
-          );
+          showAdminSection(section, previousSection);
         }
 
-
-        $$(".nav-button").forEach(
-          (
-            button
-          ) => {
-            const moduleMatch =
-              section === "venture-module" &&
-              button.dataset.ventureModule &&
-              button.dataset.ventureModule === state.currentVentureModule;
-
-            button.classList.toggle(
-              "active",
-              moduleMatch ||
-              (
-                !button.dataset.ventureModule &&
-                button.dataset.section === section
-              )
-            );
-          }
-        );
+        syncActiveAdminNav(section);
 
 
         let copy =
