@@ -7311,48 +7311,135 @@ const supabasePublishableKey =
       }
 
 
+      let adminSessionInitPromise = null;
+      let adminSessionInitUserId = "";
+      let initializedAdminUserId = "";
+      let adminSessionGeneration = 0;
+
+
+      function resetAdminSessionInitialization() {
+        adminSessionGeneration += 1;
+        adminSessionInitPromise = null;
+        adminSessionInitUserId = "";
+        initializedAdminUserId = "";
+      }
+
+
       async function handleSession(
         session
       ) {
 
+        const user =
+          session?.user;
+
         if (
-          !session?.user
+          !user
         ) {
+          resetAdminSessionInitialization();
+          state.user = null;
           showAuth();
           return;
         }
 
 
-        const allowed =
-          await bootstrapAdminMembership(
-            session.user
-          );
+        const userId =
+          String(user.id);
 
 
         if (
-          !allowed
+          initializedAdminUserId === userId &&
+          String(state.user?.id || "") === userId
         ) {
-
-          await supabase.auth.signOut();
-
-          showAuth(
-            "This account is not authorized to access the Soleil & Stone admin."
-          );
-
+          showAdmin();
           return;
         }
 
 
-        state.user =
-          session.user;
+        if (
+          adminSessionInitPromise &&
+          adminSessionInitUserId === userId
+        ) {
+          return adminSessionInitPromise;
+        }
 
 
-        showAdmin();
+        const generation =
+          adminSessionGeneration;
 
 
-        await loadAllContent();
+        adminSessionInitUserId =
+          userId;
 
-        openPortfolio();
+
+        const initPromise =
+          (async () => {
+            const allowed =
+              await bootstrapAdminMembership(
+                user
+              );
+
+
+            if (
+              generation !== adminSessionGeneration
+            ) {
+              return;
+            }
+
+
+            if (
+              !allowed
+            ) {
+              resetAdminSessionInitialization();
+
+              await supabase.auth.signOut();
+
+              showAuth(
+                "This account is not authorized to access the Soleil & Stone admin."
+              );
+
+              return;
+            }
+
+
+            state.user =
+              user;
+
+
+            showAdmin();
+
+
+            await loadAllContent();
+
+
+            if (
+              generation !== adminSessionGeneration
+            ) {
+              return;
+            }
+
+
+            initializedAdminUserId =
+              userId;
+
+
+            openPortfolio();
+          })();
+
+
+        adminSessionInitPromise =
+          initPromise;
+
+
+        try {
+          return await initPromise;
+        } finally {
+          if (
+            adminSessionInitPromise === initPromise
+          ) {
+            adminSessionInitPromise = null;
+            adminSessionInitUserId = "";
+          }
+        }
 
       }
 
@@ -14912,6 +14999,25 @@ const supabasePublishableKey =
       }
 
 
+      function scheduleAdminSectionRelease(section) {
+        if (!section) return;
+
+        const release = () => {
+          if (state.currentAdminSection === section) return;
+          releaseAdminSectionContent(section);
+        };
+
+        if ("requestIdleCallback" in window) {
+          window.requestIdleCallback(release, { timeout: 250 });
+          return;
+        }
+
+        window.requestAnimationFrame(() => {
+          window.setTimeout(release, 0);
+        });
+      }
+
+
       function adminSectionMap() {
         if (!ventureRuntimeCache.adminSections) {
           ventureRuntimeCache.adminSections = new Map(
@@ -14939,8 +15045,8 @@ const supabasePublishableKey =
 
         if (previousSection === section) return;
         sections.get(String(previousSection))?.classList.add("hidden");
-        releaseAdminSectionContent(previousSection);
         next.classList.remove("hidden");
+        scheduleAdminSectionRelease(previousSection);
       }
 
 
@@ -17506,7 +17612,7 @@ const supabasePublishableKey =
 
 
       supabase.auth.onAuthStateChange(
-        async (
+        (
           event,
           session
         ) => {
@@ -17515,12 +17621,18 @@ const supabasePublishableKey =
             event === "SIGNED_IN" ||
             event === "INITIAL_SESSION"
           ) {
-            await handleSession(session);
+            window.setTimeout(() => {
+              handleSession(session).catch((error) => {
+                console.error("Could not initialize admin session:", error);
+                showToast(error?.message || "Could not initialize the admin session.", "error");
+              });
+            }, 0);
           }
 
           if (
             event === "SIGNED_OUT"
           ) {
+            resetAdminSessionInitialization();
             state.user = null;
             showAuth();
           }
