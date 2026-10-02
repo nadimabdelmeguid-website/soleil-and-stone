@@ -7520,7 +7520,10 @@ const supabasePublishableKey =
       async function loadWorkspaceTasks() {
         const {data,error}=await supabase.from("workspace_tasks").select("*").order("due_date",{ascending:true,nullsFirst:false}).order("created_at",{ascending:false});
         if(error){showToast(`Could not load workspace tasks: ${error.message}`,"error");return;}
-        state.workspaceTasks=data||[]; renderMyDashboard();
+        state.workspaceTasks=data||[];
+        if (!state.isBulkLoading && state.currentAdminSection === "my-dashboard") {
+          renderMyDashboard();
+        }
       }
       function refreshWorkspaceSelectors() {
         const html=state.workspaceAreas.map((a)=>`<option value="${escapeHtml(a.id)}">${escapeHtml(a.name)}</option>`).join("");
@@ -7604,18 +7607,17 @@ const supabasePublishableKey =
 
 
         refreshCounts();
-        renderRecentContent();
         refreshMediaSelectors();
         refreshRecapEventSelector();
         refreshRelationshipSelectors();
-        renderCommunities();
-        renderOrganizations();
-        renderPeople();
-        renderVentures();
+
+        if (state.currentAdminSection === "ventures") {
+          renderVentures();
+        } else {
+          renderAdminSectionContent(state.currentAdminSection);
+        }
+
         renderCurrentVentureContext({ sidebar: true });
-        renderEvidence();
-        renderEvents();
-        renderFeatures();
 
       }
 
@@ -7658,7 +7660,9 @@ const supabasePublishableKey =
         state.events =
           data || [];
 
-        renderEvents();
+        if (!state.isBulkLoading && state.currentAdminSection === "events") {
+          renderEvents();
+        }
 
       }
 
@@ -7701,7 +7705,9 @@ const supabasePublishableKey =
         state.fieldNotes =
           data || [];
 
-        renderFieldNotes();
+        if (!state.isBulkLoading && state.currentAdminSection === "field-notes") {
+          renderFieldNotes();
+        }
 
       }
 
@@ -7744,7 +7750,9 @@ const supabasePublishableKey =
         state.recaps =
           data || [];
 
-        renderRecaps();
+        if (!state.isBulkLoading && state.currentAdminSection === "recaps") {
+          renderRecaps();
+        }
 
       }
 
@@ -7787,7 +7795,9 @@ const supabasePublishableKey =
         state.media =
           data || [];
 
-        renderMedia();
+        if (!state.isBulkLoading && state.currentAdminSection === "media") {
+          renderMedia();
+        }
 
       }
 
@@ -10274,7 +10284,16 @@ const supabasePublishableKey =
             : "Event created."
         );
 
-        await loadAllContent();
+        await Promise.all([
+          loadEvents(),
+          loadEventSpeakers(),
+          loadEventSponsors(),
+          loadFieldNoteEvents(),
+          loadFeaturedContent()
+        ]);
+        refreshCounts();
+        refreshRecapEventSelector();
+        renderAdminSectionContent(state.currentAdminSection);
       }
 
 
@@ -11722,7 +11741,9 @@ const supabasePublishableKey =
         const { data, error } = await supabase.from("evidence_items").select("*").order("evidence_date", { ascending: false, nullsFirst: false }).order("created_at", { ascending: false });
         if (error) { showToast(`Could not load evidence: ${error.message}`, "error"); return; }
         state.evidence = data || [];
-        renderEvidence();
+        if (!state.isBulkLoading && state.currentAdminSection === "evidence") {
+          renderEvidence();
+        }
       }
 
       function evidenceFor(contentType, contentId) {
@@ -11775,7 +11796,12 @@ const supabasePublishableKey =
         const id=$("#evidence-record-id").value;
         const payload={title:$("#evidence-title").value.trim(),evidence_type:$("#evidence-type").value,status:$("#evidence-status").value,content_type:$("#evidence-content-type").value,content_id:$("#evidence-content-id").value.trim()||null,evidence_date:$("#evidence-date").value||null,source_url:$("#evidence-url").value.trim()||null,storage_path:$("#evidence-storage-path").value.trim()||null,notes:$("#evidence-notes").value.trim()||null};
         const response=id?await supabase.from("evidence_items").update(payload).eq("id",id):await supabase.from("evidence_items").insert(payload);
-        if(response.error) throw response.error; closeModal("evidence"); showToast(id?"Evidence updated.":"Evidence added."); await loadAllContent();
+        if(response.error) throw response.error;
+        closeModal("evidence");
+        showToast(id?"Evidence updated.":"Evidence added.");
+        await loadEvidence();
+        refreshCounts();
+        renderAdminSectionContent(state.currentAdminSection);
       }
 
 
@@ -13668,7 +13694,10 @@ const supabasePublishableKey =
         if (response.error) throw response.error;
         closeModal("community");
         showToast(existingId ? "Community updated." : "Community created.");
-        await loadAllContent();
+        await loadCommunities();
+        refreshCounts();
+        refreshRelationshipSelectors();
+        renderAdminSectionContent(state.currentAdminSection);
       }
 
 
@@ -13717,7 +13746,9 @@ const supabasePublishableKey =
         if (response.error) throw response.error;
         closeModal("organization");
         showToast(existingId ? "Organization updated." : "Organization created.");
-        await loadAllContent();
+        await loadOrganizations();
+        refreshCounts();
+        renderAdminSectionContent(state.currentAdminSection);
       }
 
 
@@ -13773,7 +13804,9 @@ const supabasePublishableKey =
         if (response.error) throw response.error;
         closeModal("person");
         showToast(existingId ? "Speaker updated." : "Speaker created.");
-        await loadAllContent();
+        await loadPeople();
+        refreshCounts();
+        renderAdminSectionContent(state.currentAdminSection);
       }
 
 
@@ -14779,6 +14812,106 @@ const supabasePublishableKey =
       };
 
 
+      function renderAdminSectionContent(section) {
+        if (!section) return;
+
+        if (section === "my-dashboard") {
+          renderMyDashboard();
+          return;
+        }
+
+        if (section === "dashboard") {
+          refreshCounts();
+          renderRecentContent();
+          return;
+        }
+
+        if (section === "features") {
+          renderFeatures();
+          return;
+        }
+
+        if (section === "events") {
+          renderEvents();
+          return;
+        }
+
+        if (section === "field-notes") {
+          renderFieldNotes();
+          return;
+        }
+
+        if (section === "recaps") {
+          renderRecaps();
+          return;
+        }
+
+        if (section === "media") {
+          renderMedia();
+          return;
+        }
+
+        if (section === "communities") {
+          renderCommunities();
+          return;
+        }
+
+        if (section === "organizations") {
+          renderOrganizations();
+          return;
+        }
+
+        if (section === "people") {
+          renderPeople();
+          return;
+        }
+
+        if (section === "evidence") {
+          renderEvidence();
+        }
+      }
+
+
+      const adminSectionReleaseTargets = {
+        "my-dashboard": ["workspace-task-groups"],
+        dashboard: ["recent-content-list", "recent-content-pagination"],
+        features: ["feature-current-list", "feature-available-list"],
+        events: ["events-list"],
+        "field-notes": ["field-notes-list"],
+        recaps: ["recaps-list"],
+        media: ["media-grid"],
+        communities: ["communities-list"],
+        organizations: ["organizations-list"],
+        people: ["people-list"],
+        evidence: ["evidence-list"],
+        ventures: [
+          "ventures-list",
+          "ventures-dashboard-stats",
+          "ventures-this-week-list",
+          "ventures-blockers-list",
+          "ventures-attention-list",
+          "ventures-activity-list",
+          "ventures-documents-list",
+          "ventures-milestones-list",
+          "ventures-archive-list"
+        ],
+        "venture-home": ["venture-context-dashboard"],
+        "venture-module": ["venture-module-items"],
+        "venture-execution": ["venture-context-task-summary", "venture-context-task-list"],
+        "venture-milestones": ["venture-context-milestone-list"],
+        "venture-notes": ["venture-context-notes-panel"]
+      };
+
+
+      function releaseAdminSectionContent(section) {
+        const targets = adminSectionReleaseTargets[section] || [];
+        targets.forEach((id) => {
+          const element = document.getElementById(id);
+          if (element) element.replaceChildren();
+        });
+      }
+
+
       function adminSectionMap() {
         if (!ventureRuntimeCache.adminSections) {
           ventureRuntimeCache.adminSections = new Map(
@@ -14806,6 +14939,7 @@ const supabasePublishableKey =
 
         if (previousSection === section) return;
         sections.get(String(previousSection))?.classList.add("hidden");
+        releaseAdminSectionContent(previousSection);
         next.classList.remove("hidden");
       }
 
@@ -14931,10 +15065,7 @@ const supabasePublishableKey =
         $("#sync-note").classList.toggle("hidden", !showSyncNote);
 
 
-        if (section === "features") {
-          renderFeatures();
-        }
-
+        renderAdminSectionContent(section);
         renderVentureSection(section);
 
       }
