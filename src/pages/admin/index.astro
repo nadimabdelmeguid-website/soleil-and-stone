@@ -14356,13 +14356,11 @@ const supabasePublishableKey =
 
         if (isSoleilAndStoneVenture(venture)) {
           openSection("dashboard");
-          portfolioMode(false);
           updateMobileVentureActions();
           return;
         }
 
         openSection(initialSection);
-        portfolioMode(false);
         updateMobileVentureActions();
       }
 
@@ -15084,6 +15082,10 @@ const supabasePublishableKey =
 
         if (sectionChanged) {
           showAdminSection(section, previousSection);
+        }
+
+        if (state.currentVentureId && section !== "ventures") {
+          portfolioMode(false);
         }
 
         syncActiveAdminNav(section);
