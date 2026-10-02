@@ -6503,7 +6503,7 @@ const supabasePublishableKey =
           );
 
 
-      const $ =
+      const qsa =
         (
           selector
         ) =>
@@ -6735,13 +6735,13 @@ const supabasePublishableKey =
 
 
       function getMediaPublishTargets() {
-        return $$("#media-publish-targets input[type='checkbox']:checked")
+        return qsa("#media-publish-targets input[type='checkbox']:checked")
           .map((input) => input.value);
       }
 
 
       function resetMediaPublishTargets() {
-        $$("#media-publish-targets input[type='checkbox']")
+        qsa("#media-publish-targets input[type='checkbox']")
           .forEach((input) => { input.checked = false; });
       }
 
@@ -9295,14 +9295,14 @@ const supabasePublishableKey =
 
 
       function renumberRepeatCards() {
-        $$("#event-speaker-list .event-speaker-card").forEach(
+        qsa("#event-speaker-list .event-speaker-card").forEach(
           (card, index) => {
             const title = card.querySelector(".repeat-card-title");
             if (title) title.textContent = `Speaker ${index + 1}`;
           }
         );
 
-        $$("#event-sponsor-list .event-sponsor-card").forEach(
+        qsa("#event-sponsor-list .event-sponsor-card").forEach(
           (card, index) => {
             const title = card.querySelector(".repeat-card-title");
             if (title) title.textContent = `Sponsor ${index + 1}`;
@@ -9426,7 +9426,7 @@ const supabasePublishableKey =
 
 
       function refreshEventRepeaterMediaSelectors() {
-        $$(".event-logo-media").forEach(
+        qsa(".event-logo-media").forEach(
           (select) => {
             const current = select.value;
 
@@ -10211,7 +10211,7 @@ const supabasePublishableKey =
         ) {
           for (
             const card of
-              $$("#event-speaker-list .event-speaker-card")
+              qsa("#event-speaker-list .event-speaker-card")
           ) {
             const id =
               await saveSpeakerCard(
@@ -10226,7 +10226,7 @@ const supabasePublishableKey =
 
           for (
             const card of
-              $$("#event-sponsor-list .event-sponsor-card")
+              qsa("#event-sponsor-list .event-sponsor-card")
           ) {
             const id =
               await saveSponsorCard(
@@ -12404,12 +12404,12 @@ const supabasePublishableKey =
         const protectedTab = ["public", "execution", "milestones"].includes(tabName);
         const next = protectedTab && !hasRecord ? "overview" : tabName;
 
-        $$("#venture-tabs [data-venture-tab]").forEach((button) => {
+        qsa("#venture-tabs [data-venture-tab]").forEach((button) => {
           button.classList.toggle("active", button.dataset.ventureTab === next);
           button.disabled = !hasRecord && ["public", "execution", "milestones"].includes(button.dataset.ventureTab);
         });
 
-        $$("[data-venture-tab-panel]").forEach((panel) => {
+        qsa("[data-venture-tab-panel]").forEach((panel) => {
           panel.classList.toggle("hidden", panel.dataset.ventureTabPanel !== next);
         });
       }
@@ -12837,7 +12837,7 @@ const supabasePublishableKey =
           paused: "Paused",
           archived: "Archived"
         };
-        $$("#venture-stage-filters [data-venture-stage]").forEach((button) => {
+        qsa("#venture-stage-filters [data-venture-stage]").forEach((button) => {
           const stage = button.dataset.ventureStage;
           const count = stage === "all"
             ? state.ventures.length
@@ -14982,7 +14982,7 @@ const supabasePublishableKey =
 
         modal?.classList.add("hidden");
         modal?.setAttribute("hidden", "");
-        const anotherModalOpen = $$(".modal-backdrop").some((candidate) =>
+        const anotherModalOpen = qsa(".modal-backdrop").some((candidate) =>
           !candidate.classList.contains("hidden") && !candidate.hasAttribute("hidden")
         );
         document.body.style.overflow = anotherModalOpen ? "hidden" : "";
@@ -15221,7 +15221,7 @@ const supabasePublishableKey =
         const config = featurePlacementConfig[state.featurePlacement] || featurePlacementConfig.home;
         const allowed = new Set(config.allowedTypes);
 
-        $$("[data-feature-type]").forEach((button) => {
+        qsa("[data-feature-type]").forEach((button) => {
           const type = button.dataset.featureType;
           const visible = type === "all" || allowed.has(type);
           button.classList.toggle("hidden", !visible);
@@ -15231,7 +15231,7 @@ const supabasePublishableKey =
           state.featureTypeFilter = "all";
         }
 
-        $$("[data-feature-type]").forEach((button) => {
+        qsa("[data-feature-type]").forEach((button) => {
           button.classList.toggle("active", button.dataset.featureType === state.featureTypeFilter);
         });
       }
@@ -15244,7 +15244,7 @@ const supabasePublishableKey =
         const currentIds = new Set(assignments.map((item) => `${item.content_type}:${item.content_id}`));
         const search = $("#feature-search")?.value?.trim().toLowerCase() || "";
 
-        $$("[data-feature-placement]").forEach((button) => {
+        qsa("[data-feature-placement]").forEach((button) => {
           button.classList.toggle("active", button.dataset.featurePlacement === placement);
         });
 
@@ -15522,7 +15522,7 @@ const supabasePublishableKey =
       });
 
 
-      $$(".nav-button").forEach(
+      qsa(".nav-button").forEach(
         (
           button
         ) => {
@@ -15569,7 +15569,7 @@ const supabasePublishableKey =
       );
 
 
-      $$("[data-quick-action]").forEach(
+      qsa("[data-quick-action]").forEach(
         (
           button
         ) => {
@@ -15911,7 +15911,7 @@ const supabasePublishableKey =
             button.dataset.filter;
 
 
-          $$("#event-filters .filter-button").forEach(
+          qsa("#event-filters .filter-button").forEach(
             (
               item
             ) =>
@@ -17160,7 +17160,7 @@ const supabasePublishableKey =
       );
 
 
-      $$("[data-editor-upload]").forEach((button) => {
+      qsa("[data-editor-upload]").forEach((button) => {
         button.addEventListener("click", () => {
           const textareaId = button.dataset.editorUpload;
           const target = button.dataset.editorTarget;
@@ -17284,7 +17284,7 @@ const supabasePublishableKey =
       $("#recap-seo-description")?.addEventListener("input", updateRecapSeoCounters);
 
 
-      $$("[data-cover-upload]").forEach((button) => {
+      qsa("[data-cover-upload]").forEach((button) => {
         button.addEventListener("click", () => {
           const selectId = button.dataset.coverUpload;
           const target = button.dataset.coverTarget;
