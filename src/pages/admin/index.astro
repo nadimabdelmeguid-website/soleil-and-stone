@@ -13120,19 +13120,16 @@ const supabasePublishableKey =
 
 
       async function restoreVentureRecord(type,id) {
-        const table={
-          task:"venture_tasks",
-          milestone:"venture_milestones",
-          workspace_item:"venture_workspace_items",
-          attachment:"venture_attachments"
+        const config={
+          task:{table:"venture_tasks",loader:loadVentureTasks},
+          milestone:{table:"venture_milestones",loader:loadVentureMilestones},
+          workspace_item:{table:"venture_workspace_items",loader:loadVentureWorkspaceItems},
+          attachment:{table:"venture_attachments",loader:loadVentureAttachments}
         }[type];
-        if(!table)return;
-        const {error}=await supabase.from(table).update({archived_at:null}).eq("id",id);
+        if(!config)return;
+        const {error}=await supabase.from(config.table).update({archived_at:null}).eq("id",id);
         if(error)throw error;
-        await Promise.all([
-          loadVentureTasks(),loadVentureMilestones(),loadVentureWorkspaceItems(),
-          loadVentureAttachments(),loadVentureActivity()
-        ]);
+        await Promise.all([config.loader(),loadVentureActivity()]);
         renderVentureArchiveCenter();
         showToast("Archived record restored.");
       }
@@ -13700,7 +13697,7 @@ const supabasePublishableKey =
         $("#save-venture-button").textContent = "Save Changes";
 
         await saveVenturePublicOverview(saved);
-        await Promise.all([loadVentures(), loadVentureTasks(), loadVentureMilestones(), loadVenturePublicOverviews(), loadVentureActivity()]);
+        await Promise.all([loadVentures(), loadVenturePublicOverviews(), loadVentureActivity()]);
         const fresh = state.ventures.find((item) => String(item.id) === String(saved.id)) || saved;
         refreshVentureModalHeader(fresh);
         renderVentureTasks();
