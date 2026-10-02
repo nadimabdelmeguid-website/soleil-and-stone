@@ -11773,7 +11773,10 @@ const supabasePublishableKey =
         const { data, error } = await supabase.from("venture_public_overviews").select("*").order("sort_order", { ascending: true });
         if (error) { showToast(`Could not load public venture overviews: ${error.message}`, "error"); return; }
         state.venturePublicOverviews = data || [];
-        renderVenturesPreview();
+        const preview = $("#ventures-preview");
+        if (preview && !preview.classList.contains("hidden")) {
+          renderVenturesPreview();
+        }
       }
 
 
@@ -13281,7 +13284,6 @@ const supabasePublishableKey =
               ${hasAny ? "Change the search or stage filter." : "Create the first venture, then add its current focus, tasks and milestones."}
             </div>
           `;
-          renderVenturesPreview();
           return;
         }
 
@@ -13340,7 +13342,6 @@ const supabasePublishableKey =
           `;
         }).join("");
 
-        renderVenturesPreview();
       }
 
 
