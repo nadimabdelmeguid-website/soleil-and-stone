@@ -7311,48 +7311,135 @@ const supabasePublishableKey =
       }
 
 
+      let adminSessionInitPromise = null;
+      let adminSessionInitUserId = "";
+      let initializedAdminUserId = "";
+      let adminSessionGeneration = 0;
+
+
+      function resetAdminSessionInitialization() {
+        adminSessionGeneration += 1;
+        adminSessionInitPromise = null;
+        adminSessionInitUserId = "";
+        initializedAdminUserId = "";
+      }
+
+
       async function handleSession(
         session
       ) {
 
+        const user =
+          session?.user;
+
         if (
-          !session?.user
+          !user
         ) {
+          resetAdminSessionInitialization();
+          state.user = null;
           showAuth();
           return;
         }
 
 
-        const allowed =
-          await bootstrapAdminMembership(
-            session.user
-          );
+        const userId =
+          String(user.id);
 
 
         if (
-          !allowed
+          initializedAdminUserId === userId &&
+          String(state.user?.id || "") === userId
         ) {
-
-          await supabase.auth.signOut();
-
-          showAuth(
-            "This account is not authorized to access the Soleil & Stone admin."
-          );
-
+          showAdmin();
           return;
         }
 
 
-        state.user =
-          session.user;
+        if (
+          adminSessionInitPromise &&
+          adminSessionInitUserId === userId
+        ) {
+          return adminSessionInitPromise;
+        }
 
 
-        showAdmin();
+        const generation =
+          adminSessionGeneration;
 
 
-        await loadAllContent();
+        adminSessionInitUserId =
+          userId;
 
-        openPortfolio();
+
+        const initPromise =
+          (async () => {
+            const allowed =
+              await bootstrapAdminMembership(
+                user
+              );
+
+
+            if (
+              generation !== adminSessionGeneration
+            ) {
+              return;
+            }
+
+
+            if (
+              !allowed
+            ) {
+              resetAdminSessionInitialization();
+
+              await supabase.auth.signOut();
+
+              showAuth(
+                "This account is not authorized to access the Soleil & Stone admin."
+              );
+
+              return;
+            }
+
+
+            state.user =
+              user;
+
+
+            showAdmin();
+
+
+            await loadAllContent();
+
+
+            if (
+              generation !== adminSessionGeneration
+            ) {
+              return;
+            }
+
+
+            initializedAdminUserId =
+              userId;
+
+
+            openPortfolio();
+          })();
+
+
+        adminSessionInitPromise =
+          initPromise;
+
+
+        try {
+          return await initPromise;
+        } finally {
+          if (
+            adminSessionInitPromise === initPromise
+          ) {
+            adminSessionInitPromise = null;
+            adminSessionInitUserId = "";
+          }
+        }
 
       }
 
@@ -13033,19 +13120,16 @@ const supabasePublishableKey =
 
 
       async function restoreVentureRecord(type,id) {
-        const table={
-          task:"venture_tasks",
-          milestone:"venture_milestones",
-          workspace_item:"venture_workspace_items",
-          attachment:"venture_attachments"
+        const config={
+          task:{table:"venture_tasks",loader:loadVentureTasks},
+          milestone:{table:"venture_milestones",loader:loadVentureMilestones},
+          workspace_item:{table:"venture_workspace_items",loader:loadVentureWorkspaceItems},
+          attachment:{table:"venture_attachments",loader:loadVentureAttachments}
         }[type];
-        if(!table)return;
-        const {error}=await supabase.from(table).update({archived_at:null}).eq("id",id);
+        if(!config)return;
+        const {error}=await supabase.from(config.table).update({archived_at:null}).eq("id",id);
         if(error)throw error;
-        await Promise.all([
-          loadVentureTasks(),loadVentureMilestones(),loadVentureWorkspaceItems(),
-          loadVentureAttachments(),loadVentureActivity()
-        ]);
+        await Promise.all([config.loader(),loadVentureActivity()]);
         renderVentureArchiveCenter();
         showToast("Archived record restored.");
       }
@@ -13161,6 +13245,7 @@ const supabasePublishableKey =
         renderVentureActivity();
         renderVentureDocumentCenter();
         renderVentureArchiveCenter();
+        window.requestAnimationFrame(updateVentureDashboardRailNav);
       }
 
       function ventureSearchEntries() {
@@ -13613,7 +13698,7 @@ const supabasePublishableKey =
         $("#save-venture-button").textContent = "Save Changes";
 
         await saveVenturePublicOverview(saved);
-        await Promise.all([loadVentures(), loadVentureTasks(), loadVentureMilestones(), loadVenturePublicOverviews(), loadVentureActivity()]);
+        await Promise.all([loadVentures(), loadVenturePublicOverviews(), loadVentureActivity()]);
         const fresh = state.ventures.find((item) => String(item.id) === String(saved.id)) || saved;
         refreshVentureModalHeader(fresh);
         renderVentureTasks();
@@ -14272,13 +14357,11 @@ const supabasePublishableKey =
 
         if (isSoleilAndStoneVenture(venture)) {
           openSection("dashboard");
-          portfolioMode(false);
           updateMobileVentureActions();
           return;
         }
 
         openSection(initialSection);
-        portfolioMode(false);
         updateMobileVentureActions();
       }
 
@@ -14912,10 +14995,29 @@ const supabasePublishableKey =
       }
 
 
+      function scheduleAdminSectionRelease(section) {
+        if (!section) return;
+
+        const release = () => {
+          if (state.currentAdminSection === section) return;
+          releaseAdminSectionContent(section);
+        };
+
+        if ("requestIdleCallback" in window) {
+          window.requestIdleCallback(release, { timeout: 250 });
+          return;
+        }
+
+        window.requestAnimationFrame(() => {
+          window.setTimeout(release, 0);
+        });
+      }
+
+
       function adminSectionMap() {
         if (!ventureRuntimeCache.adminSections) {
           ventureRuntimeCache.adminSections = new Map(
-            $(".admin-section").map((element) => [
+            qsa(".admin-section").map((element) => [
               String(element.dataset.adminSection || ""),
               element
             ])
@@ -14939,8 +15041,8 @@ const supabasePublishableKey =
 
         if (previousSection === section) return;
         sections.get(String(previousSection))?.classList.add("hidden");
-        releaseAdminSectionContent(previousSection);
         next.classList.remove("hidden");
+        scheduleAdminSectionRelease(previousSection);
       }
 
 
@@ -14981,6 +15083,10 @@ const supabasePublishableKey =
 
         if (sectionChanged) {
           showAdminSection(section, previousSection);
+        }
+
+        if (state.currentVentureId && section !== "ventures") {
+          portfolioMode(false);
         }
 
         syncActiveAdminNav(section);
@@ -17506,7 +17612,7 @@ const supabasePublishableKey =
 
 
       supabase.auth.onAuthStateChange(
-        async (
+        (
           event,
           session
         ) => {
@@ -17515,12 +17621,18 @@ const supabasePublishableKey =
             event === "SIGNED_IN" ||
             event === "INITIAL_SESSION"
           ) {
-            await handleSession(session);
+            window.setTimeout(() => {
+              handleSession(session).catch((error) => {
+                console.error("Could not initialize admin session:", error);
+                showToast(error?.message || "Could not initialize the admin session.", "error");
+              });
+            }, 0);
           }
 
           if (
             event === "SIGNED_OUT"
           ) {
+            resetAdminSessionInitialization();
             state.user = null;
             showAuth();
           }
