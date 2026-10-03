@@ -9,11 +9,7 @@ import {
 
 
 const visibleEvents =
-  events
-    .filter(
-      (event) =>
-        event.showOnHome
-    )
+  [...events]
     .sort(
       (a, b) =>
         new Date(

@@ -5042,20 +5042,15 @@ const supabasePublishableKey =
                   <div class="checkbox-row">
                     <label class="checkbox-label">
                       <input
-                        id="event-show-home"
-                        type="checkbox"
-                      />
-                      Show on homepage
-                    </label>
-
-                    <label class="checkbox-label">
-                      <input
                         id="event-featured"
                         type="checkbox"
                       />
                       Featured
                     </label>
                   </div>
+                  <p class="field-help">
+                    Published events automatically appear in the homepage calendar. Draft and archived events stay off the homepage.
+                  </p>
                 </div>
               </div>
             </div>
@@ -10092,11 +10087,6 @@ const supabasePublishableKey =
             event.industry_logo_media_id ||
             "";
 
-          $("#event-show-home").checked =
-            Boolean(
-              event.show_on_home
-            );
-
           $("#event-featured").checked =
             Boolean(
               event.featured
@@ -10141,6 +10131,9 @@ const supabasePublishableKey =
 
         const startDate =
           $("#event-start-date").value;
+
+        const status =
+          $("#event-status").value;
 
         const participation =
           $("#event-participation").value ||
@@ -10240,8 +10233,7 @@ const supabasePublishableKey =
                   $("#event-organizers").value
                 )
               : [],
-          status:
-            $("#event-status").value,
+          status,
           cover_media_id:
             $("#event-cover-media").value ||
             null,
@@ -10256,7 +10248,7 @@ const supabasePublishableKey =
                 null
               : null,
           show_on_home:
-            $("#event-show-home").checked,
+            status === "published",
           featured:
             $("#event-featured").checked
         };
