@@ -108,8 +108,11 @@ function categorySlug(
     "Commercialization & Manufacturing":
       "commercialization",
 
+    "Industry & Market Insights":
+      "industry",
+
     "Fieldwork & Trade Shows":
-      "tradeshows",
+      "industry",
 
     "Startups & Entrepreneurship":
       "startups",
