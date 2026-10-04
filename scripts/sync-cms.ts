@@ -111,9 +111,6 @@ function categorySlug(
     "Industry & Market Insights":
       "industry",
 
-    "Fieldwork & Trade Shows":
-      "industry",
-
     "Startups & Entrepreneurship":
       "startups",
 
