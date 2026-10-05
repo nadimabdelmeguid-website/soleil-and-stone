@@ -17,12 +17,15 @@ permissions:
 
 concurrency:
   group: cms-rebuild-watch
-  cancel-in-progress: true
+  # Never cancel an active CMS check just because the next scheduled run starts.
+  # The job is short and has its own timeout below.
+  cancel-in-progress: false
 
 jobs:
   check-and-rebuild:
     name: Check CMS and rebuild when needed
     runs-on: ubuntu-latest
+    timeout-minutes: 10
 
     env:
       SUPABASE_URL: https://szdhkttphzvtmljuhcqs.supabase.co
@@ -51,7 +54,7 @@ jobs:
           fi
 
           STATE_JSON="$(
-            curl               --silent               --show-error               --fail               --get               "$SUPABASE_URL/rest/v1/cms_publication_state"               --header "apikey: $SUPABASE_PUBLISHABLE_KEY"               --header "Authorization: Bearer $SUPABASE_PUBLISHABLE_KEY"               --data-urlencode "select=updated_at"               --data-urlencode "id=eq.1"
+            curl               --silent               --show-error               --fail               --connect-timeout 10               --max-time 30               --retry 2               --retry-delay 2               --retry-all-errors               --get               "$SUPABASE_URL/rest/v1/cms_publication_state"               --header "apikey: $SUPABASE_PUBLISHABLE_KEY"               --header "Authorization: Bearer $SUPABASE_PUBLISHABLE_KEY"               --data-urlencode "select=updated_at"               --data-urlencode "id=eq.1"
           )"
 
           LAST_CHANGE="$(echo "$STATE_JSON" | jq -r '.[0].updated_at // empty')"
@@ -68,7 +71,7 @@ jobs:
 
           for TABLE in field_notes event_recaps; do
             RELEASES="$(
-              curl                 --silent                 --show-error                 --fail                 --get                 "$SUPABASE_URL/rest/v1/$TABLE"                 --header "apikey: $SUPABASE_PUBLISHABLE_KEY"                 --header "Authorization: Bearer $SUPABASE_PUBLISHABLE_KEY"                 --data-urlencode "select=id,published_at"                 --data-urlencode "published_at=gte.$CUTOFF"                 --data-urlencode "published_at=lte.$NOW"                 --data-urlencode "limit=1"
+              curl                 --silent                 --show-error                 --fail                 --connect-timeout 10                 --max-time 30                 --retry 2                 --retry-delay 2                 --retry-all-errors                 --get                 "$SUPABASE_URL/rest/v1/$TABLE"                 --header "apikey: $SUPABASE_PUBLISHABLE_KEY"                 --header "Authorization: Bearer $SUPABASE_PUBLISHABLE_KEY"                 --data-urlencode "select=id,published_at"                 --data-urlencode "published_at=gte.$CUTOFF"                 --data-urlencode "published_at=lte.$NOW"                 --data-urlencode "limit=1"
             )"
 
             if echo "$RELEASES" | jq -e 'length > 0' >/dev/null; then
@@ -87,7 +90,7 @@ jobs:
 
           echo "Triggering Soleil & Stone production rebuild..."
 
-          curl             --silent             --show-error             --fail             --request POST             "$VERCEL_DEPLOY_HOOK"
+          curl             --silent             --show-error             --fail             --connect-timeout 10             --max-time 30             --retry 2             --retry-delay 2             --retry-all-errors             --request POST             "$VERCEL_DEPLOY_HOOK"
 
           echo
           echo "Deployment triggered successfully."
