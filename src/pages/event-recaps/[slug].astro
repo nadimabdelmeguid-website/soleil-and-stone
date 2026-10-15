@@ -85,6 +85,9 @@ const recap = {
   stats:
     post.data.stats,
 
+  links:
+    post.data.links,
+
   photoCredit:
     post.data.photoCredit,
 
@@ -554,6 +557,76 @@ function formatDate(
       >
         <Content />
       </div>
+
+
+      {
+        recap.links &&
+        recap.links.length > 0 && (
+
+          <div
+            class="
+              mt-12
+              pt-8
+              border-t
+              border-brand-border
+            "
+          >
+            <span
+              class="
+                block
+                text-[9px]
+                uppercase
+                tracking-[0.16em]
+                text-brand-gold
+                font-semibold
+              "
+            >
+              Links & References
+            </span>
+
+            <div
+              class="
+                mt-4
+                flex
+                flex-wrap
+                gap-2
+              "
+            >
+              {
+                recap.links.map(
+                  (link) => (
+                    <a
+                      href={link.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class="
+                        inline-flex
+                        items-center
+                        gap-2
+                        border
+                        border-brand-border
+                        bg-white
+                        px-4
+                        py-2.5
+                        text-xs
+                        text-brand-charcoal
+                        font-semibold
+                        hover:border-brand-gold
+                        hover:text-brand-gold
+                        transition-colors
+                      "
+                    >
+                      {link.label}
+                      <span>↗</span>
+                    </a>
+                  )
+                )
+              }
+            </div>
+          </div>
+
+        )
+      }
 
 
       <!-- ===================================================
