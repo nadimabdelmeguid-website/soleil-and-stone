@@ -3085,6 +3085,20 @@ const supabasePublishableKey =
         body { padding-bottom:72px; }
       }
 
+      /* Soleil & Stone admin only: portfolio / venture workspace UI is intentionally disabled. */
+      #section-ventures,
+      [data-admin-section="venture-home"],
+      [data-admin-section="venture-module"],
+      [data-admin-section="venture-execution"],
+      [data-admin-section="venture-milestones"],
+      [data-admin-section="venture-notes"],
+      #venture-sidebar-nav,
+      #back-to-portfolio,
+      #portfolio-top-actions,
+      .venture-mobile-actions {
+        display: none !important;
+      }
+
     </style>
   </head>
 
@@ -3157,7 +3171,7 @@ const supabasePublishableKey =
       id="admin-app"
       class="admin-app hidden"
     >
-      <div class="admin-shell portfolio-mode">
+      <div class="admin-shell">
         <aside
           id="sidebar"
           class="sidebar"
@@ -3165,18 +3179,18 @@ const supabasePublishableKey =
           <a
             class="admin-brand"
             href="/admin/"
-            aria-label="Return to portfolio dashboard"
+            aria-label="Soleil & Stone admin"
           >
             <div id="sidebar-venture-name" class="admin-brand-name">
               SOLEIL & STONE
             </div>
 
             <div id="sidebar-venture-subtitle" class="admin-brand-subtitle">
-              Venture Workspace
+              Website Administration
             </div>
           </a>
 
-          <button id="back-to-portfolio" class="sidebar-back" type="button">
+          <button id="back-to-portfolio" class="sidebar-back hidden" type="button">
             ← All Ventures
           </button>
 
@@ -4141,7 +4155,7 @@ const supabasePublishableKey =
 
             <section
               id="section-ventures"
-              class="admin-section"
+              class="admin-section hidden"
               data-admin-section="ventures"
             >
               <div id="ventures-dashboard">
@@ -5235,7 +5249,7 @@ const supabasePublishableKey =
                     placeholder="Write your Field Note here..."
                   ></textarea>
                   <p class="field-help">
-                    Content is stored as Markdown. Select an existing Media Library image above when you want to insert one manually at your cursor.
+                    Content is stored as Markdown. Use the Link button to make sponsor, speaker, company or other names clickable inside the recap. Select an existing Media Library image above when you want to insert one manually at your cursor.
                   </p>
                 </div>
 
@@ -5636,6 +5650,21 @@ const supabasePublishableKey =
                           style="min-height: 116px;"
                           placeholder="127 :: Registrations&#10;80+ :: Attendees&#10;San Diego :: Community"
                         ></textarea>
+                      </div>
+
+                      <div class="form-field full">
+                        <label class="label" for="recap-links">
+                          Sponsor & related links
+                        </label>
+                        <textarea
+                          id="recap-links"
+                          class="textarea"
+                          style="min-height: 116px;"
+                          placeholder="SEACOMP :: https://seacomp.com&#10;Pure Project :: https://..."
+                        ></textarea>
+                        <p class="field-help">
+                          One link per line in the format Name :: URL. Use this for sponsors, speakers, companies, partners, resources or other references you want shown on the recap.
+                        </p>
                       </div>
 
                       <div class="form-field">
@@ -7433,7 +7462,14 @@ const supabasePublishableKey =
               userId;
 
 
-            openPortfolio();
+            state.currentVentureId = null;
+            state.currentVentureModule = null;
+            portfolioMode(false);
+            $("#website-sidebar-nav")?.classList.remove("hidden");
+            $("#venture-sidebar-nav")?.classList.add("hidden");
+            $("#sidebar-venture-name").textContent = "SOLEIL & STONE";
+            $("#sidebar-venture-subtitle").textContent = "Website Administration";
+            openSection("dashboard");
           })();
 
 
@@ -7666,8 +7702,6 @@ const supabasePublishableKey =
         try {
           await Promise.all(
             [
-            loadWorkspaceAreas(),
-            loadWorkspaceTasks(),
             loadEvents(),
             loadFieldNotes(),
             loadRecaps(),
@@ -7675,15 +7709,8 @@ const supabasePublishableKey =
             loadCommunities(),
             loadOrganizations(),
             loadPeople(),
-            loadVentures(),
-            loadVentureTasks(),
-            loadVentureWorkspaceItems(),
-            loadVentureAttachments(),
-            loadVenturePublicOverviews(),
-            loadVentureActivity(),
             loadEvidence(),
             loadFieldNoteEvents(),
-            loadVentureMilestones(),
             loadEventSpeakers(),
             loadEventSponsors(),
             loadFeaturedContent()
@@ -7709,13 +7736,7 @@ const supabasePublishableKey =
         refreshRecapEventSelector();
         refreshRelationshipSelectors();
 
-        if (state.currentAdminSection === "ventures") {
-          renderVentures();
-        } else {
-          renderAdminSectionContent(state.currentAdminSection);
-        }
-
-        renderCurrentVentureContext({ sidebar: true });
+        renderAdminSectionContent(state.currentAdminSection);
 
       }
 
@@ -10960,6 +10981,37 @@ const supabasePublishableKey =
       }
 
 
+      function parseRecapLinks(value) {
+        return String(value || "")
+          .split("\n")
+          .map((line) => line.trim())
+          .filter(Boolean)
+          .map((line) => {
+            const separator = line.indexOf("::");
+            if (separator === -1) return null;
+
+            const label = line.slice(0, separator).trim();
+            const url = line.slice(separator + 2).trim();
+
+            if (!label || !url) return null;
+            return { label, url };
+          })
+          .filter(Boolean);
+      }
+
+
+      function formatRecapLinks(value) {
+        return (Array.isArray(value) ? value : [])
+          .map((item) =>
+            item?.label && item?.url
+              ? `${item.label} :: ${item.url}`
+              : ""
+          )
+          .filter(Boolean)
+          .join("\n");
+      }
+
+
       function getRecapPhotoCreditFromForm() {
         const name =
           $("#recap-photo-credit-name").value.trim();
@@ -11041,6 +11093,7 @@ const supabasePublishableKey =
           $("#recap-eyebrow").value = item.eyebrow || "Event Recap";
           $("#recap-tags").value = formatRecapTags(item.tags);
           $("#recap-stats").value = formatRecapStats(item.stats);
+          $("#recap-links").value = formatRecapLinks(item.links);
           $("#recap-photo-credit-label").value = item.photo_credit?.label || "Photography";
           $("#recap-photo-credit-name").value = item.photo_credit?.name || "";
           $("#recap-photo-credit-url").value = item.photo_credit?.url || "";
@@ -11145,6 +11198,8 @@ const supabasePublishableKey =
             parseRecapTags($("#recap-tags").value),
           stats:
             parseRecapStats($("#recap-stats").value),
+          links:
+            parseRecapLinks($("#recap-links").value),
           photo_credit:
             getRecapPhotoCreditFromForm(),
           seo_title:
@@ -15069,31 +15124,19 @@ const supabasePublishableKey =
 
 
       function syncActiveAdminNav(section) {
-        const venture = currentVenture();
-        const root = isSoleilAndStoneVenture(venture)
-          ? $("#website-sidebar-nav")
-          : $("#venture-sidebar-nav");
-
+        const root = $("#website-sidebar-nav");
         if (!root) return;
 
         root.querySelectorAll(".nav-button.active").forEach((button) =>
           button.classList.remove("active")
         );
 
-        let target = null;
-        if (section === "venture-module" && state.currentVentureModule) {
-          target = root.querySelector(
-            `.nav-button[data-section="venture-module"][data-venture-module="${CSS.escape(String(state.currentVentureModule))}"]`
-          );
-        } else {
-          target = root.querySelector(
-            `.nav-button[data-section="${CSS.escape(String(section))}"]:not([data-venture-module])`
-          );
-        }
+        const target = root.querySelector(
+          `.nav-button[data-section="${CSS.escape(String(section))}"]:not([data-venture-module])`
+        );
 
         target?.classList.add("active");
       }
-
 
       function openSection(
         section
@@ -15187,7 +15230,6 @@ const supabasePublishableKey =
         ];
 
         const showSyncNote =
-          isSoleilAndStoneVenture(venture) &&
           soleilCmsSections.includes(section);
 
         $("#sync-note").classList.toggle("hidden", !showSyncNote);

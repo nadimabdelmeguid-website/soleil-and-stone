@@ -137,6 +137,18 @@ const eventRecaps =
           )
             .default([]),
 
+        links:
+          z.array(
+            z.object({
+              label:
+                z.string(),
+
+              url:
+                z.string()
+            })
+          )
+            .default([]),
+
         photoCredit:
           z.object({
             label:

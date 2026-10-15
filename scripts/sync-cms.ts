@@ -836,6 +836,7 @@ export const fieldworkIndustryLogos =
         `readingMinutes: ${Number(recap.reading_minutes || 1)}`,
         `tags: ${JSON.stringify(Array.isArray(recap.tags) ? recap.tags : [])}`,
         `stats: ${JSON.stringify(Array.isArray(recap.stats) ? recap.stats : [])}`,
+        `links: ${JSON.stringify(Array.isArray(recap.links) ? recap.links : [])}`,
         `photoCredit: ${JSON.stringify(recap.photo_credit || null)}`,
         `heroImage: ${yamlString(heroImage || "")}`,
         `seoTitle: ${yamlString(recap.seo_title || "")}`,
